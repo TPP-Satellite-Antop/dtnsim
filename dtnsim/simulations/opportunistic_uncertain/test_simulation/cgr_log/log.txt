@@ -1,0 +1,86 @@
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 1.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 2.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 3.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 4.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 5.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 6.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 7.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 8.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 9.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 10.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 11.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 12.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 13.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 14.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 15.
+[              5]: Destination node: 5.
+[              5]: Region number: 1.
+[              5]: Best routes found: 1.
+[              5]: Used route to neighbor 3.
+[             10]: Destination node: 5.
+[             10]: Region number: 1.
+[             10]: Best routes found: 1.
+[             10]: Used route to neighbor 4.
+[             30]: Destination node: 5.
+[             30]: Region number: 1.
+[             30]: Best routes found: 0.

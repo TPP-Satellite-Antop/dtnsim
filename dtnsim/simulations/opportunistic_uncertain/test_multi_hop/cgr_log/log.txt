@@ -1,0 +1,62 @@
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 1.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 2.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 3.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 4.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 5.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 6.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 7.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 8.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 9.
+[             95]: Destination node: 2.
+[             95]: Region number: 1.
+[             95]: Best routes found: 1.
+[             95]: Used route to neighbor 5.
+[            110]: Destination node: 2.
+[            110]: Region number: 1.
+[            110]: Contact plan modified, all routes will be discarded.
+[            110]: Best routes found: 1.
+[            110]: Used route to neighbor 8.
+[            110]: Destination node: 2.
+[            110]: Region number: 1.
+[            110]: Best routes found: 1.
+[            110]: Used route to neighbor 4.
+[            120]: Destination node: 2.
+[            120]: Region number: 1.
+[            120]: Best routes found: 1.
+[            120]: Used route to neighbor 2.

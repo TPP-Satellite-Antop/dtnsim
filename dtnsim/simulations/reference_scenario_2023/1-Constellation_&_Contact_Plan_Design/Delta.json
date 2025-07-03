@@ -1,0 +1,1680 @@
+{
+    "Satellites": [
+        {
+            "ApogeeAltitude": 500.0,
+            "PerigeeAltitude": 500.0,
+            "Inclinaison": 70.0,
+            "ArgumentOfPerigee": 0.0,
+            "TrueAnomaly": 0.0,
+            "RAAN": 0.0,
+            "Sensors": [
+                {
+                    "Name": "GSL1",
+                    "Pointing": {
+                        "Azimuth": -0.0,
+                        "Elevation": 90.0
+                    },
+                    "ConicAngle": 59.99999999999999
+                },
+                {
+                    "Name": "ISL-5",
+                    "Pointing": {
+                        "Azimuth": 67.5,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-6",
+                    "Pointing": {
+                        "Azimuth": 112.50000000000001,
+                        "Elevation": 3.81666561775622e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-7",
+                    "Pointing": {
+                        "Azimuth": -112.49999999999999,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-8",
+                    "Pointing": {
+                        "Azimuth": -67.49999999999997,
+                        "Elevation": 1.2722218725854067e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                }
+            ]
+        },
+        {
+            "ApogeeAltitude": 500.0,
+            "PerigeeAltitude": 500.0,
+            "Inclinaison": 70.0,
+            "ArgumentOfPerigee": 0.0,
+            "TrueAnomaly": 180.0,
+            "RAAN": 29.999999999999996,
+            "Sensors": [
+                {
+                    "Name": "GSL2",
+                    "Pointing": {
+                        "Azimuth": -0.0,
+                        "Elevation": 90.0
+                    },
+                    "ConicAngle": 59.99999999999999
+                },
+                {
+                    "Name": "ISL-9",
+                    "Pointing": {
+                        "Azimuth": 67.5,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-10",
+                    "Pointing": {
+                        "Azimuth": 112.50000000000001,
+                        "Elevation": 3.81666561775622e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-11",
+                    "Pointing": {
+                        "Azimuth": -112.49999999999999,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-12",
+                    "Pointing": {
+                        "Azimuth": -67.49999999999997,
+                        "Elevation": 1.2722218725854067e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                }
+            ]
+        },
+        {
+            "ApogeeAltitude": 500.0,
+            "PerigeeAltitude": 500.0,
+            "Inclinaison": 70.0,
+            "ArgumentOfPerigee": 0.0,
+            "TrueAnomaly": 0.0,
+            "RAAN": 59.99999999999999,
+            "Sensors": [
+                {
+                    "Name": "GSL3",
+                    "Pointing": {
+                        "Azimuth": -0.0,
+                        "Elevation": 90.0
+                    },
+                    "ConicAngle": 59.99999999999999
+                },
+                {
+                    "Name": "ISL-13",
+                    "Pointing": {
+                        "Azimuth": 67.5,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-14",
+                    "Pointing": {
+                        "Azimuth": 112.50000000000001,
+                        "Elevation": 3.81666561775622e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-15",
+                    "Pointing": {
+                        "Azimuth": -112.49999999999999,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-16",
+                    "Pointing": {
+                        "Azimuth": -67.49999999999997,
+                        "Elevation": 1.2722218725854067e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                }
+            ]
+        },
+        {
+            "ApogeeAltitude": 500.0,
+            "PerigeeAltitude": 500.0,
+            "Inclinaison": 70.0,
+            "ArgumentOfPerigee": 0.0,
+            "TrueAnomaly": 180.0,
+            "RAAN": 90.0,
+            "Sensors": [
+                {
+                    "Name": "GSL4",
+                    "Pointing": {
+                        "Azimuth": -0.0,
+                        "Elevation": 90.0
+                    },
+                    "ConicAngle": 59.99999999999999
+                },
+                {
+                    "Name": "ISL-17",
+                    "Pointing": {
+                        "Azimuth": 67.5,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-18",
+                    "Pointing": {
+                        "Azimuth": 112.50000000000001,
+                        "Elevation": 3.81666561775622e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-19",
+                    "Pointing": {
+                        "Azimuth": -112.49999999999999,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-20",
+                    "Pointing": {
+                        "Azimuth": -67.49999999999997,
+                        "Elevation": 1.2722218725854067e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                }
+            ]
+        },
+        {
+            "ApogeeAltitude": 500.0,
+            "PerigeeAltitude": 500.0,
+            "Inclinaison": 70.0,
+            "ArgumentOfPerigee": 0.0,
+            "TrueAnomaly": 0.0,
+            "RAAN": 119.99999999999999,
+            "Sensors": [
+                {
+                    "Name": "GSL5",
+                    "Pointing": {
+                        "Azimuth": -0.0,
+                        "Elevation": 90.0
+                    },
+                    "ConicAngle": 59.99999999999999
+                },
+                {
+                    "Name": "ISL-21",
+                    "Pointing": {
+                        "Azimuth": 67.5,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-22",
+                    "Pointing": {
+                        "Azimuth": 112.50000000000001,
+                        "Elevation": 3.81666561775622e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-23",
+                    "Pointing": {
+                        "Azimuth": -112.49999999999999,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-24",
+                    "Pointing": {
+                        "Azimuth": -67.49999999999997,
+                        "Elevation": 1.2722218725854067e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                }
+            ]
+        },
+        {
+            "ApogeeAltitude": 500.0,
+            "PerigeeAltitude": 500.0,
+            "Inclinaison": 70.0,
+            "ArgumentOfPerigee": 0.0,
+            "TrueAnomaly": 180.0,
+            "RAAN": 149.99999999999997,
+            "Sensors": [
+                {
+                    "Name": "GSL6",
+                    "Pointing": {
+                        "Azimuth": -0.0,
+                        "Elevation": 90.0
+                    },
+                    "ConicAngle": 59.99999999999999
+                },
+                {
+                    "Name": "ISL-25",
+                    "Pointing": {
+                        "Azimuth": 67.5,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-26",
+                    "Pointing": {
+                        "Azimuth": 112.50000000000001,
+                        "Elevation": 3.81666561775622e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-27",
+                    "Pointing": {
+                        "Azimuth": -112.49999999999999,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-28",
+                    "Pointing": {
+                        "Azimuth": -67.49999999999997,
+                        "Elevation": 1.2722218725854067e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                }
+            ]
+        },
+        {
+            "ApogeeAltitude": 500.0,
+            "PerigeeAltitude": 500.0,
+            "Inclinaison": 70.0,
+            "ArgumentOfPerigee": 0.0,
+            "TrueAnomaly": 0.0,
+            "RAAN": 180.0,
+            "Sensors": [
+                {
+                    "Name": "GSL7",
+                    "Pointing": {
+                        "Azimuth": -0.0,
+                        "Elevation": 90.0
+                    },
+                    "ConicAngle": 59.99999999999999
+                },
+                {
+                    "Name": "ISL-29",
+                    "Pointing": {
+                        "Azimuth": 67.5,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-30",
+                    "Pointing": {
+                        "Azimuth": 112.50000000000001,
+                        "Elevation": 3.81666561775622e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-31",
+                    "Pointing": {
+                        "Azimuth": -112.49999999999999,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-32",
+                    "Pointing": {
+                        "Azimuth": -67.49999999999997,
+                        "Elevation": 1.2722218725854067e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                }
+            ]
+        },
+        {
+            "ApogeeAltitude": 500.0,
+            "PerigeeAltitude": 500.0,
+            "Inclinaison": 70.0,
+            "ArgumentOfPerigee": 0.0,
+            "TrueAnomaly": 180.0,
+            "RAAN": 210.0,
+            "Sensors": [
+                {
+                    "Name": "GSL8",
+                    "Pointing": {
+                        "Azimuth": -0.0,
+                        "Elevation": 90.0
+                    },
+                    "ConicAngle": 59.99999999999999
+                },
+                {
+                    "Name": "ISL-33",
+                    "Pointing": {
+                        "Azimuth": 67.5,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-34",
+                    "Pointing": {
+                        "Azimuth": 112.50000000000001,
+                        "Elevation": 3.81666561775622e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-35",
+                    "Pointing": {
+                        "Azimuth": -112.49999999999999,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-36",
+                    "Pointing": {
+                        "Azimuth": -67.49999999999997,
+                        "Elevation": 1.2722218725854067e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                }
+            ]
+        },
+        {
+            "ApogeeAltitude": 500.0,
+            "PerigeeAltitude": 500.0,
+            "Inclinaison": 70.0,
+            "ArgumentOfPerigee": 0.0,
+            "TrueAnomaly": 0.0,
+            "RAAN": 239.99999999999997,
+            "Sensors": [
+                {
+                    "Name": "GSL9",
+                    "Pointing": {
+                        "Azimuth": -0.0,
+                        "Elevation": 90.0
+                    },
+                    "ConicAngle": 59.99999999999999
+                },
+                {
+                    "Name": "ISL-37",
+                    "Pointing": {
+                        "Azimuth": 67.5,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-38",
+                    "Pointing": {
+                        "Azimuth": 112.50000000000001,
+                        "Elevation": 3.81666561775622e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-39",
+                    "Pointing": {
+                        "Azimuth": -112.49999999999999,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-40",
+                    "Pointing": {
+                        "Azimuth": -67.49999999999997,
+                        "Elevation": 1.2722218725854067e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                }
+            ]
+        },
+        {
+            "ApogeeAltitude": 500.0,
+            "PerigeeAltitude": 500.0,
+            "Inclinaison": 70.0,
+            "ArgumentOfPerigee": 0.0,
+            "TrueAnomaly": 180.0,
+            "RAAN": 270.0,
+            "Sensors": [
+                {
+                    "Name": "GSL10",
+                    "Pointing": {
+                        "Azimuth": -0.0,
+                        "Elevation": 90.0
+                    },
+                    "ConicAngle": 59.99999999999999
+                },
+                {
+                    "Name": "ISL-41",
+                    "Pointing": {
+                        "Azimuth": 67.5,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-42",
+                    "Pointing": {
+                        "Azimuth": 112.50000000000001,
+                        "Elevation": 3.81666561775622e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-43",
+                    "Pointing": {
+                        "Azimuth": -112.49999999999999,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-44",
+                    "Pointing": {
+                        "Azimuth": -67.49999999999997,
+                        "Elevation": 1.2722218725854067e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                }
+            ]
+        },
+        {
+            "ApogeeAltitude": 500.0,
+            "PerigeeAltitude": 500.0,
+            "Inclinaison": 70.0,
+            "ArgumentOfPerigee": 0.0,
+            "TrueAnomaly": 0.0,
+            "RAAN": 299.99999999999994,
+            "Sensors": [
+                {
+                    "Name": "GSL11",
+                    "Pointing": {
+                        "Azimuth": -0.0,
+                        "Elevation": 90.0
+                    },
+                    "ConicAngle": 59.99999999999999
+                },
+                {
+                    "Name": "ISL-45",
+                    "Pointing": {
+                        "Azimuth": 67.5,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-46",
+                    "Pointing": {
+                        "Azimuth": 112.50000000000001,
+                        "Elevation": 3.81666561775622e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-47",
+                    "Pointing": {
+                        "Azimuth": -112.49999999999999,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-48",
+                    "Pointing": {
+                        "Azimuth": -67.49999999999997,
+                        "Elevation": 1.2722218725854067e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                }
+            ]
+        },
+        {
+            "ApogeeAltitude": 500.0,
+            "PerigeeAltitude": 500.0,
+            "Inclinaison": 70.0,
+            "ArgumentOfPerigee": 0.0,
+            "TrueAnomaly": 179.9999999999998,
+            "RAAN": 330.0,
+            "Sensors": [
+                {
+                    "Name": "GSL12",
+                    "Pointing": {
+                        "Azimuth": -0.0,
+                        "Elevation": 90.0
+                    },
+                    "ConicAngle": 59.99999999999999
+                },
+                {
+                    "Name": "ISL-49",
+                    "Pointing": {
+                        "Azimuth": 67.5,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-50",
+                    "Pointing": {
+                        "Azimuth": 112.50000000000001,
+                        "Elevation": 3.81666561775622e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-51",
+                    "Pointing": {
+                        "Azimuth": -112.49999999999999,
+                        "Elevation": 0.0
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                },
+                {
+                    "Name": "ISL-52",
+                    "Pointing": {
+                        "Azimuth": -67.49999999999997,
+                        "Elevation": 1.2722218725854067e-14
+                    },
+                    "ConicAngle": 20.0,
+                    "Range": {
+                        "Min": 0.0,
+                        "Max": 4000.0
+                    }
+                }
+            ]
+        }
+    ],
+    "GroundStations": [
+        {
+            "Name": "GS_AntarcticaTroll",
+            "Position": {
+                "Latitude": -71.88837419653396,
+                "Longitude": 2.5338900000000004,
+                "Radius": 6358.809540623288
+            }
+        },
+        {
+            "Name": "GS_Awarua",
+            "Position": {
+                "Latitude": -46.307734496977794,
+                "Longitude": 168.4,
+                "Radius": 6366.929864073426
+            }
+        },
+        {
+            "Name": "GS_Cordoba",
+            "Position": {
+                "Latitude": -31.24266894845589,
+                "Longitude": -64.18105,
+                "Radius": 6372.363046803694
+            }
+        },
+        {
+            "Name": "GS_Inuvik",
+            "Position": {
+                "Latitude": 68.22830273909625,
+                "Longitude": -133.723022,
+                "Radius": 6359.681526428608
+            }
+        },
+        {
+            "Name": "GS_LosAngeles",
+            "Position": {
+                "Latitude": 33.873976808112914,
+                "Longitude": -118.243683,
+                "Radius": 6371.470556851944
+            }
+        },
+        {
+            "Name": "GS_Nuuk",
+            "Position": {
+                "Latitude": 64.03208392271935,
+                "Longitude": -51.721570000000014,
+                "Radius": 6360.835695611415
+            }
+        },
+        {
+            "Name": "GS_PuertoLlano",
+            "Position": {
+                "Latitude": 38.49952430457698,
+                "Longitude": -4.1073400000000015,
+                "Radius": 6369.824498696825
+            }
+        },
+        {
+            "Name": "GS_PuntaArenas",
+            "Position": {
+                "Latitude": -52.96983627263058,
+                "Longitude": -70.91129,
+                "Radius": 6364.4833897784665
+            }
+        },
+        {
+            "Name": "GS_Svalbard",
+            "Position": {
+                "Latitude": 77.98679207051623,
+                "Longitude": 14.214635000000001,
+                "Radius": 6357.674268590528
+            }
+        },
+        {
+            "Name": "GS_Tokio",
+            "Position": {
+                "Latitude": 35.470802975196946,
+                "Longitude": 139.839478,
+                "Radius": 6370.911962666122
+            }
+        }
+    ],
+    "EndNodes": [
+        {
+            "Name": "EndNode1",
+            "Position": {
+                "Latitude": -78.04431686942951,
+                "Longitude": 2.116109079775754,
+                "Radius": 6357.665586597896
+            }
+        },
+        {
+            "Name": "EndNode2",
+            "Position": {
+                "Latitude": 11.140141576980819,
+                "Longitude": 157.83815050869958,
+                "Radius": 6377.334830856813
+            }
+        },
+        {
+            "Name": "EndNode3",
+            "Position": {
+                "Latitude": -47.74652133264264,
+                "Longitude": 23.185418840830778,
+                "Radius": 6366.394455632082
+            }
+        },
+        {
+            "Name": "EndNode4",
+            "Position": {
+                "Latitude": 35.559698661133716,
+                "Longitude": 92.44060336120208,
+                "Radius": 6370.880534512586
+            }
+        },
+        {
+            "Name": "EndNode5",
+            "Position": {
+                "Latitude": -71.74992274323643,
+                "Longitude": 178.47521334257328,
+                "Radius": 6358.840053431624
+            }
+        },
+        {
+            "Name": "EndNode6",
+            "Position": {
+                "Latitude": 9.154283576371077,
+                "Longitude": 32.53978368104757,
+                "Radius": 6377.593072991861
+            }
+        },
+        {
+            "Name": "EndNode7",
+            "Position": {
+                "Latitude": -35.71351254312918,
+                "Longitude": -163.49845824489,
+                "Radius": 6370.8260776523275
+            }
+        },
+        {
+            "Name": "EndNode8",
+            "Position": {
+                "Latitude": 21.943780892733297,
+                "Longitude": -176.44425230769562,
+                "Radius": 6375.137676530776
+            }
+        },
+        {
+            "Name": "EndNode9",
+            "Position": {
+                "Latitude": -30.896133465892152,
+                "Longitude": -161.67740557721345,
+                "Radius": 6372.477660935805
+            }
+        },
+        {
+            "Name": "EndNode10",
+            "Position": {
+                "Latitude": -56.47057854085633,
+                "Longitude": -133.25951325740652,
+                "Radius": 6363.254120854326
+            }
+        },
+        {
+            "Name": "EndNode11",
+            "Position": {
+                "Latitude": 21.993658832957838,
+                "Longitude": 134.3672060702046,
+                "Radius": 6375.124712421671
+            }
+        },
+        {
+            "Name": "EndNode12",
+            "Position": {
+                "Latitude": 17.703858632578633,
+                "Longitude": -168.51903679136868,
+                "Radius": 6376.150387028098
+            }
+        },
+        {
+            "Name": "EndNode13",
+            "Position": {
+                "Latitude": -22.36452674328132,
+                "Longitude": -70.9147977338879,
+                "Radius": 6375.027588830068
+            }
+        },
+        {
+            "Name": "EndNode14",
+            "Position": {
+                "Latitude": 19.631600778093375,
+                "Longitude": 69.95485046608664,
+                "Radius": 6375.712358939659
+            }
+        },
+        {
+            "Name": "EndNode15",
+            "Position": {
+                "Latitude": 18.16264455366909,
+                "Longitude": 135.8523095471686,
+                "Radius": 6376.049652007823
+            }
+        },
+        {
+            "Name": "EndNode16",
+            "Position": {
+                "Latitude": -1.315439735004061,
+                "Longitude": -119.25099692704661,
+                "Radius": 6378.125673114797
+            }
+        },
+        {
+            "Name": "EndNode17",
+            "Position": {
+                "Latitude": 29.71787411617921,
+                "Longitude": -43.443418924901714,
+                "Radius": 6372.861762634058
+            }
+        },
+        {
+            "Name": "EndNode18",
+            "Position": {
+                "Latitude": 25.751888321533155,
+                "Longitude": -51.624199805882625,
+                "Radius": 6374.083719670436
+            }
+        },
+        {
+            "Name": "EndNode19",
+            "Position": {
+                "Latitude": -16.587671470093742,
+                "Longitude": -32.487788365043315,
+                "Radius": 6376.3860635418705
+            }
+        },
+        {
+            "Name": "EndNode20",
+            "Position": {
+                "Latitude": -52.671394451366574,
+                "Longitude": -133.65753404170798,
+                "Radius": 6364.590506561848
+            }
+        },
+        {
+            "Name": "EndNode21",
+            "Position": {
+                "Latitude": 45.59584908216439,
+                "Longitude": -17.288105111009457,
+                "Radius": 6367.195363568795
+            }
+        },
+        {
+            "Name": "EndNode22",
+            "Position": {
+                "Latitude": -35.13005055139169,
+                "Longitude": 29.15987399906237,
+                "Radius": 6371.032121899012
+            }
+        },
+        {
+            "Name": "EndNode23",
+            "Position": {
+                "Latitude": -18.542928892069597,
+                "Longitude": 168.21450251530246,
+                "Radius": 6375.9644746219
+            }
+        },
+        {
+            "Name": "EndNode24",
+            "Position": {
+                "Latitude": 26.768909018683743,
+                "Longitude": 155.42192193662635,
+                "Radius": 6373.781582526451
+            }
+        },
+        {
+            "Name": "EndNode25",
+            "Position": {
+                "Latitude": 11.798939722779906,
+                "Longitude": 0.2907084954739787,
+                "Radius": 6377.238553014745
+            }
+        },
+        {
+            "Name": "EndNode26",
+            "Position": {
+                "Latitude": -19.56950877384481,
+                "Longitude": 1.8837959147336394,
+                "Radius": 6375.727063698998
+            }
+        },
+        {
+            "Name": "EndNode27",
+            "Position": {
+                "Latitude": 23.548713037252096,
+                "Longitude": 7.029844204098878,
+                "Radius": 6374.709031226395
+            }
+        },
+        {
+            "Name": "EndNode28",
+            "Position": {
+                "Latitude": -9.249695317922082,
+                "Longitude": 64.159780482444,
+                "Radius": 6377.581776251218
+            }
+        },
+        {
+            "Name": "EndNode29",
+            "Position": {
+                "Latitude": 55.17534674733611,
+                "Longitude": -150.48533676259558,
+                "Radius": 6363.702579025791
+            }
+        },
+        {
+            "Name": "EndNode30",
+            "Position": {
+                "Latitude": 47.02661597701059,
+                "Longitude": -130.0531278890552,
+                "Radius": 6366.662095241412
+            }
+        },
+        {
+            "Name": "EndNode31",
+            "Position": {
+                "Latitude": -32.82576794428033,
+                "Longitude": 127.62903608191921,
+                "Radius": 6371.830571007991
+            }
+        },
+        {
+            "Name": "EndNode32",
+            "Position": {
+                "Latitude": -4.503405450950651,
+                "Longitude": 83.04766553243536,
+                "Radius": 6378.004498712832
+            }
+        },
+        {
+            "Name": "EndNode33",
+            "Position": {
+                "Latitude": 4.827739410224672,
+                "Longitude": 114.18303198634135,
+                "Radius": 6377.984773554505
+            }
+        },
+        {
+            "Name": "EndNode34",
+            "Position": {
+                "Latitude": -6.9566790967197605,
+                "Longitude": -39.67763010070231,
+                "Radius": 6377.821730029577
+            }
+        },
+        {
+            "Name": "EndNode35",
+            "Position": {
+                "Latitude": -22.746550590302313,
+                "Longitude": -100.593192165708,
+                "Radius": 6374.926212730324
+            }
+        },
+        {
+            "Name": "EndNode36",
+            "Position": {
+                "Latitude": -16.788093208321648,
+                "Longitude": -134.06529946852768,
+                "Radius": 6376.344738425508
+            }
+        },
+        {
+            "Name": "EndNode37",
+            "Position": {
+                "Latitude": -69.75049192401845,
+                "Longitude": 16.1241304455379,
+                "Radius": 6359.302681626501
+            }
+        },
+        {
+            "Name": "EndNode38",
+            "Position": {
+                "Latitude": -42.40285165533551,
+                "Longitude": -23.27749821203577,
+                "Radius": 6368.385953605196
+            }
+        },
+        {
+            "Name": "EndNode39",
+            "Position": {
+                "Latitude": 45.11470463540701,
+                "Longitude": 110.5041798316193,
+                "Radius": 6367.374914236644
+            }
+        },
+        {
+            "Name": "EndNode40",
+            "Position": {
+                "Latitude": -32.03221852169052,
+                "Longitude": -162.8510263359271,
+                "Radius": 6372.099253585963
+            }
+        },
+        {
+            "Name": "EndNode41",
+            "Position": {
+                "Latitude": 59.76940860004024,
+                "Longitude": 98.82098201517329,
+                "Radius": 6362.152834096591
+            }
+        },
+        {
+            "Name": "EndNode42",
+            "Position": {
+                "Latitude": -41.302404467046955,
+                "Longitude": -66.6888994347051,
+                "Radius": 6368.794398323953
+            }
+        },
+        {
+            "Name": "EndNode43",
+            "Position": {
+                "Latitude": -70.40578449293291,
+                "Longitude": -72.7450900379486,
+                "Radius": 6359.146590825905
+            }
+        },
+        {
+            "Name": "EndNode44",
+            "Position": {
+                "Latitude": 37.49973522182303,
+                "Longitude": 104.62699834185042,
+                "Radius": 6370.186988415518
+            }
+        },
+        {
+            "Name": "EndNode45",
+            "Position": {
+                "Latitude": 40.228727619031496,
+                "Longitude": -109.210398575755,
+                "Radius": 6369.191028760103
+            }
+        },
+        {
+            "Name": "EndNode46",
+            "Position": {
+                "Latitude": 32.501374646717125,
+                "Longitude": 62.47061993751265,
+                "Radius": 6371.940822390696
+            }
+        },
+        {
+            "Name": "EndNode47",
+            "Position": {
+                "Latitude": 46.883991682488045,
+                "Longitude": -119.20096010306422,
+                "Radius": 6366.715184747826
+            }
+        },
+        {
+            "Name": "EndNode48",
+            "Position": {
+                "Latitude": 3.4873342107664027,
+                "Longitude": 97.32179930272781,
+                "Radius": 6378.057477741406
+            }
+        },
+        {
+            "Name": "EndNode49",
+            "Position": {
+                "Latitude": 55.363458308323274,
+                "Longitude": 95.80523607216941,
+                "Radius": 6363.636949041311
+            }
+        },
+        {
+            "Name": "EndNode50",
+            "Position": {
+                "Latitude": 59.767582942683205,
+                "Longitude": 58.84418275850992,
+                "Radius": 6362.153425463198
+            }
+        },
+        {
+            "Name": "EndNode51",
+            "Position": {
+                "Latitude": -60.354185995696604,
+                "Longitude": 133.6751132306693,
+                "Radius": 6361.964533539276
+            }
+        },
+        {
+            "Name": "EndNode52",
+            "Position": {
+                "Latitude": 25.559187522079377,
+                "Longitude": -162.09301670531022,
+                "Radius": 6374.140035479044
+            }
+        },
+        {
+            "Name": "EndNode53",
+            "Position": {
+                "Latitude": 19.26790502333383,
+                "Longitude": 1.9057005609776356,
+                "Radius": 6375.797933920653
+            }
+        },
+        {
+            "Name": "EndNode54",
+            "Position": {
+                "Latitude": 33.32200482737964,
+                "Longitude": 117.04260826109117,
+                "Radius": 6371.660835306124
+            }
+        },
+        {
+            "Name": "EndNode55",
+            "Position": {
+                "Latitude": -18.305036727751446,
+                "Longitude": -63.648576631955365,
+                "Radius": 6376.017935818679
+            }
+        },
+        {
+            "Name": "EndNode56",
+            "Position": {
+                "Latitude": 42.09243451312486,
+                "Longitude": 7.8734390198847555,
+                "Radius": 6368.501331653933
+            }
+        },
+        {
+            "Name": "EndNode57",
+            "Position": {
+                "Latitude": 29.907950596164177,
+                "Longitude": 81.58690239554164,
+                "Radius": 6372.800401591421
+            }
+        },
+        {
+            "Name": "EndNode58",
+            "Position": {
+                "Latitude": 4.8119107889593575,
+                "Longitude": -84.37860568504222,
+                "Radius": 6377.9857677427535
+            }
+        },
+        {
+            "Name": "EndNode59",
+            "Position": {
+                "Latitude": 55.63581238562179,
+                "Longitude": 56.80091797440729,
+                "Radius": 6363.542220740925
+            }
+        },
+        {
+            "Name": "EndNode60",
+            "Position": {
+                "Latitude": 20.91691296652613,
+                "Longitude": -3.3626708327915082,
+                "Radius": 6375.399327386974
+            }
+        },
+        {
+            "Name": "EndNode61",
+            "Position": {
+                "Latitude": -14.725929174266783,
+                "Longitude": -87.28392207729287,
+                "Radius": 6376.748692255065
+            }
+        },
+        {
+            "Name": "EndNode62",
+            "Position": {
+                "Latitude": 23.13286964111579,
+                "Longitude": -101.40214218179833,
+                "Radius": 6374.822341692749
+            }
+        },
+        {
+            "Name": "EndNode63",
+            "Position": {
+                "Latitude": -47.61438937018408,
+                "Longitude": -37.07211780427547,
+                "Radius": 6366.443532462624
+            }
+        },
+        {
+            "Name": "EndNode64",
+            "Position": {
+                "Latitude": -20.55583409340612,
+                "Longitude": 21.387027320738724,
+                "Radius": 6375.4889151428915
+            }
+        },
+        {
+            "Name": "EndNode65",
+            "Position": {
+                "Latitude": 30.899982542956366,
+                "Longitude": -103.23815092838399,
+                "Radius": 6372.476391887135
+            }
+        },
+        {
+            "Name": "EndNode66",
+            "Position": {
+                "Latitude": 20.64777505650507,
+                "Longitude": -43.511702975340825,
+                "Radius": 6375.466224534355
+            }
+        },
+        {
+            "Name": "EndNode67",
+            "Position": {
+                "Latitude": 48.64220077407519,
+                "Longitude": -61.81825599102829,
+                "Radius": 6366.062436370997
+            }
+        },
+        {
+            "Name": "EndNode68",
+            "Position": {
+                "Latitude": 34.669512742256714,
+                "Longitude": -84.60068956250893,
+                "Radius": 6371.193715256362
+            }
+        },
+        {
+            "Name": "EndNode69",
+            "Position": {
+                "Latitude": -18.90078794370193,
+                "Longitude": 21.49440196433005,
+                "Radius": 6375.882944845219
+            }
+        },
+        {
+            "Name": "EndNode70",
+            "Position": {
+                "Latitude": -22.430343253864507,
+                "Longitude": -143.70310807427433,
+                "Radius": 6375.01021918656
+            }
+        },
+        {
+            "Name": "EndNode71",
+            "Position": {
+                "Latitude": 37.10972210457864,
+                "Longitude": -81.57680614326239,
+                "Radius": 6370.3275199141235
+            }
+        },
+        {
+            "Name": "EndNode72",
+            "Position": {
+                "Latitude": -33.7253006565409,
+                "Longitude": 157.98094745172057,
+                "Radius": 6371.521958678975
+            }
+        },
+        {
+            "Name": "EndNode73",
+            "Position": {
+                "Latitude": 66.35114537573266,
+                "Longitude": -153.9183388726542,
+                "Radius": 6360.178709820379
+            }
+        },
+        {
+            "Name": "EndNode74",
+            "Position": {
+                "Latitude": -58.00132045580774,
+                "Longitude": -105.99030918151907,
+                "Radius": 6362.735270569356
+            }
+        },
+        {
+            "Name": "EndNode75",
+            "Position": {
+                "Latitude": -9.24334490516785,
+                "Longitude": 63.16968077111027,
+                "Radius": 6377.582531649579
+            }
+        },
+        {
+            "Name": "EndNode76",
+            "Position": {
+                "Latitude": -7.6506565042135,
+                "Longitude": -80.89134794603267,
+                "Radius": 6377.756090455921
+            }
+        },
+        {
+            "Name": "EndNode77",
+            "Position": {
+                "Latitude": -40.827083037095406,
+                "Longitude": -9.694499793803148,
+                "Radius": 6368.970250936715
+            }
+        },
+        {
+            "Name": "EndNode78",
+            "Position": {
+                "Latitude": 22.679031642202382,
+                "Longitude": -113.44214382563821,
+                "Radius": 6374.944227431566
+            }
+        },
+        {
+            "Name": "EndNode79",
+            "Position": {
+                "Latitude": -47.176983571670704,
+                "Longitude": -144.408762828968,
+                "Radius": 6366.606145162556
+            }
+        },
+        {
+            "Name": "EndNode80",
+            "Position": {
+                "Latitude": 3.901344331679931,
+                "Longitude": -149.16405272055363,
+                "Radius": 6378.037506855012
+            }
+        },
+        {
+            "Name": "EndNode81",
+            "Position": {
+                "Latitude": 9.328234792169603,
+                "Longitude": 67.77152752047007,
+                "Radius": 6377.572392423226
+            }
+        },
+        {
+            "Name": "EndNode82",
+            "Position": {
+                "Latitude": 5.439189088530676,
+                "Longitude": -14.28434193652842,
+                "Radius": 6377.943896732264
+            }
+        },
+        {
+            "Name": "EndNode83",
+            "Position": {
+                "Latitude": -40.242643818699136,
+                "Longitude": -137.97928318666166,
+                "Radius": 6369.185902195632
+            }
+        },
+        {
+            "Name": "EndNode84",
+            "Position": {
+                "Latitude": -22.636076728601495,
+                "Longitude": -55.97033924781781,
+                "Radius": 6374.955666500942
+            }
+        },
+        {
+            "Name": "EndNode85",
+            "Position": {
+                "Latitude": -55.55735251382349,
+                "Longitude": 116.84575229616603,
+                "Radius": 6363.569474163752
+            }
+        },
+        {
+            "Name": "EndNode86",
+            "Position": {
+                "Latitude": 48.212989892551306,
+                "Longitude": 69.69150680470742,
+                "Radius": 6366.221388678218
+            }
+        },
+        {
+            "Name": "EndNode87",
+            "Position": {
+                "Latitude": 30.87498019558845,
+                "Longitude": -167.093386446699,
+                "Radius": 6372.484633593379
+            }
+        },
+        {
+            "Name": "EndNode88",
+            "Position": {
+                "Latitude": -8.776698297179419,
+                "Longitude": 124.07634883346009,
+                "Radius": 6377.636668616409
+            }
+        },
+        {
+            "Name": "EndNode89",
+            "Position": {
+                "Latitude": -50.49368187916694,
+                "Longitude": -84.16216707015599,
+                "Radius": 6365.380836777632
+            }
+        },
+        {
+            "Name": "EndNode90",
+            "Position": {
+                "Latitude": 62.78476198470002,
+                "Longitude": -139.32803503386378,
+                "Radius": 6361.2072336479305
+            }
+        },
+        {
+            "Name": "EndNode91",
+            "Position": {
+                "Latitude": -46.51474123701493,
+                "Longitude": -169.03214810389235,
+                "Radius": 6366.852715866859
+            }
+        },
+        {
+            "Name": "EndNode92",
+            "Position": {
+                "Latitude": 39.66516976899291,
+                "Longitude": -4.298187744313565,
+                "Radius": 6369.398282108816
+            }
+        },
+        {
+            "Name": "EndNode93",
+            "Position": {
+                "Latitude": -36.11079826867799,
+                "Longitude": -178.04447736824315,
+                "Radius": 6370.684976414517
+            }
+        },
+        {
+            "Name": "EndNode94",
+            "Position": {
+                "Latitude": -36.78408390552835,
+                "Longitude": -58.00027197881047,
+                "Radius": 6370.444450309524
+            }
+        },
+        {
+            "Name": "EndNode95",
+            "Position": {
+                "Latitude": -0.5743552403216453,
+                "Longitude": -92.32965235771816,
+                "Radius": 6378.134840304821
+            }
+        },
+        {
+            "Name": "EndNode96",
+            "Position": {
+                "Latitude": 40.30647763975348,
+                "Longitude": 20.919282612597726,
+                "Radius": 6369.1623813944525
+            }
+        },
+        {
+            "Name": "EndNode97",
+            "Position": {
+                "Latitude": 37.53236474725796,
+                "Longitude": 143.56039878733793,
+                "Radius": 6370.175207958888
+            }
+        },
+        {
+            "Name": "EndNode98",
+            "Position": {
+                "Latitude": 45.521310426564845,
+                "Longitude": -1.8299182968979446,
+                "Radius": 6367.223175644192
+            }
+        },
+        {
+            "Name": "EndNode99",
+            "Position": {
+                "Latitude": -44.10637609996122,
+                "Longitude": -175.1169662268894,
+                "Radius": 6367.751224812636
+            }
+        },
+        {
+            "Name": "EndNode100",
+            "Position": {
+                "Latitude": -34.07845584659935,
+                "Longitude": -83.47203630141135,
+                "Radius": 6371.399686133788
+            }
+        }
+    ]
+}

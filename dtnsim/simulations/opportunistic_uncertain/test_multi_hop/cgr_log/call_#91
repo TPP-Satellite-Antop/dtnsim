@@ -1,0 +1,85 @@
+
+current time: 95
+
+------------------------------------------- BUNDLE -------------------------------------------
+
+Destination     SenderNode      Size            Deadline        Bundle EVC      DlvConfidence
+2               0               1000            9000095         1062            0.00
+PriorityLevel   Ordinal         Critical        ReturnToSender  Probe           Fragmentable
+Normal          0               no              no              no              no
+
+Excluded neighbors: 
+
+----------------------------------------------------------------------------------------------
+
+----------------------------------------------------- CONTACTS GRAPH -----------------------------------------------------
+Time: 95
+Region          FromNode        ToNode          FromTime        ToTime          XmitRate        Confidence      Citations
+1               4               2               130             140             1000            1.00            0
+1               5               2               100             110             1000            1.00            0
+1               5               4               110             120             1000            1.00            0
+1               6               5               110             120             1000            1.00            0
+1               8               4               120             130             1000            1.00            0
+1               9               5               100             110             1000            1.00            0
+1               9               6               110             120             1000            1.00            0
+1               9               8               110             120             1000            1.00            0
+
+--------------------------------------------------------------------------------------------------------------------------
+
+---------------------------- RANGES GRAPH ----------------------------
+Time: 95
+FromNode        ToNode          FromTime        ToTime          OWLT
+4               2               130             140             0
+5               2               100             110             0
+5               4               110             120             0
+6               5               110             120             0
+8               4               120             130             0
+9               5               100             110             0
+9               6               110             120             0
+9               8               110             120             0
+
+----------------------------------------------------------------------
+
+--------------------------------------------------------- PHASE ONE: COMPUTED ROUTES ----------------------------------------------------------
+
+1) ComputedAtTime: 95
+Neighbor        FromTime        ToTime          ArrivalTime     OwltSum         Confidence      Children        Father          Hops            SP
+5               100             110             100             0               1.00            0               no              2               0.070000
+FromNode        ToNode          FromTime        ToTime          XmitRate        Confidence      MTV[Bulk]       MTV[Normal]     MTV[Expedited]
+9               5               100             110             1000            1.00            10000           10000           10000
+5               2               100             110             1000            1.00            10000           10000           10000
+
+2) ComputedAtTime: 95
+Neighbor        FromTime        ToTime          ArrivalTime     OwltSum         Confidence      Children        Father          Hops            SP
+8               110             120             130             0               1.00            0               no              3               0.000000
+FromNode        ToNode          FromTime        ToTime          XmitRate        Confidence      MTV[Bulk]       MTV[Normal]     MTV[Expedited]
+9               8               110             120             1000            1.00            10000           10000           10000
+8               4               120             130             1000            1.00            10000           10000           10000
+4               2               130             140             1000            1.00            10000           10000           10000
+
+3) ComputedAtTime: 95
+Neighbor        FromTime        ToTime          ArrivalTime     OwltSum         Confidence      Children        Father          Hops            SP
+6               110             120             130             0               1.00            0               no              4               0.000000
+FromNode        ToNode          FromTime        ToTime          XmitRate        Confidence      MTV[Bulk]       MTV[Normal]     MTV[Expedited]
+9               6               110             120             1000            1.00            10000           10000           10000
+6               5               110             120             1000            1.00            10000           10000           10000
+5               4               110             120             1000            1.00            10000           10000           10000
+4               2               130             140             1000            1.00            10000           10000           10000
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------- PHASE TWO: CANDIDATE ROUTES ---------------------------------------------------------
+
+Route n.        ETO             PBAT            RVL             Overbooked (G)  Overbooked (U)  Protected (G)   Protected (U)
+1)              100             102             9000            0               0               0               0
+2)              110             131             10000           0               0               0               0
+3)              110             131             8000            0               0               0               0
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+------------ PHASE THREE: BEST ROUTES ------------
+
+Route n.        Neighbor
+1)              5
+
+--------------------------------------------------

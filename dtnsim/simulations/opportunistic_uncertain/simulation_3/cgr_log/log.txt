@@ -1,0 +1,168 @@
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 1.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 2.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 3.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 4.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 5.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 6.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 7.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 8.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 9.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 10.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 11.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 12.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 13.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 14.
+[              0]: Unibo-CGR Version 1.0.
+[              0]: Anti-loop mechanism disabled.
+[              0]: One route per neighbor enabled (without limits).
+[              0]: ETO only on the first hop.
+[              0]: Own node: 15.
+[              0]: Destination node: 5.
+[              0]: Region number: 1.
+[              0]: Best routes found: 1.
+[              0]: Used route to neighbor 1.
+[              0]: Destination node: 5.
+[              0]: Region number: 1.
+[              0]: Best routes found: 1.
+[              0]: Used route to neighbor 3.
+[             10]: Destination node: 5.
+[             10]: Region number: 1.
+[             10]: Best routes found: 1.
+[             10]: Used route to neighbor 2.
+[             10]: Destination node: 5.
+[             10]: Region number: 1.
+[             10]: Best routes found: 1.
+[             10]: Used route to neighbor 3.
+[             20]: Destination node: 4.
+[             20]: Region number: 1.
+[             20]: Best routes found: 1.
+[             20]: Used route to neighbor 2.
+[             30]: Destination node: 3.
+[             30]: Region number: 1.
+[             30]: Best routes found: 1.
+[             30]: Used route to neighbor 2.
+[             30]: Destination node: 7.
+[             30]: Region number: 1.
+[             30]: Best routes found: 1.
+[             30]: Used route to neighbor 3.
+[             40]: Destination node: 5.
+[             40]: Region number: 1.
+[             40]: 0 routes found to destination.
+[             40]: Destination node: 5.
+[             40]: Region number: 1.
+[             40]: 0 routes found to destination.
+[             45]: Destination node: 7.
+[             45]: Region number: 1.
+[             45]: Best routes found: 1.
+[             45]: Used route to neighbor 4.
+[             60]: Destination node: 7.
+[             60]: Region number: 1.
+[             60]: 0 routes found to destination.
+[             60]: Destination node: 7.
+[             60]: Region number: 1.
+[             60]: 0 routes found to destination.
+[             60]: Destination node: 4.
+[             60]: Region number: 1.
+[             60]: Contact plan modified, all routes will be discarded.
+[             60]: Best routes found: 1.
+[             60]: Used route to neighbor 2.
+[             60]: Destination node: 3.
+[             60]: Region number: 1.
+[             60]: Best routes found: 1.
+[             60]: Used route to neighbor 2.
+[             80]: Destination node: 1.
+[             80]: Region number: 1.
+[             80]: Best routes found: 1.
+[             80]: Used route to neighbor 3.
+[             80]: Destination node: 1.
+[             80]: Region number: 1.
+[             80]: Contact plan modified, all routes will be discarded.
+[             80]: Best routes found: 1.
+[             80]: Used route to neighbor 4.
+[             85]: Destination node: 3.
+[             85]: Region number: 1.
+[             85]: Best routes found: 1.
+[             85]: Used route to neighbor 1.
+[             85]: Destination node: 3.
+[             85]: Region number: 1.
+[             85]: Best routes found: 1.
+[             85]: Used route to neighbor 2.
+[            100]: Destination node: 3.
+[            100]: Region number: 1.
+[            100]: Contact plan modified, all routes will be discarded.
+[            100]: Best routes found: 1.
+[            100]: Used route to neighbor 3.
+[            100]: Destination node: 4.
+[            100]: Region number: 1.
+[            100]: Best routes found: 1.
+[            100]: Used route to neighbor 3.
+[            100]: Destination node: 3.
+[            100]: Region number: 1.
+[            100]: Best routes found: 1.
+[            100]: Used route to neighbor 3.
+[            120]: Destination node: 4.
+[            120]: Region number: 1.
+[            120]: Contact plan modified, all routes will be discarded.
+[            120]: Best routes found: 1.
+[            120]: Used route to neighbor 4.
+[            140]: Destination node: 1.
+[            140]: Region number: 1.
+[            140]: Contact plan modified, all routes will be discarded.
+[            140]: Best routes found: 1.
+[            140]: Used route to neighbor 1.

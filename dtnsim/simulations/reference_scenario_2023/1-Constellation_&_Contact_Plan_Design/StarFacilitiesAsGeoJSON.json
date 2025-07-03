@@ -1,0 +1,1545 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    114.02932765750893,
+                    17.73869028323952
+                ]
+            },
+            "properties": {
+                "name": "EndNode1",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -178.0227609949729,
+                    4.059389437779752
+                ]
+            },
+            "properties": {
+                "name": "EndNode10",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -15.069602986048517,
+                    30.390660156674944
+                ]
+            },
+            "properties": {
+                "name": "EndNode100",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -50.479203723659225,
+                    -5.729792387489541
+                ]
+            },
+            "properties": {
+                "name": "EndNode11",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.4435641321512,
+                    -5.470069652702954
+                ]
+            },
+            "properties": {
+                "name": "EndNode12",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -108.61484886553295,
+                    -55.5655226615743
+                ]
+            },
+            "properties": {
+                "name": "EndNode13",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    155.25924307021205,
+                    -28.519769193316556
+                ]
+            },
+            "properties": {
+                "name": "EndNode14",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    47.54800702029453,
+                    -57.072955912121024
+                ]
+            },
+            "properties": {
+                "name": "EndNode15",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    7.331850412527302,
+                    -66.41668057580381
+                ]
+            },
+            "properties": {
+                "name": "EndNode16",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -94.3397522575184,
+                    -84.90127393456218
+                ]
+            },
+            "properties": {
+                "name": "EndNode17",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -108.36659415853367,
+                    -3.640646700232495
+                ]
+            },
+            "properties": {
+                "name": "EndNode18",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    25.33383373350816,
+                    47.42155937167855
+                ]
+            },
+            "properties": {
+                "name": "EndNode19",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    136.83007003283524,
+                    61.3956856913796
+                ]
+            },
+            "properties": {
+                "name": "EndNode2",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -38.34752521093287,
+                    -8.998511463575747
+                ]
+            },
+            "properties": {
+                "name": "EndNode20",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    74.43728200626448,
+                    20.502516616899534
+                ]
+            },
+            "properties": {
+                "name": "EndNode21",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -41.32383959378156,
+                    -16.099711590788015
+                ]
+            },
+            "properties": {
+                "name": "EndNode22",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -173.22512040068315,
+                    40.03189757886237
+                ]
+            },
+            "properties": {
+                "name": "EndNode23",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -103.03027321615438,
+                    35.88889092587614
+                ]
+            },
+            "properties": {
+                "name": "EndNode24",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    115.77504237845352,
+                    46.93638001277117
+                ]
+            },
+            "properties": {
+                "name": "EndNode25",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -44.54026731923656,
+                    45.5985984110426
+                ]
+            },
+            "properties": {
+                "name": "EndNode26",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -26.885981958560027,
+                    32.30972594480593
+                ]
+            },
+            "properties": {
+                "name": "EndNode27",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    162.56758144040538,
+                    71.89124959500825
+                ]
+            },
+            "properties": {
+                "name": "EndNode28",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    100.82696619423848,
+                    57.09635768236238
+                ]
+            },
+            "properties": {
+                "name": "EndNode29",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    24.62209958514066,
+                    -32.99045415522819
+                ]
+            },
+            "properties": {
+                "name": "EndNode3",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -52.40661458614406,
+                    54.11991796790445
+                ]
+            },
+            "properties": {
+                "name": "EndNode30",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -124.88602874803668,
+                    59.951298448353995
+                ]
+            },
+            "properties": {
+                "name": "EndNode31",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    124.62528812959023,
+                    -41.49168568843568
+                ]
+            },
+            "properties": {
+                "name": "EndNode32",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    119.86211342671608,
+                    38.615954547476505
+                ]
+            },
+            "properties": {
+                "name": "EndNode33",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    146.36849538436007,
+                    42.07381397939953
+                ]
+            },
+            "properties": {
+                "name": "EndNode34",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    172.15521630423757,
+                    47.485436386122196
+                ]
+            },
+            "properties": {
+                "name": "EndNode35",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    168.67672993372008,
+                    29.09838969427286
+                ]
+            },
+            "properties": {
+                "name": "EndNode36",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -158.04945390129498,
+                    6.056784269347494
+                ]
+            },
+            "properties": {
+                "name": "EndNode37",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -64.12497195932997,
+                    -39.506907348019375
+                ]
+            },
+            "properties": {
+                "name": "EndNode38",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    123.40746051607378,
+                    34.768589090612494
+                ]
+            },
+            "properties": {
+                "name": "EndNode39",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    127.644352830657,
+                    55.745784408329754
+                ]
+            },
+            "properties": {
+                "name": "EndNode4",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    53.23400943635025,
+                    2.8348354874786876
+                ]
+            },
+            "properties": {
+                "name": "EndNode40",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    12.31100713151159,
+                    14.052683394795023
+                ]
+            },
+            "properties": {
+                "name": "EndNode41",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -64.73537235241503,
+                    18.338723907614444
+                ]
+            },
+            "properties": {
+                "name": "EndNode42",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    79.07561647947716,
+                    -51.3432400272398
+                ]
+            },
+            "properties": {
+                "name": "EndNode43",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    4.379203679703978,
+                    -72.55282539795712
+                ]
+            },
+            "properties": {
+                "name": "EndNode44",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -128.82917966943097,
+                    -12.195546291523497
+                ]
+            },
+            "properties": {
+                "name": "EndNode45",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -135.97836701350312,
+                    9.857691948378232
+                ]
+            },
+            "properties": {
+                "name": "EndNode46",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -146.76044397558428,
+                    6.115553821037045
+                ]
+            },
+            "properties": {
+                "name": "EndNode47",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -87.94386450064162,
+                    2.345647977715497
+                ]
+            },
+            "properties": {
+                "name": "EndNode48",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -89.86028342788995,
+                    29.15371155866189
+                ]
+            },
+            "properties": {
+                "name": "EndNode49",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    70.69993327457411,
+                    8.459909091106441
+                ]
+            },
+            "properties": {
+                "name": "EndNode5",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    6.569208805957317,
+                    68.8730272849896
+                ]
+            },
+            "properties": {
+                "name": "EndNode50",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -123.45255194213229,
+                    -22.787953657632066
+                ]
+            },
+            "properties": {
+                "name": "EndNode51",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    25.65374614325469,
+                    -43.85138599549929
+                ]
+            },
+            "properties": {
+                "name": "EndNode52",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    12.809548355483514,
+                    -14.340706975112322
+                ]
+            },
+            "properties": {
+                "name": "EndNode53",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -86.74931443194517,
+                    9.910775625918394
+                ]
+            },
+            "properties": {
+                "name": "EndNode54",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -133.88218460570113,
+                    23.187499344294494
+                ]
+            },
+            "properties": {
+                "name": "EndNode55",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    162.43507014533378,
+                    -6.328347488609436
+                ]
+            },
+            "properties": {
+                "name": "EndNode56",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -95.45243598350524,
+                    -42.13245324024899
+                ]
+            },
+            "properties": {
+                "name": "EndNode57",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    135.2319385375299,
+                    -44.372656996033825
+                ]
+            },
+            "properties": {
+                "name": "EndNode58",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    42.32670067581677,
+                    11.167506452279962
+                ]
+            },
+            "properties": {
+                "name": "EndNode59",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    88.8109940846079,
+                    23.849425846044785
+                ]
+            },
+            "properties": {
+                "name": "EndNode6",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    6.26640943663685,
+                    -19.077464583296692
+                ]
+            },
+            "properties": {
+                "name": "EndNode60",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    162.2473302873346,
+                    -69.6790067418426
+                ]
+            },
+            "properties": {
+                "name": "EndNode61",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    129.99307525321296,
+                    -67.46646825312074
+                ]
+            },
+            "properties": {
+                "name": "EndNode62",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -83.2581835372303,
+                    -78.09319401317661
+                ]
+            },
+            "properties": {
+                "name": "EndNode63",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    66.19566585510495,
+                    14.29709304957965
+                ]
+            },
+            "properties": {
+                "name": "EndNode64",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -113.1448728316582,
+                    -46.26075161275736
+                ]
+            },
+            "properties": {
+                "name": "EndNode65",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -11.608015877120096,
+                    29.349083234813836
+                ]
+            },
+            "properties": {
+                "name": "EndNode66",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -107.17999865823094,
+                    30.37148327889668
+                ]
+            },
+            "properties": {
+                "name": "EndNode67",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -29.59617963093248,
+                    10.046872674614647
+                ]
+            },
+            "properties": {
+                "name": "EndNode68",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -127.58541473528594,
+                    -1.9395290197227533
+                ]
+            },
+            "properties": {
+                "name": "EndNode69",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -7.241099616065526,
+                    3.7656534610433856
+                ]
+            },
+            "properties": {
+                "name": "EndNode7",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    131.76892713471835,
+                    -38.92838963283951
+                ]
+            },
+            "properties": {
+                "name": "EndNode70",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -95.93111277439978,
+                    37.77876083599584
+                ]
+            },
+            "properties": {
+                "name": "EndNode71",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    176.43237408228862,
+                    -53.277234409548775
+                ]
+            },
+            "properties": {
+                "name": "EndNode72",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    7.627561662974815,
+                    30.63832643792596
+                ]
+            },
+            "properties": {
+                "name": "EndNode73",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -80.21080114830059,
+                    19.308195972883436
+                ]
+            },
+            "properties": {
+                "name": "EndNode74",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    143.82585124752825,
+                    49.24309746307463
+                ]
+            },
+            "properties": {
+                "name": "EndNode75",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    132.83661111776144,
+                    -18.262384763708457
+                ]
+            },
+            "properties": {
+                "name": "EndNode76",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    46.55442457664288,
+                    -18.488559665820794
+                ]
+            },
+            "properties": {
+                "name": "EndNode77",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -76.79406258311566,
+                    -18.999878703904688
+                ]
+            },
+            "properties": {
+                "name": "EndNode78",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    4.161931596874155,
+                    34.668435755362985
+                ]
+            },
+            "properties": {
+                "name": "EndNode79",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -85.4500681185738,
+                    17.657719832644663
+                ]
+            },
+            "properties": {
+                "name": "EndNode8",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -166.16868119757353,
+                    -58.304930849205135
+                ]
+            },
+            "properties": {
+                "name": "EndNode80",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -139.67231158997893,
+                    -40.03396583851104
+                ]
+            },
+            "properties": {
+                "name": "EndNode81",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -65.11242755737611,
+                    70.93192335213261
+                ]
+            },
+            "properties": {
+                "name": "EndNode82",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -46.79235793264173,
+                    -40.04835345743059
+                ]
+            },
+            "properties": {
+                "name": "EndNode83",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -53.735632167413094,
+                    -40.054384477870585
+                ]
+            },
+            "properties": {
+                "name": "EndNode84",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    40.99067204724458,
+                    -18.15196043947355
+                ]
+            },
+            "properties": {
+                "name": "EndNode85",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    160.94795645825081,
+                    -12.582850435738186
+                ]
+            },
+            "properties": {
+                "name": "EndNode86",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -102.55705699311932,
+                    -51.100220832612706
+                ]
+            },
+            "properties": {
+                "name": "EndNode87",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -14.345223467631769,
+                    -43.26432048082225
+                ]
+            },
+            "properties": {
+                "name": "EndNode88",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -167.0507206992667,
+                    45.93915543726052
+                ]
+            },
+            "properties": {
+                "name": "EndNode89",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -26.93233823236105,
+                    -77.43675841501832
+                ]
+            },
+            "properties": {
+                "name": "EndNode9",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -65.78426257689698,
+                    19.556469225252926
+                ]
+            },
+            "properties": {
+                "name": "EndNode90",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    82.7665560604679,
+                    -3.933584427879699
+                ]
+            },
+            "properties": {
+                "name": "EndNode91",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    23.390628285029262,
+                    62.15607026246337
+                ]
+            },
+            "properties": {
+                "name": "EndNode92",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    25.827197126098614,
+                    48.56669614334518
+                ]
+            },
+            "properties": {
+                "name": "EndNode93",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    10.847519730426056,
+                    27.103911525415104
+                ]
+            },
+            "properties": {
+                "name": "EndNode94",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    174.69511303200636,
+                    1.9704250177619367
+                ]
+            },
+            "properties": {
+                "name": "EndNode95",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    99.78516917634954,
+                    -61.96009532853127
+                ]
+            },
+            "properties": {
+                "name": "EndNode96",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -145.39025869905674,
+                    -4.520684688142359
+                ]
+            },
+            "properties": {
+                "name": "EndNode97",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    104.48452637027651,
+                    -61.55624736871164
+                ]
+            },
+            "properties": {
+                "name": "EndNode98",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    171.51436188560587,
+                    71.81360216881198
+                ]
+            },
+            "properties": {
+                "name": "EndNode99",
+                "facilityType": "End Node"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    2.5338899999999995,
+                    -71.88839574714396
+                ]
+            },
+            "properties": {
+                "name": "GroundStation_GS_AntarcticaTroll",
+                "facilityType": "Ground Station"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    168.4,
+                    -46.30773242983601
+                ]
+            },
+            "properties": {
+                "name": "GroundStation_GS_Awarua",
+                "facilityType": "Ground Station"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -64.18104999999998,
+                    -31.242678269000393
+                ]
+            },
+            "properties": {
+                "name": "GroundStation_GS_Cordoba",
+                "facilityType": "Ground Station"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -133.723022,
+                    68.22830167494905
+                ]
+            },
+            "properties": {
+                "name": "GroundStation_GS_Inuvik",
+                "facilityType": "Ground Station"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -118.243683,
+                    33.873976187406335
+                ]
+            },
+            "properties": {
+                "name": "GroundStation_GS_LosAngeles",
+                "facilityType": "Ground Station"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -51.72157000000001,
+                    64.03208281426534
+                ]
+            },
+            "properties": {
+                "name": "GroundStation_GS_Nuuk",
+                "facilityType": "Ground Station"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -4.107340000000001,
+                    38.49954427169789
+                ]
+            },
+            "properties": {
+                "name": "GroundStation_GS_PuertoLlano",
+                "facilityType": "Ground Station"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -70.91129,
+                    -52.96983512848429
+                ]
+            },
+            "properties": {
+                "name": "GroundStation_GS_PuntaArenas",
+                "facilityType": "Ground Station"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    14.214635000000007,
+                    77.98679154781148
+                ]
+            },
+            "properties": {
+                "name": "GroundStation_GS_Svalbard",
+                "facilityType": "Ground Station"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    139.839478,
+                    35.470802007514855
+                ]
+            },
+            "properties": {
+                "name": "GroundStation_GS_Tokio",
+                "facilityType": "Ground Station"
+            }
+        }
+    ]
+}

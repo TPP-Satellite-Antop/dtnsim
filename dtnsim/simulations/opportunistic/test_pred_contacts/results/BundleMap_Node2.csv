@@ -1,0 +1,4 @@
+SimTime,SRC,DST,TSRC,TDST,BitLenght,DurationSec
+25,2,3,2,3,8000,1
+40,2,3,2,3,8000,1
+65,2,3,2,3,8000,1
