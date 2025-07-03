@@ -23,7 +23,7 @@ void App::initialize()
 			int destinationEid = stoi(destinationEidStr);
 			if (destinationEid > this->getParentModule()->getVectorSize())
 			{
-				throw cException((string("Error: wrong destinationEid = ") + destinationEidStr).c_str());
+				throw cException("Error: %s", (string("wrong destinationEid = ") + destinationEidStr).c_str());
 			}
 			destinationEidVec_.push_back(destinationEid);
 		}
@@ -41,7 +41,7 @@ void App::initialize()
 		if ((bundlesNumberVec_.size() != destinationEidVec_.size()) || (bundlesNumberVec_.size() != sizeVec_.size() || (bundlesNumberVec_.size() != startVec_.size())))
 		{
             string str1 = "Error in App Traffic: Node[" + to_string(this->getParentModule()->getIndex()) + "]" + ", bundlesNumberVec, destinationEidVec, sizeVec, startVec: Sizes Missmatch!";
-            throw cException((str1).c_str());
+			throw cException("Exception: %s", str1.c_str());
 		}
 
 		for (unsigned int i = 0; i < bundlesNumberVec_.size(); i++)

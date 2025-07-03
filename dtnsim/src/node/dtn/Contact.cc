@@ -120,7 +120,7 @@ double Contact::getFailureProbability() const
 	return this->failureProbability_;
 }
 
-double Contact::setFailureProbability(double failureProbability)
+void Contact::setFailureProbability(double failureProbability)
 {
 	this->failureProbability_ = failureProbability;
 }

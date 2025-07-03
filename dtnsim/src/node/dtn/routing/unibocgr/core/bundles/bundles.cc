@@ -662,7 +662,7 @@ int initialize_bundle(int backward_propagation, int critical, float dlvConfidenc
  *****************************************************************************/
 void print_bundle(FILE *file_call, CgrBundle *bundle, List excludedNodes, time_t currentTime)
 {
-	char *priority;
+	const char *priority;
 
 	if (file_call != NULL)
 	{
@@ -691,13 +691,13 @@ void print_bundle(FILE *file_call, CgrBundle *bundle, List excludedNodes, time_t
 				(RETURN_TO_SENDER(bundle) != 0) ? "yes" : "no", (IS_PROBE(bundle) != 0) ? "yes" : "no",
 				(IS_FRAGMENTABLE(bundle) != 0 ? "yes" : "no"));
 
-		print_ull_list(file_call, excludedNodes, "\nExcluded neighbors: ", ", ");
+		print_all_list(file_call, excludedNodes, "\nExcluded neighbors: ", ", ");
 
 #if (CGR_AVOID_LOOP == 1 || CGR_AVOID_LOOP == 3)
-		print_ull_list(file_call, bundle->failedNeighbors, "\nFailed neighbors: ", ", ");
+		print_all_list(file_call, bundle->failedNeighbors, "\nFailed neighbors: ", ", ");
 #endif
 #if (CGR_AVOID_LOOP == 2 || CGR_AVOID_LOOP == 3)
-		print_ull_list(file_call, bundle->geoRoute, "\nGeo route: ", " -> ");
+		print_all_list(file_call, bundle->geoRoute, "\nGeo route: ", " -> ");
 #endif
 
 		fprintf(file_call,

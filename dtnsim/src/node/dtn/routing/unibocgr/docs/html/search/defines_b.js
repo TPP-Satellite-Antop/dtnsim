@@ -13,7 +13,7 @@ var searchData=
   ['print_5fresult_5fcgr_1371',['print_result_cgr',['../cgr_8c.html#a7170757c5ff8212a3c0d70da61593743',1,'cgr.c']]],
   ['print_5fstring_1372',['print_string',['../log_8h.html#a4684646d0f42ee349bbdd626a43096e3',1,'log.h']]],
   ['print_5ftime_5fresults_1373',['print_time_results',['../time_8h.html#a6e7962c1f8eb9a4dde744e7b547f50e7',1,'time.h']]],
-  ['print_5full_5flist_1374',['print_ull_list',['../log_8h.html#a2ccc84db5dd91774f10150af83fa210a',1,'log.h']]],
+  ['print_5full_5flist_1374',['print_all_list',['../log_8h.html#a2ccc84db5dd91774f10150af83fa210a',1,'log.h']]],
   ['printcontactsgraph_1375',['printContactsGraph',['../contacts_8h.html#aedc31a5f30c73a42614784d92dee637a',1,'contacts.h']]],
   ['printcurrentstate_1376',['printCurrentState',['../log_8h.html#a2e03e74d524a81f69b198ed8cebc1594',1,'log.h']]],
   ['printdebugionroute_1377',['printDebugIonRoute',['../interface__unibocgr__dtn2_8cc.html#a7be558e5be1bcd091dd761547647ce16',1,'interface_unibocgr_dtn2.cc']]],

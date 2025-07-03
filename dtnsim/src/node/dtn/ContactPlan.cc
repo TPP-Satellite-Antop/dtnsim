@@ -60,7 +60,7 @@ void ContactPlan::parseContactPlanFile(string fileName, int nodesNumber, int mod
 	file.open(fileName.c_str());
 
 	if (!file.is_open())
-		throw cException(("Error: wrong path to contacts file " + string(fileName)).c_str());
+		throw cException("%s", ("Error: wrong path to contacts file " + fileName).c_str());
 
 	while (getline(file, fileLine))
 	{
@@ -170,7 +170,7 @@ void ContactPlan::parseOpportunisticContactPlanFile(string fileName, int nodesNu
 	file.open(fileName.c_str());
 
 	if (!file.is_open())
-		throw cException(("Error: wrong path to contacts file " + string(fileName)).c_str());
+		throw cException("%s", ("Error: wrong path to contacts file " + fileName).c_str());
 
 	while (getline(file, fileLine))
 	{

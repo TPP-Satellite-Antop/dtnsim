@@ -668,7 +668,7 @@ void printCurrentState()
 /******************************************************************************
  *
  * \par Function Name:
- *      print_ull_list
+ *      print_all_list
  *
  * \brief  Print a list of unsigned long long element
  *
@@ -697,7 +697,7 @@ void printCurrentState()
  *  -------- | --------------- | -----------------------------------------------
  *  29/03/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int print_ull_list(FILE *file, List list, char *brief, char *separator)
+int print_all_list(FILE *file, List list, const char *brief, const char *separator)
 {
 	int len, result = -1, temp;
 	ListElt *elt;
