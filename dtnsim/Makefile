@@ -1,10 +1,3 @@
-#
-# OMNeT++/OMNEST Makefile for dtnsim
-#
-# This file was generated with the command:
-#  opp_makemake -f --deep -O out -I. -I/usr/include/python3.8 -lpython3.8 -Xsrc/node/dtn/routing/unibocgr/dtnme -Xtests
-#
-
 # Name of target to be created (-o option)
 TARGET_DIR = .
 TARGET_NAME = dtnsim$(D)
@@ -18,14 +11,15 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(CMDENV_LIBS)
 #USERIF_LIBS = $(QTENV_LIBS)
 
+PYTHON_VERSION=3.11
 # C++ include paths (with -I)
-INCLUDE_PATH = -I. -I/usr/include/python3.8
+INCLUDE_PATH = -I. -I/usr/include/python$(PYTHON_VERSION)
 
 # Additional object and library files to link with
 EXTRA_OBJS =
 
 # Additional libraries (-L, -l options)
-LIBS =  -lpython3.8
+LIBS =  -lpython$(PYTHON_VERSION)
 
 # Output directory
 PROJECT_OUTPUT_DIR = out
