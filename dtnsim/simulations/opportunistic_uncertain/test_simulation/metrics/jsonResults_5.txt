@@ -1,0 +1,13 @@
+{
+    "RUCoPCalls": 0,
+    "RUCoPComputationTime": 0,
+    "bundleDeliveryCounts": {
+        "1:5:5.000000": 2
+    },
+    "bundleIds": [
+        "1:5:5.000000"
+    ],
+    "cgrCalls": 3,
+    "cgrComputationTime": 0,
+    "receivedIds": []
+}

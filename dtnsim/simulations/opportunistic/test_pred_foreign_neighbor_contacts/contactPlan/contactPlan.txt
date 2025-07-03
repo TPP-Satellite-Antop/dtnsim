@@ -1,0 +1,28 @@
+a contact +0 +100 1 2 0
+a contact +110 +115 1 2 0
+a contact +20 +80 3 4 0
+a contact +80 +90 3 4 0
+a ocontact +50 +60 2 3 0
+a ocontact +95 +105 2 3 0
+a ocontact +55 +58 4 6 0
+a ocontact +90 +100 3 5 0
+a ocontact +10 +20 4 7 0
+a ocontact +20 +30 4 7 0
+a ocontact +50 +60 4 7 0
+a ocontact +90 +100 4 7 0
+
+
+a range +0 +100 1 2 0
+a range +110 +115 1 2 0
+a range +20 +80 3 4 0
+a range +80 +90 3 4 0
+a orange +50 +60 2 3 0
+a orange +95 +105 2 3 0
+a orange +55 +58 4 6 0
+a orange +90 +100 3 5 0
+a orange +10 +20 4 7 0
+a orange +20 +30 4 7 0
+a orange +50 +60 4 7 0
+a orange +90 +100 4 7 0
+
+

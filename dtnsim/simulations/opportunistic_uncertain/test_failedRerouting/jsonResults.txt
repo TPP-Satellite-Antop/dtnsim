@@ -1,0 +1,16 @@
+{
+    "RUCoPCalls": 3,
+    "bundleDeliveryCounts": {
+        "13": 3
+    },
+    "bundleDeliveryTimes": {
+        "13": 25.0
+    },
+    "bundleIds": [
+        13
+    ],
+    "cgrCalls": 3,
+    "receivedIds": [
+        13
+    ]
+}

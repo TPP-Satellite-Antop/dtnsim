@@ -1,0 +1,20 @@
+a contact +0 +20 1 2 1000 10
+a contact +0 +20 1 3 1000 15
+a contact +20 +40 2 4 1000 20
+a contact +20 +40 3 4 1000 30
+a contact +40 +60 5 4 1000 0
+a ocontact +35 +50 1 6 1000 0
+a ocontact +0 +30 1 4 1000 0
+
+
+
+
+a range +0 +20 1 2 0 0
+a range +0 +20 1 3 0 0
+a range +20 +40 2 4 0 0
+a range +20 +40 3 4 0 0
+a range +40 +60 5 4 0 0
+a orange +0 +20 1 5 0 0
+
+
+

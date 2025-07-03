@@ -1,0 +1,26 @@
+{
+    "RUCoPCalls": 11,
+    "bundleDeliveryCounts": {
+        "24": 7,
+        "26": 2,
+        "29": 1,
+        "37": 1
+    },
+    "bundleDeliveryTimes": {
+        "26": 41.0,
+        "29": 0.0,
+        "37": 0.0
+    },
+    "bundleIds": [
+        24,
+        26,
+        29,
+        37
+    ],
+    "cgrCalls": 11,
+    "receivedIds": [
+        26,
+        29,
+        37
+    ]
+}

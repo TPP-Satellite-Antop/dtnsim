@@ -1,0 +1,23 @@
+The bundles with the following ids have been sent: 
+17(1 to 5), 
+--------------------
+The following bundles were received by the destination node with the following delivery time: 
+(17: 0.000000), 
+--------------------
+That means, that overall 1 (1/1) were delivered successfully
+--------------------
+Further, every bundle was sent the following amount of times: 
+(17: 6), 
+--------------------
+Overall, the computation required 2 calls to RUCoP, which took 7 seconds and 0 calls to CGR, which took 0 seconds
+--------------------
+To achieve this results, the following routing decisions have been taken: 
+Node 1: 
+Bundle 17: (to: 2, time: 0.000000), (to: 3, time: 0.000000), 
+Node 2: 
+Bundle 17: (to: 4, time: 0.000000), 
+Node 3: 
+Bundle 17: (to: 4, time: 0.000000), 
+Node 4: 
+Bundle 17: (to: 5, time: 0.000000), (to: 5, time: 0.000000), 
+Node 5: 
