@@ -59,7 +59,7 @@ extern void writeLogFlush(const char *format, ...);
 extern void setLogTime(time_t time);
 extern void printCurrentState();
 extern int print_string(FILE *file, char *string);
-extern int print_ull_list(FILE *file, List list, char *brief, char *separator);
+extern int print_all_list(FILE *file, List list, const char *brief, const char *separator);
 extern void log_fflush();
 
 #else
@@ -73,7 +73,7 @@ extern void log_fflush();
 #define setLogTime(time) do { } while(0)
 #define printCurrentState() do { } while(0)
 #define print_string(file, string) do { } while(0)
-#define print_ull_list(file,list,brief,separator) do { } while(0)
+#define print_all_list(file,list,brief,separator) do { } while(0)
 #define log_fflush() do {  } while(0)
 
 #endif

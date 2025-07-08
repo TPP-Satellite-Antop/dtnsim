@@ -7,6 +7,8 @@
 
 #include "RoutingORUCOP.h"
 
+namespace fs = std::filesystem;
+
 static map<long, long> originalBundleIds;
 
 long getOriginalBundleId(long bundleId);
@@ -532,9 +534,16 @@ void RoutingORUCOP::createIniFile(int source, int destination)
 void RoutingORUCOP::callToPython(BundlePkt *bundle)
 {
 	char currDirectory[128];
-	getcwd(currDirectory, 128); //save current directory
+	if (getcwd(currDirectory, sizeof(currDirectory)) == NULL) {
+		perror("getcwd failed");
+		return;
+	}
 
-	chdir("../../../");
+	if (chdir("../../../") != 0) {
+		perror("chdir failed");
+        return;
+	}
+
 	if (opportunistic)
 	{
 		this->contactPlan_->deleteOldContacts();
@@ -546,16 +555,24 @@ void RoutingORUCOP::callToPython(BundlePkt *bundle)
 	this->createIniFile(this->eid_, bundle->getDestinationEid());
 
 	auto start = high_resolution_clock::now();
-	system("./run_ibruf.py"); //"venv/bin/python run_bruf.py"
+
+	if (system("./run_ibruf.py") != 0){ //"venv/bin/python run_bruf.py"
+		perror("run_ibruf failed");
+    }
+
 	auto stop = high_resolution_clock::now();
 	auto duration = duration_cast<seconds>(stop - start);
 	this->metricCollector_->updateRUCoPComputationTime(duration.count());
 	this->readJsonFromFile(bundle->getDestinationEid(), bundle->getId());
 	this->updateRoutingDecisions();
 
-	system("rm -r working_dir");
-	system("rm net.py");
-	system("rm ini.txt");
+	try {
+		fs::remove_all("working_dir");
+		fs::remove("net.py");
+		fs::remove("ini.txt");
+	} catch (const fs::filesystem_error& e) {
+		perror("remove files failed");
+	}
 
 	this->lastUpdateTime_[originalBundleIds[bundle->getId()]] = simTime().dbl();
 	for (size_t i = 0; i < this->bundleCopies_; i++)
@@ -563,7 +580,10 @@ void RoutingORUCOP::callToPython(BundlePkt *bundle)
 		this->metricCollector_->updateRUCoPCalls(this->eid_); //one RUCoP call for each bundle
 	}
 
-	chdir(currDirectory); //return to current directory
+	if (chdir(currDirectory) != 0) {
+		perror("chdir back failed");
+		return;
+	}
 
 	for (int i = 1; i <= this->bundleCopies_; i++)
 	{
@@ -622,6 +642,8 @@ int RoutingORUCOP::getTsForStartOrCurrentTime(int startOrCurrent, int destinatio
 		}
 	}
 
+	std::cerr << "Error: No timestamp found for start time " << startOrCurrent << " at destination " << destination << endl;
+    return -1;
 }
 
 /*
@@ -646,6 +668,8 @@ int RoutingORUCOP::getTsForEndTime(int end, int destination)
 		}
 	}
 
+    std::cerr << "Error: No timestamp found for end time " << end << " at destination " << destination << endl;
+	return -1;
 }
 
 /**

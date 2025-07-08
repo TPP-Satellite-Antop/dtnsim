@@ -6,8 +6,9 @@ The simulator is implemented on the [Omnet++ framework version 6.x](https://omne
 
 The simulator is still under development: this is a beta version. Nonetheless, feel free to use it and test it. Our contact information is below. 
 
-## Installation ##
+## Installation and build##
 
+1. Directly from Omnet++
 * Download [Omnet++](https://omnetpp.org/omnetpp). DTNSIM was tested on version 5.5.1.
 * Import the DTNSIM repository from the Omnet++ IDE (File->Import->Projects from Git->Clone URI).
 * Build DTNSIM project.
@@ -18,9 +19,16 @@ The simulator is still under development: this is a beta version. Nonetheless, f
 
 Note: Nodes will remain static in the simulation visualization. Indeed, the dynamic of the network is captured in the "contact plans" which comprises a list of all time-bound communication opportunities between nodes. In other words, if simulating mobile network, the mobility should be captured in such contact plans and provided to DTNSIM as input.
 
+2. Using command line
+* Add to you PATH envar the path to omnetpp/bin. For example: `export PATH=/home/user/omnetpp-6.1/bin:$PATH`
+* `cd` to /dtnsim
+* Change the variable "PYTHON_VERSION" in the Makefile to your python version. (Just mayor and minor).
+* Run `make`
+
+
 ## ION Support ##
 
-Interplanetary Overlay Network (ION) flight code is supported in the support-ion branch. Currenly, ION 3.5.0 Contact Graph Routing library is supported by DTNSIM.
+Interplanetary Overlay Network (ION) flight code is supported in the support-ion branch. Currently, ION 3.5.0 Contact Graph Routing library is supported by DTNSIM.
 
 ## Contact Us ##
 

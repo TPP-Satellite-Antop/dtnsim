@@ -32,7 +32,7 @@ public:
 	double getConfidence() const;
 	double getRange() const;
 	double getFailureProbability() const;
-	double setFailureProbability(double failureProbability);
+	void setFailureProbability(double failureProbability);
 	void setRange(double range);
 	bool isDiscovered() const;
 	bool isPredicted() const;

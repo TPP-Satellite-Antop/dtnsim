@@ -13,6 +13,8 @@
 #include "src/node/dtn/routing/unibocgr/core/library/list/list.h"
 #include "src/node/dtn/routing/unibocgr/core/bundles/bundles.h"
 
+namespace fs = std::filesystem;
+
 static SdrModel *sdrUnibo;
 static json brufFunction;
 static int currDest;
@@ -988,9 +990,17 @@ void RoutingUncertainUniboCgr::contactEnd(Contact *c)
 void RoutingUncertainUniboCgr::callToPython()
 {
 	char currDirectory[128];
-	getcwd(currDirectory, 128); //save current directory
+	if(getcwd(currDirectory, 128) == NULL)
+	{
+		perror("Error getting current directory");
+		return;
+	}
 
-	chdir("../../../");
+	if(chdir("../../../") != 0)
+	{
+		perror("Error changing directory to ../../../");
+		return;
+	}
 
 	updateStartTimes(this->contactPlan_->getContacts());
 
@@ -998,16 +1008,25 @@ void RoutingUncertainUniboCgr::callToPython()
 	this->createSourceDestFile();
 
 	auto start = high_resolution_clock::now();
-	system("./run_cgrbruf.py"); //"venv/bin/python run_bruf.py"
+	if(system("./run_cgrbruf.py") != 0)
+	{
+		perror("Error running run_cgrbruf.py");
+		return;
+	}
+
 	auto stop = high_resolution_clock::now();
 	auto duration = duration_cast<seconds>(stop - start);
 	this->metricCollector_->updateRUCoPComputationTime(duration.count());
 
 	this->readJsonFromFile();
 
-	system("rm -r working_dir");
-	system("rm net.py");
-	system("rm sourcetarget.txt");
+	try {
+		fs::remove_all("working_dir");
+		fs::remove("net.py");
+		fs::remove("sourcetarget.txt");
+	} catch (const fs::filesystem_error& e) {
+		std::cerr << "Error deleting files: " << e.what() << std::endl;
+	}
 
 	this->lastTimeUpdated_[currDest] = simTime().dbl();
 	this->metricCollector_->updateRUCoPCalls(this->eid_);
@@ -1015,11 +1034,14 @@ void RoutingUncertainUniboCgr::callToPython()
 	this->tsStartTimes_[currDest] = tsStartTimes[currDest];
 	brufFunction = this->nodeBrufFunction_[currDest];
 
-	chdir(currDirectory); //return to current directory
+	if(chdir(currDirectory) != 0)
+	{
+		perror("Error changing back to original directory");
+		return;
+	}
 
 	ofstream jsonFile("sharedFolder/" + to_string(currDest) + ".txt");
 	jsonFile << this->nodeBrufFunction_[currDest] << endl;
-
 }
 
 /*
@@ -1093,6 +1115,8 @@ int getTsForStartOrCurrentTime(int startOrCurrent)
 		}
 	}
 
+    std::cerr << "Error: No timestamp found for time " << startOrCurrent << " at destination " << currDest << endl;
+    return -1;
 }
 
 /*
@@ -1115,6 +1139,8 @@ int getTsForEndTime(int end)
 		}
 	}
 
+	std::cerr << "Error: No timestamp found for end time " << end << " at destination " << currDest << endl;
+	return -1;
 }
 
 /*
@@ -1133,10 +1159,11 @@ void RoutingUncertainUniboCgr::readJsonFromFile()
 	{
 		this->nodeBrufFunction_[currDest] = json::parse(infile);
 		infile.close();
-		string command = "rm " + filename;
-		char removeFile[command.length() + 1];
-		strcpy(removeFile, command.c_str());
-		system(removeFile);
+		try {
+			fs::remove(filename);
+		} catch (const fs::filesystem_error& e) {
+			perror("Error deleting file");
+		}
 	}
 	else
 	{
