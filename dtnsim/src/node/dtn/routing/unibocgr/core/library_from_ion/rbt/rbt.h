@@ -18,38 +18,37 @@
 #define RBT_H_
 
 #ifndef RBT_DEBUG
-#define RBT_DEBUG	0
+#define RBT_DEBUG 0
 #endif
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-#include "src/node/dtn/routing/unibocgr/core/library_from_ion/rbt/rbt_type.h"
 #include "../../library/commonDefines.h"
+#include "src/node/dtn/routing/unibocgr/core/library_from_ion/rbt/rbt_type.h"
 
-extern Rbt* rbt_create(RbtDeleteFn deleteFn, RbtCompareFn compareFn);
+extern Rbt *rbt_create(RbtDeleteFn deleteFn, RbtCompareFn compareFn);
 extern void rbt_clear(Rbt *rbt);
 extern void rbt_destroy(Rbt *rbt);
 extern void rbt_user_data_set(Rbt *rbt, void *userData);
-extern RbtNode* rbt_insert(Rbt *rbt, void *data);
+extern RbtNode *rbt_insert(Rbt *rbt, void *data);
 extern void rbt_delete(Rbt *rbt, void *dataBuffer);
 
-extern RbtNode* rbt_search(Rbt *rbt, void *dataBuffer, RbtNode **successor);
-extern RbtNode* rbt_first(Rbt *rbt);
-extern RbtNode* rbt_last(Rbt *rbt);
+extern RbtNode *rbt_search(Rbt *rbt, void *dataBuffer, RbtNode **successor);
+extern RbtNode *rbt_first(Rbt *rbt);
+extern RbtNode *rbt_last(Rbt *rbt);
 #define rbt_prev(node) rbt_traverse(node, 0)
 #define rbt_next(node) rbt_traverse(node, 1)
-extern RbtNode* rbt_traverse(RbtNode *node, int direction);
+extern RbtNode *rbt_traverse(RbtNode *node, int direction);
 
-extern Rbt* rbt_rbt(RbtNode *node);
-extern void* rbt_data(RbtNode *node);
-extern void* rbt_user_data(Rbt *rbt);
+extern Rbt *rbt_rbt(RbtNode *node);
+extern void *rbt_data(RbtNode *node);
+extern void *rbt_user_data(Rbt *rbt);
 extern unsigned long int rbt_length(Rbt *rbt);
 
 #if (LOG == 1)
-typedef int (*print_tree_node)(FILE*, void*);
+typedef int (*print_tree_node)(FILE *, void *);
 extern int printTreeInOrder(Rbt *rbt, FILE *file, print_tree_node print_function);
 #endif
 

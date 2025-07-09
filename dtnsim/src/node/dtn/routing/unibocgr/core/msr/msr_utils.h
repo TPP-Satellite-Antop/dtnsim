@@ -33,6 +33,7 @@
 
 #include <stdlib.h>
 
+#include "../routes/routes.h"
 #include "src/node/dtn/routing/unibocgr/core/bundles/bundles.h"
 #include "src/node/dtn/routing/unibocgr/core/cgr/cgr_phases.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/contacts/contacts.h"
@@ -40,37 +41,36 @@
 #include "src/node/dtn/routing/unibocgr/core/library/commonDefines.h"
 #include "src/node/dtn/routing/unibocgr/core/library/list/list.h"
 #include "src/node/dtn/routing/unibocgr/core/msr/msr.h"
-#include "../routes/routes.h"
 
 extern void delete_msr_route(Route *route);
 
 #if (CGRR == 1 && MSR == 1)
 #include "cgrr.h"
-//You need to include a folder with cgrr.h in the path (options -I in gcc)
-// From cgrr.h we get: CGRRouteBlock, CGRRoute, CGRRHop
+// You need to include a folder with cgrr.h in the path (options -I in gcc)
+//  From cgrr.h we get: CGRRouteBlock, CGRRoute, CGRRHop
 /*
 typedef struct
 {
-	uvast	fromNode;
-	uvast	toNode;
-	time_t	fromTime;
+        uvast	fromNode;
+        uvast	toNode;
+        time_t	fromTime;
 } CGRRHop;
 
 //Note: uvast could be replaced with: unsigned int, unsigned long int, unsigned long long int
 
 typedef struct
 {
-	unsigned int  hopCount; //Number of hops (contacts)
-	CGRRHop		 *hopList; //Hop (contact): identified by [from, to, fromTime]
+        unsigned int  hopCount; //Number of hops (contacts)
+        CGRRHop		 *hopList; //Hop (contact): identified by [from, to, fromTime]
 } CGRRoute;
 
 //Note: hopList must be an array of hopCount size
 
 typedef struct
 {
-	unsigned int recRoutesLength; //number of recomputedRoutes
-	CGRRoute originalRoute; //computed by the source
-	CGRRoute *recomputedRoutes; //computed by following nodes
+        unsigned int recRoutesLength; //number of recomputedRoutes
+        CGRRoute originalRoute; //computed by the source
+        CGRRoute *recomputedRoutes; //computed by following nodes
 } CGRRouteBlock;
 */
 // Another implementation that defines these three struct type
@@ -79,8 +79,5 @@ typedef struct
 extern int set_msr_route(time_t current_time, CGRRouteBlock *cgrrBlk, CgrBundle *bundle);
 
 #endif
-
-
-
 
 #endif /* CGR_UNIBO_MSR_MSR_UTILS_H_ */

@@ -33,9 +33,6 @@
 
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/ranges/ranges.h"
 
-
-
-
 /******************************************************************************
  *
  * \par Function Name:
@@ -62,15 +59,14 @@
  *  02/07/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 ContactPlanSAP get_contact_plan_sap(ContactPlanSAP *newSap) {
-	static ContactPlanSAP sap;
+    static ContactPlanSAP sap;
 
-	if(newSap != NULL) {
-		sap = *newSap;
-	}
+    if (newSap != NULL) {
+        sap = *newSap;
+    }
 
-	return sap;
+    return sap;
 }
-
 
 /******************************************************************************
  *
@@ -86,7 +82,8 @@ ContactPlanSAP get_contact_plan_sap(ContactPlanSAP *newSap) {
  * \return void
  *
  * \param[in]  seconds        The second when the contact plan has been modified.
- * \param[in]  micro_seconds  The microsecond (referred to second) when the contact plan has been modified
+ * \param[in]  micro_seconds  The microsecond (referred to second) when the contact plan has been
+ *modified
  *
  * \par Revision History:
  *
@@ -95,13 +92,12 @@ ContactPlanSAP get_contact_plan_sap(ContactPlanSAP *newSap) {
  *  02/07/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 void set_time_contact_plan_updated(time_t seconds, suseconds_t micro_seconds) {
-	ContactPlanSAP sap = get_contact_plan_sap(NULL);
+    ContactPlanSAP sap = get_contact_plan_sap(NULL);
 
-	sap.contactPlanEditTime.tv_sec = seconds;
-	sap.contactPlanEditTime.tv_usec = micro_seconds;
+    sap.contactPlanEditTime.tv_sec = seconds;
+    sap.contactPlanEditTime.tv_usec = micro_seconds;
 
-	get_contact_plan_sap(&sap);
-
+    get_contact_plan_sap(&sap);
 }
 
 /******************************************************************************
@@ -127,56 +123,42 @@ void set_time_contact_plan_updated(time_t seconds, suseconds_t micro_seconds) {
  *  -------- | ---------------|  -----------------------------------------------
  *  23/01/20 | L. Persampieri |   Initial Implementation and documentation.
  *****************************************************************************/
-int initialize_contact_plan(bool newNode)
-{
-	int result = 1;
-	ContactPlanSAP sap = get_contact_plan_sap(NULL);
+int initialize_contact_plan(bool newNode) {
+    int result = 1;
+    ContactPlanSAP sap = get_contact_plan_sap(NULL);
 
-	if (sap.contactsGraph == 0)
-	{
-		if (create_ContactsGraph() == 1)
-		{
-			sap.contactsGraph = 1;
-		}
-		else
-		{
-			result = -2;
-		}
-	}
-	if (sap.rangesGraph == 0)
-	{
-		if (create_RangesGraph() == 1)
-		{
-			sap.rangesGraph = 1;
-		}
-		else
-		{
-			result = -2;
-		}
-	}
-	if (sap.nodes == 0)
-	{
-		if (create_NodesTree(newNode) == 1)
-		{
-			sap.nodes = 1;
-		}
-		else
-		{
-			result = -2;
-		}
-	}
+    if (sap.contactsGraph == 0) {
+        if (create_ContactsGraph() == 1) {
+            sap.contactsGraph = 1;
+        } else {
+            result = -2;
+        }
+    }
+    if (sap.rangesGraph == 0) {
+        if (create_RangesGraph() == 1) {
+            sap.rangesGraph = 1;
+        } else {
+            result = -2;
+        }
+    }
+    if (sap.nodes == 0) {
+        if (create_NodesTree(newNode) == 1) {
+            sap.nodes = 1;
+        } else {
+            result = -2;
+        }
+    }
 
-	if (result == 1)
-	{
-		sap.initialized = 1;
-	}
+    if (result == 1) {
+        sap.initialized = 1;
+    }
 
-	sap.contactPlanEditTime.tv_sec = -1;
-	sap.contactPlanEditTime.tv_usec = -1;
+    sap.contactPlanEditTime.tv_sec = -1;
+    sap.contactPlanEditTime.tv_usec = -1;
 
-	get_contact_plan_sap(&sap); // save
+    get_contact_plan_sap(&sap); // save
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -202,15 +184,13 @@ int initialize_contact_plan(bool newNode)
  *  -------- | ---------------|  -----------------------------------------------
  *  23/01/20 | L. Persampieri |   Initial Implementation and documentation.
  *****************************************************************************/
-void removeExpired(time_t time)
-{
-	ContactPlanSAP sap = get_contact_plan_sap(NULL);
-	if (sap.initialized)
-	{
-		removeExpiredContacts(time);
-		removeExpiredRanges(time);
-		removeOldNeighbors(time);
-	}
+void removeExpired(time_t time) {
+    ContactPlanSAP sap = get_contact_plan_sap(NULL);
+    if (sap.initialized) {
+        removeExpiredContacts(time);
+        removeExpiredRanges(time);
+        removeOldNeighbors(time);
+    }
 }
 
 /******************************************************************************
@@ -250,18 +230,18 @@ void removeExpired(time_t time)
  *  -------- | ---------------|  -----------------------------------------------
  *  23/01/20 | L. Persampieri |   Initial Implementation and documentation.
  *****************************************************************************/
-int addContact(unsigned long regionNbr, unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
-		time_t toTime, long unsigned int xmitRate, float confidence, int copyMTV, double mtv[], double pf, bool multiHop)
-{
-	int result = 0;
-	ContactPlanSAP sap = get_contact_plan_sap(NULL);
+int addContact(unsigned long regionNbr, unsigned long long fromNode, unsigned long long toNode,
+               time_t fromTime, time_t toTime, long unsigned int xmitRate, float confidence,
+               int copyMTV, double mtv[], double pf, bool multiHop) {
+    int result = 0;
+    ContactPlanSAP sap = get_contact_plan_sap(NULL);
 
-	if (sap.initialized)
-	{
-		result = add_contact_to_graph(regionNbr, fromNode, toNode, fromTime, toTime, xmitRate, confidence, copyMTV, mtv, pf, multiHop);
-	}
+    if (sap.initialized) {
+        result = add_contact_to_graph(regionNbr, fromNode, toNode, fromTime, toTime, xmitRate,
+                                      confidence, copyMTV, mtv, pf, multiHop);
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -294,18 +274,17 @@ int addContact(unsigned long regionNbr, unsigned long long fromNode, unsigned lo
  *  -------- | ---------------|  -----------------------------------------------
  *  23/01/20 | L. Persampieri |   Initial Implementation and documentation.
  *****************************************************************************/
-int removeContact(unsigned long regionNbr, unsigned long long fromNode, unsigned long long toNode, time_t *fromTime)
-{
-	int result = 0;
-	ContactPlanSAP sap = get_contact_plan_sap(NULL);
+int removeContact(unsigned long regionNbr, unsigned long long fromNode, unsigned long long toNode,
+                  time_t *fromTime) {
+    int result = 0;
+    ContactPlanSAP sap = get_contact_plan_sap(NULL);
 
-	if (sap.initialized)
-	{
-		remove_contact_from_graph(regionNbr, fromTime, fromNode, toNode);
-		result = 1;
-	}
+    if (sap.initialized) {
+        remove_contact_from_graph(regionNbr, fromTime, fromNode, toNode);
+        result = 1;
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -341,18 +320,15 @@ int removeContact(unsigned long regionNbr, unsigned long long fromNode, unsigned
  *  23/01/20 | L. Persampieri |   Initial Implementation and documentation.
  *****************************************************************************/
 int addRange(unsigned long long fromNode, unsigned long long toNode, time_t fromTime, time_t toTime,
-		unsigned int owlt)
-{
-	int result = -3;
-	ContactPlanSAP sap = get_contact_plan_sap(NULL);
+             unsigned int owlt) {
+    int result = -3;
+    ContactPlanSAP sap = get_contact_plan_sap(NULL);
 
-	if (sap.initialized)
-	{
-		result = add_range_to_graph(fromNode, toNode, fromTime, toTime, owlt);
+    if (sap.initialized) {
+        result = add_range_to_graph(fromNode, toNode, fromTime, toTime, owlt);
+    }
 
-	}
-
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -385,18 +361,16 @@ int addRange(unsigned long long fromNode, unsigned long long toNode, time_t from
  *  -------- | ---------------|  -----------------------------------------------
  *  23/01/20 | L. Persampieri |   Initial Implementation and documentation.
  *****************************************************************************/
-int removeRange(unsigned long long fromNode, unsigned long long toNode, time_t *fromTime)
-{
-	int result = 0;
-	ContactPlanSAP sap = get_contact_plan_sap(NULL);
+int removeRange(unsigned long long fromNode, unsigned long long toNode, time_t *fromTime) {
+    int result = 0;
+    ContactPlanSAP sap = get_contact_plan_sap(NULL);
 
-	if (sap.initialized)
-	{
-		remove_range_from_graph(fromTime, fromNode, toNode);
-		result = 1;
-	}
+    if (sap.initialized) {
+        remove_range_from_graph(fromTime, fromNode, toNode);
+        result = 1;
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -422,13 +396,12 @@ int removeRange(unsigned long long fromNode, unsigned long long toNode, time_t *
  *  -------- | ---------------|  -----------------------------------------------
  *  23/01/20 | L. Persampieri |   Initial Implementation and documentation.
  *****************************************************************************/
-void reset_contact_plan()
-{
-	reset_NodesTree();
-	reset_RangesGraph();
-	reset_ContactsGraph();
+void reset_contact_plan() {
+    reset_NodesTree();
+    reset_RangesGraph();
+    reset_ContactsGraph();
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -454,24 +427,22 @@ void reset_contact_plan()
  *  -------- | ---------------|  -----------------------------------------------
  *  23/01/20 | L. Persampieri |   Initial Implementation and documentation.
  *****************************************************************************/
-void destroy_contact_plan()
-{
-	ContactPlanSAP sap = get_contact_plan_sap(NULL);
+void destroy_contact_plan() {
+    ContactPlanSAP sap = get_contact_plan_sap(NULL);
 
-	destroy_NodesTree();
-	destroy_RangesGraph();
-	destroy_ContactsGraph();
+    destroy_NodesTree();
+    destroy_RangesGraph();
+    destroy_ContactsGraph();
 
-	sap.initialized = 0;
-	sap.contactsGraph = 0;
-	sap.rangesGraph = 0;
-	sap.nodes = 0;
+    sap.initialized = 0;
+    sap.contactsGraph = 0;
+    sap.rangesGraph = 0;
+    sap.nodes = 0;
 
-	sap.contactPlanEditTime.tv_sec = -1;
-	sap.contactPlanEditTime.tv_usec = -1;
+    sap.contactPlanEditTime.tv_sec = -1;
+    sap.contactPlanEditTime.tv_usec = -1;
 
-	get_contact_plan_sap(&sap); // save
+    get_contact_plan_sap(&sap); // save
 
-	return;
+    return;
 }
-

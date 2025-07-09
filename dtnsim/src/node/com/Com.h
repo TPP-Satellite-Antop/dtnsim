@@ -3,37 +3,34 @@
 
 #include <src/node/dtn/ContactPlan.h>
 
-#include <stdio.h>
-#include <string.h>
-#include <omnetpp.h>
 #include <fstream>
 #include <iomanip>
+#include <omnetpp.h>
+#include <stdio.h>
+#include <string.h>
 
-#include "src/node/MsgTypes.h"
 #include "src/dtnsim_m.h"
+#include "src/node/MsgTypes.h"
 
 using namespace std;
 using namespace omnetpp;
 
-class Com: public cSimpleModule
-{
-public:
-	Com();
-	virtual ~Com();
-	virtual void setContactTopology(ContactPlan &contactTopology);
+class Com : public cSimpleModule {
+  public:
+    Com();
+    virtual ~Com();
+    virtual void setContactTopology(ContactPlan &contactTopology);
 
-protected:
-	virtual void initialize();
-	virtual void handleMessage(cMessage *);
-	virtual void finish();
+  protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *);
+    virtual void finish();
 
-private:
+  private:
+    int eid_;
+    ContactPlan contactTopology_;
 
-	int eid_;
-	ContactPlan contactTopology_;
-
-	double packetLoss_;
-
+    double packetLoss_;
 };
 
 #endif /* COM_H_ */

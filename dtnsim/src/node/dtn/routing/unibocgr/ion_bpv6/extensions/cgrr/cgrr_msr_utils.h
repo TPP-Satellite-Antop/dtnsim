@@ -1,7 +1,7 @@
 /** \file cgrr_msr_utils.h
  *
- *  \brief  This file provides the declaration of the functions to optimize the use of CGRR Extension Block
- *          for Moderate Source Routing.
+ *  \brief  This file provides the declaration of the functions to optimize the use of CGRR
+ *Extension Block for Moderate Source Routing.
  *
  *
  ** \copyright Copyright (c) 2020, Alma Mater Studiorum, University of Bologna, All rights reserved.
@@ -30,21 +30,18 @@
 #ifndef BPV7_LIBRARY_EXT_CGRR_CGRR_MSR_UTILS_H_
 #define BPV7_LIBRARY_EXT_CGRR_CGRR_MSR_UTILS_H_
 
-#include <stdlib.h>
 #include "../../../src/node/dtn/routing/unibocgr/ion_bpv6/extensions/cgrr/cgrr.h"
-
+#include <stdlib.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-extern int storeMsrRoute(CGRRoute *cgrr_route, Bundle* bundle);
+extern int storeMsrRoute(CGRRoute *cgrr_route, Bundle *bundle);
 extern int updateLastCgrrRoute(Bundle *bundle);
 
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif /* BPV7_LIBRARY_EXT_CGRR_CGRR_MSR_UTILS_H_ */

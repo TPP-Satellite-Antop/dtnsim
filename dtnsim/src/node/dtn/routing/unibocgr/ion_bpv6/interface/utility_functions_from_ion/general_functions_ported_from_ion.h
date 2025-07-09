@@ -6,7 +6,7 @@
  *
  * \par Ported from ION 3.7.0 by
  *      Lorenzo Persampieri, lorenzo.persampieri@studio.unibo.it
- * 
+ *
  * \par Supervisor
  *      Carlo Caini, carlo.caini@unibo.it
  *
@@ -20,17 +20,16 @@
 #include "../../../ici/include/ion.h"
 #include "../../../ici/include/platform.h"
 #include "../../../ici/include/sdrstring.h"
-#include "../../library/cgr.h"
 #include "../../library/bpP.h"
+#include "../../library/cgr.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 extern void removeRoute(PsmPartition ionwm, PsmAddress routeElt);
 extern int create_ion_node_routing_object(IonNode *terminusNode, PsmPartition ionwm,
-		CgrVdb *cgrvdb);
+                                          CgrVdb *cgrvdb);
 
 #ifdef __cplusplus
 }

@@ -33,59 +33,60 @@
 
 #include <sys/time.h>
 
-#include "src/node/dtn/routing/unibocgr/core/library/commonDefines.h"
+#include "src/node/dtn/routing/unibocgr/core/contact_plan/contacts/contacts.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/nodes/nodes.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/ranges/ranges.h"
-#include "src/node/dtn/routing/unibocgr/core/contact_plan/contacts/contacts.h"
+#include "src/node/dtn/routing/unibocgr/core/library/commonDefines.h"
 #include "src/node/dtn/routing/unibocgr/core/library_from_ion/rbt/rbt.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /**
  * \brief Used to get some information about the state of the contact plan.
  */
 typedef struct {
-	/**
-	 * \brief Boolean: 0 if the contacts graph hasn't been initialized, 1 otherwise.
-	 */
-	int contactsGraph;
-	/**
-	 * \brief Boolean: 0 if the ranges graph hasn't been initialized, 1 otherwise.
-	 */
-	int rangesGraph;
-	/**
-	 * \brief Boolean: 0 if the nodes tree hasn't been initialized, 1 otherwise.
-	 */
-	int nodes;
-	/**
-	 * \brief Boolean: 0 if all the main structures hasn't been initialized, 1 otherwise.
-	 */
-	int initialized;
-	/**
-	 * \brief The last time when we add/delete contacts/ranges.
-	 */
-	struct timeval contactPlanEditTime;
+    /**
+     * \brief Boolean: 0 if the contacts graph hasn't been initialized, 1 otherwise.
+     */
+    int contactsGraph;
+    /**
+     * \brief Boolean: 0 if the ranges graph hasn't been initialized, 1 otherwise.
+     */
+    int rangesGraph;
+    /**
+     * \brief Boolean: 0 if the nodes tree hasn't been initialized, 1 otherwise.
+     */
+    int nodes;
+    /**
+     * \brief Boolean: 0 if all the main structures hasn't been initialized, 1 otherwise.
+     */
+    int initialized;
+    /**
+     * \brief The last time when we add/delete contacts/ranges.
+     */
+    struct timeval contactPlanEditTime;
 } ContactPlanSAP;
 
 extern ContactPlanSAP get_contact_plan_sap(ContactPlanSAP *newSap);
 
-//extern void set_time_contact_plan_updated(__time_t seconds, __suseconds_t micro_seconds);
+// extern void set_time_contact_plan_updated(__time_t seconds, __suseconds_t micro_seconds);
 extern void set_time_contact_plan_updated(time_t seconds, suseconds_t micro_seconds);
 
 extern int initialize_contact_plan(bool newNode);
 
 extern void removeExpired(time_t time);
 
-extern int addContact(unsigned long regionNbr, unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
-		time_t toTime, long unsigned int xmitRate, float confidence, int copyMTV, double mtv[], double pf, bool multiHop);
-extern int removeContact(unsigned long regionNbr, unsigned long long fromNode, unsigned long long toNode,
-		time_t *fromTime);
+extern int addContact(unsigned long regionNbr, unsigned long long fromNode,
+                      unsigned long long toNode, time_t fromTime, time_t toTime,
+                      long unsigned int xmitRate, float confidence, int copyMTV, double mtv[],
+                      double pf, bool multiHop);
+extern int removeContact(unsigned long regionNbr, unsigned long long fromNode,
+                         unsigned long long toNode, time_t *fromTime);
 
 extern int addRange(unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
-		time_t toTime, unsigned int owlt);
+                    time_t toTime, unsigned int owlt);
 extern int removeRange(unsigned long long fromNode, unsigned long long toNode, time_t *fromTime);
 
 extern void reset_contact_plan();

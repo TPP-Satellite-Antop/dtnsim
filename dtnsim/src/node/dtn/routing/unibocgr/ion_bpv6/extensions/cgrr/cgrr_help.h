@@ -2,7 +2,8 @@
  *
  *	\brief       This file provides helper functions that use "cgr.h" library.
  *
- *  \details     We need this separated header file just to avoid some compilation error in ION 4.0.0.
+ *  \details     We need this separated header file just to avoid some compilation error in
+ *ION 4.0.0.
  *
  ** \copyright Copyright (c) 2020, Alma Mater Studiorum, University of Bologna, All rights reserved.
  **
@@ -33,24 +34,23 @@
 #include "../../../src/node/dtn/routing/unibocgr/ion_bpv6/aux_files/cgr.h"
 #include "../../../src/node/dtn/routing/unibocgr/ion_bpv6/extensions/cgrr/cgrr.h"
 
-typedef struct
-{
-	unsigned int fragmOffset;
-	unsigned int fragmLength;
-	uvast evc;
-	int readLock; /*  0 if you should not read the values, 1 otherwise */
-	int cloneLevel; /* 1 if this CGRR Ext. Block has been cloned from
-	                     another CGRR Ext. Block (i.e. due bundle's fragmentation).
-	                   2 if the bundle has been cloned
-	                   0 otherwise
-	                   */
+typedef struct {
+    unsigned int fragmOffset;
+    unsigned int fragmLength;
+    uvast evc;
+    int readLock;   /*  0 if you should not read the values, 1 otherwise */
+    int cloneLevel; /* 1 if this CGRR Ext. Block has been cloned from
+                         another CGRR Ext. Block (i.e. due bundle's fragmentation).
+                       2 if the bundle has been cloned
+                       0 otherwise
+                       */
 } CGRRObject;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern int getCGRRoute(CgrRoute *in_route, CGRRoute * out_route);
+extern int getCGRRoute(CgrRoute *in_route, CGRRoute *out_route);
 
 #ifdef __cplusplus
 }

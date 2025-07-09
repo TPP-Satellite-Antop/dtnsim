@@ -30,12 +30,12 @@
 #include "../../../src/node/dtn/routing/unibocgr/ion_bpv6/extensions/rgr/rgr_utils.h"
 
 #include <string.h>
-//Added by A.Stramiglio 28/11/19
+// Added by A.Stramiglio 28/11/19
 #include <unistd.h>
-//Added by A.Stramiglio 3/12/19
+// Added by A.Stramiglio 3/12/19
 #include <lyst.h>
 
-//Added by L. Persampieri 26/03/20
+// Added by L. Persampieri 26/03/20
 #include <ctype.h>
 
 /******************************************************************************
@@ -43,8 +43,8 @@
  *
  * \par Purpose: This function converts an ExtensionBlock into a GeoRoute Struct.
  * 				 if the ExtensionBlock is empty nothing changes. The GeoRoute Struct
- * 				 passed must be initialized. The function allocates an rgrBlk in psm Memory
- * 				 with MTAKE.The caller needs to do the MRELEASE.
+ * 				 passed must be initialized. The function allocates an rgrBlk in psm
+ *Memory with MTAKE.The caller needs to do the MRELEASE.
  *
  * \return int
  *
@@ -66,78 +66,71 @@
  *  21/11/19 | A. Stramiglio  |   Initial Implementation and documentation
  *  22/02/20 | L. Persampieri |   Bug fix: nested if
  *****************************************************************************/
-extern int rgr_read(ExtensionBlock *blk, GeoRoute *rgrBlk)
-{
+extern int rgr_read(ExtensionBlock *blk, GeoRoute *rgrBlk) {
 
-	Sdr sdr = getIonsdr();
-	unsigned char *cursor = NULL;
-	unsigned char *blkBuffer = NULL;
-	int unparsedBytes = 0;
-	unsigned int temp = 0;
+    Sdr sdr = getIonsdr();
+    unsigned char *cursor = NULL;
+    unsigned char *blkBuffer = NULL;
+    int unparsedBytes = 0;
+    unsigned int temp = 0;
 
-	/*
-	 * Step 1 - Extract previously added nodes, if there are any.
-	 */
+    /*
+     * Step 1 - Extract previously added nodes, if there are any.
+     */
 
-	if (blk->dataLength > 0)
-	{
-		blkBuffer = MTAKE(blk->length);
-		if (blkBuffer == NULL)
-		{
-			rgr_debugPrint("[rgr.c/rgr_processOnDequeue] No space for block buffer %u.", blk->length);
-			return -1;
-		}
+    if (blk->dataLength > 0) {
+        blkBuffer = MTAKE(blk->length);
+        if (blkBuffer == NULL) {
+            rgr_debugPrint("[rgr.c/rgr_processOnDequeue] No space for block buffer %u.",
+                           blk->length);
+            return -1;
+        }
 
-		CHKERR(sdr_begin_xn(sdr));
-		sdr_read(sdr, (char*) blkBuffer, blk->bytes, blk->length);
-		sdr_end_xn(sdr);
+        CHKERR(sdr_begin_xn(sdr));
+        sdr_read(sdr, (char *)blkBuffer, blk->bytes, blk->length);
+        sdr_end_xn(sdr);
 
-		unparsedBytes = blk->dataLength;
-		cursor = (blkBuffer) + (blk->length - blk->dataLength);
-		//rgr_debugPrint("rgr_processOnDequeue: Unpased bytes: %d, data length: %u", unparsedBytes, blk->dataLength);
+        unparsedBytes = blk->dataLength;
+        cursor = (blkBuffer) + (blk->length - blk->dataLength);
+        // rgr_debugPrint("rgr_processOnDequeue: Unpased bytes: %d, data length: %u", unparsedBytes,
+        // blk->dataLength);
 
-		extractSmallSdnv(&temp, &cursor, &unparsedBytes);
-		//rgr_debugPrint("rgr_processOnDequeue: Retrieved GeoRoute block length of %u", temp);
-		rgrBlk->length = temp;
-		//rgr_debugPrint("rgr_processOnDequeue: GeoRoute block length = %u", rgrBlk.length);
+        extractSmallSdnv(&temp, &cursor, &unparsedBytes);
+        // rgr_debugPrint("rgr_processOnDequeue: Retrieved GeoRoute block length of %u", temp);
+        rgrBlk->length = temp;
+        // rgr_debugPrint("rgr_processOnDequeue: GeoRoute block length = %u", rgrBlk.length);
 
-		/*
-		 * Step 2 - Initialize rgrBlk with correct values.
-		 * */
+        /*
+         * Step 2 - Initialize rgrBlk with correct values.
+         * */
 
-		if (rgrBlk->length != 0) //nested by L. Persampieri
-		{
+        if (rgrBlk->length != 0) // nested by L. Persampieri
+        {
 
-			rgrBlk->nodes = (char*) MTAKE(rgrBlk->length + 1);
+            rgrBlk->nodes = (char *)MTAKE(rgrBlk->length + 1);
 
-			if (rgrBlk->nodes == NULL)
-			{
-				MRELEASE(blkBuffer); //Added by L. Persampieri
-				rgr_debugPrint(
-						"[rgr.c/rgr_processOnDequeue] Cannot instantiate memory for oldRgrBlk.nodes.");
-				return -1;
-			}
+            if (rgrBlk->nodes == NULL) {
+                MRELEASE(blkBuffer); // Added by L. Persampieri
+                rgr_debugPrint(
+                    "[rgr.c/rgr_processOnDequeue] Cannot instantiate memory for oldRgrBlk.nodes.");
+                return -1;
+            }
 
-			if (rgrBlk->length > 0)
-			{
-				memcpy(rgrBlk->nodes, cursor, rgrBlk->length);
-				//rgr_debugPrint("rgr_processOnDequeue: Extracted %s", rgrBlk.nodes);
-			}
+            if (rgrBlk->length > 0) {
+                memcpy(rgrBlk->nodes, cursor, rgrBlk->length);
+                // rgr_debugPrint("rgr_processOnDequeue: Extracted %s", rgrBlk.nodes);
+            }
 
-			MRELEASE(blkBuffer);
-		}
-		else
-		{
-			MRELEASE(blkBuffer);
-			return -2;
-		}
-	}
-	else
-	{
-		return -3;
-	}
+            MRELEASE(blkBuffer);
+        } else {
+            MRELEASE(blkBuffer);
+            return -2;
+        }
+    } else {
+        return -3;
+    }
 
-	return 0;
+    return 0;
 }
 
 /******************************************************************************
@@ -145,16 +138,16 @@ extern int rgr_read(ExtensionBlock *blk, GeoRoute *rgrBlk)
  * \par Function Name: findLoopEntryNode
  *
  * \par Purpose: This function finds if a loop occurred looking the GeoRoute.
- * 			     If my own node number is found in the route, the following node is considered as
- * 			     loopEntryNode.
+ * 			     If my own node number is found in the route, the following node is
+ *considered as loopEntryNode.
  *
  * \return uvast
  *
  * \retval "> 0" Loop occurred, returning loopNode.
  * \retval    0  No loop or system error.
  *
- * \param[in] route				The GeoRoute containing information of the bundle route.
- * \param[in] nodeNum			Own node number of the bundle
+ * \param[in] route				The GeoRoute containing information of the bundle
+ *route. \param[in] nodeNum			Own node number of the bundle
  *
  * \par Notes:
  *
@@ -164,72 +157,61 @@ extern int rgr_read(ExtensionBlock *blk, GeoRoute *rgrBlk)
  *  -------- | ------------  | ---------------------------------------------
  *  3/12/19  | A. Stramiglio |    Initial Implementation and documentation
  *****************************************************************************/
-extern uvast findLoopEntryNode(GeoRoute *route, uvast nodeNum)
-{
-	char *temp;
-//	char *next;
-	char stringNodeNum[sizeof(uvast) + 5];
-//	char subString[256];
-	uvast failedNode = 0;
+extern uvast findLoopEntryNode(GeoRoute *route, uvast nodeNum) {
+    char *temp;
+    //	char *next;
+    char stringNodeNum[sizeof(uvast) + 5];
+    //	char subString[256];
+    uvast failedNode = 0;
 
-	if (route == NULL || route->nodes == NULL || nodeNum == 0)
-	{
-		return 0;
-	}
+    if (route == NULL || route->nodes == NULL || nodeNum == 0) {
+        return 0;
+    }
 
-	//Step 1 -> Converts nodeNum into a string
-	sprintf(stringNodeNum, "ipn:"UVAST_FIELDSPEC, nodeNum);
+    // Step 1 -> Converts nodeNum into a string
+    sprintf(stringNodeNum, "ipn:" UVAST_FIELDSPEC, nodeNum);
 
-	//Step 2a -> not found my node, return 0
-	temp = strstr(route->nodes, stringNodeNum);
-	if (temp == NULL)
-	{
-		rgr_debugPrint("[rgr_utils.c/findLoopEntryNode] NOT found the node: %s in the route: %s",
-				stringNodeNum, route->nodes);
-		return 0;
+    // Step 2a -> not found my node, return 0
+    temp = strstr(route->nodes, stringNodeNum);
+    if (temp == NULL) {
+        rgr_debugPrint("[rgr_utils.c/findLoopEntryNode] NOT found the node: %s in the route: %s",
+                       stringNodeNum, route->nodes);
+        return 0;
 
-	}
-	else
-	{
-		//Step 2b -> found my node
+    } else {
+        // Step 2b -> found my node
 
-		//if there is an occurrence
-		rgr_debugPrint(
-				"[rgr_utils.c/findLoopEntryNode] LOOP occurred! Found the node: %s in the route: %s",
-				stringNodeNum, route->nodes);
-		//make substring
-		//		strcpy(subString, temp + strlen(stringNodeNum));
-		temp = strstr(temp + 4, "ipn:");
-		if (temp != NULL)
-		{
-			rgr_debugPrint("[rgr_utils.c/findLoopEntryNode] SubString: %s", temp);
+        // if there is an occurrence
+        rgr_debugPrint(
+            "[rgr_utils.c/findLoopEntryNode] LOOP occurred! Found the node: %s in the route: %s",
+            stringNodeNum, route->nodes);
+        // make substring
+        //		strcpy(subString, temp + strlen(stringNodeNum));
+        temp = strstr(temp + 4, "ipn:");
+        if (temp != NULL) {
+            rgr_debugPrint("[rgr_utils.c/findLoopEntryNode] SubString: %s", temp);
 
-			//Step 4 -> take the successive node as failedNode
-			temp = temp + 4;
-			if (*temp != '\0')
-			{
-				//node number always in format ipn:nodeNum
-				failedNode = (uvast) strtouvast(temp);
-				rgr_debugPrint("[rgr_utils.c/findLoopEntryNode] The failed node is: " UVAST_FIELDSPEC,
-						failedNode);
+            // Step 4 -> take the successive node as failedNode
+            temp = temp + 4;
+            if (*temp != '\0') {
+                // node number always in format ipn:nodeNum
+                failedNode = (uvast)strtouvast(temp);
+                rgr_debugPrint(
+                    "[rgr_utils.c/findLoopEntryNode] The failed node is: " UVAST_FIELDSPEC,
+                    failedNode);
 
-			}
-			else
-			{
-				rgr_debugPrint("[rgr_utils.c/findLoopEntryNode] Error string ends in ipn:");
-				return 0;
-			}
-		}
-		else
-		{
-			rgr_debugPrint("[rgr_utils.c/findLoopEntryNode] Error in strstr, not found the failedNode");
-			return 0;
-		}
+            } else {
+                rgr_debugPrint("[rgr_utils.c/findLoopEntryNode] Error string ends in ipn:");
+                return 0;
+            }
+        } else {
+            rgr_debugPrint(
+                "[rgr_utils.c/findLoopEntryNode] Error in strstr, not found the failedNode");
+            return 0;
+        }
+    }
 
-	}
-
-	return failedNode;
-
+    return failedNode;
 }
 
 /******************************************************************************
@@ -262,97 +244,75 @@ extern uvast findLoopEntryNode(GeoRoute *route, uvast nodeNum)
  *  -------- | --------------- | -----------------------------------------------
  *  26/03/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int get_geo_route_lyst(GeoRoute *route, Lyst resultLyst)
-{
-	int result = -1, end = 0;
-	char *temp;
-	uvast ipn_node, *new_elt;
+int get_geo_route_lyst(GeoRoute *route, Lyst resultLyst) {
+    int result = -1, end = 0;
+    char *temp;
+    uvast ipn_node, *new_elt;
 
-	if (route != NULL && resultLyst != NULL)
-	{
-		result = 0;
-		end = 0;
-		temp = route->nodes;
-		while (!end)
-		{
-			temp = strstr(temp, "ipn:");
-			if (temp != NULL && isdigit(*(temp + 4)))
-			{
-				temp = temp + 4;
-				ipn_node = strtouvast(temp);
-				new_elt = MTAKE(sizeof(uvast));
-				if (new_elt != NULL)
-				{
-					*new_elt = ipn_node;
-					if (lyst_insert_last(resultLyst, new_elt) == NULL)
-					{
-						MRELEASE(new_elt);
-						end = 1;
-						result = -2;
-					}
-					else
-					{
-						result++;
-					}
-				}
-				else
-				{
-					end = 1;
-					result = -2;
-				}
-			}
-			else
-			{
-				end = 1;
-			}
-		}
-	}
+    if (route != NULL && resultLyst != NULL) {
+        result = 0;
+        end = 0;
+        temp = route->nodes;
+        while (!end) {
+            temp = strstr(temp, "ipn:");
+            if (temp != NULL && isdigit(*(temp + 4))) {
+                temp = temp + 4;
+                ipn_node = strtouvast(temp);
+                new_elt = MTAKE(sizeof(uvast));
+                if (new_elt != NULL) {
+                    *new_elt = ipn_node;
+                    if (lyst_insert_last(resultLyst, new_elt) == NULL) {
+                        MRELEASE(new_elt);
+                        end = 1;
+                        result = -2;
+                    } else {
+                        result++;
+                    }
+                } else {
+                    end = 1;
+                    result = -2;
+                }
+            } else {
+                end = 1;
+            }
+        }
+    }
 
-	return result;
+    return result;
 }
 
-void printRoute(GeoRoute *route)
-{
+void printRoute(GeoRoute *route) {}
 
+void copyRoute(GeoRoute *dest, GeoRoute *src) {}
+
+int parseAndSaveRoute(GeoRoute *route) {
+    return 1;
 }
 
-void copyRoute(GeoRoute *dest, GeoRoute *src)
-{
+char *parseAdminEID(Sdr sdr, Bundle *bundle) {
+    MetaEid metaEid;
+    VScheme *vscheme;
+    PsmAddress vschemeElt;
+    char proxNodeEid[SDRSTRING_BUFSZ];
 
-}
+    // as per libbpP func bpDequeue
+    if (bundle->proxNodeEid) {
+        sdr_begin_xn(sdr);
+        sdr_string_read(sdr, proxNodeEid, bundle->proxNodeEid);
+        sdr_end_xn(sdr);
+    }
 
-int parseAndSaveRoute(GeoRoute *route)
-{
-	return 1;
-}
+    /*
+     * Look at scheme we are delivering to, as that will be the
+     * scheme of our local admin EID, as we don't cross schemes
+     * in transmit.
+     */
+    if (parseEidString(proxNodeEid, &metaEid, &vscheme, &vschemeElt) == 0) {
+        /*	Can't know which admin EID to use.		*/
+        return NULL;
+    }
 
-char* parseAdminEID(Sdr sdr, Bundle *bundle)
-{
-	MetaEid metaEid;
-	VScheme *vscheme;
-	PsmAddress vschemeElt;
-	char proxNodeEid[SDRSTRING_BUFSZ];
+    restoreEidString(&metaEid);
 
-	// as per libbpP func bpDequeue
-	if (bundle->proxNodeEid)
-	{
-		sdr_begin_xn(sdr);
-		sdr_string_read(sdr, proxNodeEid, bundle->proxNodeEid);
-		sdr_end_xn(sdr);
-	}
-
-	/*
-	 * Look at scheme we are delivering to, as that will be the
-	 * scheme of our local admin EID, as we don't cross schemes
-	 * in transmit.
-	 */
-	if (parseEidString(proxNodeEid, &metaEid, &vscheme, &vschemeElt) == 0)
-	{
-		/*	Can't know which admin EID to use.		*/
-		return NULL;
-	}
-
-	restoreEidString(&metaEid);
-
-	return vscheme->adminEid;
+    return vscheme->adminEid;
 }

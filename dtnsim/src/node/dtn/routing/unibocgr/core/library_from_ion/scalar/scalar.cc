@@ -6,7 +6,7 @@
  *
  * \par Ported from ION 3.7.0 by
  *      Lorenzo Persampieri, lorenzo.persampieri@studio.unibo.it
- * 
+ *
  * \par Supervisor
  *      Carlo Caini, carlo.caini@unibo.it
  *
@@ -38,23 +38,19 @@
  *  -------- | --------------- | -----------------------------------------------
  *  30/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-void loadCgrScalar(CgrScalar *s, long int i)
-{
-	if (s != NULL)
-	{
-		if (i < 0)
-		{
-			i = 0 - i;
-		}
+void loadCgrScalar(CgrScalar *s, long int i) {
+    if (s != NULL) {
+        if (i < 0) {
+            i = 0 - i;
+        }
 
-		s->gigs = 0;
-		s->units = i;
-		while (s->units >= ONE_GIG)
-		{
-			s->gigs++;
-			s->units -= ONE_GIG;
-		}
-	}
+        s->gigs = 0;
+        s->units = i;
+        while (s->units >= ONE_GIG) {
+            s->gigs++;
+            s->units -= ONE_GIG;
+        }
+    }
 }
 
 /******************************************************************************
@@ -80,28 +76,23 @@ void loadCgrScalar(CgrScalar *s, long int i)
  *  -------- | --------------- | -----------------------------------------------
  *  30/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-void increaseCgrScalar(CgrScalar *s, long int i)
-{
-	if (s != NULL)
-	{
-		if (i < 0)
-		{
-			i = 0 - i;
-		}
+void increaseCgrScalar(CgrScalar *s, long int i) {
+    if (s != NULL) {
+        if (i < 0) {
+            i = 0 - i;
+        }
 
-		while (i >= ONE_GIG)
-		{
-			i -= ONE_GIG;
-			s->gigs++;
-		}
+        while (i >= ONE_GIG) {
+            i -= ONE_GIG;
+            s->gigs++;
+        }
 
-		s->units += i;
-		while (s->units >= ONE_GIG)
-		{
-			s->gigs++;
-			s->units -= ONE_GIG;
-		}
-	}
+        s->units += i;
+        while (s->units >= ONE_GIG) {
+            s->gigs++;
+            s->units -= ONE_GIG;
+        }
+    }
 }
 
 /******************************************************************************
@@ -127,29 +118,24 @@ void increaseCgrScalar(CgrScalar *s, long int i)
  *  -------- | --------------- | -----------------------------------------------
  *  30/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-void reduceCgrScalar(CgrScalar *s, long int i)
-{
-	if (s != NULL)
-	{
-		if (i < 0)
-		{
-			i = 0 - i;
-		}
+void reduceCgrScalar(CgrScalar *s, long int i) {
+    if (s != NULL) {
+        if (i < 0) {
+            i = 0 - i;
+        }
 
-		while (i >= ONE_GIG)
-		{
-			i -= ONE_GIG;
-			s->gigs--;
-		}
+        while (i >= ONE_GIG) {
+            i -= ONE_GIG;
+            s->gigs--;
+        }
 
-		while (i > s->units)
-		{
-			s->units += ONE_GIG;
-			s->gigs--;
-		}
+        while (i > s->units) {
+            s->units += ONE_GIG;
+            s->gigs--;
+        }
 
-		s->units -= i;
-	}
+        s->units -= i;
+    }
 }
 
 /******************************************************************************
@@ -175,21 +161,18 @@ void reduceCgrScalar(CgrScalar *s, long int i)
  *  -------- | --------------- | -----------------------------------------------
  *  30/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-void multiplyCgrScalar(CgrScalar *s, long int i)
-{
-	double product;
+void multiplyCgrScalar(CgrScalar *s, long int i) {
+    double product;
 
-	if (s != NULL)
-	{
-		if (i < 0)
-		{
-			i = 0 - i;
-		}
+    if (s != NULL) {
+        if (i < 0) {
+            i = 0 - i;
+        }
 
-		product = (double) (((s->gigs * ONE_GIG) + (s->units)) * i);
-		s->gigs = (long int) (product / ONE_GIG);
-		s->units = (long int) (product - ((double) (s->gigs * ONE_GIG)));
-	}
+        product = (double)(((s->gigs * ONE_GIG) + (s->units)) * i);
+        s->gigs = (long int)(product / ONE_GIG);
+        s->units = (long int)(product - ((double)(s->gigs * ONE_GIG)));
+    }
 }
 
 /******************************************************************************
@@ -215,21 +198,18 @@ void multiplyCgrScalar(CgrScalar *s, long int i)
  *  -------- | --------------- | -----------------------------------------------
  *  30/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-void divideCgrScalar(CgrScalar *s, long int i)
-{
-	double quotient;
+void divideCgrScalar(CgrScalar *s, long int i) {
+    double quotient;
 
-	if (s != NULL && i != 0)
-	{
-		if (i < 0)
-		{
-			i = 0 - i;
-		}
+    if (s != NULL && i != 0) {
+        if (i < 0) {
+            i = 0 - i;
+        }
 
-		quotient = (double) (((s->gigs * ONE_GIG) + s->units) / i);
-		s->gigs = (int) (quotient / ONE_GIG);
-		s->units = (int) (quotient - (((double) (s->gigs)) * ONE_GIG));
-	}
+        quotient = (double)(((s->gigs * ONE_GIG) + s->units) / i);
+        s->gigs = (int)(quotient / ONE_GIG);
+        s->units = (int)(quotient - (((double)(s->gigs)) * ONE_GIG));
+    }
 }
 
 /******************************************************************************
@@ -254,13 +234,11 @@ void divideCgrScalar(CgrScalar *s, long int i)
  *  -------- | --------------- | -----------------------------------------------
  *  30/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-void copyCgrScalar(CgrScalar *to, CgrScalar *from)
-{
-	if (to != NULL && from != NULL)
-	{
-		to->gigs = from->gigs;
-		to->units = from->units;
-	}
+void copyCgrScalar(CgrScalar *to, CgrScalar *from) {
+    if (to != NULL && from != NULL) {
+        to->gigs = from->gigs;
+        to->units = from->units;
+    }
 }
 
 /******************************************************************************
@@ -278,7 +256,8 @@ void copyCgrScalar(CgrScalar *to, CgrScalar *from)
  *
  * \param[in,out]  *s           The CgrScalar for which we want to add the quantity "increment",
  *                              initially the augend at the end the sum
- * \param[in]      *increment   The CgrScalar that contains the quantity to increment in "s" (the addend)
+ * \param[in]      *increment   The CgrScalar that contains the quantity to increment in "s" (the
+ *addend)
  *
  * \par Revision History:
  *
@@ -286,13 +265,11 @@ void copyCgrScalar(CgrScalar *to, CgrScalar *from)
  *  -------- | --------------- | -----------------------------------------------
  *  30/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-void addToCgrScalar(CgrScalar *s, CgrScalar *increment)
-{
-	if (s != NULL && increment != NULL)
-	{
-		increaseCgrScalar(s, increment->units);
-		s->gigs += increment->gigs;
-	}
+void addToCgrScalar(CgrScalar *s, CgrScalar *increment) {
+    if (s != NULL && increment != NULL) {
+        increaseCgrScalar(s, increment->units);
+        s->gigs += increment->gigs;
+    }
 }
 
 /******************************************************************************
@@ -310,7 +287,8 @@ void addToCgrScalar(CgrScalar *s, CgrScalar *increment)
  *
  * \param[in, out]  *s           The CgrScalar that we want to decrement, initially the minuend
  *                               at the end the difference
- * \param[in]       *decrement   The CgrScalar that contains the quantity to decrement from s (the subtrahend)
+ * \param[in]       *decrement   The CgrScalar that contains the quantity to decrement from s (the
+ *subtrahend)
  *
  * \warning At the end "s" could be negative.
  *
@@ -320,13 +298,11 @@ void addToCgrScalar(CgrScalar *s, CgrScalar *increment)
  *  -------- | --------------- | -----------------------------------------------
  *  30/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-void subtractFromCgrScalar(CgrScalar *s, CgrScalar *decrement)
-{
-	if (s != NULL && decrement != NULL)
-	{
-		reduceCgrScalar(s, decrement->units);
-		s->gigs -= decrement->gigs;
-	}
+void subtractFromCgrScalar(CgrScalar *s, CgrScalar *decrement) {
+    if (s != NULL && decrement != NULL) {
+        reduceCgrScalar(s, decrement->units);
+        s->gigs -= decrement->gigs;
+    }
 }
 
 /******************************************************************************
@@ -354,13 +330,11 @@ void subtractFromCgrScalar(CgrScalar *s, CgrScalar *decrement)
  *  -------- | --------------- | -----------------------------------------------
  *  30/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-int CgrScalarIsValid(CgrScalar *s)
-{
-	int result = -1;
-	if (s != NULL)
-	{
-		result = (s->gigs >= 0);
-	}
+int CgrScalarIsValid(CgrScalar *s) {
+    int result = -1;
+    if (s != NULL) {
+        result = (s->gigs >= 0);
+    }
 
-	return result;
+    return result;
 }

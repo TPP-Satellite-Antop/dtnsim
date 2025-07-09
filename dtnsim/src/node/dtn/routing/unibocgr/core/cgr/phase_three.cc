@@ -2,7 +2,7 @@
  *
  *  \brief  This file provides the implementation of the CGR's phase three:
  *          the choose of the best routes from the candidate routes list (phase two's output).
- *  
+ *
  *  \details The output of this phase is the best routes list.
  *
  *
@@ -30,15 +30,13 @@
  *          Carlo Caini, carlo.caini@unibo.it
  */
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
+#include "../routes/routes.h"
 #include "src/node/dtn/routing/unibocgr/core/cgr/cgr_phases.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/contacts/contacts.h"
 #include "src/node/dtn/routing/unibocgr/core/library/list/list.h"
-#include "../routes/routes.h"
-
-
 
 /******************************************************************************
  *
@@ -69,80 +67,59 @@
  *  -------- | --------------- | -----------------------------------------------
  *  13/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static int best_route_cost_function(void *first, void *second)
-{
-	int result = -1;
-	Route *firstRoute, *secondRoute;
+static int best_route_cost_function(void *first, void *second) {
+    int result = -1;
+    Route *firstRoute, *secondRoute;
 
-	firstRoute = (Route*) first;
-	secondRoute = (Route*) second;
+    firstRoute = (Route *)first;
+    secondRoute = (Route *)second;
 
 #if (CGR_AVOID_LOOP > 0)
-	if (firstRoute->checkValue > secondRoute->checkValue)
-	{
-		result = 1;
-	}
-	else if (firstRoute->checkValue < secondRoute->checkValue)
-	{
-		result = -1;
-	}
-	else
-	{
+    if (firstRoute->checkValue > secondRoute->checkValue) {
+        result = 1;
+    } else if (firstRoute->checkValue < secondRoute->checkValue) {
+        result = -1;
+    } else {
 #endif
 
-		if (firstRoute->successProbability < secondRoute->successProbability)
-		{
-			result = 1;
-		}
-		else if (firstRoute->successProbability == secondRoute->successProbability)
-		{
-		if (firstRoute->pbat > secondRoute->pbat) //SABR 3.2.8.1.4 a) 1)
-		{
-			result = 1;
-		}
-		else if (firstRoute->pbat == secondRoute->pbat)
-		{
-			if (firstRoute->hops->length > secondRoute->hops->length) //SABR 3.2.8.1.4 a) 2)
-			{
-				result = 1;
-			}
-			else if (firstRoute->hops->length == secondRoute->hops->length)
-			{
-				if (firstRoute->toTime < secondRoute->toTime) //SABR 3.2.8.1.4 a) 3)
-				{
-					result = 1;
-				}
-				else if (firstRoute->toTime == secondRoute->toTime)
-				{
+        if (firstRoute->successProbability < secondRoute->successProbability) {
+            result = 1;
+        } else if (firstRoute->successProbability == secondRoute->successProbability) {
+            if (firstRoute->pbat > secondRoute->pbat) // SABR 3.2.8.1.4 a) 1)
+            {
+                result = 1;
+            } else if (firstRoute->pbat == secondRoute->pbat) {
+                if (firstRoute->hops->length > secondRoute->hops->length) // SABR 3.2.8.1.4 a) 2)
+                {
+                    result = 1;
+                } else if (firstRoute->hops->length == secondRoute->hops->length) {
+                    if (firstRoute->toTime < secondRoute->toTime) // SABR 3.2.8.1.4 a) 3)
+                    {
+                        result = 1;
+                    } else if (firstRoute->toTime == secondRoute->toTime) {
 #if (CCSDS_SABR_DEFAULTS == 0 && CGR_ION_3_7_0 == 0)
-					if (firstRoute->owltSum > secondRoute->owltSum)
-					{
-						result = 1;
-					}
-					else if (firstRoute->owltSum == secondRoute->owltSum)
-					{
+                        if (firstRoute->owltSum > secondRoute->owltSum) {
+                            result = 1;
+                        } else if (firstRoute->owltSum == secondRoute->owltSum) {
 #endif
-						//SABR 3.2.8.1.4 a) 4)
-						if (firstRoute->neighbor > secondRoute->neighbor)
-						{
-							result = 1;
-						}
-						else if (firstRoute->neighbor == secondRoute->neighbor)
-						{
-							result = 0;
-						}
+                            // SABR 3.2.8.1.4 a) 4)
+                            if (firstRoute->neighbor > secondRoute->neighbor) {
+                                result = 1;
+                            } else if (firstRoute->neighbor == secondRoute->neighbor) {
+                                result = 0;
+                            }
 #if (CCSDS_SABR_DEFAULTS == 0 && CGR_ION_3_7_0 == 0)
-					}
+                        }
 #endif
-				}
-			}
-		}
-		}
+                    }
+                }
+            }
+        }
 #if (CGR_AVOID_LOOP > 0)
-	}
+    }
 #endif
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -151,7 +128,8 @@ static int best_route_cost_function(void *first, void *second)
  * 		getOneBestRoutePerNeighbor
  *
  * \brief For each neighbor choose the best route and removes from candidateRoutes the other routes.
- * 		  At the end candidateRoutes will be sorted (the first route will be the best route and so on)
+ * 		  At the end candidateRoutes will be sorted (the first route will be the best route
+ *and so on)
  *
  *
  * \par Date Written:
@@ -160,7 +138,8 @@ static int best_route_cost_function(void *first, void *second)
  * \return void
  *
  * \param[in,out]   *candidateRoutes     Initially it contains all the candidateRoutes,
- *                                       at the end only the best route per neighbor remains in this list.
+ *                                       at the end only the best route per neighbor remains in this
+ *list.
  *
  *\warning candidateRoutes doesn't have to be NULL.
  *
@@ -170,44 +149,39 @@ static int best_route_cost_function(void *first, void *second)
  *  -------- | --------------- | -----------------------------------------------
  *  13/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void getOneBestRoutePerNeighbor(List candidateRoutes)
-{
-	ListElt *elt, *next, *temp;
-	Route *currentNeighborFirstRoute, *currentRoute;
-	compare_function temp_compare;
-	unsigned long long viaNeighbor = 0;
+static void getOneBestRoutePerNeighbor(List candidateRoutes) {
+    ListElt *elt, *next, *temp;
+    Route *currentNeighborFirstRoute, *currentRoute;
+    compare_function temp_compare;
+    unsigned long long viaNeighbor = 0;
 
-	elt = candidateRoutes->first;
-	for (elt = candidateRoutes->first; elt != NULL; elt = elt->next)
-	{
-		temp = elt->next;
-		currentNeighborFirstRoute = (Route*) elt->data;
-		viaNeighbor = currentNeighborFirstRoute->neighbor;
-		while (temp != NULL)
-		{
-			currentRoute = (Route*) temp->data;
-			next = temp->next;
-			if (viaNeighbor == currentRoute->neighbor)
-			{
-				if (best_route_cost_function(currentRoute, elt->data) < 0)
-				{
-					elt->data = currentRoute;
-				}
+    elt = candidateRoutes->first;
+    for (elt = candidateRoutes->first; elt != NULL; elt = elt->next) {
+        temp = elt->next;
+        currentNeighborFirstRoute = (Route *)elt->data;
+        viaNeighbor = currentNeighborFirstRoute->neighbor;
+        while (temp != NULL) {
+            currentRoute = (Route *)temp->data;
+            next = temp->next;
+            if (viaNeighbor == currentRoute->neighbor) {
+                if (best_route_cost_function(currentRoute, elt->data) < 0) {
+                    elt->data = currentRoute;
+                }
 
-				list_remove_elt(temp);
-			}
+                list_remove_elt(temp);
+            }
 
-			temp = next;
-		}
-	}
+            temp = next;
+        }
+    }
 
-	temp_compare = candidateRoutes->compare;
-	candidateRoutes->compare = best_route_cost_function;
+    temp_compare = candidateRoutes->compare;
+    candidateRoutes->compare = best_route_cost_function;
 
-	sort_list(candidateRoutes);
-	candidateRoutes->compare = temp_compare;
+    sort_list(candidateRoutes);
+    candidateRoutes->compare = temp_compare;
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -235,34 +209,28 @@ static void getOneBestRoutePerNeighbor(List candidateRoutes)
  *  -------- | --------------- | -----------------------------------------------
  *  13/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void getBestRoute(List candidateRoutes)
-{
-	ListElt *elt, *next, *bestElt = NULL;
+static void getBestRoute(List candidateRoutes) {
+    ListElt *elt, *next, *bestElt = NULL;
 
-	elt = candidateRoutes->first;
+    elt = candidateRoutes->first;
 
-	while (elt != NULL)
-	{
-		next = elt->next;
+    while (elt != NULL) {
+        next = elt->next;
 
-		if (bestElt == NULL)
-		{
-			bestElt = elt;
-		}
-		else
-		{
-			if (best_route_cost_function(elt->data, bestElt->data) < 0)
-			{
-				bestElt->data = elt->data;
-			}
+        if (bestElt == NULL) {
+            bestElt = elt;
+        } else {
+            if (best_route_cost_function(elt->data, bestElt->data) < 0) {
+                bestElt->data = elt->data;
+            }
 
-			list_remove_elt(elt);
-		}
+            list_remove_elt(elt);
+        }
 
-		elt = next;
-	}
+        elt = next;
+    }
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -293,29 +261,25 @@ static void getBestRoute(List candidateRoutes)
  *  -------- | --------------- | -----------------------------------------------
  *  13/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void update_volumes(CgrBundle *bundle, List bestRoutes)
-{
-	ListElt *routeElt, *hopElt;
-	UniboContact *contact;
-	Route *route;
-	int i, priority = bundle->priority_level;
+static void update_volumes(CgrBundle *bundle, List bestRoutes) {
+    ListElt *routeElt, *hopElt;
+    UniboContact *contact;
+    Route *route;
+    int i, priority = bundle->priority_level;
 
-	for (routeElt = bestRoutes->first; routeElt != NULL; routeElt = routeElt->next)
-	{
-		route = (Route*) routeElt->data;
+    for (routeElt = bestRoutes->first; routeElt != NULL; routeElt = routeElt->next) {
+        route = (Route *)routeElt->data;
 
-		for (hopElt = route->hops->first; hopElt != NULL; hopElt = hopElt->next)
-		{
-			contact = (UniboContact*) hopElt->data;
+        for (hopElt = route->hops->first; hopElt != NULL; hopElt = hopElt->next) {
+            contact = (UniboContact *)hopElt->data;
 
-			for (i = 0; i <= priority; i++)
-			{
-				contact->mtv[i] -= (double) bundle->evc;
-			}
-		}
-	}
+            for (i = 0; i <= priority; i++) {
+                contact->mtv[i] -= (double)bundle->evc;
+            }
+        }
+    }
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -350,31 +314,26 @@ static void update_volumes(CgrBundle *bundle, List bestRoutes)
  *  -------- | --------------- | -----------------------------------------------
  *  13/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int chooseBestRoutes(CgrBundle *bundle, List candidateRoutes)
-{
-	int result = -1;
+int chooseBestRoutes(CgrBundle *bundle, List candidateRoutes) {
+    int result = -1;
 
-	debug_printf("Entry point phase three.");
+    debug_printf("Entry point phase three.");
 
-	if (candidateRoutes != NULL && bundle != NULL)
-	{
-		if (IS_CRITICAL(bundle))
-		{
-			getOneBestRoutePerNeighbor(candidateRoutes);
-		}
-		else
-		{
-			getBestRoute(candidateRoutes);
-		}
+    if (candidateRoutes != NULL && bundle != NULL) {
+        if (IS_CRITICAL(bundle)) {
+            getOneBestRoutePerNeighbor(candidateRoutes);
+        } else {
+            getBestRoute(candidateRoutes);
+        }
 
-		update_volumes(bundle, candidateRoutes);
+        update_volumes(bundle, candidateRoutes);
 
-		result = (int) candidateRoutes->length;
-	}
+        result = (int)candidateRoutes->length;
+    }
 
-	debug_printf("Best routes choosed: %d", result);
+    debug_printf("Best routes choosed: %d", result);
 
-	return result;
+    return result;
 }
 
 #if (LOG == 1)
@@ -407,24 +366,20 @@ int chooseBestRoutes(CgrBundle *bundle, List candidateRoutes)
  *  -------- | --------------- | -----------------------------------------------
  *  13/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static int print_phase_three_route(FILE *file, Route *route)
-{
-	int len = -1, result = -1;
-	char num[20];
+static int print_phase_three_route(FILE *file, Route *route) {
+    int len = -1, result = -1;
+    char num[20];
 
-	if (file != NULL && route != NULL)
-	{
-		result = 0;
-		num[0] = '\0';
-		len = sprintf(num, "%u)", route->num);
-		if (len >= 0)
-		{
-			fprintf(file, "%-15s %llu\n", num, route->neighbor);
-		}
+    if (file != NULL && route != NULL) {
+        result = 0;
+        num[0] = '\0';
+        len = sprintf(num, "%u)", route->num);
+        if (len >= 0) {
+            fprintf(file, "%-15s %llu\n", num, route->neighbor);
+        }
+    }
 
-	}
-
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -450,31 +405,24 @@ static int print_phase_three_route(FILE *file, Route *route)
  *  -------- | --------------- | -----------------------------------------------
  *  13/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void print_phase_three_routes(FILE *file, List bestRoutes)
-{
-	ListElt *elt;
+void print_phase_three_routes(FILE *file, List bestRoutes) {
+    ListElt *elt;
 
-	if (file != NULL)
-	{
-		fprintf(file, "\n------------ PHASE THREE: BEST ROUTES ------------\n");
+    if (file != NULL) {
+        fprintf(file, "\n------------ PHASE THREE: BEST ROUTES ------------\n");
 
-		if (bestRoutes != NULL && bestRoutes->length > 0)
-		{
-			fprintf(file, "\n%-15s %s\n", "Route n.", "Neighbor");
-			for (elt = bestRoutes->first; elt != NULL; elt = elt->next)
-			{
-				print_phase_three_route(file, (Route*) elt->data);
-			}
-		}
-		else
-		{
-			fprintf(file, "\n0 best routes.\n");
-		}
-		fprintf(file, "\n--------------------------------------------------\n");
+        if (bestRoutes != NULL && bestRoutes->length > 0) {
+            fprintf(file, "\n%-15s %s\n", "Route n.", "Neighbor");
+            for (elt = bestRoutes->first; elt != NULL; elt = elt->next) {
+                print_phase_three_route(file, (Route *)elt->data);
+            }
+        } else {
+            fprintf(file, "\n0 best routes.\n");
+        }
+        fprintf(file, "\n--------------------------------------------------\n");
 
-		debug_fflush(file);
-	}
+        debug_fflush(file);
+    }
 }
 
 #endif
-

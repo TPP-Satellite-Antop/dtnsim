@@ -34,9 +34,9 @@
 
 #include <sys/time.h>
 
+#include "../../library/list/list_type.h"
 #include "src/node/dtn/routing/unibocgr/core/library/commonDefines.h"
 #include "src/node/dtn/routing/unibocgr/core/library_from_ion/rbt/rbt_type.h"
-#include "../../library/list/list_type.h"
 #include <vector>
 
 #ifndef REVISABLE_CONFIDENCE
@@ -67,146 +67,137 @@
 #define COPY_MTV 1
 #define DO_NOT_COPY_MTV 0
 
-
-
 typedef struct cgrContactNote ContactNote;
 
-typedef enum
-{
-	TypeRegistration = 1,
-	TypeScheduled,
-	TypeSuppressed,
-	TypePredicted,
-	TypeHypothetical,
-	TypeDiscovered
+typedef enum {
+    TypeRegistration = 1,
+    TypeScheduled,
+    TypeSuppressed,
+    TypePredicted,
+    TypeHypothetical,
+    TypeDiscovered
 } CtType;
 
-
 using namespace std;
-typedef struct
-{
+typedef struct {
     /**
      * \brief Common region of both sender and receiver
      */
-     unsigned long regionNbr;
-	/**
-	 * \brief Sender node (ipn node number)
-	 */
-	unsigned long long fromNode;
-	/**
-	 * \brief Receiver node (ipn node number)
-	 */
-	unsigned long long toNode;
-	/**
-	 * \brief Start transit time
-	 */
-	time_t fromTime;
-	/**
-	 * \brief Stop transmit time
-	 */
-	time_t toTime;
-	/**
-	 * \brief In bytes per second
-	 */
-	long unsigned int xmitRate;
-	/**
-	 * Chance that this contact will fail
-	 */
-	double pf;
-	/**
-	 * Indicator whether this contact consists of several hops
-	 */
-	bool multiHop;
-	/**
-	 * \brief Confidence that the contact will materialize
-	 */
-	float confidence;
-	/**
-	 * \brief Registration or Scheduled
-	 */
-	CtType type;
-	/**
-	 * \brief Remaining volume (for each level of priority)
-	 */
-	double mtv[3];
-	/**
-	 * \brief Used by Dijkstra's search
-	 */
-	ContactNote *routingObject;
-	/**
-	 * \brief List of ListElt data.
-	 *
-	 * \details Each citation is a pointer to the element
-	 * of the hops list of the Route where the contact appears,
-	 * and this element of the hops list points to this contact.
-	 */
-	List citations;
+    unsigned long regionNbr;
+    /**
+     * \brief Sender node (ipn node number)
+     */
+    unsigned long long fromNode;
+    /**
+     * \brief Receiver node (ipn node number)
+     */
+    unsigned long long toNode;
+    /**
+     * \brief Start transit time
+     */
+    time_t fromTime;
+    /**
+     * \brief Stop transmit time
+     */
+    time_t toTime;
+    /**
+     * \brief In bytes per second
+     */
+    long unsigned int xmitRate;
+    /**
+     * Chance that this contact will fail
+     */
+    double pf;
+    /**
+     * Indicator whether this contact consists of several hops
+     */
+    bool multiHop;
+    /**
+     * \brief Confidence that the contact will materialize
+     */
+    float confidence;
+    /**
+     * \brief Registration or Scheduled
+     */
+    CtType type;
+    /**
+     * \brief Remaining volume (for each level of priority)
+     */
+    double mtv[3];
+    /**
+     * \brief Used by Dijkstra's search
+     */
+    ContactNote *routingObject;
+    /**
+     * \brief List of ListElt data.
+     *
+     * \details Each citation is a pointer to the element
+     * of the hops list of the Route where the contact appears,
+     * and this element of the hops list points to this contact.
+     */
+    List citations;
 } UniboContact;
 
-
-
-
-
-struct cgrContactNote
-{
-	/**
-	 * \brief Previous contact in the route, used to reconstruct the route at the end of
-	 * the Dijkstra's search
-	 */
-	UniboContact *predecessor;
-	/**
-	 * \brief Best case arrival time to the toNode of the contact
-	 */
-	time_t arrivalTime;
-	/**
-	 * \brief Boolean used to identify each contact that belongs to the visited set
-	 *
-	 * \details Values
-	 *          -  1  Contact already visited
-	 *          -  0  Contact not visited
-	 */
-	int visited;
-	/**
-	 * \brief Flag used to identify each contact that belongs to the excluded set
-	 */
-	int suppressed;
-	/**
-	 * \brief Ranges sum to reach the toNode
-	 */
-	unsigned int owltSum;
-	/**
-	 * \brief Number of hops to reach this contact during Dijkstra's search.
-	 */
-	unsigned int hopCount;
-	/**
-	 * \brief Product of the confidence of each contacts in the path to
-	 * reach this contact and of the contact's confidence itself
-	 */
-	float arrivalConfidence;
-	/**
-	 *  Probability of succesfully reaching this contact
-	 */
-	double successProbability;
-	/**
-	 * \brief Flag to known if we already get the range for this contact during the Dijkstra's search.
-	 *
-	 * \details Values:
-	 *          -  1  Range found at contact's start time
-	 *          -  0  Range has yet to be searched
-	 *          - -1  Range not found at the contact's start time
-	 *
-	 * \par Notes:
-	 *          1.  Phase one always looks for the range at contact's start time.
-	 */
-	int rangeFlag;
-	/**
-	 * \brief The owlt of the range found.
-	 */
-	unsigned int owlt;
-	/**
-	 * \brief
-	 */
-	UniboContact *nextContactInDijkstraQueue;
+struct cgrContactNote {
+    /**
+     * \brief Previous contact in the route, used to reconstruct the route at the end of
+     * the Dijkstra's search
+     */
+    UniboContact *predecessor;
+    /**
+     * \brief Best case arrival time to the toNode of the contact
+     */
+    time_t arrivalTime;
+    /**
+     * \brief Boolean used to identify each contact that belongs to the visited set
+     *
+     * \details Values
+     *          -  1  Contact already visited
+     *          -  0  Contact not visited
+     */
+    int visited;
+    /**
+     * \brief Flag used to identify each contact that belongs to the excluded set
+     */
+    int suppressed;
+    /**
+     * \brief Ranges sum to reach the toNode
+     */
+    unsigned int owltSum;
+    /**
+     * \brief Number of hops to reach this contact during Dijkstra's search.
+     */
+    unsigned int hopCount;
+    /**
+     * \brief Product of the confidence of each contacts in the path to
+     * reach this contact and of the contact's confidence itself
+     */
+    float arrivalConfidence;
+    /**
+     *  Probability of succesfully reaching this contact
+     */
+    double successProbability;
+    /**
+     * \brief Flag to known if we already get the range for this contact during the Dijkstra's
+     * search.
+     *
+     * \details Values:
+     *          -  1  Range found at contact's start time
+     *          -  0  Range has yet to be searched
+     *          - -1  Range not found at the contact's start time
+     *
+     * \par Notes:
+     *          1.  Phase one always looks for the range at contact's start time.
+     */
+    int rangeFlag;
+    /**
+     * \brief The owlt of the range found.
+     */
+    unsigned int owlt;
+    /**
+     * \brief
+     */
+    UniboContact *nextContactInDijkstraQueue;
 };
 
 /**
@@ -214,26 +205,27 @@ struct cgrContactNote
  *        the contact graph library.
  */
 typedef struct {
-	/**
-	 * \brief The contact graph.
-	 */
-	Rbt *contacts;
-	/**
-	 * \brief The time of the next contact that expires.
-	 */
-	time_t timeContactToRemove;
+    /**
+     * \brief The contact graph.
+     */
+    Rbt *contacts;
+    /**
+     * \brief The time of the next contact that expires.
+     */
+    time_t timeContactToRemove;
 
-} ContactGraphSAP; //was in contacts.c(c)
+} ContactGraphSAP; // was in contacts.c(c)
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 extern int compare_contacts(void *first, void *second);
-extern UniboContact* create_contact(unsigned long regionNbr, unsigned long long fromNode, unsigned long long toNode,
-		time_t fromTime, time_t toTime, long unsigned int xmitRate, float confidence, CtType type, double pf, bool multiHop);
-extern void free_contact(void*);
+extern UniboContact *create_contact(unsigned long regionNbr, unsigned long long fromNode,
+                                    unsigned long long toNode, time_t fromTime, time_t toTime,
+                                    long unsigned int xmitRate, float confidence, CtType type,
+                                    double pf, bool multiHop);
+extern void free_contact(void *);
 
 ContactGraphSAP *get_contact_graph_sap(ContactGraphSAP *newSap);
 
@@ -242,41 +234,58 @@ extern void destroy_ContactsGraph();
 extern void reset_ContactsGraph();
 
 extern void removeExpiredContacts(time_t time);
-extern void remove_contact_from_graph(unsigned long regionNbr, time_t *fromTime, unsigned long long fromNode,
-		unsigned long long toNode);
+extern void remove_contact_from_graph(unsigned long regionNbr, time_t *fromTime,
+                                      unsigned long long fromNode, unsigned long long toNode);
 extern void remove_contact_elt_from_graph(UniboContact *elt);
-int add_contact_to_graph(unsigned long regionNbr, unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
-		time_t toTime, long unsigned int xmitRate, float confidence, int copyMTV, double mtv[], double pf, bool multiHop);
+int add_contact_to_graph(unsigned long regionNbr, unsigned long long fromNode,
+                         unsigned long long toNode, time_t fromTime, time_t toTime,
+                         long unsigned int xmitRate, float confidence, int copyMTV, double mtv[],
+                         double pf, bool multiHop);
 extern void discardAllRoutesFromContactsGraph();
 
-extern UniboContact* get_contact(unsigned long regionNbr, unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
-		RbtNode **node);
-extern UniboContact* get_first_contact(RbtNode **node);
-extern UniboContact* get_first_contact_from_node(unsigned long regionNbr, unsigned long long fromNodeNbr, RbtNode **node);
-extern UniboContact* get_first_contact_from_node_to_node(unsigned long regionNbr, unsigned long long fromNodeNbr,
-		unsigned long long toNodeNbr, RbtNode **node);
-extern UniboContact* get_next_contact(RbtNode **node);
-extern UniboContact* get_prev_contact(RbtNode **node);
-extern UniboContact * get_contact_with_time_tolerance(unsigned long regionNbr, unsigned long long fromNode, unsigned long long toNode, time_t fromTime, unsigned int tolerance);
+extern UniboContact *get_contact(unsigned long regionNbr, unsigned long long fromNode,
+                                 unsigned long long toNode, time_t fromTime, RbtNode **node);
+extern UniboContact *get_first_contact(RbtNode **node);
+extern UniboContact *get_first_contact_from_node(unsigned long regionNbr,
+                                                 unsigned long long fromNodeNbr, RbtNode **node);
+extern UniboContact *get_first_contact_from_node_to_node(unsigned long regionNbr,
+                                                         unsigned long long fromNodeNbr,
+                                                         unsigned long long toNodeNbr,
+                                                         RbtNode **node);
+extern UniboContact *get_next_contact(RbtNode **node);
+extern UniboContact *get_prev_contact(RbtNode **node);
+extern UniboContact *get_contact_with_time_tolerance(unsigned long regionNbr,
+                                                     unsigned long long fromNode,
+                                                     unsigned long long toNode, time_t fromTime,
+                                                     unsigned int tolerance);
 
 #if REVISABLE_CONFIDENCE
-extern int revise_confidence(unsigned long regionNbr, unsigned long long fromNode, unsigned long long toNode, time_t fromTime, float newConfidence);
+extern int revise_confidence(unsigned long regionNbr, unsigned long long fromNode,
+                             unsigned long long toNode, time_t fromTime, float newConfidence);
 #endif
 #if REVISABLE_XMIT_RATE
-extern int revise_xmit_rate(unsigned long regionNbr, unsigned long long fromNode, unsigned long long toNode, time_t fromTime, unsigned long int xmitRate, int copyMTV, double mtv[]);
+extern int revise_xmit_rate(unsigned long regionNbr, unsigned long long fromNode,
+                            unsigned long long toNode, time_t fromTime, unsigned long int xmitRate,
+                            int copyMTV, double mtv[]);
 #endif
 #if REVISABLE_CONTACT
-extern int revise_contact(unsigned long regionNbr, unsigned long long fromNode, unsigned long long toNode, time_t fromTime, float newConfidence, unsigned long int xmitRate, int copyMTV, double mtv[]);
+extern int revise_contact(unsigned long regionNbr, unsigned long long fromNode,
+                          unsigned long long toNode, time_t fromTime, float newConfidence,
+                          unsigned long int xmitRate, int copyMTV, double mtv[]);
 #endif
 
-extern int refill_mtv(unsigned long regionNbr, unsigned long long fromNode, unsigned long long toNode, time_t fromTime, unsigned int tolerance, unsigned int refillSize, int priority);
+extern int refill_mtv(unsigned long regionNbr, unsigned long long fromNode,
+                      unsigned long long toNode, time_t fromTime, unsigned int tolerance,
+                      unsigned int refillSize, int priority);
 
 extern List get_known_regions();
 
 #if (LOG == 1)
 extern int printContactsGraph(FILE *file, time_t currentTime);
 #else
-#define printContactsGraph(file, currentTime) do {  } while(0)
+#define printContactsGraph(file, currentTime)                                                      \
+    do {                                                                                           \
+    } while (0)
 #endif
 
 #ifdef __cplusplus

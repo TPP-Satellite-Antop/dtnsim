@@ -33,11 +33,12 @@
 
 #include "src/node/dtn/routing/unibocgr/core/cgr/cgr.h"
 
-#include <stdlib.h>
 #include "../contact_plan/nodes/nodes.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/time.h>
 
+#include "../routes/routes.h"
 #include "src/node/dtn/routing/unibocgr/core/cgr/cgr_phases.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/contactPlan.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/contacts/contacts.h"
@@ -45,11 +46,6 @@
 #include "src/node/dtn/routing/unibocgr/core/library/list/list.h"
 #include "src/node/dtn/routing/unibocgr/core/msr/msr.h"
 #include "src/node/dtn/routing/unibocgr/core/time_analysis/time.h"
-#include "../routes/routes.h"
-
-
-
-
 
 #if (LOG == 1)
 
@@ -76,29 +72,22 @@
  *  -------- | --------------- | -----------------------------------------------
  *  15/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void print_result_cgr(int result, List bestRoutes)
-{
-	ListElt *elt;
-	Route *route;
+static void print_result_cgr(int result, List bestRoutes) {
+    ListElt *elt;
+    Route *route;
 
-	if (result >= 0)
-	{
-		writeLog("Best routes found: %d.", result);
+    if (result >= 0) {
+        writeLog("Best routes found: %d.", result);
 
-		if (bestRoutes != NULL)
-		{
-			for (elt = bestRoutes->first; elt != NULL; elt = elt->next)
-			{
-				route = (Route*) elt->data;
-				writeLog("Used route to neighbor %llu.", route->neighbor);
-			}
-		}
-	}
-	else if (result == -1)
-	{
-		writeLog("0 routes found to the destination.");
-	}
-
+        if (bestRoutes != NULL) {
+            for (elt = bestRoutes->first; elt != NULL; elt = elt->next) {
+                route = (Route *)elt->data;
+                writeLog("Used route to neighbor %llu.", route->neighbor);
+            }
+        }
+    } else if (result == -1) {
+        writeLog("0 routes found to the destination.");
+    }
 }
 
 /******************************************************************************
@@ -121,81 +110,83 @@ static void print_result_cgr(int result, List bestRoutes)
  *  -------- | --------------- | -----------------------------------------------
  *  02/04/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void print_cgr_settings()
-{
-	writeLog("Unibo-CGR Version %.1f.", UNIBO_CGR_VERSION);
+static void print_cgr_settings() {
+    writeLog("Unibo-CGR Version %.1f.", UNIBO_CGR_VERSION);
 
 #if (CGR_AVOID_LOOP == 0)
-	writeLog("Anti-loop mechanism disabled.");
+    writeLog("Anti-loop mechanism disabled.");
 #elif (CGR_AVOID_LOOP == 1)
-	writeLog("Anti-loop mechanism enabled (only reactive version).");
-#elif(CGR_AVOID_LOOP == 2)
-	writeLog("Anti-loop mechanism enabled (only proactive version).");
-#elif(CGR_AVOID_LOOP == 3)
-	writeLog("Anti-loop mechanism enabled (proactive and reactive version).");
+    writeLog("Anti-loop mechanism enabled (only reactive version).");
+#elif (CGR_AVOID_LOOP == 2)
+    writeLog("Anti-loop mechanism enabled (only proactive version).");
+#elif (CGR_AVOID_LOOP == 3)
+    writeLog("Anti-loop mechanism enabled (proactive and reactive version).");
 #else
-	writeLog("CGR_AVOID_LOOP: Unknown macro value.");
+    writeLog("CGR_AVOID_LOOP: Unknown macro value.");
 #endif
 
 #if (MAX_DIJKSTRA_ROUTES == 0)
-	writeLog("One route per neighbor enabled (without limits).");
+    writeLog("One route per neighbor enabled (without limits).");
 #elif (MAX_DIJKSTRA_ROUTES == 1)
-	writeLog("One route per neighbor disabled.");
+    writeLog("One route per neighbor disabled.");
 #elif (MAX_DIJKSTRA_ROUTES > 1)
-	writeLog("One route per neighbor enabled (at most %d neighbors).", MAX_DIJKSTRA_ROUTES);
+    writeLog("One route per neighbor enabled (at most %d neighbors).", MAX_DIJKSTRA_ROUTES);
 #else
-	writeLog("MAX_DIJKSTRA_ROUTES: Unknown macro value.");
+    writeLog("MAX_DIJKSTRA_ROUTES: Unknown macro value.");
 #endif
 
 #if (QUEUE_DELAY == 0)
-	writeLog("ETO only on the first hop.");
+    writeLog("ETO only on the first hop.");
 #elif (QUEUE_DELAY == 1)
-	writeLog("ETO on all hops.");
+    writeLog("ETO on all hops.");
 #else
-	writeLog("QUEUE_DELAY: Unknown macro value.");
+    writeLog("QUEUE_DELAY: Unknown macro value.");
 #endif
 
 #if (NEGLECT_CONFIDENCE == 1)
-	writeLog("Neglect confidence.");
+    writeLog("Neglect confidence.");
 #elif (NEGLECT_CONFIDENCE != 0)
-	writeLog("NEGLECT_CONFIDENCE: Unknown macro value.");
+    writeLog("NEGLECT_CONFIDENCE: Unknown macro value.");
 #endif
 
 #if (ADD_COMPUTED_ROUTE_TO_INTERMEDIATE_NODES == 1)
-	writeLog("Add computed route to intermediate nodes enabled.");
+    writeLog("Add computed route to intermediate nodes enabled.");
 #endif
 
 #if (CCSDS_SABR_DEFAULTS == 1)
-	writeLog("CCSDS SABR standard algorithm enabled.");
+    writeLog("CCSDS SABR standard algorithm enabled.");
 #endif
 
 #if (UNIBO_CGR_SUGGESTED_SETTINGS == 1)
-	writeLog("Unibo-CGR suggested settings enabled.");
+    writeLog("Unibo-CGR suggested settings enabled.");
 #endif
 
 #if (CGR_ION_3_7_0 == 1)
-	writeLog("ION-3.7.0 CGR implementation settings enabled.");
+    writeLog("ION-3.7.0 CGR implementation settings enabled.");
 #endif
 
 #if (MSR == 1)
-	writeLog("Moderate Source Routing enabled.");
-	writeLog("MSR time tolerance: %d s.", MSR_TIME_TOLERANCE);
+    writeLog("Moderate Source Routing enabled.");
+    writeLog("MSR time tolerance: %d s.", MSR_TIME_TOLERANCE);
 #if (WISE_NODE == 0)
-	writeLog("MSR hops lower bound: %d.", MSR_HOPS_LOWER_BOUND);
+    writeLog("MSR hops lower bound: %d.", MSR_HOPS_LOWER_BOUND);
 #endif
 
 #endif
 
-	log_fflush();
+    log_fflush();
 
-	return;
+    return;
 }
 
 #else
-#define print_result_cgr(result, bestRoutes) do { } while(0)
-#define print_cgr_settings() do { } while(0)
+#define print_result_cgr(result, bestRoutes)                                                       \
+    do {                                                                                           \
+    } while (0)
+#define print_cgr_settings()                                                                       \
+    do {                                                                                           \
+    } while (0)
 #endif
-
 
 /******************************************************************************
  *
@@ -214,7 +205,8 @@ static void print_cgr_settings()
  * \retval  UniboCgrCurrentCallSAP*  The struct with some data used during the current call
  *
  * \param[in]   *newSap      If you just want a reference to the SAP set NULL here;
- *                           otherwise set a new UniboCgrCurrentCallSAP (the previous one will be overwritten).
+ *                           otherwise set a new UniboCgrCurrentCallSAP (the previous one will be
+ *overwritten).
  *
  *
  * \par Revision History:
@@ -223,16 +215,15 @@ static void print_cgr_settings()
  *  -------- | --------------- | -----------------------------------------------
  *  02/07/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-UniboCgrCurrentCallSAP *get_current_call_sap(UniboCgrCurrentCallSAP *newSap) { //was static
-	static UniboCgrCurrentCallSAP sap;
+UniboCgrCurrentCallSAP *get_current_call_sap(UniboCgrCurrentCallSAP *newSap) { // was static
+    static UniboCgrCurrentCallSAP sap;
 
-	if(newSap != NULL) {
-		sap = *newSap;
-	}
+    if (newSap != NULL) {
+        sap = *newSap;
+    }
 
-	return &sap;
+    return &sap;
 }
-
 
 /******************************************************************************
  *
@@ -251,7 +242,8 @@ UniboCgrCurrentCallSAP *get_current_call_sap(UniboCgrCurrentCallSAP *newSap) { /
  * \retval  UniboCgrCurrentCallSAP*  The struct with some data used during the current call
  *
  * \param[in]   *newSap      If you just want a reference to the SAP set NULL here;
- *                           otherwise set a new UniboCgrCurrentCallSAP (the previous one will be overwritten).
+ *                           otherwise set a new UniboCgrCurrentCallSAP (the previous one will be
+ *overwritten).
  *
  *
  * \par Revision History:
@@ -261,13 +253,13 @@ UniboCgrCurrentCallSAP *get_current_call_sap(UniboCgrCurrentCallSAP *newSap) { /
  *  02/07/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 UniboCgrSAP get_unibo_cgr_sap(UniboCgrSAP *newSap) {
-	static UniboCgrSAP sap;
+    static UniboCgrSAP sap;
 
-	if(newSap != NULL) {
-		sap = *newSap;
-	}
+    if (newSap != NULL) {
+        sap = *newSap;
+    }
 
-	return sap;
+    return sap;
 }
 
 /******************************************************************************
@@ -293,11 +285,10 @@ UniboCgrSAP get_unibo_cgr_sap(UniboCgrSAP *newSap) {
  *  02/07/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 unsigned long long get_local_node() {
-	UniboCgrSAP sap = get_unibo_cgr_sap(NULL);
+    UniboCgrSAP sap = get_unibo_cgr_sap(NULL);
 
-	return sap.localNode;
+    return sap.localNode;
 }
-
 
 /******************************************************************************
  *
@@ -320,10 +311,9 @@ unsigned long long get_local_node() {
  *  02/07/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 time_t get_current_time() {
-	UniboCgrCurrentCallSAP *sap = get_current_call_sap(NULL);
-	return sap->current_time;
+    UniboCgrCurrentCallSAP *sap = get_current_call_sap(NULL);
+    return sap->current_time;
 }
-
 
 /******************************************************************************
  *
@@ -348,34 +338,30 @@ time_t get_current_time() {
  *  01/08/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 long unsigned int get_computed_routes_number(unsigned long long destination) {
-	UniboCgrCurrentCallSAP *sap = get_current_call_sap(NULL);
-	Node *destinationNode = NULL;
-	long unsigned int result = 0;
+    UniboCgrCurrentCallSAP *sap = get_current_call_sap(NULL);
+    Node *destinationNode = NULL;
+    long unsigned int result = 0;
 
-	if(sap->destinationNode != NULL)
-	{
-		if(sap->destinationNode->nodeNbr == destination)
-		{
-			destinationNode = sap->destinationNode;
-		}
-	}
+    if (sap->destinationNode != NULL) {
+        if (sap->destinationNode->nodeNbr == destination) {
+            destinationNode = sap->destinationNode;
+        }
+    }
 
-	if(destinationNode == NULL)
-	{
-		destinationNode = get_node(destination);
-	}
+    if (destinationNode == NULL) {
+        destinationNode = get_node(destination);
+    }
 
-	if(destinationNode != NULL) {
-		if(destinationNode->routingObject != NULL &&
-				destinationNode->routingObject->selectedRoutes != NULL &&
-				destinationNode->routingObject->knownRoutes != NULL)
-		{
-			result = destinationNode->routingObject->selectedRoutes->length + destinationNode->routingObject->knownRoutes->length;
-		}
-	}
+    if (destinationNode != NULL) {
+        if (destinationNode->routingObject != NULL &&
+            destinationNode->routingObject->selectedRoutes != NULL &&
+            destinationNode->routingObject->knownRoutes != NULL) {
+            result = destinationNode->routingObject->selectedRoutes->length +
+                     destinationNode->routingObject->knownRoutes->length;
+        }
+    }
 
-	return result;
-
+    return result;
 }
 
 #if (LOG)
@@ -401,9 +387,9 @@ long unsigned int get_computed_routes_number(unsigned long long destination) {
  *  -------- | --------------- | -----------------------------------------------
  *  02/07/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static FILE * get_file_call() {
-	UniboCgrCurrentCallSAP *sap = get_current_call_sap(NULL);
-	return sap->file_call;
+static FILE *get_file_call() {
+    UniboCgrCurrentCallSAP *sap = get_current_call_sap(NULL);
+    return sap->file_call;
 }
 
 #endif
@@ -432,8 +418,8 @@ static FILE * get_file_call() {
  *  15/09/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 RoutingAlgorithm get_last_call_routing_algorithm() {
-	UniboCgrCurrentCallSAP *sap = get_current_call_sap(NULL);
-	return sap->algorithm;
+    UniboCgrCurrentCallSAP *sap = get_current_call_sap(NULL);
+    return sap->algorithm;
 }
 
 /******************************************************************************
@@ -468,83 +454,65 @@ RoutingAlgorithm get_last_call_routing_algorithm() {
  *  -------- | --------------- | -----------------------------------------------
  *  15/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int initialize_cgr(time_t time, unsigned long long ownNode, bool newNode)
-{
+int initialize_cgr(time_t time, unsigned long long ownNode, bool newNode) {
 
-	int result = -1;
+    int result = -1;
 
-	UniboCgrSAP sap = get_unibo_cgr_sap(NULL);
-	UniboCgrCurrentCallSAP *currentCallSap = get_current_call_sap(NULL);
+    UniboCgrSAP sap = get_unibo_cgr_sap(NULL);
+    UniboCgrCurrentCallSAP *currentCallSap = get_current_call_sap(NULL);
 
+    if (ownNode > 0) {
 
-
-	if (ownNode > 0)
-	{
-
-		currentCallSap->current_time = time;
-		currentCallSap->file_call = NULL;
-		currentCallSap->destinationNode = NULL;
-		currentCallSap->algorithm = unknown_algorithm;
+        currentCallSap->current_time = time;
+        currentCallSap->file_call = NULL;
+        currentCallSap->destinationNode = NULL;
+        currentCallSap->algorithm = unknown_algorithm;
 #if (LOG == 1)
-		result = createLogDir();
-		if (result >= 0)
-		{
-			result = openLogFile();
-			if (result == 1)
-			{
-				setLogTime(time);
+        result = createLogDir();
+        if (result >= 0) {
+            result = openLogFile();
+            if (result == 1) {
+                setLogTime(time);
 #endif
-				if (initialize_contact_plan(newNode) == 1)
-				{
-					if (initialize_phase_one(ownNode) == 1)
-					{
-						sap.localNode = ownNode;
-						sap.cgrEditTime.tv_sec = -1;
-						sap.cgrEditTime.tv_usec = -1;
-						sap.count_bundles = 1;
-						result = initialize_phase_two();
+                if (initialize_contact_plan(newNode) == 1) {
+                    if (initialize_phase_one(ownNode) == 1) {
+                        sap.localNode = ownNode;
+                        sap.cgrEditTime.tv_sec = -1;
+                        sap.cgrEditTime.tv_usec = -1;
+                        sap.count_bundles = 1;
+                        result = initialize_phase_two();
 
-						print_cgr_settings();
-						writeLog("Own node: %llu.", ownNode);
+                        print_cgr_settings();
+                        writeLog("Own node: %llu.", ownNode);
 
-						get_unibo_cgr_sap(&sap); // save
+                        get_unibo_cgr_sap(&sap); // save
 
 #if (MSR == 1)
-						if(initialize_msr() != 1)
-						{
-							result = -2;
-						}
+                        if (initialize_msr() != 1) {
+                            result = -2;
+                        }
 #endif
-					}
-					else
-					{
-						result = -2;
-					}
-				}
-				else
-				{
-					result = -2;
-				}
+                    } else {
+                        result = -2;
+                    }
+                } else {
+                    result = -2;
+                }
 #if (LOG == 1)
-				if (cleanLogDir() < 0)
-				{
-					currentCallSap->file_call = NULL;
-				}
-			}
-			else
-			{
-				result = -4;
-			}
-		}
-		else
-		{
-			result = -3;
-		}
+                if (cleanLogDir() < 0) {
+                    currentCallSap->file_call = NULL;
+                }
+            } else {
+                result = -4;
+            }
+        } else {
+            result = -3;
+        }
 #endif
 
-		initialize_time_analysis();
-	}
-	return result;
+        initialize_time_analysis();
+    }
+    return result;
 }
 
 /******************************************************************************
@@ -572,11 +540,10 @@ int initialize_cgr(time_t time, unsigned long long ownNode, bool newNode)
  *  -------- | --------------- | -----------------------------------------------
  *  15/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void discardAllRoutes()
-{
-//	discardAllRoutesFromContactsGraph();
-//	discardAllRoutesFromNodesTree();
-	reset_NodesTree();
+static void discardAllRoutes() {
+    //	discardAllRoutesFromContactsGraph();
+    //	discardAllRoutesFromNodesTree();
+    reset_NodesTree();
 }
 
 /******************************************************************************
@@ -603,39 +570,37 @@ static void discardAllRoutes()
  *  -------- | --------------- | -----------------------------------------------
  *  15/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void destroy_cgr(time_t time)
-{
-	UniboCgrSAP sap = get_unibo_cgr_sap(NULL);
-	UniboCgrCurrentCallSAP *currentCallSap = get_current_call_sap(NULL);
+void destroy_cgr(time_t time) {
+    UniboCgrSAP sap = get_unibo_cgr_sap(NULL);
+    UniboCgrCurrentCallSAP *currentCallSap = get_current_call_sap(NULL);
 
-	currentCallSap->algorithm = unknown_algorithm;
-	currentCallSap->current_time = time;
-	setLogTime(currentCallSap->current_time);
-	destroy_contact_plan();
-	destroy_phase_one();
-	destroy_phase_two();
+    currentCallSap->algorithm = unknown_algorithm;
+    currentCallSap->current_time = time;
+    setLogTime(currentCallSap->current_time);
+    destroy_contact_plan();
+    destroy_phase_one();
+    destroy_phase_two();
 
 #if (MSR == 1)
-	destroy_msr();
+    destroy_msr();
 #endif
 
-	writeLog("Shutdown.");
-	closeLogFile();
+    writeLog("Shutdown.");
+    closeLogFile();
 
-	// reset to initial values all data
+    // reset to initial values all data
 
-	currentCallSap->file_call = NULL;
-	sap.localNode = 0;
-	sap.count_bundles = 1;
+    currentCallSap->file_call = NULL;
+    sap.localNode = 0;
+    sap.count_bundles = 1;
 
-	sap.cgrEditTime.tv_sec = -1;
-	sap.cgrEditTime.tv_usec = -1;
-	currentCallSap->current_time = MAX_POSIX_TIME;
+    sap.cgrEditTime.tv_sec = -1;
+    sap.cgrEditTime.tv_usec = -1;
+    currentCallSap->current_time = MAX_POSIX_TIME;
 
-	get_unibo_cgr_sap(&sap); // save
+    get_unibo_cgr_sap(&sap); // save
 
-	destroy_time_analysis();
-
+    destroy_time_analysis();
 }
 
 /******************************************************************************
@@ -663,51 +628,41 @@ void destroy_cgr(time_t time)
  *  -------- | --------------- | -----------------------------------------------
  *  30/04/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void parse_excluded_nodes(List excludedNodes)
-{
-	ListElt *main_elt, *next_main;
-	ListElt *current_elt, *next_current;
-	unsigned long long *main_node;
-	unsigned long long *current_node;
+static void parse_excluded_nodes(List excludedNodes) {
+    ListElt *main_elt, *next_main;
+    ListElt *current_elt, *next_current;
+    unsigned long long *main_node;
+    unsigned long long *current_node;
 
+    main_elt = excludedNodes->first;
+    while (main_elt != NULL) {
+        next_main = main_elt->next;
+        if (main_elt->data != NULL) {
+            main_node = (unsigned long long *)main_elt->data;
 
-	main_elt = excludedNodes->first;
-	while(main_elt != NULL)
-	{
-		next_main = main_elt->next;
-		if(main_elt->data != NULL)
-		{
-			main_node = (unsigned long long *) main_elt->data;
+            current_elt = main_elt->next;
 
-			current_elt = main_elt->next;
+            while (current_elt != NULL) {
+                next_current = current_elt->next;
 
-			while (current_elt != NULL)
-			{
-				next_current = current_elt->next;
+                if (current_elt->data != NULL) {
+                    current_node = (unsigned long long *)current_elt->data;
 
-				if (current_elt->data != NULL)
-				{
-					current_node = (unsigned long long*) current_elt->data;
+                    if (*current_node == *main_node) {
+                        list_remove_elt(current_elt);
+                    }
+                }
 
-					if (*current_node == *main_node)
-					{
-						list_remove_elt(current_elt);
-					}
+                current_elt = next_current;
+            }
+        } else {
+            list_remove_elt(main_elt);
+        }
 
-				}
+        main_elt = next_main;
+    }
 
-				current_elt = next_current;
-			}
-		}
-		else
-		{
-			list_remove_elt(main_elt);
-		}
-
-		main_elt = next_main;
-	}
-
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -734,11 +689,11 @@ static void parse_excluded_nodes(List excludedNodes)
  *  -------- | --------------- | -----------------------------------------------
  *  15/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void reset_cgr() //was static
+void reset_cgr() // was static
 {
-	reset_phase_one();
-	reset_phase_two();
-	reset_neighbors_temporary_fields();
+    reset_phase_one();
+    reset_phase_two();
+    reset_neighbors_temporary_fields();
 }
 
 /******************************************************************************
@@ -764,25 +719,21 @@ void reset_cgr() //was static
  *  -------- | --------------- | -----------------------------------------------
  *  15/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void clear_rtg_object(RtgObject *rtgObj)
-{
-	ListElt *elt;
-	Route *route;
+static void clear_rtg_object(RtgObject *rtgObj) {
+    ListElt *elt;
+    Route *route;
 
-	if (rtgObj != NULL)
-	{
-		for (elt = rtgObj->selectedRoutes->first; elt != NULL; elt = elt->next)
-		{
-			route = (Route*) elt->data;
-			route->checkValue = 0;
+    if (rtgObj != NULL) {
+        for (elt = rtgObj->selectedRoutes->first; elt != NULL; elt = elt->next) {
+            route = (Route *)elt->data;
+            route->checkValue = 0;
 #if (LOG == 1)
-			route->num = 0;
+            route->num = 0;
 #endif
-		}
+        }
+    }
 
-	}
-
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -809,24 +760,21 @@ static void clear_rtg_object(RtgObject *rtgObj)
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int is_initialized_terminus_node(Node *terminusNode)
-{
-	int result = 0;
-	RtgObject *rtgObj;
-	if (terminusNode != NULL)
-	{
-		rtgObj = terminusNode->routingObject;
+static int is_initialized_terminus_node(Node *terminusNode) {
+    int result = 0;
+    RtgObject *rtgObj;
+    if (terminusNode != NULL) {
+        rtgObj = terminusNode->routingObject;
 
-		if (rtgObj != NULL)
-		{
-			if (rtgObj->knownRoutes != NULL && rtgObj->selectedRoutes != NULL && rtgObj->citations != NULL)
-			{
-				result = 1;
-			}
-		}
-	}
+        if (rtgObj != NULL) {
+            if (rtgObj->knownRoutes != NULL && rtgObj->selectedRoutes != NULL &&
+                rtgObj->citations != NULL) {
+                result = 1;
+            }
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -856,25 +804,20 @@ static int is_initialized_terminus_node(Node *terminusNode)
  *  -------- | --------------- | -----------------------------------------------
  *  15/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static int excludeNeighbor(List excludedNeighbors, unsigned long long neighbor)
-{
-	unsigned long long *temp = (unsigned long long*) MWITHDRAW(sizeof(unsigned long long));
-	int result = -2;
-	if (temp != NULL)
-	{
-		*temp = neighbor;
+static int excludeNeighbor(List excludedNeighbors, unsigned long long neighbor) {
+    unsigned long long *temp = (unsigned long long *)MWITHDRAW(sizeof(unsigned long long));
+    int result = -2;
+    if (temp != NULL) {
+        *temp = neighbor;
 
-		if (neighbor == 0 || list_insert_last(excludedNeighbors, temp) != NULL)
-		{
-			result = 0;
-		}
-		else
-		{
-			MDEPOSIT(temp);
-		}
-	}
+        if (neighbor == 0 || list_insert_last(excludedNeighbors, temp) != NULL) {
+            result = 0;
+        } else {
+            MDEPOSIT(temp);
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -914,67 +857,56 @@ static int excludeNeighbor(List excludedNeighbors, unsigned long long neighbor)
  *  15/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 static int executeCGR(CgrBundle *bundle, Node *terminusNode, List excludedNeighbors,
-		List *bestRoutes)
-{
-	int result = 0, stop = 0;
-	long unsigned int missingNeighbors = 0;
-	List candidateRoutes = NULL;
-	List subsetComputedRoutes = NULL;
-	RtgObject *rtgObj = terminusNode->routingObject;
+                      List *bestRoutes) {
+    int result = 0, stop = 0;
+    long unsigned int missingNeighbors = 0;
+    List candidateRoutes = NULL;
+    List subsetComputedRoutes = NULL;
+    RtgObject *rtgObj = terminusNode->routingObject;
 
+    if (get_local_node_neighbors_count() == 0) {
+        // 0 neighbors to reach destination...
+        stop = 1;
+    }
 
+    while (!stop) {
+        result = getCandidateRoutes(terminusNode, bundle, excludedNeighbors, rtgObj->selectedRoutes,
+                                    &subsetComputedRoutes, &missingNeighbors,
+                                    &candidateRoutes); // phase two
 
-	if(get_local_node_neighbors_count() == 0)
-	{
-		// 0 neighbors to reach destination...
-		stop = 1;
+        if (result != 0 || missingNeighbors == 0) {
+            stop = 1;
+        }
 
+        if (!stop) {
+            result = computeRoutes(bundle->regionNbr, terminusNode, subsetComputedRoutes,
+                                   missingNeighbors); // phase one
 
-	}
+            stop = (result <= 0) ? 1 : 0;
+        }
+    }
 
+    print_phase_one_routes(get_file_call(), rtgObj->selectedRoutes);
+    print_phase_two_routes(get_file_call(), candidateRoutes);
+    *bestRoutes = NULL;
 
+    if (result >= 0 && candidateRoutes != NULL && candidateRoutes->length > 0) {
+        record_phases_start_time(phaseThree);
 
-	while (!stop)
-	{
-		result = getCandidateRoutes(terminusNode, bundle, excludedNeighbors, rtgObj->selectedRoutes, &subsetComputedRoutes, &missingNeighbors, &candidateRoutes); //phase two
+        result = chooseBestRoutes(bundle, candidateRoutes); // phase three
 
-		if (result != 0 || missingNeighbors == 0)
-		{
-			stop = 1;
-		}
+        record_phases_stop_time(phaseThree);
 
+        *bestRoutes = candidateRoutes;
+    }
 
-		if (!stop)
-		{
-			result = computeRoutes(bundle->regionNbr, terminusNode, subsetComputedRoutes, missingNeighbors); //phase one
+    print_phase_three_routes(get_file_call(), *bestRoutes);
 
-			stop = (result <= 0) ? 1 : 0;
-		}
-	}
+    clear_rtg_object(rtgObj); // clear the temporary values
 
-	print_phase_one_routes(get_file_call(), rtgObj->selectedRoutes);
-	print_phase_two_routes(get_file_call(), candidateRoutes);
-	*bestRoutes = NULL;
+    debug_printf("result -> %d", result);
 
-	if (result >= 0 && candidateRoutes != NULL && candidateRoutes->length > 0)
-	{
-		record_phases_start_time(phaseThree);
-
-		result = chooseBestRoutes(bundle, candidateRoutes); //phase three
-
-		record_phases_stop_time(phaseThree);
-
-		*bestRoutes = candidateRoutes;
-	}
-
-	print_phase_three_routes(get_file_call(), *bestRoutes);
-
-	clear_rtg_object(rtgObj); //clear the temporary values
-
-	debug_printf("result -> %d", result);
-
-	return result;
-
+    return result;
 }
 
 /******************************************************************************
@@ -1015,170 +947,136 @@ static int executeCGR(CgrBundle *bundle, Node *terminusNode, List excludedNeighb
  *  -------- | --------------- | -----------------------------------------------
  *  15/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int getBestRoutes(time_t time, CgrBundle *bundle, List excludedNeighbors, List *bestRoutes)
-{
-	int result = -4;
-	Node *terminusNode;
-	UniboCgrCurrentCallSAP *currentCallSap = get_current_call_sap(NULL);
-	UniboCgrSAP sap = get_unibo_cgr_sap(NULL);
-	ContactPlanSAP cpSap;
+int getBestRoutes(time_t time, CgrBundle *bundle, List excludedNeighbors, List *bestRoutes) {
+    int result = -4;
+    Node *terminusNode;
+    UniboCgrCurrentCallSAP *currentCallSap = get_current_call_sap(NULL);
+    UniboCgrSAP sap = get_unibo_cgr_sap(NULL);
+    ContactPlanSAP cpSap;
 
+    record_total_core_start_time();
 
+    currentCallSap->algorithm = unknown_algorithm;
 
-	record_total_core_start_time();
+    setLogTime(time);
 
-	currentCallSap->algorithm = unknown_algorithm;
-
-	setLogTime(time);
-
-	if (bundle != NULL && excludedNeighbors != NULL && bestRoutes != NULL)
-	{
-		*bestRoutes = NULL;
-		debug_printf("Call n.: %u", sap.count_bundles);
-		writeLog("Destination node: %llu.", bundle->terminus_node);
+    if (bundle != NULL && excludedNeighbors != NULL && bestRoutes != NULL) {
+        *bestRoutes = NULL;
+        debug_printf("Call n.: %u", sap.count_bundles);
+        writeLog("Destination node: %llu.", bundle->terminus_node);
         writeLog("Region number: %lu.", bundle->regionNbr);
-		if (check_bundle(bundle) != 0)
-		{
-			writeLog("Bundle bad formed.");
-			result = -4;
-		}
-		else if (bundle->expiration_time < time) //bundle expired
-		{
-			result = 0;
-			writeLog("Bundle expired.");
-		}
-		else if(time < currentCallSap->current_time)
-		{
-			result = -5;
-			writeLog("Error, time (%ld s) is in the past (last time: %ld s)", time, currentCallSap->current_time);
-		}
-		else
-		{
+        if (check_bundle(bundle) != 0) {
+            writeLog("Bundle bad formed.");
+            result = -4;
+        } else if (bundle->expiration_time < time) // bundle expired
+        {
+            result = 0;
+            writeLog("Bundle expired.");
+        } else if (time < currentCallSap->current_time) {
+            result = -5;
+            writeLog("Error, time (%ld s) is in the past (last time: %ld s)", time,
+                     currentCallSap->current_time);
+        } else {
 
-			result = 0;
+            result = 0;
 
             reset_cgr();
 
-			cpSap = get_contact_plan_sap(NULL);
+            cpSap = get_contact_plan_sap(NULL);
 
+            if (cpSap.contactPlanEditTime.tv_sec > sap.cgrEditTime.tv_sec ||
+                (sap.cgrEditTime.tv_sec == cpSap.contactPlanEditTime.tv_sec &&
+                 cpSap.contactPlanEditTime.tv_usec > sap.cgrEditTime.tv_usec)) {
 
+                if (sap.cgrEditTime.tv_sec != -1) {
+                    writeLog("Contact plan modified, all routes will be discarded.");
+                    discardAllRoutes();
+                }
+                sap.cgrEditTime.tv_sec = cpSap.contactPlanEditTime.tv_sec;
+                sap.cgrEditTime.tv_usec = cpSap.contactPlanEditTime.tv_usec;
 
-			if (cpSap.contactPlanEditTime.tv_sec > sap.cgrEditTime.tv_sec
-					|| (sap.cgrEditTime.tv_sec == cpSap.contactPlanEditTime.tv_sec
-							&& cpSap.contactPlanEditTime.tv_usec > sap.cgrEditTime.tv_usec))
-			{
+                if (build_local_node_neighbors_list(sap.localNode) < 0) {
+                    result = -2;
 
-				if (sap.cgrEditTime.tv_sec != -1)
-				{
-					writeLog("Contact plan modified, all routes will be discarded.");
-					discardAllRoutes();
-				}
-				sap.cgrEditTime.tv_sec = cpSap.contactPlanEditTime.tv_sec;
-				sap.cgrEditTime.tv_usec = cpSap.contactPlanEditTime.tv_usec;
+                    verbose_debug_printf("Error...");
+                }
+            }
 
-				if(build_local_node_neighbors_list(sap.localNode) < 0)
-				{
-					result = -2;
+            if (result == 0) {
 
+                currentCallSap->current_time = time;
 
+                removeExpired(currentCallSap->current_time);
 
-					verbose_debug_printf("Error...");
-				}
-			}
+                terminusNode = add_node(bundle->terminus_node);
 
-			if(result == 0)
-			{
+                currentCallSap->destinationNode = terminusNode;
 
-				currentCallSap->current_time = time;
+                if (!is_initialized_terminus_node(terminusNode)) {
+                    // Some error in the "Node graph" management
+                    terminusNode = NULL;
+                }
 
-				removeExpired(currentCallSap->current_time);
-
-				terminusNode = add_node(bundle->terminus_node);
-
-				currentCallSap->destinationNode = terminusNode;
-
-				if(!is_initialized_terminus_node(terminusNode))
-				{
-					// Some error in the "Node graph" management
-					terminusNode = NULL;
-
-
-
-				}
-
-				result = 0;
+                result = 0;
 
 #if (CGR_AVOID_LOOP == 1 || CGR_AVOID_LOOP == 3)
-				result = set_failed_neighbors_list(bundle, sap.localNode);
+                result = set_failed_neighbors_list(bundle, sap.localNode);
 #endif
-				if (result >= 0 && !(RETURN_TO_SENDER(bundle)) && bundle->sender_node != 0)
-				{
+                if (result >= 0 && !(RETURN_TO_SENDER(bundle)) && bundle->sender_node != 0) {
 
-					//result = excludeNeighbor(excludedNeighbors, bundle->sender_node);
+                    // result = excludeNeighbor(excludedNeighbors, bundle->sender_node);
+                }
 
-				}
-
-				parse_excluded_nodes(excludedNeighbors);
+                parse_excluded_nodes(excludedNeighbors);
 
 #if (LOG == 1)
-				currentCallSap->file_call = openBundleFile(sap.count_bundles + 10 * sap.localNode);
-				print_bundle(currentCallSap->file_call, bundle, excludedNeighbors, currentCallSap->current_time);
-				printContactsGraph(currentCallSap->file_call, currentCallSap->current_time);
-				printRangesGraph(currentCallSap->file_call, currentCallSap->current_time);
+                currentCallSap->file_call = openBundleFile(sap.count_bundles + 10 * sap.localNode);
+                print_bundle(currentCallSap->file_call, bundle, excludedNeighbors,
+                             currentCallSap->current_time);
+                printContactsGraph(currentCallSap->file_call, currentCallSap->current_time);
+                printRangesGraph(currentCallSap->file_call, currentCallSap->current_time);
 #endif
 
+                get_unibo_cgr_sap(&sap); // save
 
-				get_unibo_cgr_sap(&sap); // save
-
-				if (terminusNode != NULL && result >= 0)
-				{
+                if (terminusNode != NULL && result >= 0) {
 #if (MSR == 1)
-					result = tryMSR(currentCallSap->current_time, bundle, excludedNeighbors, currentCallSap->file_call, bestRoutes);
-					if(result <= 0 && result != -2)
-					{
+                    result = tryMSR(currentCallSap->current_time, bundle, excludedNeighbors,
+                                    currentCallSap->file_call, bestRoutes);
+                    if (result <= 0 && result != -2) {
 #endif
-						result = executeCGR(bundle, terminusNode, excludedNeighbors, bestRoutes);
-						if(result > 0)
-						{
-							currentCallSap->algorithm = cgr;
-						}
+                        result = executeCGR(bundle, terminusNode, excludedNeighbors, bestRoutes);
+                        if (result > 0) {
+                            currentCallSap->algorithm = cgr;
+                        }
 #if (MSR == 1)
-					}
-					else if(result > 0)
-					{
-						currentCallSap->algorithm = msr;
-					}
+                    } else if (result > 0) {
+                        currentCallSap->algorithm = msr;
+                    }
 #endif
-				}
-				else
-				{
-					result = -2;
-				}
+                } else {
+                    result = -2;
+                }
 
-				closeBundleFile(&(currentCallSap->file_call));
-			}
-		}
+                closeBundleFile(&(currentCallSap->file_call));
+            }
+        }
 
-		if(result == -1)
-		{
-			writeLog("0 routes found to destination.");
-		}
-		else if(result == 0)
-		{
-			writeLog("Best routes found: 0.");
-		}
-		else if(result > 0)
-		{
-			print_result_cgr(result, *bestRoutes);
-		}
-	}
+        if (result == -1) {
+            writeLog("0 routes found to destination.");
+        } else if (result == 0) {
+            writeLog("Best routes found: 0.");
+        } else if (result > 0) {
+            print_result_cgr(result, *bestRoutes);
+        }
+    }
 
-	debug_printf("result -> %d", result);
+    debug_printf("result -> %d", result);
 
-	sap.count_bundles++;
-	get_unibo_cgr_sap(&sap); // save
+    sap.count_bundles++;
+    get_unibo_cgr_sap(&sap); // save
 
-	record_total_core_stop_time();
+    record_total_core_stop_time();
 
-	return result;
+    return result;
 }

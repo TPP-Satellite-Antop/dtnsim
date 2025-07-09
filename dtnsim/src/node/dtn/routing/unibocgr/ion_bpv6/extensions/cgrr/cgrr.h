@@ -34,18 +34,17 @@
 
 #define _CGRR_H_
 
-
 #include "../../../src/node/dtn/routing/unibocgr/ion_bpv6/extensions/cgrr/cgrr_utils.h"
 
-#define	EXTENSION_TYPE_CGRR	23
+#define EXTENSION_TYPE_CGRR 23
 
-extern int	cgrr_offer(ExtensionBlock *, Bundle *);
-extern void	cgrr_release(ExtensionBlock *);
-extern int	cgrr_record(ExtensionBlock *, AcqExtBlock *);
-extern int	cgrr_copy(ExtensionBlock *, ExtensionBlock *);
-extern int	cgrr_acquire(AcqExtBlock *, AcqWorkArea *);
-extern int	cgrr_check(AcqExtBlock *, AcqWorkArea *);
-extern void	cgrr_clear(AcqExtBlock *);
+extern int cgrr_offer(ExtensionBlock *, Bundle *);
+extern void cgrr_release(ExtensionBlock *);
+extern int cgrr_record(ExtensionBlock *, AcqExtBlock *);
+extern int cgrr_copy(ExtensionBlock *, ExtensionBlock *);
+extern int cgrr_acquire(AcqExtBlock *, AcqWorkArea *);
+extern int cgrr_check(AcqExtBlock *, AcqWorkArea *);
+extern void cgrr_clear(AcqExtBlock *);
 
 extern int cgrr_attach(ExtensionBlock *blk, CGRRouteBlock *cgrrBlk);
 #endif

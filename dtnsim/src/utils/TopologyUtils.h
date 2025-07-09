@@ -4,17 +4,18 @@
 #define TOPOLOGYUTILS_H_
 
 #include "ContactPlan.h"
-#include <boost/graph/adjacency_list.hpp>
 #include "utils/TopologyGraphInfo.h"
+#include <boost/graph/adjacency_list.hpp>
 #include <fstream>
+#include <map>
 #include <sstream>
 #include <string>
-#include <map>
 
-typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, TopologyVertexInfo, TopologyEdgeInfo, TopologyGraphInfo> TopologyGraph;
+typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, TopologyVertexInfo,
+                              TopologyEdgeInfo, TopologyGraphInfo>
+    TopologyGraph;
 
-namespace topologyUtils
-{
+namespace topologyUtils {
 
 /// @brief Compute Topology from the Contact Plan.
 /// @return map that associate one TopologyGraph per state

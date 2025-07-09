@@ -31,9 +31,8 @@
 #ifndef _RGR_UTILS_H_
 #define _RGR_UTILS_H_
 
-#include "bpP.h"
 #include "bei.h"
-
+#include "bpP.h"
 
 #ifndef RGR_DEBUG
 /**
@@ -47,27 +46,27 @@
 #if (RGR_DEBUG == 1)
 #define rgr_debugPrint(f_, ...) debugPrint((f_), ##__VA_ARGS__)
 #else
-#define rgr_debugPrint(f_, ...) do {  } while(0)
+#define rgr_debugPrint(f_, ...)                                                                    \
+    do {                                                                                           \
+    } while (0)
 #endif
 
-
-typedef struct
-{
-	unsigned int	length;
-	char			*nodes;
+typedef struct {
+    unsigned int length;
+    char *nodes;
 } GeoRoute;
 
 extern void printRoute(GeoRoute *route);
 extern void copyRoute(GeoRoute *dest, GeoRoute *src);
-extern char* parseAdminEID(Sdr sdr, Bundle *bundle);
+extern char *parseAdminEID(Sdr sdr, Bundle *bundle);
 int parseAndSaveRoute(GeoRoute *route);
-//Added by A.Stramiglio 21/11/19
+// Added by A.Stramiglio 21/11/19
 extern int rgr_read(ExtensionBlock *blk, GeoRoute *rgrBlk);
 
-//added by A.Stramiglio 29/02/20
+// added by A.Stramiglio 29/02/20
 extern uvast findLoopEntryNode(GeoRoute *route, uvast nodeNum);
 
-//Added by L. Persampieri 26/03/20
+// Added by L. Persampieri 26/03/20
 extern int get_geo_route_lyst(GeoRoute *route, Lyst resultLyst);
 
 #endif /* _RGR_UTILS_H_ */

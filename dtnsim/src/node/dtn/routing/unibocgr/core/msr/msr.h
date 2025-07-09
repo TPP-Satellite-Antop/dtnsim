@@ -35,15 +35,15 @@
 
 #include <stdlib.h>
 
+#include "../routes/routes.h"
 #include "src/node/dtn/routing/unibocgr/core/bundles/bundles.h"
 #include "src/node/dtn/routing/unibocgr/core/library/commonDefines.h"
 #include "src/node/dtn/routing/unibocgr/core/library/list/list.h"
-#include "../routes/routes.h"
-
 
 #if (MSR == 1)
 
-extern int tryMSR(time_t current_time, CgrBundle *bundle, List excludedNeighbors, FILE *file_call, List *bestRoutes);
+extern int tryMSR(time_t current_time, CgrBundle *bundle, List excludedNeighbors, FILE *file_call,
+                  List *bestRoutes);
 extern int initialize_msr();
 extern void destroy_msr();
 
@@ -60,19 +60,19 @@ fatal error
 #if (MSR == 1)
 
 #if (WISE_NODE != 0 && WISE_NODE != 1)
-fatal error
+    fatal error
 // Intentional compilation error
 // WISE_NODE must be 0 or 1
 #endif
 
 #if (MSR_TIME_TOLERANCE < 0)
-fatal error
+        fatal error
 // Intentional compilation error
 // MSR_TIME_TOLERANCE must be greater or equal to 0.
 #endif
 
 #if (WISE_NODE == 0 && MSR_HOPS_LOWER_BOUND < 1)
-fatal error
+            fatal error
 // Intentional compilation error
 // MSR_HOPS_TOLERANCE must be greater or equal to 1.
 #endif

@@ -27,18 +27,16 @@
  *       Carlo Caini, carlo.caini@unibo.it
  */
 
-
 #ifndef LIBRARY_COMMONDEFINES_H_
 #define LIBRARY_COMMONDEFINES_H_
 
-#include <sys/time.h>
 #include <stdlib.h>
+#include <sys/time.h>
 
 #include "src/node/dtn/routing/unibocgr/core/config.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 // just to use with function pointer
@@ -48,7 +46,7 @@ extern void MDEPOSIT_wrapper(void *addr);
 }
 #endif
 
-#define	MAX_POSIX_TIME	2147483647
+#define MAX_POSIX_TIME 2147483647
 
 #define CLEAR_FLAGS(flags) ((flags) = 0)
 
@@ -60,7 +58,9 @@ extern void MDEPOSIT_wrapper(void *addr);
  */
 #define debug_fflush(file) fflush(file)
 #else
-#define debug_fflush(file) do {  } while(0)
+#define debug_fflush(file)                                                                         \
+    do {                                                                                           \
+    } while (0)
 #endif
 
 #if (DEBUG_CGR == 1)
@@ -73,12 +73,13 @@ extern void MDEPOSIT_wrapper(void *addr);
  *
  * \hideinitializer
  */
-#define verbose_debug_printf(f_, ...) do { \
-	fprintf(stdout, "At line %d of %s, %s(): ", __LINE__, __FILE__, __FUNCTION__); \
-	fprintf(stdout, (f_), ##__VA_ARGS__); \
-	fputc('\n', stdout); \
-	debug_fflush(stdout); \
-} while(0)
+#define verbose_debug_printf(f_, ...)                                                              \
+    do {                                                                                           \
+        fprintf(stdout, "At line %d of %s, %s(): ", __LINE__, __FILE__, __FUNCTION__);             \
+        fprintf(stdout, (f_), ##__VA_ARGS__);                                                      \
+        fputc('\n', stdout);                                                                       \
+        debug_fflush(stdout);                                                                      \
+    } while (0)
 
 /**
  * \brief   Debug utility function: print the file, line and function that called this macro
@@ -88,12 +89,13 @@ extern void MDEPOSIT_wrapper(void *addr);
  *
  * \hideinitializer
  */
-#define flush_verbose_debug_printf(f_, ...) do { \
-	fprintf(stdout, "At line %d of %s, %s(): ", __LINE__, __FILE__, __FUNCTION__); \
-	fprintf(stdout, (f_), ##__VA_ARGS__); \
-	fputc('\n', stdout); \
-	fflush(stdout); \
-} while(0)
+#define flush_verbose_debug_printf(f_, ...)                                                        \
+    do {                                                                                           \
+        fprintf(stdout, "At line %d of %s, %s(): ", __LINE__, __FILE__, __FUNCTION__);             \
+        fprintf(stdout, (f_), ##__VA_ARGS__);                                                      \
+        fputc('\n', stdout);                                                                       \
+        fflush(stdout);                                                                            \
+    } while (0)
 
 /**
  * \brief   Debug utility function: print the function that called this macro
@@ -103,12 +105,13 @@ extern void MDEPOSIT_wrapper(void *addr);
  *
  * \hideinitializer
  */
-#define flush_debug_printf(f_, ...) do { \
-	fprintf(stdout, "%s(): ", __FUNCTION__); \
-	fprintf(stdout, (f_), ##__VA_ARGS__); \
-	fputc('\n', stdout); \
-	fflush(stdout); \
-} while(0)
+#define flush_debug_printf(f_, ...)                                                                \
+    do {                                                                                           \
+        fprintf(stdout, "%s(): ", __FUNCTION__);                                                   \
+        fprintf(stdout, (f_), ##__VA_ARGS__);                                                      \
+        fputc('\n', stdout);                                                                       \
+        fflush(stdout);                                                                            \
+    } while (0)
 
 /**
  * \brief   Debug utility function: print the function that called this macro
@@ -118,19 +121,28 @@ extern void MDEPOSIT_wrapper(void *addr);
  *
  * \hideinitializer
  */
-#define debug_printf(f_, ...) do { \
-	fprintf(stdout, "%s(): ", __FUNCTION__); \
-	fprintf(stdout, (f_), ##__VA_ARGS__); \
-	fputc('\n', stdout); \
-	debug_fflush(stdout); \
-} while(0)
+#define debug_printf(f_, ...)                                                                      \
+    do {                                                                                           \
+        fprintf(stdout, "%s(): ", __FUNCTION__);                                                   \
+        fprintf(stdout, (f_), ##__VA_ARGS__);                                                      \
+        fputc('\n', stdout);                                                                       \
+        debug_fflush(stdout);                                                                      \
+    } while (0)
 
 #else
-	// empty define
-#define debug_printf(f_, ...) do { } while(0)
-#define verbose_debug_printf(f_, ...) do { } while(0)
-#define flush_debug_printf(f_, ...) do {  } while(0)
-#define flush_verbose_debug_printf(f_, ...) do {  } while(0)
+// empty define
+#define debug_printf(f_, ...)                                                                      \
+    do {                                                                                           \
+    } while (0)
+#define verbose_debug_printf(f_, ...)                                                              \
+    do {                                                                                           \
+    } while (0)
+#define flush_debug_printf(f_, ...)                                                                \
+    do {                                                                                           \
+    } while (0)
+#define flush_verbose_debug_printf(f_, ...)                                                        \
+    do {                                                                                           \
+    } while (0)
 #endif
 
 #include "src/node/dtn/routing/unibocgr/core/library/log/log.h"

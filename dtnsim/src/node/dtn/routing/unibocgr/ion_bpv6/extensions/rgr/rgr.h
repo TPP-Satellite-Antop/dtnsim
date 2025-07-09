@@ -31,17 +31,17 @@
 
 #include "../../../src/node/dtn/routing/unibocgr/ion_bpv6/extensions/rgr/rgr_utils.h"
 
-#define	EXTENSION_TYPE_RGR	22
+#define EXTENSION_TYPE_RGR 22
 
-extern int	rgr_offer(ExtensionBlock *, Bundle *);
-extern void	rgr_release(ExtensionBlock *);
-extern int	rgr_record(ExtensionBlock *, AcqExtBlock *);
-extern int	rgr_copy(ExtensionBlock *, ExtensionBlock *);
-//extern int	rgr_processOnTransmit(ExtensionBlock *, Bundle *, void *);
-extern int	rgr_processOnDequeue(ExtensionBlock *, Bundle *, void *);
-extern int	rgr_acquire(AcqExtBlock *, AcqWorkArea *);
-extern void	rgr_clear(AcqExtBlock *);
-extern int  rgr_parse(AcqExtBlock *, AcqWorkArea *);
+extern int rgr_offer(ExtensionBlock *, Bundle *);
+extern void rgr_release(ExtensionBlock *);
+extern int rgr_record(ExtensionBlock *, AcqExtBlock *);
+extern int rgr_copy(ExtensionBlock *, ExtensionBlock *);
+// extern int	rgr_processOnTransmit(ExtensionBlock *, Bundle *, void *);
+extern int rgr_processOnDequeue(ExtensionBlock *, Bundle *, void *);
+extern int rgr_acquire(AcqExtBlock *, AcqWorkArea *);
+extern void rgr_clear(AcqExtBlock *);
+extern int rgr_parse(AcqExtBlock *, AcqWorkArea *);
 
 int rgr_attach(Bundle *bundle, ExtensionBlock *blk, GeoRoute *rgrBlk);
 

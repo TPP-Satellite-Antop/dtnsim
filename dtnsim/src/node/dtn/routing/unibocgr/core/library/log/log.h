@@ -30,26 +30,25 @@
 #ifndef SOURCES_LIBRARY_LOG_H_
 #define SOURCES_LIBRARY_LOG_H_
 
+#include <errno.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include <sys/time.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <sys/types.h>
-#include <stdarg.h>
 
 #include "src/node/dtn/routing/unibocgr/core/library/commonDefines.h"
 #include "src/node/dtn/routing/unibocgr/core/library/list/list_type.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #if (LOG == 1)
 extern int cleanLogDir();
-extern FILE* openBundleFile(unsigned int num);
+extern FILE *openBundleFile(unsigned int num);
 extern void closeBundleFile(FILE **file_call);
 extern int openLogFile();
 extern void closeLogFile();
@@ -64,17 +63,35 @@ extern void log_fflush();
 
 #else
 
-//empty defines for some functions
+// empty defines for some functions
 
-#define closeBundleFile(file_call) do { } while(0)
-#define closeLogFile() do { } while(0)
-#define writeLog(f_, ...) do { } while(0)
-#define writeLogFlush(f_, ...) do {  } while(0)
-#define setLogTime(time) do { } while(0)
-#define printCurrentState() do { } while(0)
-#define print_string(file, string) do { } while(0)
-#define print_all_list(file,list,brief,separator) do { } while(0)
-#define log_fflush() do {  } while(0)
+#define closeBundleFile(file_call)                                                                 \
+    do {                                                                                           \
+    } while (0)
+#define closeLogFile()                                                                             \
+    do {                                                                                           \
+    } while (0)
+#define writeLog(f_, ...)                                                                          \
+    do {                                                                                           \
+    } while (0)
+#define writeLogFlush(f_, ...)                                                                     \
+    do {                                                                                           \
+    } while (0)
+#define setLogTime(time)                                                                           \
+    do {                                                                                           \
+    } while (0)
+#define printCurrentState()                                                                        \
+    do {                                                                                           \
+    } while (0)
+#define print_string(file, string)                                                                 \
+    do {                                                                                           \
+    } while (0)
+#define print_all_list(file, list, brief, separator)                                               \
+    do {                                                                                           \
+    } while (0)
+#define log_fflush()                                                                               \
+    do {                                                                                           \
+    } while (0)
 
 #endif
 
@@ -86,14 +103,19 @@ extern void log_fflush();
  */
 #define debugLog(f_, ...) writeLog((f_), ##__VA_ARGS__)
 /**
- * \brief Print a log in the main log file and flush the stream, compiled only with DEBUG_CGR and LOG enabled.
+ * \brief Print a log in the main log file and flush the stream, compiled only with DEBUG_CGR and
+ * LOG enabled.
  *
  * \hideinitializer
  */
 #define debugLogFlush(f_, ...) writeLogFlush((f_), ##__VA_ARGS__)
 #else
-#define debugLog(f_, ...) do {  } while(0)
-#define debugLogFlush(f_, ...) do {  } while(0)
+#define debugLog(f_, ...)                                                                          \
+    do {                                                                                           \
+    } while (0)
+#define debugLogFlush(f_, ...)                                                                     \
+    do {                                                                                           \
+    } while (0)
 #endif
 
 #ifdef __cplusplus

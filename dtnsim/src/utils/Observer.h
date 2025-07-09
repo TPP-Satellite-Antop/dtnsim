@@ -8,11 +8,9 @@
 #ifndef SRC_UTILS_OBSERVER_H_
 #define SRC_UTILS_OBSERVER_H_
 
-class Observer
-{
-public:
-
-	virtual void update(void) = 0;
+class Observer {
+  public:
+    virtual void update(void) = 0;
 };
 
 #endif /* SRC_UTILS_OBSERVER_H_ */
