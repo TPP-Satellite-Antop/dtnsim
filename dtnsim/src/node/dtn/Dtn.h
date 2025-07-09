@@ -101,6 +101,7 @@ private:
 
 	int eid_;
 	bool onFault = false;
+	void initializeRouting(string routingString);
 
 	// Pointer to grahics module
 	Graphics *graphicsModule;

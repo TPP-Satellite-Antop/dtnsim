@@ -1,69 +1,68 @@
 
 
-cplusplus {{
-    #include "src/node/dtn/routing/CgrRoute.h"
-    typedef std::list<int> intList;
-}}
+cplusplus {
+    {
+#include "src/node/dtn/routing/CgrRoute.h"
+        typedef std::list<int> intList;
+    }
+}
 
-class CgrRoute
-{
+class CgrRoute {
     @existingClass;
 }
 
-class intList
-{
+class intList {
     @existingClass;
 }
 
-//struct CgrRoute;
-//class noncobject cgrRouteList;
+// struct CgrRoute;
+// class noncobject cgrRouteList;
 
-packet BundlePkt{
-		////////////////////////////////////////////////    
-    	// Bundle Protocol fields (set by source node)
-    	////////////////////////////////////////////////
-    	long bundleId;
-    	int sourceEid;
-        int destinationEid;
-        bool critical;
-        simtime_t creationTimestamp;
-        simtime_t ttl;
-        bool returnToSender;
-        bool custodyTransferRequested;
-        
-        // Source routing path
-        CgrRoute cgrRoute;
-        
-        // Bundle is a report
-        bool bundleIsCustodyReport;
-        bool custodyAccepted;
-        long custodyBundleId;
-        
-        ////////////////////////////////////////////////
-        // Bundle meta-data (set by intermediate nodes)
-        ////////////////////////////////////////////////
-        int custodianEid;
-        int senderEid;
-        int nextHopEid;
-        int hopCount;
-        intList visitedNodes;
-        
-        // Probabilistic routing meta-data
-        int xmitCopiesCount;
-        double dlvConfidence;
-        
-        //Spray And Wait number of copies variable
-        int bundlesCopies;
-        
-        //Proactive CGR Routing specific use variable 
-        // 0 to route by delivery time
-        // 1 to route by hops
-        // 2 to route by hops and delivery time (making a copy)
-        int qos;
-        
+packet BundlePkt {
+    ////////////////////////////////////////////////
+    // Bundle Protocol fields (set by source node)
+    ////////////////////////////////////////////////
+    long bundleId;
+    int sourceEid;
+    int destinationEid;
+    bool critical;
+    simtime_t creationTimestamp;
+    simtime_t ttl;
+    bool returnToSender;
+    bool custodyTransferRequested;
+
+    // Source routing path
+    CgrRoute cgrRoute;
+
+    // Bundle is a report
+    bool bundleIsCustodyReport;
+    bool custodyAccepted;
+    long custodyBundleId;
+
+    ////////////////////////////////////////////////
+    // Bundle meta-data (set by intermediate nodes)
+    ////////////////////////////////////////////////
+    int custodianEid;
+    int senderEid;
+    int nextHopEid;
+    int hopCount;
+    intList visitedNodes;
+
+    // Probabilistic routing meta-data
+    int xmitCopiesCount;
+    double dlvConfidence;
+
+    // Spray And Wait number of copies variable
+    int bundlesCopies;
+
+    // Proactive CGR Routing specific use variable
+    //  0 to route by delivery time
+    //  1 to route by hops
+    //  2 to route by hops and delivery time (making a copy)
+    int qos;
 };
 
-message TrafficGeneratorMsg{
+message TrafficGeneratorMsg {
     int bundlesNumber;
     int destinationEid;
     int size;
@@ -71,7 +70,7 @@ message TrafficGeneratorMsg{
     double interval;
 };
 
-message ContactMsg{
+message ContactMsg {
     int id;
     double dataRate;
     simtime_t start;
@@ -81,20 +80,18 @@ message ContactMsg{
     int destinationEid;
 };
 
-message ForwardingMsgEnd{
+message ForwardingMsgEnd {
     int neighborEid;
     int contactId;
     long bundleId;
     bool sentToDestination;
 };
 
-message ForwardingMsgStart{
+message ForwardingMsgStart {
     int neighborEid;
     int contactId;
 };
 
-message CustodyTimout{
+message CustodyTimout {
     int bundleId;
 };
-
-
