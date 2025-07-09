@@ -153,6 +153,8 @@ void Dtn::initialize(int stage)
 
 		if (routeString.compare("direct") == 0)
 			routing = new RoutingDirect(eid_, &sdr_, &contactPlan_);
+		else if (routeString.compare("antop") == 0)
+			routing = new RoutingAntop(eid_, &sdr_, &contactPlan_);
 		else if (routeString.compare("cgrModel350") == 0)
 			routing = new RoutingCgrModel350(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
 		else if (routeString.compare("cgrModel350_Hops") == 0)
