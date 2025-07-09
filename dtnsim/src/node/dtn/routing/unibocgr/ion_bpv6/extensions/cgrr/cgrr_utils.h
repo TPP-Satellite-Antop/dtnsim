@@ -31,8 +31,8 @@
 #ifndef _CGRR_UTIL_H_
 #define _CGRR_UTIL_H_
 
-#include "bpP.h"
 #include "bei.h"
+#include "bpP.h"
 #include <stdlib.h>
 
 #ifndef CGRR_DEBUG
@@ -47,44 +47,43 @@
 #if (CGRR_DEBUG == 1)
 #define cgrr_debugPrint(f_, ...) debugPrint((f_), ##__VA_ARGS__)
 #else
-#define cgrr_debugPrint(f_, ...) do {  } while(0)
+#define cgrr_debugPrint(f_, ...)                                                                   \
+    do {                                                                                           \
+    } while (0)
 #endif
 
-typedef struct
-{
-	uvast	fromNode;
-	uvast	toNode;
-	time_t	fromTime;
+typedef struct {
+    uvast fromNode;
+    uvast toNode;
+    time_t fromTime;
 } CGRRHop;
 
-typedef struct
-{
-	unsigned int  hopCount; //Number of hops (contacts)
-	CGRRHop		 *hopList; //Hop (contact): identified by [from, to, fromTime]
+typedef struct {
+    unsigned int hopCount; // Number of hops (contacts)
+    CGRRHop *hopList;      // Hop (contact): identified by [from, to, fromTime]
 } CGRRoute;
 
-
-typedef struct
-{
-	unsigned int recRoutesLength; //number of recomputedRoutes
-	CGRRoute originalRoute; //computed by the source
-	CGRRoute *recomputedRoutes; //computed by following nodes
+typedef struct {
+    unsigned int recRoutesLength; // number of recomputedRoutes
+    CGRRoute originalRoute;       // computed by the source
+    CGRRoute *recomputedRoutes;   // computed by following nodes
 } CGRRouteBlock;
 
 extern void printCGRRoute(CGRRoute *cgrRoute);
 extern void printCGRRouteBlock(CGRRouteBlock *cgrrBlk);
 extern unsigned char *cgrr_serializeCGRR(uvast *length, CGRRouteBlock *cgrrBlk);
-extern int	cgrr_deserializeCGRR(AcqExtBlock *blk, AcqWorkArea *wk);
-extern int	cgrr_getCGRRFromExtensionBlock(ExtensionBlock *blk, CGRRouteBlock *cgrrBlk);
-int saveRouteToExtBlock(int hopCount, CGRRHop* hopList, Bundle* bundle);
-extern int addRoute( Bundle *bundle, Object extBlockElt, CGRRoute *routeToAdd);
-extern unsigned char *cgrr_addSdnvToStream(unsigned char *stream, Sdnv* value);
-extern int processModifiedExtensionBlock(Bundle *bundle, Object blkAddr, ExtensionBlock *blk, unsigned int oldLength, unsigned int oldSize);
+extern int cgrr_deserializeCGRR(AcqExtBlock *blk, AcqWorkArea *wk);
+extern int cgrr_getCGRRFromExtensionBlock(ExtensionBlock *blk, CGRRouteBlock *cgrrBlk);
+int saveRouteToExtBlock(int hopCount, CGRRHop *hopList, Bundle *bundle);
+extern int addRoute(Bundle *bundle, Object extBlockElt, CGRRoute *routeToAdd);
+extern unsigned char *cgrr_addSdnvToStream(unsigned char *stream, Sdnv *value);
+extern int processModifiedExtensionBlock(Bundle *bundle, Object blkAddr, ExtensionBlock *blk,
+                                         unsigned int oldLength, unsigned int oldSize);
 extern void copyCGRRouteBlock(CGRRouteBlock *dest, CGRRouteBlock *src);
 extern void copyCGRRoute(CGRRoute *dest, CGRRoute *src);
 /*extern unsigned int writeCGRRouteBlockToSdr(Sdr sdr, Object destAddress, CGRRouteBlock *src);
 unsigned int writeCGRRouteToSdr(Sdr sdr, Object destAddress, CGRRoute *src);*/
-extern void releaseCgrrBlkMemory(CGRRouteBlock *cgrrBlk); //Added by G.M. De Cola
+extern void releaseCgrrBlkMemory(CGRRouteBlock *cgrrBlk); // Added by G.M. De Cola
 
 extern int cgrr_getUsedEvc(Bundle *bundle, ExtensionBlock *cgrrExtBlk, uvast *size);
 extern int cgrr_setUsedEvc(Bundle *bundle, ExtensionBlock *cgrrExtBlk, uvast evc);

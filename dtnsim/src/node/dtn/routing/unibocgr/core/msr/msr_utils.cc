@@ -47,10 +47,9 @@
  * \retval -1    Arguments error
  * \retval -2    MWITHDRAW error
  *
- * \param[in]     current_time   The current (differential from interface) time from the start of Unibo-CGR
- * \param[in]     finalContact   The last contact of the route
- * \param[out]    resultRoute    The Route just builded in success case. This field must be
- *                               allocated by the caller.
+ * \param[in]     current_time   The current (differential from interface) time from the start of
+ *Unibo-CGR \param[in]     finalContact   The last contact of the route \param[out]    resultRoute
+ *The Route just builded in success case. This field must be allocated by the caller.
  *
  * \par Revision History:
  *
@@ -58,55 +57,47 @@
  *  -------- | --------------- |  -----------------------------------------------
  *  23/04/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-int populate_msr_route(time_t current_time, UniboContact *finalContact, Route *resultRoute)
-{
-	int result = -1;
-	time_t earliestEndTime;
-	UniboContact *contact, *firstContact = NULL;
-	ContactNote *current_work;
-	ListElt *elt;
+int populate_msr_route(time_t current_time, UniboContact *finalContact, Route *resultRoute) {
+    int result = -1;
+    time_t earliestEndTime;
+    UniboContact *contact, *firstContact = NULL;
+    ContactNote *current_work;
+    ListElt *elt;
 
-	if(finalContact != NULL && resultRoute != NULL)
-	{
-		result = 0;
+    if (finalContact != NULL && resultRoute != NULL) {
+        result = 0;
 
-		resultRoute->arrivalConfidence = finalContact->routingObject->arrivalConfidence;
-		resultRoute->computedAtTime = current_time;
+        resultRoute->arrivalConfidence = finalContact->routingObject->arrivalConfidence;
+        resultRoute->computedAtTime = current_time;
 
-		earliestEndTime = MAX_POSIX_TIME;
-		contact = finalContact;
+        earliestEndTime = MAX_POSIX_TIME;
+        contact = finalContact;
 
-		while (contact != NULL)
-		{
-			current_work = contact->routingObject;
-			if (contact->toTime < earliestEndTime)
-			{
-				earliestEndTime = contact->toTime;
-			}
+        while (contact != NULL) {
+            current_work = contact->routingObject;
+            if (contact->toTime < earliestEndTime) {
+                earliestEndTime = contact->toTime;
+            }
 
-			elt = list_insert_first(resultRoute->hops, contact);
+            elt = list_insert_first(resultRoute->hops, contact);
 
-			if (elt == NULL)
-			{
-				result = -2;
-				contact = NULL; //I leave the loop
-			}
-			else
-			{
-				firstContact = contact;
-				contact = current_work->predecessor;
-			}
-		}
+            if (elt == NULL) {
+                result = -2;
+                contact = NULL; // I leave the loop
+            } else {
+                firstContact = contact;
+                contact = current_work->predecessor;
+            }
+        }
 
-		if (result == 0)
-		{
-			resultRoute->neighbor = firstContact->toNode;
-			resultRoute->fromTime = firstContact->fromTime;
-			resultRoute->toTime = earliestEndTime;
-		}
-	}
+        if (result == 0) {
+            resultRoute->neighbor = firstContact->toNode;
+            resultRoute->fromTime = firstContact->fromTime;
+            resultRoute->toTime = earliestEndTime;
+        }
+    }
 
-	return result;
+    return result;
 }
 
 #if (CGRR == 1 && MSR == 1)
@@ -138,121 +129,96 @@ int populate_msr_route(time_t current_time, UniboContact *finalContact, Route *r
  *  -------- | --------------- |  -----------------------------------------------
  *  23/04/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int build_msr_route(time_t current_time, CGRRoute* cgrrRoute, CgrBundle *bundle)
-{
-	int result = -1;
-	int stop = 0;
-	unsigned int count;
-	unsigned int localNodePosition, i;
-	unsigned long long prevToNode;
-	Route *newRoute;
-	UniboContact *contact = NULL, *prevContact;
-	unsigned long long localNode = get_local_node();
+static int build_msr_route(time_t current_time, CGRRoute *cgrrRoute, CgrBundle *bundle) {
+    int result = -1;
+    int stop = 0;
+    unsigned int count;
+    unsigned int localNodePosition, i;
+    unsigned long long prevToNode;
+    Route *newRoute;
+    UniboContact *contact = NULL, *prevContact;
+    unsigned long long localNode = get_local_node();
 
-	if(cgrrRoute == NULL || bundle == NULL || current_time < 0)
-	{
-		return -3;
-	}
+    if (cgrrRoute == NULL || bundle == NULL || current_time < 0) {
+        return -3;
+    }
 
-	localNodePosition =  0;
-	stop = 0;
-	for(i = 0; i < cgrrRoute->hopCount && !stop; i++)
-	{
-		if(cgrrRoute->hopList[i].fromNode == localNode)
-		{
-			localNodePosition = i;
-			stop = 1;
-		}
-	}
-	if (stop)
-	{
-		newRoute = create_cgr_route();
-		stop = 0;
-		prevContact = NULL;
-		count = 0;
-		prevToNode = localNode;
+    localNodePosition = 0;
+    stop = 0;
+    for (i = 0; i < cgrrRoute->hopCount && !stop; i++) {
+        if (cgrrRoute->hopList[i].fromNode == localNode) {
+            localNodePosition = i;
+            stop = 1;
+        }
+    }
+    if (stop) {
+        newRoute = create_cgr_route();
+        stop = 0;
+        prevContact = NULL;
+        count = 0;
+        prevToNode = localNode;
 
-		for (i = localNodePosition; i < cgrrRoute->hopCount && !stop; i++)
-		{
-			contact = get_contact_with_time_tolerance(bundle->regionNbr, cgrrRoute->hopList[i].fromNode,
-					cgrrRoute->hopList[i].toNode,
-					cgrrRoute->hopList[i].fromTime, MSR_TIME_TOLERANCE);
+        for (i = localNodePosition; i < cgrrRoute->hopCount && !stop; i++) {
+            contact = get_contact_with_time_tolerance(
+                bundle->regionNbr, cgrrRoute->hopList[i].fromNode, cgrrRoute->hopList[i].toNode,
+                cgrrRoute->hopList[i].fromTime, MSR_TIME_TOLERANCE);
 
-			if (contact != NULL && contact->toTime > current_time)
-			{
-				if(prevToNode == contact->fromNode &&
-						((prevToNode != contact->toNode ) ||
-								(count == 0 && bundle->terminus_node == localNode)))
-				{
-					prevToNode = contact->toNode;
-					count++;
-					contact->routingObject->predecessor = prevContact;
-					if(prevContact != NULL)
-					{
-						contact->routingObject->arrivalConfidence =
-							contact->confidence*prevContact->routingObject->arrivalConfidence;
-					}
-					else
-					{
-						contact->routingObject->arrivalConfidence = contact->confidence;
-					}
-					prevContact = contact;
-				}
-				else
-				{
-					stop = 1;
-					verbose_debug_printf("MSR: malformed route...");
-				}
-			}
-			else
-			{
+            if (contact != NULL && contact->toTime > current_time) {
+                if (prevToNode == contact->fromNode &&
+                    ((prevToNode != contact->toNode) ||
+                     (count == 0 && bundle->terminus_node == localNode))) {
+                    prevToNode = contact->toNode;
+                    count++;
+                    contact->routingObject->predecessor = prevContact;
+                    if (prevContact != NULL) {
+                        contact->routingObject->arrivalConfidence =
+                            contact->confidence * prevContact->routingObject->arrivalConfidence;
+                    } else {
+                        contact->routingObject->arrivalConfidence = contact->confidence;
+                    }
+                    prevContact = contact;
+                } else {
+                    stop = 1;
+                    verbose_debug_printf("MSR: malformed route...");
+                }
+            } else {
 #if (WISE_NODE == 1)
-				stop = 1;
+                stop = 1;
 #else
-				if(count < MSR_HOPS_LOWER_BOUND)
-				{
-					// Lower bound not reached.
-					stop = 1;
-				}
-				else
-				{
-					contact = prevContact;
-					stop = 2;
-				}
+                if (count < MSR_HOPS_LOWER_BOUND) {
+                    // Lower bound not reached.
+                    stop = 1;
+                } else {
+                    contact = prevContact;
+                    stop = 2;
+                }
 #endif
-			}
-		}
+            }
+        }
 
-		if(!stop && (bundle->terminus_node != prevToNode))
-		{
-			stop = 1;
-			verbose_debug_printf("MSR: malformed route...");
-			verbose_debug_printf("prevToNode: %llu, destination: %llu", prevToNode, bundle->terminus_node);
-		}
+        if (!stop && (bundle->terminus_node != prevToNode)) {
+            stop = 1;
+            verbose_debug_printf("MSR: malformed route...");
+            verbose_debug_printf("prevToNode: %llu, destination: %llu", prevToNode,
+                                 bundle->terminus_node);
+        }
 
-		if(stop == 1)
-		{
-			delete_msr_route(newRoute);
-			result = -1;
-		}
-		else
-		{
-			if(populate_msr_route(current_time, contact, newRoute) < 0)
-			{
-				result = -2;
-				delete_msr_route(newRoute);
-			}
-			else
-			{
-				// Success case
-				result = 0;
-				bundle->msrRoute = newRoute;
-			}
-		}
-	}
+        if (stop == 1) {
+            delete_msr_route(newRoute);
+            result = -1;
+        } else {
+            if (populate_msr_route(current_time, contact, newRoute) < 0) {
+                result = -2;
+                delete_msr_route(newRoute);
+            } else {
+                // Success case
+                result = 0;
+                bundle->msrRoute = newRoute;
+            }
+        }
+    }
 
-	return result;
-
+    return result;
 }
 
 /******************************************************************************
@@ -273,9 +239,9 @@ static int build_msr_route(time_t current_time, CGRRoute* cgrrRoute, CgrBundle *
  * \retval  -3   Arguments error
  *
  * \param[in]      current_time   The differencial time from CGR's start
- * \param[in]      cgrrBlk        The CGRR Extension Block that contains all the routes previously computed
- *                                by some ipn node.
- * \param[in,out]  bundle         The bundle that at the end will contains the builded Route
+ * \param[in]      cgrrBlk        The CGRR Extension Block that contains all the routes previously
+ *computed by some ipn node. \param[in,out]  bundle         The bundle that at the end will contains
+ *the builded Route
  *
  * \par Revision History:
  *
@@ -283,33 +249,25 @@ static int build_msr_route(time_t current_time, CGRRoute* cgrrRoute, CgrBundle *
  *  -------- | --------------- |  -----------------------------------------------
  *  23/04/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-int set_msr_route(time_t current_time, CGRRouteBlock *cgrrBlk, CgrBundle *bundle)
-{
-	CGRRoute *cgrrRoute;
-	int result = -3;
+int set_msr_route(time_t current_time, CGRRouteBlock *cgrrBlk, CgrBundle *bundle) {
+    CGRRoute *cgrrRoute;
+    int result = -3;
 
-	if(cgrrBlk != NULL && bundle != NULL)
-	{
-		if(cgrrBlk->recRoutesLength > 0)
-		{
-			cgrrRoute = &(cgrrBlk->recomputedRoutes[cgrrBlk->recRoutesLength - 1]);
-		}
-		else
-		{
-			cgrrRoute = &(cgrrBlk->originalRoute);
-		}
+    if (cgrrBlk != NULL && bundle != NULL) {
+        if (cgrrBlk->recRoutesLength > 0) {
+            cgrrRoute = &(cgrrBlk->recomputedRoutes[cgrrBlk->recRoutesLength - 1]);
+        } else {
+            cgrrRoute = &(cgrrBlk->originalRoute);
+        }
 
-		if(cgrrRoute != NULL)
-		{
-			result = build_msr_route(current_time, cgrrRoute, bundle);
-		}
-		else
-		{
-			result = -1;
-		}
-	}
+        if (cgrrRoute != NULL) {
+            result = build_msr_route(current_time, cgrrRoute, bundle);
+        } else {
+            result = -1;
+        }
+    }
 
-	return result;
+    return result;
 }
 
 #endif
@@ -334,25 +292,20 @@ int set_msr_route(time_t current_time, CGRRouteBlock *cgrrBlk, CgrBundle *bundle
  *  -------- | --------------- |  -----------------------------------------------
  *  23/04/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-void delete_msr_route(Route *route)
-{
-	if(route != NULL)
-	{
-		if(route->hops != NULL)
-		{
-			route->hops->delete_data_elt = NULL;
-			route->hops->delete_userData = NULL;
-			free_list(route->hops);
-		}
-		if(route->children != NULL)
-		{
-			route->children->delete_data_elt = NULL;
-			route->children->delete_userData = NULL;
-			free_list(route->children);
-		}
+void delete_msr_route(Route *route) {
+    if (route != NULL) {
+        if (route->hops != NULL) {
+            route->hops->delete_data_elt = NULL;
+            route->hops->delete_userData = NULL;
+            free_list(route->hops);
+        }
+        if (route->children != NULL) {
+            route->children->delete_data_elt = NULL;
+            route->children->delete_userData = NULL;
+            free_list(route->children);
+        }
 
-		memset(route,0,sizeof(Route));
-		MDEPOSIT(route);
-	}
+        memset(route, 0, sizeof(Route));
+        MDEPOSIT(route);
+    }
 }
-

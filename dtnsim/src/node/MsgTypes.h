@@ -19,8 +19,8 @@
 
 #define TRAFFIC_TIMER 7
 
-#define BUNDLE_CUSTODY_REPORT 8	// white
-#define BUNDLE 9				// yellow
+#define BUNDLE_CUSTODY_REPORT 8 // white
+#define BUNDLE 9                // yellow
 
 #define CUSTODY_TIMEOUT 10
 

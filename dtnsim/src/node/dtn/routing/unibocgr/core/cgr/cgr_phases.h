@@ -1,5 +1,5 @@
 /** \file cgr_phases.h
- *	
+ *
  *  \brief  This file contains the declarations of the functions
  *          to call and manage each of the three logical CGR phases.
  *
@@ -38,15 +38,14 @@
 #include "../contact_plan/nodes/nodes.h"
 #include <sys/time.h>
 
-#include "src/node/dtn/routing/unibocgr/core/bundles/bundles.h"
-#include "src/node/dtn/routing/unibocgr/core/contact_plan/contacts/contacts.h"
 #include "../library/commonDefines.h"
 #include "../library/list/list_type.h"
 #include "../library_from_ion/scalar/scalar.h"
+#include "src/node/dtn/routing/unibocgr/core/bundles/bundles.h"
+#include "src/node/dtn/routing/unibocgr/core/contact_plan/contacts/contacts.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /******************************************************/
@@ -74,7 +73,7 @@ extern "C"
  *
  * \details From SABR CCSDS Blue book, 2.4.2
  */
-#define	MAX_SPEED_MPH	(450000)
+#define MAX_SPEED_MPH (450000)
 
 #if (CGR_AVOID_LOOP > 0)
 #undef NO_LOOP
@@ -93,7 +92,8 @@ extern "C"
  */
 #define NO_LOOP 1
 /**
- * \brief   Used to flag routes considered as "Possible loop routes" by the anti-loop proactive version.
+ * \brief   Used to flag routes considered as "Possible loop routes" by the anti-loop proactive
+ * version.
  *
  * \details It means that at least one node of the route (except the neighbor)
  *          matches with one node of the geographic route of the bundle.
@@ -101,7 +101,8 @@ extern "C"
  */
 #define POSSIBLE_LOOP 2
 /**
- * \brief   Used to flag routes considered as "Closing loop routes" by the anti-loop proactive version.
+ * \brief   Used to flag routes considered as "Closing loop routes" by the anti-loop proactive
+ * version.
  *
  * \details It means that the route's neighbor matches with one node of the bundle's geo route.
  *          Don't change this value.
@@ -121,13 +122,10 @@ extern "C"
 #define FAILED_NEIGHBOR 4
 #endif
 
-
 /******************************************************/
 
 /*******************PHASE ONE MACROS*******************/
 // Macros used in phase one only
-
-
 
 /******************************************************/
 
@@ -137,12 +135,13 @@ extern "C"
 #if (CCSDS_SABR_DEFAULTS == 0)
 #ifndef NEGLECT_CONFIDENCE
 /**
- * \brief   Used to enable or disable the use of the confidence for the computation and the choose of the routes.
+ * \brief   Used to enable or disable the use of the confidence for the computation and the choose
+ * of the routes.
  *
- * \details ION implementation differs slightly from CCSDS SABR in the candidate and best route selection criteria
- *          as ION use the route confidence, not mentioned in CCSDS SABR.
- *          Set to 1 if you want CGR to strictly implements the CCSDS SABR criteria, thus to neglect confidence.
- *          Otherwise set to 0.
+ * \details ION implementation differs slightly from CCSDS SABR in the candidate and best route
+ * selection criteria as ION use the route confidence, not mentioned in CCSDS SABR. Set to 1 if you
+ * want CGR to strictly implements the CCSDS SABR criteria, thus to neglect confidence. Otherwise
+ * set to 0.
  *
  * \hideinitializer
  */
@@ -160,87 +159,86 @@ extern "C"
  *
  * \warning Change this value only if you know what you are doing.
  */
-#define	MIN_CONFIDENCE_IMPROVEMENT	(0.05)
+#define MIN_CONFIDENCE_IMPROVEMENT (0.05)
 #endif
 
 /**
  * \brief Used to keep in one place all the data used by phase one.
  */
 typedef struct {
-	/**
-	 * \brief List of unsigned long long, for each neighbor in this list we already have a computed
-	 *        route (selectedRoutes)
-	 */
-	List excludedNeighbors;
-	/**
-	 * \brief A trick to exclude only one time the "neighbors" for each CGR's call.
-	 *
-	 * \details 1 if we already excluded all the neighbors for this call, 0 otherwise.
-	 */
-	int alreadyExcluded;
-	/**
-	 * \brief Boolean used to know if the graph has been already cleand with ClearTotally rule
-	 *        during the current call.
-	 *
-	 * \details 1 if we already called the clear_work_areas with clearTotally rule, 0 otherwise.
-	 */
-	int graphCleaned;
-	/**
-	 * \brief A trick to update only one time the cost values for
-	 * the route in Yen's "list B" (knownRoutes) for each CGR's call.
-	 *
-	 * \details 1 if we already updated the cost values for this call, 0 otherwise.
-	 */
-	int knownRoutesUpdated;
-	/**
-	 * \brief The contacts graph's root.
-	 */
-	UniboContact graphRoot;
-	/**
-	 * \brief The dijkstra's note for the contacts graph's root.
-	 */
-	ContactNote graphRootWork;
-	/**
-	 * \brief The destination of the current bundle
-	 */
-	unsigned long long destination;
+    /**
+     * \brief List of unsigned long long, for each neighbor in this list we already have a computed
+     *        route (selectedRoutes)
+     */
+    List excludedNeighbors;
+    /**
+     * \brief A trick to exclude only one time the "neighbors" for each CGR's call.
+     *
+     * \details 1 if we already excluded all the neighbors for this call, 0 otherwise.
+     */
+    int alreadyExcluded;
+    /**
+     * \brief Boolean used to know if the graph has been already cleand with ClearTotally rule
+     *        during the current call.
+     *
+     * \details 1 if we already called the clear_work_areas with clearTotally rule, 0 otherwise.
+     */
+    int graphCleaned;
+    /**
+     * \brief A trick to update only one time the cost values for
+     * the route in Yen's "list B" (knownRoutes) for each CGR's call.
+     *
+     * \details 1 if we already updated the cost values for this call, 0 otherwise.
+     */
+    int knownRoutesUpdated;
+    /**
+     * \brief The contacts graph's root.
+     */
+    UniboContact graphRoot;
+    /**
+     * \brief The dijkstra's note for the contacts graph's root.
+     */
+    ContactNote graphRootWork;
+    /**
+     * \brief The destination of the current bundle
+     */
+    unsigned long long destination;
     /**
      * \brief The region in which resides the bundle's destination
      */
-	unsigned long regionNbr;
+    unsigned long regionNbr;
 } PhaseOneSAP;
 
 /**
  * \brief Used to keep in one place all the data used by phase two.
  */
 typedef struct {
-	/**
-	 * \brief The candidate routes list.
-	 */
-	List routes;
-	/**
-	 * \brief The subset of the computed routes. For each route in this list
-	 *        we want that phase one compute other routes.
-	 */
-	List subset;
-	/**
-	 * \brief In this list we store the suppressed (i.e: excluded, failed ...) during
-	 *        the current call. All the nodes in this list are neighbors with a
-	 *        possible route to destination
-	 */
-	List suppressedNeighbors;
-	/**
-	 * \brief The number of neighbors found during the current call.
-	 */
-	long unsigned int neighborsFound;
-	/**
-	 * \brief The "max neighbors number" computed during the previous
-	 *        iteration in phase two during the current call to CGR.
-	 *        Resetted to 0 at each call to CGR.
-	 */
-	long unsigned int last_max_neighbors_number;
+    /**
+     * \brief The candidate routes list.
+     */
+    List routes;
+    /**
+     * \brief The subset of the computed routes. For each route in this list
+     *        we want that phase one compute other routes.
+     */
+    List subset;
+    /**
+     * \brief In this list we store the suppressed (i.e: excluded, failed ...) during
+     *        the current call. All the nodes in this list are neighbors with a
+     *        possible route to destination
+     */
+    List suppressedNeighbors;
+    /**
+     * \brief The number of neighbors found during the current call.
+     */
+    long unsigned int neighborsFound;
+    /**
+     * \brief The "max neighbors number" computed during the previous
+     *        iteration in phase two during the current call to CGR.
+     *        Resetted to 0 at each call to CGR.
+     */
+    long unsigned int last_max_neighbors_number;
 } PhaseTwoSAP;
-
 
 /******************************************************/
 
@@ -248,20 +246,23 @@ typedef struct {
 extern int initialize_phase_one(unsigned long long localNode);
 extern void reset_phase_one();
 extern void destroy_phase_one();
-extern int computeRoutes(unsigned long regionNbr, Node *terminusNode, List subsetComputedRoutes, long unsigned int missingNeighbors);
-extern PhaseOneSAP *get_phase_one_sap(PhaseOneSAP * newSap);
+extern int computeRoutes(unsigned long regionNbr, Node *terminusNode, List subsetComputedRoutes,
+                         long unsigned int missingNeighbors);
+extern PhaseOneSAP *get_phase_one_sap(PhaseOneSAP *newSap);
 /*********************************************************************/
 
 /***************************** PHASE TWO *****************************/
 extern int initialize_phase_two();
 extern void destroy_phase_two();
 extern void reset_phase_two();
-extern int checkRoute(time_t current_time, unsigned long long localNode, CgrBundle *bundle, List excludedNeighbors, Route *route);
-extern int getCandidateRoutes(Node *terminusNode, CgrBundle *bundle, List excludedNeighbors, List computedRoutes,
-		List *subsetComputedRoutes, long unsigned int *missingNeighbors, List *candidateRoutes);
-extern int computeApplicableBacklog(unsigned long long neighbor, int priority, unsigned int ordinal, CgrScalar *applicableBacklog,
-		CgrScalar *totalBacklog);
-extern PhaseTwoSAP *get_phase_two_sap(PhaseTwoSAP * newSap);
+extern int checkRoute(time_t current_time, unsigned long long localNode, CgrBundle *bundle,
+                      List excludedNeighbors, Route *route);
+extern int getCandidateRoutes(Node *terminusNode, CgrBundle *bundle, List excludedNeighbors,
+                              List computedRoutes, List *subsetComputedRoutes,
+                              long unsigned int *missingNeighbors, List *candidateRoutes);
+extern int computeApplicableBacklog(unsigned long long neighbor, int priority, unsigned int ordinal,
+                                    CgrScalar *applicableBacklog, CgrScalar *totalBacklog);
+extern PhaseTwoSAP *get_phase_two_sap(PhaseTwoSAP *newSap);
 /*********************************************************************/
 
 /**************************** PHASE THREE ****************************/
@@ -271,8 +272,9 @@ extern int chooseBestRoutes(CgrBundle *bundle, List candidateRoutes);
 /**************************** SHARED *****************************/
 extern time_t get_current_time();
 extern unsigned long long get_local_node();
-extern double get_probability_if_this_route_is_chosen(Route* route);
-extern double get_probability_if_this_contact_is_chosen(UniboContact* contact, time_t earliestTransmissionTime);
+extern double get_probability_if_this_route_is_chosen(Route *route);
+extern double get_probability_if_this_contact_is_chosen(UniboContact *contact,
+                                                        time_t earliestTransmissionTime);
 /*****************************************************************/
 
 #if (LOG == 1)
@@ -280,9 +282,15 @@ extern void print_phase_one_routes(FILE *file, List computedRoutes);
 extern void print_phase_two_routes(FILE *file, List candidateRoutes);
 extern void print_phase_three_routes(FILE *file, List bestRoutes);
 #else
-#define print_phase_one_routes(file, computedRoutes) do { } while(0)
-#define print_phase_two_routes(file, candidateRoutes) do { } while(0)
-#define print_phase_three_routes(file, bestRoutes) do { } while(0)
+#define print_phase_one_routes(file, computedRoutes)                                               \
+    do {                                                                                           \
+    } while (0)
+#define print_phase_two_routes(file, candidateRoutes)                                              \
+    do {                                                                                           \
+    } while (0)
+#define print_phase_three_routes(file, bestRoutes)                                                 \
+    do {                                                                                           \
+    } while (0)
 #endif
 
 /******************CHECK MACROS ERROR******************/
@@ -296,14 +304,11 @@ fatal error
 // NEGLECT_CONFIDENCE must be 0 or 1.
 #endif
 
-
 /**
  * \endcond
  */
 
 /******************************************************/
-
-
 
 #ifdef __cplusplus
 }

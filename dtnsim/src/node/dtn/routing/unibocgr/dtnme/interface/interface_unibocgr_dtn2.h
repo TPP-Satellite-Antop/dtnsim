@@ -28,11 +28,10 @@
  *       Carlo Caini, carlo.caini@unibo.it
  */
 
-
 #ifndef SOURCES_INTERFACE_UNIBO_CGR_DTN2_H_
 #define SOURCES_INTERFACE_UNIBO_CGR_DTN2_H_
 
-//include from dtn2
+// include from dtn2
 #include "../../../../bundling/Bundle.h"
 #include "../../../RouteEntry.h"
 #include "../../../UniboCGRBundleRouter.h"
@@ -43,7 +42,7 @@
 // (same name used in ION and in this CGR implementation)
 #endif
 
-//DTN2 is written in c++
+// DTN2 is written in c++
 //#ifndef __cplusplus
 //#define __cplusplus
 //#endif
@@ -52,14 +51,13 @@
 #include <sys/time.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-extern int callUniboCGR(time_t time, dtn::Bundle *bundle,
-		 std::string *res);
+extern int callUniboCGR(time_t time, dtn::Bundle *bundle, std::string *res);
 extern void destroy_contact_graph_routing(time_t time);
-extern int initialize_contact_graph_routing(unsigned long long ownNode, time_t time, dtn::UniboCGRBundleRouter* router);
+extern int initialize_contact_graph_routing(unsigned long long ownNode, time_t time,
+                                            dtn::UniboCGRBundleRouter *router);
 
 #ifdef __cplusplus
 }

@@ -1,126 +1,121 @@
 #ifndef __CENTRAL_H_
 #define __CENTRAL_H_
 
+#include <iostream>
+#include <limits>
+#include <map>
+#include <omnetpp.h>
+#include <src/node/com/Com.h>
 #include <src/node/dtn/ContactPlan.h>
 #include <src/node/dtn/Dtn.h>
-#include <src/node/com/Com.h>
-#include <omnetpp.h>
 #include <string>
-#include <iostream>
-#include <map>
 #include <utility>
-#include <limits>
 #include <vector>
 
 #include "../utils/Lp.h"
-#include "src/utils/TopologyUtils.h"
-#include "src/utils/RouterUtils.h"
+#include "src/node/app/App.h"
 #include "src/utils/LpUtils.h"
 #include "src/utils/MetricCollector.h"
-#include "src/node/app/App.h"
+#include "src/utils/RouterUtils.h"
+#include "src/utils/TopologyUtils.h"
 
-#include "src/node/dtn/routing/RoutingCgrModel350.h"
 #include "src/node/dtn/SdrModel.h"
+#include "src/node/dtn/routing/RoutingCgrModel350.h"
 
-#include "src/node/MsgTypes.h"
 #include "src/dtnsim_m.h"
+#include "src/node/MsgTypes.h"
 
 using namespace omnetpp;
 using namespace std;
 
+namespace dtnsim {
 
-namespace dtnsim
-{
+class Central : public cSimpleModule {
+  public:
+    Central();
+    virtual ~Central();
+    void finish();
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
 
-class Central: public cSimpleModule
-{
-public:
+  private:
+    /// @brief Fill flowIds_ structure with App traffic data generators
+    void computeFlowIds();
 
-	Central();
-	virtual ~Central();
-	void finish();
-	virtual void initialize();
-	virtual void handleMessage(cMessage * msg);
+    /// @brief Compute Topology from  contactPlan_ and save it
+    /// in dot and pdf files inside "results" folder
+    void saveTopology();
 
-private:
+    /// @brief Compute Flows from BundleMaps files and save them
+    /// in dot and pdf files inside "results" folder
+    void saveFlows();
 
-	/// @brief Fill flowIds_ structure with App traffic data generators
-	void computeFlowIds();
+    void saveLpFlows();
 
-	/// @brief Compute Topology from  contactPlan_ and save it
-	/// in dot and pdf files inside "results" folder
-	void saveTopology();
+    map<int, map<int, map<int, double>>> getTraffics();
 
-	/// @brief Compute Flows from BundleMaps files and save them
-	/// in dot and pdf files inside "results" folder
-	void saveFlows();
+    double getState(double trafficStart);
 
-	void saveLpFlows();
+    /// @brief delete contacts from contactPlan_
+    /// @param[in] contactsToDelete are contact ids
+    /// @param[in] faultsAware specifies if the contact is erased or simply set to deleted
+    void deleteContacts(vector<int> contactsToDelete, bool faultsAware);
 
-	map<int, map<int, map<int, double > > > getTraffics();
+    /// @brief get nContacts randomly
+    /// @return vector of contact ids
+    vector<int> getRandomContactIds(int nContacts);
 
-	double getState(double trafficStart);
+    /// @brief get contacts randomly. Any contact is chosen with probability failureProbability.
+    /// @return vector of contact ids
+    vector<int> getRandomContactIdsWithFProb(double failureProbability);
 
-	/// @brief delete contacts from contactPlan_
-	/// @param[in] contactsToDelete are contact ids
-	/// @param[in] faultsAware specifies if the contact is erased or simply set to deleted
-	void deleteContacts(vector<int> contactsToDelete, bool faultsAware);
+    /// @brief goes to the available contacts from the network topology and chooses their id, in
+    /// case they have to be deleted
+    /// @return the ids of the chosen contacts to be deleted
+    vector<int> getContactIdsWithSpecificFProb();
 
-	/// @brief get nContacts randomly
-	/// @return vector of contact ids
-	vector<int> getRandomContactIds(int nContacts);
+    /// @brief get nContacts by iteratively erasing contacts
+    /// with highest centrality
+    /// @return vector of contact ids
+    vector<int> getCentralityContactIds(int nContacts, int nodesNumber);
+    int computeNumberOfRoutesThroughContact(int contactId, vector<CgrRoute> shortestPaths);
+    set<int> getAffectedContacts(vector<CgrRoute> shortestPaths);
 
-	/// @brief get contacts randomly. Any contact is chosen with probability failureProbability.
-	/// @return vector of contact ids
-	vector<int> getRandomContactIdsWithFProb(double failureProbability);
+    /// @brief compute total routes from all to all nodes
+    /// nodePairsRoutes is returned as output, it will contain an element i->j if there is at least
+    /// a route between i and j
+    int computeTotalRoutesNumber(ContactPlan &contactPlan, int nodesNumber,
+                                 set<pair<int, int>> &nodePairsRoutes);
 
-	/// @brief goes to the available contacts from the network topology and chooses their id, in case they have to be deleted
-	/// @return the ids of the chosen contacts to be deleted
-	vector<int> getContactIdsWithSpecificFProb();
+    // Nodes Number in the network
+    int nodesNumber_;
 
-	/// @brief get nContacts by iteratively erasing contacts
-	/// with highest centrality
-	/// @return vector of contact ids
-	vector<int> getCentralityContactIds(int nContacts, int nodesNumber);
-	int computeNumberOfRoutesThroughContact(int contactId, vector<CgrRoute> shortestPaths);
-	set<int> getAffectedContacts(vector<CgrRoute> shortestPaths);
+    // Contact Plan passed to all nodes to feed CGR
+    // It can be different to the real topology
+    ContactPlan contactPlan_;
 
-	/// @brief compute total routes from all to all nodes
-	/// nodePairsRoutes is returned as output, it will contain an element i->j if there is at least a route between i and j
-	int computeTotalRoutesNumber(ContactPlan &contactPlan, int nodesNumber, set<pair<int, int> > &nodePairsRoutes);
+    // Contact Plan passed to all nodes to schedule Contacts
+    // and get transmission rates
+    ContactPlan contactTopology_;
 
+    // Observer used to collect and evaluate all the necessary metrics
+    MetricCollector metricCollector_;
 
-	// Nodes Number in the network
-	int nodesNumber_;
+    // specify if there are ion nodes in the simulation
+    bool ionNodes_;
 
-	// Contact Plan passed to all nodes to feed CGR
-	// It can be different to the real topology
-	ContactPlan contactPlan_;
+    // flowIds map: (src,dst) -> flowId
+    // save flow ids corresponding to traffic data
+    // generated in App layer
+    map<pair<int, int>, unsigned int> flowIds_;
 
-	// Contact Plan passed to all nodes to schedule Contacts
-	// and get transmission rates
-	ContactPlan contactTopology_;
-
-	//Observer used to collect and evaluate all the necessary metrics
-	MetricCollector metricCollector_;
-
-	// specify if there are ion nodes in the simulation
-	bool ionNodes_;
-
-	// flowIds map: (src,dst) -> flowId
-	// save flow ids corresponding to traffic data
-	// generated in App layer
-	map<pair<int, int>, unsigned int> flowIds_;
-
-	// stat signals
-	simsignal_t contactsNumber;
-	simsignal_t totalRoutes;
-	simsignal_t availableRoutes;
-	simsignal_t pairsOfNodesWithAtLeastOneRoute;
-
+    // stat signals
+    simsignal_t contactsNumber;
+    simsignal_t totalRoutes;
+    simsignal_t availableRoutes;
+    simsignal_t pairsOfNodesWithAtLeastOneRoute;
 };
 
-}
-
+} // namespace dtnsim
 
 #endif

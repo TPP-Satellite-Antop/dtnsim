@@ -1,5 +1,5 @@
 /** \file routes.c
- *	
+ *
  *  \brief  This file provides the implementations of the functions to create
  *          and delete the routes and other utility functions.
  *
@@ -32,9 +32,9 @@
 
 #include <stdlib.h>
 
+#include "../contact_plan/nodes/nodes.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/contacts/contacts.h"
 #include "src/node/dtn/routing/unibocgr/core/library/list/list.h"
-#include "../contact_plan/nodes/nodes.h"
 
 /******************************************************************************
  *
@@ -59,9 +59,8 @@
  *  -------- | --------------- | -----------------------------------------------
  *  21/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void erase_cgr_route(Route *route)
-{
-	memset(route, 0, sizeof(Route));
+static void erase_cgr_route(Route *route) {
+    memset(route, 0, sizeof(Route));
 }
 
 /******************************************************************************
@@ -77,8 +76,8 @@ static void erase_cgr_route(Route *route)
  *
  * \return void
  *
- * \param[in]	*contact		The Contact for which we want to delete the citation "target"
- * \param[in]	*target			The citation to remove from the contact
+ * \param[in]	*contact		The Contact for which we want to delete the citation
+ *"target" \param[in]	*target			The citation to remove from the contact
  *
  * \warning We have to remove only the citation from the contact: no chain events
  *
@@ -88,38 +87,31 @@ static void erase_cgr_route(Route *route)
  *  -------- | --------------- | -----------------------------------------------
  *  21/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void remove_citation(UniboContact *contact, ListElt *target)
-{
-	ListElt *current;
-	int deleted = 0;
+static void remove_citation(UniboContact *contact, ListElt *target) {
+    ListElt *current;
+    int deleted = 0;
 
-	if (contact != NULL && target != NULL)
-	{
-		if (contact->citations != NULL)
-		{
-			current = contact->citations->first;
-			while (current != NULL)
-			{
-				if (current->data == target) //if they point to the same address
-				{
-					list_remove_elt(current);
-					current = NULL; //I leave the loop
-					deleted = 1;
-				}
-				else
-				{
-					current = current->next;
-				}
-			}
-		}
-	}
+    if (contact != NULL && target != NULL) {
+        if (contact->citations != NULL) {
+            current = contact->citations->first;
+            while (current != NULL) {
+                if (current->data == target) // if they point to the same address
+                {
+                    list_remove_elt(current);
+                    current = NULL; // I leave the loop
+                    deleted = 1;
+                } else {
+                    current = current->next;
+                }
+            }
+        }
+    }
 
-	if (deleted == 0)
-	{
-		flush_verbose_debug_printf("Error!!!");
-	}
+    if (deleted == 0) {
+        flush_verbose_debug_printf("Error!!!");
+    }
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -145,16 +137,14 @@ static void remove_citation(UniboContact *contact, ListElt *target)
  *  -------- | --------------- | -----------------------------------------------
  *  13/05/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void remove_reference_from_son(void *data)
-{
-	Route *son;
-	if(data != NULL)
-	{
-		son = (Route*) data;
-		son->citationToFather = NULL;
-	}
+static void remove_reference_from_son(void *data) {
+    Route *son;
+    if (data != NULL) {
+        son = (Route *)data;
+        son->citationToFather = NULL;
+    }
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -175,12 +165,16 @@ static void remove_reference_from_son(void *data)
  * 							selectedFather and selectedChild
  *
  * \par Notes:
- * 			1. The children of this route at the end will have the father field setted to NULL.
- * 			2. The father of this route at the end will not see anymore this route in the children list.
- * 			3. The selectedFather of this route at the end will acquire as selectedChild the selectedChild of this route.
- *			4. The selectedChild of this route at the end will acquire as selectedFather the selectedFather of this route.
- *			5. If this route has a selectedChild field setted to NULL we set to 0 the spursComputed field
- *			   of the selectedFather.
+ * 			1. The children of this route at the end will have the father field setted to
+ *NULL.
+ * 			2. The father of this route at the end will not see anymore this route in the
+ *children list.
+ * 			3. The selectedFather of this route at the end will acquire as selectedChild
+ *the selectedChild of this route.
+ *			4. The selectedChild of this route at the end will acquire as selectedFather the
+ *selectedFather of this route.
+ *			5. If this route has a selectedChild field setted to NULL we set to 0 the
+ *spursComputed field of the selectedFather.
  *
  * \par Revision History:
  *
@@ -188,34 +182,29 @@ static void remove_reference_from_son(void *data)
  *  -------- | --------------- | -----------------------------------------------
  *  21/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void update_references(Route *route)
-{
-	//destroy children list, all son->father will be setted to NULL by remove_reference_from_son()
-	free_list(route->children);
-	route->children = NULL;
+static void update_references(Route *route) {
+    // destroy children list, all son->father will be setted to NULL by remove_reference_from_son()
+    free_list(route->children);
+    route->children = NULL;
 
-	// manage the selectedFather-selectedChild to optimize Yen's algorithm
-	if (route->selectedFather != NULL)
-	{
-		route->selectedFather->selectedChild = route->selectedChild;
-		if (route->selectedFather->selectedChild == NULL)
-		{
-			route->selectedFather->spursComputed = 0;
-		}
-	}
-	if (route->selectedChild != NULL)
-	{
-		route->selectedChild->selectedFather = route->selectedFather;
-	}
+    // manage the selectedFather-selectedChild to optimize Yen's algorithm
+    if (route->selectedFather != NULL) {
+        route->selectedFather->selectedChild = route->selectedChild;
+        if (route->selectedFather->selectedChild == NULL) {
+            route->selectedFather->spursComputed = 0;
+        }
+    }
+    if (route->selectedChild != NULL) {
+        route->selectedChild->selectedFather = route->selectedFather;
+    }
 
-	// remove the citation to this son from the father's children list
-	// the route->citationFather is setted to NULL by the remove_reference_from_son()
-	if (route->citationToFather != NULL)
-	{
-		list_remove_elt(route->citationToFather);
-	}
+    // remove the citation to this son from the father's children list
+    // the route->citationFather is setted to NULL by the remove_reference_from_son()
+    if (route->citationToFather != NULL) {
+        list_remove_elt(route->citationToFather);
+    }
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -236,10 +225,12 @@ static void update_references(Route *route)
  * \param[in]	*data		The Route that we want to delete
  *
  * \par Notes:
- * 			1. All contacts in the hops list at the end will not have anymore any reference
- * 			   with this route.
- * 			2. The route will be removed also from the list where it was putted in (referenceElt field)
- * 			3. For the other references with other routes see the update_references function
+ * 			1. All contacts in the hops list at the end will not have anymore any
+ *reference with this route.
+ * 			2. The route will be removed also from the list where it was putted in
+ *(referenceElt field)
+ * 			3. For the other references with other routes see the update_references
+ *function
  *
  * \par Revision History:
  *
@@ -247,52 +238,47 @@ static void update_references(Route *route)
  *  -------- | --------------- | -----------------------------------------------
  *  21/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void delete_cgr_route(void *data)
-{
-	ListElt *elt, *nextElt;
-	UniboContact *contact;
-	Route *route;
-	delete_function temp;
-	List list;
-	if (data != NULL)
-	{
-		route = (Route*) data;
+void delete_cgr_route(void *data) {
+    ListElt *elt, *nextElt;
+    UniboContact *contact;
+    Route *route;
+    delete_function temp;
+    List list;
+    if (data != NULL) {
+        route = (Route *)data;
 
-		if (route->hops != NULL)
-		{
-			elt = route->hops->first;
-			while (elt != NULL)
-			{
-				nextElt = elt->next;
-				contact = (UniboContact*) elt->data;
-				remove_citation(contact, elt); //delete citation from the contact
-				MDEPOSIT(elt);
-				elt = nextElt;
-			}
+        if (route->hops != NULL) {
+            elt = route->hops->first;
+            while (elt != NULL) {
+                nextElt = elt->next;
+                contact = (UniboContact *)elt->data;
+                remove_citation(contact, elt); // delete citation from the contact
+                MDEPOSIT(elt);
+                elt = nextElt;
+            }
 
-			MDEPOSIT(route->hops);
-		}
+            MDEPOSIT(route->hops);
+        }
 
-		update_references(route); //manage the references with other routes
+        update_references(route); // manage the references with other routes
 
-		if (route->referenceElt != NULL)
-		{
-			list = route->referenceElt->list;
-			if (list != NULL)
-			{
-				temp = list->delete_data_elt;
-				list->delete_data_elt = NULL; //It was setted with this function, so I set
-											  //it to NULL to avoid chain events
+        if (route->referenceElt != NULL) {
+            list = route->referenceElt->list;
+            if (list != NULL) {
+                temp = list->delete_data_elt;
+                list->delete_data_elt = NULL; // It was setted with this function, so I set
+                                              // it to NULL to avoid chain events
 
-				list_remove_elt(route->referenceElt); //delete the route from the list where it was putted in
+                list_remove_elt(
+                    route->referenceElt); // delete the route from the list where it was putted in
 
-				list->delete_data_elt = temp; //Reset the delete_function properly at the default value
-			}
-
-		}
-		erase_cgr_route(route);
-		MDEPOSIT(route);
-	}
+                list->delete_data_elt =
+                    temp; // Reset the delete_function properly at the default value
+            }
+        }
+        erase_cgr_route(route);
+        MDEPOSIT(route);
+    }
 }
 
 /******************************************************************************
@@ -312,8 +298,10 @@ void delete_cgr_route(void *data)
  *
  * \par Notes:
  * 			1. The free_list_elts can't be used to delete a list of Route, due to the
- * 			   delete_cgr_route setted as delete_function that remove the element from the list.
- * 			2. All references will be managed by the delete_cgr_route called by this function
+ * 			   delete_cgr_route setted as delete_function that remove the element from the
+ *list.
+ * 			2. All references will be managed by the delete_cgr_route called by this
+ *function
  *
  * \par Revision History:
  *
@@ -321,34 +309,28 @@ void delete_cgr_route(void *data)
  *  -------- | --------------- | -----------------------------------------------
  *  03/04/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void clear_routes_list(List routes)
-{
-	ListElt *elt, *next;
+void clear_routes_list(List routes) {
+    ListElt *elt, *next;
 
-	if (routes != NULL)
-	{
-		elt = routes->first;
-		while (elt != NULL)
-		{
-			next = elt->next;
-			if (elt->data != NULL)
-			{
-				delete_cgr_route(elt->data);
-			}
-			else
-			{
-				flush_verbose_debug_printf("Error: route NULL!!!");
-				list_remove_elt(elt);
-			}
-			elt = next;
-		}
+    if (routes != NULL) {
+        elt = routes->first;
+        while (elt != NULL) {
+            next = elt->next;
+            if (elt->data != NULL) {
+                delete_cgr_route(elt->data);
+            } else {
+                flush_verbose_debug_printf("Error: route NULL!!!");
+                list_remove_elt(elt);
+            }
+            elt = next;
+        }
 
-		routes->first = NULL;
-		routes->last = NULL;
-		routes->length = 0;
-	}
+        routes->first = NULL;
+        routes->last = NULL;
+        routes->length = 0;
+    }
 
-	return;
+    return;
 }
 /******************************************************************************
  *
@@ -367,8 +349,10 @@ void clear_routes_list(List routes)
  *
  * \par Notes:
  * 			1. The free_list can't be used to delete a list of Route, due to the
- * 			   delete_cgr_route setted as delete_function that remove the element from the list.
- * 			2. All references will be managed by the delete_cgr_route called by this function
+ * 			   delete_cgr_route setted as delete_function that remove the element from the
+ *list.
+ * 			2. All references will be managed by the delete_cgr_route called by this
+ *function
  *
  * \par Revision History:
  *
@@ -376,12 +360,11 @@ void clear_routes_list(List routes)
  *  -------- | --------------- | -----------------------------------------------
  *  21/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void destroy_routes_list(List routes)
-{
-	clear_routes_list(routes);
-	MDEPOSIT(routes);
+void destroy_routes_list(List routes) {
+    clear_routes_list(routes);
+    MDEPOSIT(routes);
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -412,26 +395,23 @@ void destroy_routes_list(List routes)
  *  -------- | --------------- | -----------------------------------------------
  *  21/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-Route* create_cgr_route()
-{
-	Route *result;
-	result = (Route*) MWITHDRAW(sizeof(Route));
-	if (result != NULL)
-	{
-		erase_cgr_route(result);
-		result->hops = list_create(result, NULL, NULL, NULL);
-		result->children = list_create(result, NULL, NULL, remove_reference_from_son);
+Route *create_cgr_route() {
+    Route *result;
+    result = (Route *)MWITHDRAW(sizeof(Route));
+    if (result != NULL) {
+        erase_cgr_route(result);
+        result->hops = list_create(result, NULL, NULL, NULL);
+        result->children = list_create(result, NULL, NULL, remove_reference_from_son);
 
-		if (result->hops == NULL || result->children == NULL)
-		{
-			MDEPOSIT(result->hops);
-			MDEPOSIT(result->children);
-			MDEPOSIT(result);
-			result = NULL;
-		}
-	}
+        if (result->hops == NULL || result->children == NULL) {
+            MDEPOSIT(result->hops);
+            MDEPOSIT(result->children);
+            MDEPOSIT(result);
+            result = NULL;
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -459,36 +439,30 @@ Route* create_cgr_route()
  *  -------- | --------------- | -----------------------------------------------
  *  21/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int move_route_from_known_to_selected(Route *route)
-{
+int move_route_from_known_to_selected(Route *route) {
 
-	int result = -1;
-	RtgObject *rtgObj;
-	ListElt *elt_in_known;
-	List knownRoutes;
+    int result = -1;
+    RtgObject *rtgObj;
+    ListElt *elt_in_known;
+    List knownRoutes;
 
-	if (route != NULL)
-	{
-		elt_in_known = route->referenceElt;
-		if (elt_in_known != NULL)
-		{
-			knownRoutes = elt_in_known->list;
-			if (knownRoutes != NULL)
-			{
-				rtgObj = (RtgObject*) knownRoutes->userData;
-				if (rtgObj != NULL)
-				{
-					if (knownRoutes == rtgObj->knownRoutes)
-					{
-						result = move_elt_to_other_list(route->referenceElt,
-								rtgObj->selectedRoutes);
-					}
-				}
-			}
-		}
-	}
+    if (route != NULL) {
+        elt_in_known = route->referenceElt;
+        if (elt_in_known != NULL) {
+            knownRoutes = elt_in_known->list;
+            if (knownRoutes != NULL) {
+                rtgObj = (RtgObject *)knownRoutes->userData;
+                if (rtgObj != NULL) {
+                    if (knownRoutes == rtgObj->knownRoutes) {
+                        result =
+                            move_elt_to_other_list(route->referenceElt, rtgObj->selectedRoutes);
+                    }
+                }
+            }
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -508,8 +482,9 @@ int move_route_from_known_to_selected(Route *route)
  * \retval  -1		Error case: rtgObj NULL or route NULL
  * \retval  -2		MWITHDRAW error
  *
- * \param[in]	*rtgObj		The RtgObject that contains the selectedRoutes where we want to put the route
- * \param[in]	*route		The route that we want to put into the selectedRoutes as first element
+ * \param[in]	*rtgObj		The RtgObject that contains the selectedRoutes where we want to put
+ *the route \param[in]	*route		The route that we want to put into the selectedRoutes as
+ *first element
  *
  * \par Notes:
  * 			1.	The Route's referenceElt will be setted
@@ -520,25 +495,20 @@ int move_route_from_known_to_selected(Route *route)
  *  -------- | --------------- | -----------------------------------------------
  *  21/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int insert_selected_route(RtgObject *rtgObj, Route *route)
-{
-	int result = -1;
-	ListElt *elt;
-	if (rtgObj != NULL && route != NULL)
-	{
-		elt = list_insert_first(rtgObj->selectedRoutes, route);
-		if (elt != NULL)
-		{
-			route->referenceElt = elt;
-			result = 0;
-		}
-		else
-		{
-			result = -2;
-		}
-	}
+int insert_selected_route(RtgObject *rtgObj, Route *route) {
+    int result = -1;
+    ListElt *elt;
+    if (rtgObj != NULL && route != NULL) {
+        elt = list_insert_first(rtgObj->selectedRoutes, route);
+        if (elt != NULL) {
+            route->referenceElt = elt;
+            result = 0;
+        } else {
+            result = -2;
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -558,8 +528,9 @@ int insert_selected_route(RtgObject *rtgObj, Route *route)
  * \retval  -1		Error case: rtgObj NULL or route NULL
  * \retval  -2		MWITHDRAW error
  *
- * \param[in]	*rtgObj		The RtgObject that contains the knownRoutes where we want to put the route
- * \param[in]	*route		The route that we want to put into the knownRoutes as first element
+ * \param[in]	*rtgObj		The RtgObject that contains the knownRoutes where we want to put the
+ *route \param[in]	*route		The route that we want to put into the knownRoutes as first
+ *element
  *
  * \par Notes:
  * 			1.	The Route's referenceElt will be setted
@@ -570,34 +541,27 @@ int insert_selected_route(RtgObject *rtgObj, Route *route)
  *  -------- | --------------- | -----------------------------------------------
  *  21/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int insert_known_route(RtgObject *rtgObj, Route *route)
-{
-	int result = -1;
-	ListElt *elt;
-	if (rtgObj != NULL && route != NULL)
-	{
-		elt = list_insert_first(rtgObj->knownRoutes, route);
-		if (elt != NULL)
-		{
-			route->referenceElt = elt;
-			result = 0;
-		}
-		else
-		{
-			result = -2;
-		}
-	}
+int insert_known_route(RtgObject *rtgObj, Route *route) {
+    int result = -1;
+    ListElt *elt;
+    if (rtgObj != NULL && route != NULL) {
+        elt = list_insert_first(rtgObj->knownRoutes, route);
+        if (elt != NULL) {
+            route->referenceElt = elt;
+            result = 0;
+        } else {
+            result = -2;
+        }
+    }
 
-	return result;
+    return result;
 }
 
-Route * get_route_father(Route *son)
-{
-	Route *father = NULL;
-	if(son != NULL && son->citationToFather != NULL && son->citationToFather->list != NULL)
-	{
-		father = (Route*) son->citationToFather->list->userData;
-	}
+Route *get_route_father(Route *son) {
+    Route *father = NULL;
+    if (son != NULL && son->citationToFather != NULL && son->citationToFather->list != NULL) {
+        father = (Route *)son->citationToFather->list->userData;
+    }
 
-	return father;
+    return father;
 }

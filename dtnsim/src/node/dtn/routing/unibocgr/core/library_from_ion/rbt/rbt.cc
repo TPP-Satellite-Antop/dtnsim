@@ -11,7 +11,7 @@
  *
  * \par Ported from ION 3.7.0 by
  *      Lorenzo Persampieri, lorenzo.persampieri@studio.unibo.it
- * 
+ *
  * \par Supervisor
  *      Carlo Caini, carlo.caini@unibo.it
  *
@@ -66,11 +66,10 @@
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-static void eraseTree(Rbt *rbt)
-{
-	rbt->userData = NULL;
-	rbt->root = NULL;
-	rbt->length = 0;
+static void eraseTree(Rbt *rbt) {
+    rbt->userData = NULL;
+    rbt->root = NULL;
+    rbt->length = 0;
 }
 
 /******************************************************************************
@@ -94,14 +93,13 @@ static void eraseTree(Rbt *rbt)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-static void eraseTreeNode(RbtNode *node)
-{
-	node->rbt = NULL;
-	node->parent = NULL;
-	node->child[LEFT] = NULL;
-	node->child[RIGHT] = NULL;
-	node->data = NULL;
-	node->isRed = 0;
+static void eraseTreeNode(RbtNode *node) {
+    node->rbt = NULL;
+    node->parent = NULL;
+    node->child[LEFT] = NULL;
+    node->child[RIGHT] = NULL;
+    node->data = NULL;
+    node->isRed = 0;
 }
 
 /******************************************************************************
@@ -128,20 +126,16 @@ static void eraseTreeNode(RbtNode *node)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-static int nodeIsRed(RbtNode *node)
-{
-	int result;
+static int nodeIsRed(RbtNode *node) {
+    int result;
 
-	if (node == NULL)
-	{
-		result = 0;
-	}
-	else
-	{
-		result = node->isRed;
-	}
+    if (node == NULL) {
+        result = 0;
+    } else {
+        result = node->isRed;
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -170,20 +164,18 @@ static int nodeIsRed(RbtNode *node)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-Rbt* rbt_create(RbtDeleteFn deleteFn, RbtCompareFn compareFn)
-{
-	Rbt *rbt;
+Rbt *rbt_create(RbtDeleteFn deleteFn, RbtCompareFn compareFn) {
+    Rbt *rbt;
 
-	rbt = (Rbt*) MWITHDRAW(sizeof(Rbt));
+    rbt = (Rbt *)MWITHDRAW(sizeof(Rbt));
 
-	if (rbt != NULL)
-	{
-		eraseTree(rbt);
-		rbt->deleteFn = deleteFn;
-		rbt->compareFn = compareFn;
-	}
+    if (rbt != NULL) {
+        eraseTree(rbt);
+        rbt->deleteFn = deleteFn;
+        rbt->compareFn = compareFn;
+    }
 
-	return rbt;
+    return rbt;
 }
 
 /******************************************************************************
@@ -211,68 +203,59 @@ Rbt* rbt_create(RbtDeleteFn deleteFn, RbtCompareFn compareFn)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-static void destroyRbtNodes(Rbt *rbtPtr, RbtDeleteFn deleteFn)
-{
-	RbtNode *nodePtr;
-	RbtNode *parentNode;
+static void destroyRbtNodes(Rbt *rbtPtr, RbtDeleteFn deleteFn) {
+    RbtNode *nodePtr;
+    RbtNode *parentNode;
 
-	nodePtr = rbtPtr->root;
-	/*	Destroy all nodes of the tree.				*/
+    nodePtr = rbtPtr->root;
+    /*	Destroy all nodes of the tree.				*/
 
-	while (nodePtr != NULL)
-	{
-		/*	If node has a left subtree, descend into it.	*/
+    while (nodePtr != NULL) {
+        /*	If node has a left subtree, descend into it.	*/
 
-		if (nodePtr->child[LEFT] != NULL)
-		{
-			nodePtr = nodePtr->child[LEFT];
-			continue;
-		}
+        if (nodePtr->child[LEFT] != NULL) {
+            nodePtr = nodePtr->child[LEFT];
+            continue;
+        }
 
-		/*	If node has a right subtree, descend into it.	*/
+        /*	If node has a right subtree, descend into it.	*/
 
-		if (nodePtr->child[RIGHT] != NULL)
-		{
-			nodePtr = nodePtr->child[RIGHT];
-			continue;
-		}
+        if (nodePtr->child[RIGHT] != NULL) {
+            nodePtr = nodePtr->child[RIGHT];
+            continue;
+        }
 
-		/*	Node is a leaf, so can delete it.		*/
+        /*	Node is a leaf, so can delete it.		*/
 
-		parentNode = nodePtr->parent;
-		if (deleteFn != NULL)
-		{
-			deleteFn(nodePtr->data);
-		}
+        parentNode = nodePtr->parent;
+        if (deleteFn != NULL) {
+            deleteFn(nodePtr->data);
+        }
 
-		/*	just in case user mistakenly accesses later...	*/
-		eraseTreeNode(nodePtr);
-		MDEPOSIT(nodePtr);
+        /*	just in case user mistakenly accesses later...	*/
+        eraseTreeNode(nodePtr);
+        MDEPOSIT(nodePtr);
 
-		/*	Now pop back up to this node's parent.		*/
+        /*	Now pop back up to this node's parent.		*/
 
-		if (parentNode == NULL)
-		{
-			rbtPtr->root = NULL;
-			break; /*	Have deleted the root node.	*/
-		}
+        if (parentNode == NULL) {
+            rbtPtr->root = NULL;
+            break; /*	Have deleted the root node.	*/
+        }
 
-		/*	Erase the child pointer for the child that
-		 *	has now been deleted.				*/
+        /*	Erase the child pointer for the child that
+         *	has now been deleted.				*/
 
-		if (nodePtr == parentNode->child[LEFT])
-		{
-			parentNode->child[LEFT] = NULL;
-		}
+        if (nodePtr == parentNode->child[LEFT]) {
+            parentNode->child[LEFT] = NULL;
+        }
 
-		if (nodePtr == parentNode->child[RIGHT])
-		{
-			parentNode->child[RIGHT] = NULL;
-		}
+        if (nodePtr == parentNode->child[RIGHT]) {
+            parentNode->child[RIGHT] = NULL;
+        }
 
-		nodePtr = parentNode;
-
-	}
+        nodePtr = parentNode;
+    }
 }
 
 /******************************************************************************
@@ -299,12 +282,10 @@ static void destroyRbtNodes(Rbt *rbtPtr, RbtDeleteFn deleteFn)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-void rbt_clear(Rbt *rbt)
-{
-	if (rbt != NULL)
-	{
-		destroyRbtNodes(rbt, rbt->deleteFn);
-	}
+void rbt_clear(Rbt *rbt) {
+    if (rbt != NULL) {
+        destroyRbtNodes(rbt, rbt->deleteFn);
+    }
 }
 
 /******************************************************************************
@@ -331,18 +312,16 @@ void rbt_clear(Rbt *rbt)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-void rbt_destroy(Rbt *rbt)
-{
-	if (rbt != NULL)
-	{
-		destroyRbtNodes(rbt, rbt->deleteFn);
+void rbt_destroy(Rbt *rbt) {
+    if (rbt != NULL) {
+        destroyRbtNodes(rbt, rbt->deleteFn);
 
-		/*	Now destroy the tree itself.				*/
+        /*	Now destroy the tree itself.				*/
 
-		/*	just in case user mistakenly accesses later...		*/
-		eraseTree(rbt);
-		MDEPOSIT(rbt);
-	}
+        /*	just in case user mistakenly accesses later...		*/
+        eraseTree(rbt);
+        MDEPOSIT(rbt);
+    }
 }
 
 /******************************************************************************
@@ -367,16 +346,14 @@ void rbt_destroy(Rbt *rbt)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-void* rbt_user_data(Rbt *rbt)
-{
-	void *userData = NULL;
+void *rbt_user_data(Rbt *rbt) {
+    void *userData = NULL;
 
-	if (rbt != NULL)
-	{
+    if (rbt != NULL) {
 
-		userData = rbt->userData;
-	}
-	return userData;
+        userData = rbt->userData;
+    }
+    return userData;
 }
 
 /******************************************************************************
@@ -400,13 +377,11 @@ void* rbt_user_data(Rbt *rbt)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-void rbt_user_data_set(Rbt *rbt, void *data)
-{
+void rbt_user_data_set(Rbt *rbt, void *data) {
 
-	if (rbt != NULL && data != NULL)
-	{
-		rbt->userData = data;
-	}
+    if (rbt != NULL && data != NULL) {
+        rbt->userData = data;
+    }
 }
 
 /******************************************************************************
@@ -432,16 +407,14 @@ void rbt_user_data_set(Rbt *rbt, void *data)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-long unsigned int rbt_length(Rbt *rbt)
-{
-	long unsigned int length = 0;
+long unsigned int rbt_length(Rbt *rbt) {
+    long unsigned int length = 0;
 
-	if (rbt != NULL)
-	{
-		length = rbt->length;
-	}
+    if (rbt != NULL) {
+        length = rbt->length;
+    }
 
-	return length;
+    return length;
 }
 
 /*	Rotation to the RIGHT is a clockwise rotation: the root node
@@ -488,26 +461,24 @@ long unsigned int rbt_length(Rbt *rbt)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-static RbtNode* rotateOnce(RbtNode *root, int direction)
-{
-	int otherDirection = 1 - direction;
-	RbtNode *pivot;
-	RbtNode *orphan;
+static RbtNode *rotateOnce(RbtNode *root, int direction) {
+    int otherDirection = 1 - direction;
+    RbtNode *pivot;
+    RbtNode *orphan;
 
-	pivot = root->child[otherDirection];
-	orphan = pivot->child[direction];
-	pivot->parent = root->parent;
-	pivot->child[direction] = root;
-	pivot->isRed = 0;
-	root->parent = pivot;
-	root->child[otherDirection] = orphan;
-	root->isRed = 1;
-	if (orphan != NULL)
-	{
-		orphan->parent = root;
-	}
+    pivot = root->child[otherDirection];
+    orphan = pivot->child[direction];
+    pivot->parent = root->parent;
+    pivot->child[direction] = root;
+    pivot->isRed = 0;
+    root->parent = pivot;
+    root->child[otherDirection] = orphan;
+    root->isRed = 1;
+    if (orphan != NULL) {
+        orphan->parent = root;
+    }
 
-	return pivot;
+    return pivot;
 }
 
 /******************************************************************************
@@ -538,12 +509,11 @@ static RbtNode* rotateOnce(RbtNode *root, int direction)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-static RbtNode* rotateTwice(RbtNode *root, int direction)
-{
-	int otherDirection = 1 - direction;
+static RbtNode *rotateTwice(RbtNode *root, int direction) {
+    int otherDirection = 1 - direction;
 
-	root->child[otherDirection] = rotateOnce(root->child[otherDirection], otherDirection);
-	return rotateOnce(root, direction);
+    root->child[otherDirection] = rotateOnce(root->child[otherDirection], otherDirection);
+    return rotateOnce(root, direction);
 }
 
 /******************************************************************************
@@ -580,31 +550,28 @@ static RbtNode* rotateTwice(RbtNode *root, int direction)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-static RbtNode* createNode(Rbt *rbt, RbtNode *parent, void *data, RbtNode **buffer)
-{
-	RbtNode *node;
+static RbtNode *createNode(Rbt *rbt, RbtNode *parent, void *data, RbtNode **buffer) {
+    RbtNode *node;
 
-	node = (RbtNode*) MWITHDRAW(sizeof(RbtNode));
+    node = (RbtNode *)MWITHDRAW(sizeof(RbtNode));
 
-	if (node != NULL)
-	{
-		node->rbt = rbt;
-		node->parent = parent;
-		node->child[LEFT] = NULL;
-		node->child[RIGHT] = NULL;
-		node->data = data;
-		if (buffer != NULL) /*	Tree already has a root.		*/
-		{
-			node->isRed = 1;
-			*buffer = node;
-		}
-		else /*	This is the first node in the tree.	*/
-		{
-			node->isRed = 0; /*	Root is always black.	*/
-		}
-	}
+    if (node != NULL) {
+        node->rbt = rbt;
+        node->parent = parent;
+        node->child[LEFT] = NULL;
+        node->child[RIGHT] = NULL;
+        node->data = data;
+        if (buffer != NULL) /*	Tree already has a root.		*/
+        {
+            node->isRed = 1;
+            *buffer = node;
+        } else /*	This is the first node in the tree.	*/
+        {
+            node->isRed = 0; /*	Root is always black.	*/
+        }
+    }
 
-	return node;
+    return node;
 }
 
 /******************************************************************************
@@ -627,7 +594,8 @@ static RbtNode* createNode(Rbt *rbt, RbtNode *parent, void *data, RbtNode **buff
  * \param[in]  *data  The data pointed by the new RbtNode
  *
  * \par Notes:
- * 			1. The compareFn will be used to find the position where the new node will be inserted.
+ * 			1. The compareFn will be used to find the position where the new node will be
+ *inserted.
  *
  * \par Revision History:
  *
@@ -635,157 +603,138 @@ static RbtNode* createNode(Rbt *rbt, RbtNode *parent, void *data, RbtNode **buff
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-RbtNode* rbt_insert(Rbt *rbt, void *data)
-{
-	RbtNode dummyRootBuffer = { NULL, NULL, { NULL, NULL }, NULL, 0 };
-	/*	Dummy root is a trick; it
-	 *	lets us avoid constantly
-	 *	rebalancing at actual root.	*/
-	RbtNode *child[2] = { NULL, NULL };
-	RbtNode *node = NULL;		//	q
-	RbtNode *greatgrandparent = NULL;		//	t
-	RbtNode *grandparent = NULL;		//	g
-	RbtNode *parent = NULL;				//	p
-	int direction = LEFT;	//	dir
-	int prevDirection = LEFT;	//	last
-	int subtree;		//	dir2
-	RbtCompareFn compare;
+RbtNode *rbt_insert(Rbt *rbt, void *data) {
+    RbtNode dummyRootBuffer = {NULL, NULL, {NULL, NULL}, NULL, 0};
+    /*	Dummy root is a trick; it
+     *	lets us avoid constantly
+     *	rebalancing at actual root.	*/
+    RbtNode *child[2] = {NULL, NULL};
+    RbtNode *node = NULL;             //	q
+    RbtNode *greatgrandparent = NULL; //	t
+    RbtNode *grandparent = NULL;      //	g
+    RbtNode *parent = NULL;           //	p
+    int direction = LEFT;             //	dir
+    int prevDirection = LEFT;         //	last
+    int subtree;                      //	dir2
+    RbtCompareFn compare;
 
-	if (rbt != NULL && data != NULL)
-	{
-		compare = rbt->compareFn;
+    if (rbt != NULL && data != NULL) {
+        compare = rbt->compareFn;
 
-		if (rbt->root == NULL)
-		{
-			node = createNode(rbt, NULL, data, NULL);
-			if (node != NULL)
-			{
-				rbt->root = node;
-				rbt->length = 1;
-			}
+        if (rbt->root == NULL) {
+            node = createNode(rbt, NULL, data, NULL);
+            if (node != NULL) {
+                rbt->root = node;
+                rbt->length = 1;
+            }
 
-			return node;
-		}
+            return node;
+        }
 
-		/*	Initialize for top-down insertion pass.  Tree is
-		 *	known to be non-empty, so every newly inserted node
-		 *	will be a leaf with a non-zero parent (at least at
-		 *	first).							*/
+        /*	Initialize for top-down insertion pass.  Tree is
+         *	known to be non-empty, so every newly inserted node
+         *	will be a leaf with a non-zero parent (at least at
+         *	first).							*/
 
-		greatgrandparent = &dummyRootBuffer;
-		greatgrandparent->child[RIGHT] = rbt->root;
-		grandparent = NULL; /*	None.		*/
-		parent = NULL; /*	None.		*/
-		node = rbt->root;
-		while (1)
-		{
-			if (node == NULL) /*	(Can't be tree's root node.)	*/
-			{
-				/*	Have found the position at which this
-				 *	node should be inserted.		*/
+        greatgrandparent = &dummyRootBuffer;
+        greatgrandparent->child[RIGHT] = rbt->root;
+        grandparent = NULL; /*	None.		*/
+        parent = NULL;      /*	None.		*/
+        node = rbt->root;
+        while (1) {
+            if (node == NULL) /*	(Can't be tree's root node.)	*/
+            {
+                /*	Have found the position at which this
+                 *	node should be inserted.		*/
 
-				node = createNode(rbt, parent, data, &node);
-				if (node == NULL)
-				{
-					return NULL;
-				}
+                node = createNode(rbt, parent, data, &node);
+                if (node == NULL) {
+                    return NULL;
+                }
 
-				/*	Update parent's child pointer.  Note
-				 *	that parent must already exist and be
-				 *	known, because this is not the root
-				 *	node.					*/
+                /*	Update parent's child pointer.  Note
+                 *	that parent must already exist and be
+                 *	known, because this is not the root
+                 *	node.					*/
 
-				parent->child[direction] = node;
-			}
-			else /*	(Might be the root node.)	*/
-			{
+                parent->child[direction] = node;
+            } else /*	(Might be the root node.)	*/
+            {
 
-				/*	Check for need to flip colors.		*/
+                /*	Check for need to flip colors.		*/
 
-				if (nodeIsRed(node->child[LEFT]) && nodeIsRed(node->child[RIGHT]))
-				{
-					/*	The two children are RED, so
-					 *	make current node RED and
-					 *	children BLACK.			*/
+                if (nodeIsRed(node->child[LEFT]) && nodeIsRed(node->child[RIGHT])) {
+                    /*	The two children are RED, so
+                     *	make current node RED and
+                     *	children BLACK.			*/
 
-					node->isRed = 1;
-					child[LEFT] = node->child[LEFT];
-					child[LEFT]->isRed = 0;
-					child[RIGHT] = node->child[RIGHT];
-					child[RIGHT]->isRed = 0;
-				}
-			}
+                    node->isRed = 1;
+                    child[LEFT] = node->child[LEFT];
+                    child[LEFT]->isRed = 0;
+                    child[RIGHT] = node->child[RIGHT];
+                    child[RIGHT]->isRed = 0;
+                }
+            }
 
-			/*	Now look for a newly introduced red violation;
-			 *	if present, fix it.  Note that there can't be
-			 *	a violation if this is the root node, because
-			 *	the parent is the dummy root, which is black.	*/
+            /*	Now look for a newly introduced red violation;
+             *	if present, fix it.  Note that there can't be
+             *	a violation if this is the root node, because
+             *	the parent is the dummy root, which is black.	*/
 
-			if (nodeIsRed(parent) && nodeIsRed(node))
-			{
-				if (greatgrandparent->child[RIGHT] == grandparent)
-				{
-					subtree = RIGHT;
-				}
-				else
-				{
-					subtree = LEFT;
-				}
+            if (nodeIsRed(parent) && nodeIsRed(node)) {
+                if (greatgrandparent->child[RIGHT] == grandparent) {
+                    subtree = RIGHT;
+                } else {
+                    subtree = LEFT;
+                }
 
-				if (node == parent->child[prevDirection])
-				{
-					greatgrandparent->child[subtree] = rotateOnce(grandparent, 1 - prevDirection);
-				}
-				else /*	Child in current direction.	*/
-				{
-					greatgrandparent->child[subtree] = rotateTwice(grandparent, 1 - prevDirection);
-				}
-			}
+                if (node == parent->child[prevDirection]) {
+                    greatgrandparent->child[subtree] = rotateOnce(grandparent, 1 - prevDirection);
+                } else /*	Child in current direction.	*/
+                {
+                    greatgrandparent->child[subtree] = rotateTwice(grandparent, 1 - prevDirection);
+                }
+            }
 
-			/*	Stop if this data item is in the tree, either
-			 *	from earlier insertion or from this one.	*/
+            /*	Stop if this data item is in the tree, either
+             *	from earlier insertion or from this one.	*/
 
-			if (node->data == data)
-			{
-				break;
-			}
+            if (node->data == data) {
+                break;
+            }
 
-			/*	Decide which branch to take next.		*/
+            /*	Decide which branch to take next.		*/
 
-			prevDirection = direction;
-			if (compare(node->data, data) < 0)
-			{
-				direction = RIGHT;
-			}
-			else
-			{
-				direction = LEFT;
-			}
+            prevDirection = direction;
+            if (compare(node->data, data) < 0) {
+                direction = RIGHT;
+            } else {
+                direction = LEFT;
+            }
 
-			/*	Descend one level in the tree and try again.	*/
+            /*	Descend one level in the tree and try again.	*/
 
-			if (grandparent != NULL)
-			{
-				greatgrandparent = grandparent;
-			}
+            if (grandparent != NULL) {
+                greatgrandparent = grandparent;
+            }
 
-			grandparent = parent;
-			parent = node;
-			node = node->child[direction];
-		}
+            grandparent = parent;
+            parent = node;
+            node = node->child[direction];
+        }
 
-		rbt->length += 1;
+        rbt->length += 1;
 
-		/*	Record the new root node object.			*/
+        /*	Record the new root node object.			*/
 
-		rbt->root = dummyRootBuffer.child[RIGHT];
+        rbt->root = dummyRootBuffer.child[RIGHT];
 
-		/*	Make sure the root node is black.			*/
+        /*	Make sure the root node is black.			*/
 
-		node = rbt->root;
-		node->isRed = 0;
-	}
-	return node;
+        node = rbt->root;
+        node->isRed = 0;
+    }
+    return node;
 }
 
 /******************************************************************************
@@ -814,282 +763,255 @@ RbtNode* rbt_insert(Rbt *rbt, void *data)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-void rbt_delete(Rbt *rbt, void *dataBuffer)
-{
-	RbtNode dummyRootBuffer = { NULL, NULL, { NULL, NULL }, NULL, 0 };
-	/*	Dummy root is a trick; it
-	 *	lets us avoid special cases.	*/
-	RbtNode *node;		//	q
-	RbtNode *sibling;		//	s
-	RbtNode *parent;		//	p
-	RbtNode *stepparent;		//	p
-	RbtNode *grandparentPtr;	//	g
-	RbtNode *target;		//	f
-	int direction;		//	dir
-	int otherDirection;		//	!dir
-	int prevDirection;		//	last
-	int prevOtherDirection;	//	!last
-	int subtree;		//	dir2
-	RbtNode *childPtr[2];
-	int result;
-	int i;
-	int j;
-	RbtCompareFn compare;
-	RbtDeleteFn deleteFn;
+void rbt_delete(Rbt *rbt, void *dataBuffer) {
+    RbtNode dummyRootBuffer = {NULL, NULL, {NULL, NULL}, NULL, 0};
+    /*	Dummy root is a trick; it
+     *	lets us avoid special cases.	*/
+    RbtNode *node;           //	q
+    RbtNode *sibling;        //	s
+    RbtNode *parent;         //	p
+    RbtNode *stepparent;     //	p
+    RbtNode *grandparentPtr; //	g
+    RbtNode *target;         //	f
+    int direction;           //	dir
+    int otherDirection;      //	!dir
+    int prevDirection;       //	last
+    int prevOtherDirection;  //	!last
+    int subtree;             //	dir2
+    RbtNode *childPtr[2];
+    int result;
+    int i;
+    int j;
+    RbtCompareFn compare;
+    RbtDeleteFn deleteFn;
 
-	if (rbt != NULL)
-	{
-		compare = rbt->compareFn;
-		deleteFn = rbt->deleteFn;
-		if (rbt->length == 0 || rbt->root == NULL)
-		{
-			return;
-		}
+    if (rbt != NULL) {
+        compare = rbt->compareFn;
+        deleteFn = rbt->deleteFn;
+        if (rbt->length == 0 || rbt->root == NULL) {
+            return;
+        }
 
-		/*	We descend the tree, searching for the node that is
-		 *	to be deleted (rather than requiring its address),
-		 *	because we want to ensure that the node has been
-		 *	recolored red -- if necessary -- by the time we
-		 *	reach it.  This is because deleting a red node never
-		 *	violates any red-black tree rules, so there is no
-		 *	subsequent tree fix-up needed.  Our general strategy
-		 *	is to push "red-ness" all the way down to the target
-		 *	node, rotating as necessary to ensure that the target
-		 *	node is transformed into a red leaf.
-		 *
-		 *	Note: a special case is when the node that is to be
-		 *	deleted is the only node in the tree, hence the root.
-		 *	In this case (only), we can delete a black node
-		 *	without violating any red-black tree rules.
-		 *
-		 *	Note 2: this searching strategy is the reason we need
-		 *	the compare function provided on node deletion just
-		 *	as on node insertion.					*/
+        /*	We descend the tree, searching for the node that is
+         *	to be deleted (rather than requiring its address),
+         *	because we want to ensure that the node has been
+         *	recolored red -- if necessary -- by the time we
+         *	reach it.  This is because deleting a red node never
+         *	violates any red-black tree rules, so there is no
+         *	subsequent tree fix-up needed.  Our general strategy
+         *	is to push "red-ness" all the way down to the target
+         *	node, rotating as necessary to ensure that the target
+         *	node is transformed into a red leaf.
+         *
+         *	Note: a special case is when the node that is to be
+         *	deleted is the only node in the tree, hence the root.
+         *	In this case (only), we can delete a black node
+         *	without violating any red-black tree rules.
+         *
+         *	Note 2: this searching strategy is the reason we need
+         *	the compare function provided on node deletion just
+         *	as on node insertion.					*/
 
-		grandparentPtr = NULL;
-		parent = NULL;
-		node = &dummyRootBuffer;
-		node->child[RIGHT] = rbt->root;
-		target = NULL; /*	f		*/
-		direction = RIGHT;
-		while (node->child[direction] != NULL)
-		{
-			prevDirection = direction;
-			grandparentPtr = parent;
+        grandparentPtr = NULL;
+        parent = NULL;
+        node = &dummyRootBuffer;
+        node->child[RIGHT] = rbt->root;
+        target = NULL; /*	f		*/
+        direction = RIGHT;
+        while (node->child[direction] != NULL) {
+            prevDirection = direction;
+            grandparentPtr = parent;
 
-			/*	The first time through the loop, parentPtr
-			 *	is NULL so grandparentPtr is still NULL.  The
-			 *	second time through the loop, nodePtr is a
-			 *	pointer to the dummy root, so the dummy root
-			 *	becomes the grandparent.  The third time, a
-			 *	pointer to the tree's root (a real node) is
-			 *	placed in grandparentPtr.			*/
+            /*	The first time through the loop, parentPtr
+             *	is NULL so grandparentPtr is still NULL.  The
+             *	second time through the loop, nodePtr is a
+             *	pointer to the dummy root, so the dummy root
+             *	becomes the grandparent.  The third time, a
+             *	pointer to the tree's root (a real node) is
+             *	placed in grandparentPtr.			*/
 
-			parent = node;
+            parent = node;
 
-			/*	The first time through the loop, nodePtr is
-			 *	a pointer to the dummy root, so the dummy root
-			 *	becomes the parent.  The second time, a pointer
-			 *	to the tree's root (a real node) is placed in
-			 *	parentPtr.					*/
+            /*	The first time through the loop, nodePtr is
+             *	a pointer to the dummy root, so the dummy root
+             *	becomes the parent.  The second time, a pointer
+             *	to the tree's root (a real node) is placed in
+             *	parentPtr.					*/
 
-			node = node->child[direction];
+            node = node->child[direction];
 
-			/*	The first time through the loop, a pointer
-			 *	to the tree's root (a real node) is placed in
-			 *	nodePtr before any other processing happens.
-			 *
-			 *	Note that the loop continues PAST the node
-			 *	that is to be deleted, locating that node's
-			 *	inorder predecessor.  Then we come back to
-			 *	move the predecessor's data into the target
-			 *	node (erasing the target node's data) and
-			 *	destroy to predecessor node.			*/
+            /*	The first time through the loop, a pointer
+             *	to the tree's root (a real node) is placed in
+             *	nodePtr before any other processing happens.
+             *
+             *	Note that the loop continues PAST the node
+             *	that is to be deleted, locating that node's
+             *	inorder predecessor.  Then we come back to
+             *	move the predecessor's data into the target
+             *	node (erasing the target node's data) and
+             *	destroy to predecessor node.			*/
 
-			result = compare(node->data, dataBuffer);
-			if (result < 0)
-			{
-				direction = RIGHT;
-			}
-			else
-			{
-				direction = LEFT;
-				if (result == 0)
-				{
-					target = node;
-				}
-			}
+            result = compare(node->data, dataBuffer);
+            if (result < 0) {
+                direction = RIGHT;
+            } else {
+                direction = LEFT;
+                if (result == 0) {
+                    target = node;
+                }
+            }
 
-			if (nodeIsRed(node) || nodeIsRed(node->child[direction]))
-			{
-				continue; /*	No recolor needed.	*/
-			}
+            if (nodeIsRed(node) || nodeIsRed(node->child[direction])) {
+                continue; /*	No recolor needed.	*/
+            }
 
-			/*	Neither the node nor its child (if any) in
-			 *	the current direction of search are red, so
-			 *	we must introduce some redness.			*/
+            /*	Neither the node nor its child (if any) in
+             *	the current direction of search are red, so
+             *	we must introduce some redness.			*/
 
-			otherDirection = 1 - direction;
-			if (nodeIsRed(node->child[otherDirection]))
-			{
-				/*	This is the "red sibling" case.  Rotate
-				 *	current node down/red.			*/
+            otherDirection = 1 - direction;
+            if (nodeIsRed(node->child[otherDirection])) {
+                /*	This is the "red sibling" case.  Rotate
+                 *	current node down/red.			*/
 
-				childPtr[otherDirection] = node->child[otherDirection];
-				parent->child[prevDirection] = rotateOnce(node, direction);
+                childPtr[otherDirection] = node->child[otherDirection];
+                parent->child[prevDirection] = rotateOnce(node, direction);
 
-				/*	The new root of the subtree whose root
-				 *	before rotation was "node" [the red
-				 *	sibling] must be noted as "parent" in
-				 *	place of the original parent of "node",
-				 *	because it is now the actual parent
-				 *	of "node".				*/
+                /*	The new root of the subtree whose root
+                 *	before rotation was "node" [the red
+                 *	sibling] must be noted as "parent" in
+                 *	place of the original parent of "node",
+                 *	because it is now the actual parent
+                 *	of "node".				*/
 
-				parent = parent->child[prevDirection];
+                parent = parent->child[prevDirection];
 
-				/*	We've introduced the necessary redness;
-				 *	time to descend again.			*/
+                /*	We've introduced the necessary redness;
+                 *	time to descend again.			*/
 
-				continue;
-			}
+                continue;
+            }
 
-			/*	Node and all of its children (if any) are now
-			 *	known to be black.
-			 *
-			 *	Remaining cases concern the children (if any)
-			 *	of the sibling (if any) of the current node.	*/
+            /*	Node and all of its children (if any) are now
+             *	known to be black.
+             *
+             *	Remaining cases concern the children (if any)
+             *	of the sibling (if any) of the current node.	*/
 
-			prevOtherDirection = 1 - prevDirection;
-			sibling = parent->child[prevOtherDirection];
-			if (sibling == NULL) /*	(True of tree root.)	*/
-			{
-				continue; /*	No sibling, no problem.	*/
-			}
+            prevOtherDirection = 1 - prevDirection;
+            sibling = parent->child[prevOtherDirection];
+            if (sibling == NULL) /*	(True of tree root.)	*/
+            {
+                continue; /*	No sibling, no problem.	*/
+            }
 
-			/*	Node has got a sibling.  Therefore it can't be
-			 *	the root of the tree, so the root of the tree
-			 *	must be above this node.  Therefore this node's
-			 *	parent cannot be the dummy node, so both the
-			 *	node's parent and the dummy node are above this
-			 *	node in the tree.  So the node must have a
-			 *	grandparent (the dummy node or some real node
-			 *	lower in the tree).  So grandparentPtr cannot
-			 *	be NULL.					*/
+            /*	Node has got a sibling.  Therefore it can't be
+             *	the root of the tree, so the root of the tree
+             *	must be above this node.  Therefore this node's
+             *	parent cannot be the dummy node, so both the
+             *	node's parent and the dummy node are above this
+             *	node in the tree.  So the node must have a
+             *	grandparent (the dummy node or some real node
+             *	lower in the tree).  So grandparentPtr cannot
+             *	be NULL.					*/
 
-			/*	Check for need to flip colors.  NOT TREE ROOT.	*/
+            /*	Check for need to flip colors.  NOT TREE ROOT.	*/
 
-			if (nodeIsRed(sibling->child[LEFT]) == 0 && nodeIsRed(sibling->child[RIGHT]) == 0)
-			{
-				/*	Sibling has no red children, so it's
-				 *	safe to make both the current node and
-				 *	its sibling RED and their parent BLACK.	*/
+            if (nodeIsRed(sibling->child[LEFT]) == 0 && nodeIsRed(sibling->child[RIGHT]) == 0) {
+                /*	Sibling has no red children, so it's
+                 *	safe to make both the current node and
+                 *	its sibling RED and their parent BLACK.	*/
 
-				parent->isRed = 0;
-				sibling->isRed = 1;
-				node->isRed = 1;
-				continue;
-			}
+                parent->isRed = 0;
+                sibling->isRed = 1;
+                node->isRed = 1;
+                continue;
+            }
 
-			if (parent == grandparentPtr->child[RIGHT])
-			{
-				subtree = RIGHT;
-			}
-			else
-			{
-				subtree = LEFT;
-			}
+            if (parent == grandparentPtr->child[RIGHT]) {
+                subtree = RIGHT;
+            } else {
+                subtree = LEFT;
+            }
 
-			/*	Note: grandparent is known to have a child
-			 *	on the "subtree" side ("parent"), even if
-			 *	grandparent is dummy.  And that child is
-			 *	known to have two children -- "node" and
-			 *	"sibling".					*/
+            /*	Note: grandparent is known to have a child
+             *	on the "subtree" side ("parent"), even if
+             *	grandparent is dummy.  And that child is
+             *	known to have two children -- "node" and
+             *	"sibling".					*/
 
-			if (nodeIsRed(sibling->child[prevDirection]))
-			{
-				grandparentPtr->child[subtree] = rotateTwice(parent, prevDirection);
-			}
-			else
-			{
-				if (nodeIsRed(sibling->child[prevOtherDirection]))
-				{
-					grandparentPtr->child[subtree] = rotateOnce(parent, prevDirection);
-				}
-			}
+            if (nodeIsRed(sibling->child[prevDirection])) {
+                grandparentPtr->child[subtree] = rotateTwice(parent, prevDirection);
+            } else {
+                if (nodeIsRed(sibling->child[prevOtherDirection])) {
+                    grandparentPtr->child[subtree] = rotateOnce(parent, prevDirection);
+                }
+            }
 
-			/*	The subtree may now have a new parent, due
-			 *	to rotation.  Ensure nodes have correct colors.	*/
+            /*	The subtree may now have a new parent, due
+             *	to rotation.  Ensure nodes have correct colors.	*/
 
-			stepparent = grandparentPtr->child[subtree];
-			stepparent->isRed = 1;
-			node->isRed = 1;
-			childPtr[LEFT] = stepparent->child[LEFT];
-			childPtr[LEFT]->isRed = 0;
-			childPtr[RIGHT] = stepparent->child[RIGHT];
-			childPtr[RIGHT]->isRed = 0;
-		}
+            stepparent = grandparentPtr->child[subtree];
+            stepparent->isRed = 1;
+            node->isRed = 1;
+            childPtr[LEFT] = stepparent->child[LEFT];
+            childPtr[LEFT]->isRed = 0;
+            childPtr[RIGHT] = stepparent->child[RIGHT];
+            childPtr[RIGHT]->isRed = 0;
+        }
 
-		/*	At this point the current node is NOT the one we're
-		 *	trying to delete.  It is the inorder predecessor of
-		 *	the node we're trying to delete -- a node whose
-		 *	content we want to retain.  The data that's in this
-		 *	predecessor is retained by copying it into the
-		 *	target node -- which effectively deletes the target
-		 *	node without actually removing it from the tree.
-		 *	Then the current node (the inorder predecessor of
-		 *	the target node, which is now redundant) is removed
-		 *	from the tree.						*/
+        /*	At this point the current node is NOT the one we're
+         *	trying to delete.  It is the inorder predecessor of
+         *	the node we're trying to delete -- a node whose
+         *	content we want to retain.  The data that's in this
+         *	predecessor is retained by copying it into the
+         *	target node -- which effectively deletes the target
+         *	node without actually removing it from the tree.
+         *	Then the current node (the inorder predecessor of
+         *	the target node, which is now redundant) is removed
+         *	from the tree.						*/
 
-		if (target != NULL)
-		{
-			if (deleteFn != NULL)
-			{
-				deleteFn(target->data);
-			}
+        if (target != NULL) {
+            if (deleteFn != NULL) {
+                deleteFn(target->data);
+            }
 
-			target->data = node->data;
+            target->data = node->data;
 
-			/*	To destroy inorder predecessor node, must
-			 *	make its parent forget about it.		*/
+            /*	To destroy inorder predecessor node, must
+             *	make its parent forget about it.		*/
 
-			if (parent->child[RIGHT] == node)
-			{
-				i = RIGHT;
-			}
-			else
-			{
-				i = LEFT;
-			}
+            if (parent->child[RIGHT] == node) {
+                i = RIGHT;
+            } else {
+                i = LEFT;
+            }
 
-			if (node->child[LEFT] == NULL)
-			{
-				j = RIGHT;
-			}
-			else
-			{
-				j = LEFT;
-			}
+            if (node->child[LEFT] == NULL) {
+                j = RIGHT;
+            } else {
+                j = LEFT;
+            }
 
-			parent->child[i] = node->child[j];
+            parent->child[i] = node->child[j];
 
-			/*	just in case user mistakenly accesses later...	*/
-			eraseTreeNode(node);
-			MDEPOSIT(node);
-			rbt->length -= 1;
-		}
+            /*	just in case user mistakenly accesses later...	*/
+            eraseTreeNode(node);
+            MDEPOSIT(node);
+            rbt->length -= 1;
+        }
 
-		/*	Update root in rbt object.				*/
+        /*	Update root in rbt object.				*/
 
-		rbt->root = dummyRootBuffer.child[RIGHT];
+        rbt->root = dummyRootBuffer.child[RIGHT];
 
-		/*	Make sure root is BLACK.				*/
+        /*	Make sure root is BLACK.				*/
 
-		if (rbt->root != NULL)
-		{
-			node = rbt->root;
-			node->isRed = 0;
-		}
-	}
+        if (rbt->root != NULL) {
+            node = rbt->root;
+            node->isRed = 0;
+        }
+    }
 }
 
 /******************************************************************************
@@ -1119,23 +1041,19 @@ void rbt_delete(Rbt *rbt, void *dataBuffer)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-RbtNode* rbt_first(Rbt *rbt)
-{
-	RbtNode *first = NULL;
-	RbtNode *node;
+RbtNode *rbt_first(Rbt *rbt) {
+    RbtNode *first = NULL;
+    RbtNode *node;
 
-	if (rbt != NULL)
-	{
-		node = rbt->root;
+    if (rbt != NULL) {
+        node = rbt->root;
 
-		while (node != NULL)
-		{
-			first = node;
-			node = node->child[LEFT];
-		}
-
-	}
-	return first;
+        while (node != NULL) {
+            first = node;
+            node = node->child[LEFT];
+        }
+    }
+    return first;
 }
 
 /******************************************************************************
@@ -1165,23 +1083,20 @@ RbtNode* rbt_first(Rbt *rbt)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-RbtNode* rbt_last(Rbt *rbt)
-{
+RbtNode *rbt_last(Rbt *rbt) {
 
-	RbtNode *last = NULL;
-	RbtNode *node;
+    RbtNode *last = NULL;
+    RbtNode *node;
 
-	if (rbt != NULL)
-	{
-		node = rbt->root;
+    if (rbt != NULL) {
+        node = rbt->root;
 
-		while (node != NULL)
-		{
-			last = node;
-			node = node->child[RIGHT];
-		}
-	}
-	return last;
+        while (node != NULL) {
+            last = node;
+            node = node->child[RIGHT];
+        }
+    }
+    return last;
 }
 
 /******************************************************************************
@@ -1214,77 +1129,72 @@ RbtNode* rbt_last(Rbt *rbt)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-static RbtNode* traverseRbt(RbtNode *fromNode, int direction)
-{
-	int otherDirection = 1 - direction;
-	RbtNode *nodePtr;
-	RbtNode *next;
+static RbtNode *traverseRbt(RbtNode *fromNode, int direction) {
+    int otherDirection = 1 - direction;
+    RbtNode *nodePtr;
+    RbtNode *next;
 
-	nodePtr = fromNode;
-	if (nodePtr->child[direction] == NULL)
-	{
-		/*	No next neighbor in this direction in the
-		 *	subtree of which this node is root.  Time to
-		 *	return to parent, popping up one level.		*/
+    nodePtr = fromNode;
+    if (nodePtr->child[direction] == NULL) {
+        /*	No next neighbor in this direction in the
+         *	subtree of which this node is root.  Time to
+         *	return to parent, popping up one level.		*/
 
-		next = nodePtr->parent;
-		while (next != NULL)
-		{
-			nodePtr = next;
-			if (fromNode == nodePtr->child[otherDirection])
-			{
-				/*	If the previously traversed
-				 *	node was the child on the
-				 *	reverse side of the direction
-				 *	of traversal, then the parent
-				 *	is the next node.  The parent
-				 *	is always the next node going
-				 *	RIGHT after its left child's
-				 *	subtree is exited (i.e.,
-				 *	following the last node in
-				 *	the left child's subtree),
-				 *	and it's the next node going
-				 *	LEFT after its right child's
-				 *	subtree is exited (i.e.,
-				 *	following the first node in
-				 *	the right child's subtree).	*/
+        next = nodePtr->parent;
+        while (next != NULL) {
+            nodePtr = next;
+            if (fromNode == nodePtr->child[otherDirection]) {
+                /*	If the previously traversed
+                 *	node was the child on the
+                 *	reverse side of the direction
+                 *	of traversal, then the parent
+                 *	is the next node.  The parent
+                 *	is always the next node going
+                 *	RIGHT after its left child's
+                 *	subtree is exited (i.e.,
+                 *	following the last node in
+                 *	the left child's subtree),
+                 *	and it's the next node going
+                 *	LEFT after its right child's
+                 *	subtree is exited (i.e.,
+                 *	following the first node in
+                 *	the right child's subtree).	*/
 
-				break;
-			}
+                break;
+            }
 
-			/*	If previous node was the node on the
-			 *	side of the direction of traversal,
-			 *	then there are no more un-traversed
-			 *	nodes in this parent node's subtree.
-			 *	So must exit this subtree, popping
-			 *	up one more level.			*/
+            /*	If previous node was the node on the
+             *	side of the direction of traversal,
+             *	then there are no more un-traversed
+             *	nodes in this parent node's subtree.
+             *	So must exit this subtree, popping
+             *	up one more level.			*/
 
-			fromNode = next;
-			next = nodePtr->parent;
-		}
+            fromNode = next;
+            next = nodePtr->parent;
+        }
 
-		return next;
-	}
+        return next;
+    }
 
-	/*	Next neighbor going RIGHT is the leftmost node in
-	 *	this node's right-hand subtree; next neighbor going
-	 *	LEFT is the rightmost node in this node's left-hand
-	 *	subtree.  First get root of that subtree, the node's
-	 *	child in the direction of traversal.			*/
+    /*	Next neighbor going RIGHT is the leftmost node in
+     *	this node's right-hand subtree; next neighbor going
+     *	LEFT is the rightmost node in this node's left-hand
+     *	subtree.  First get root of that subtree, the node's
+     *	child in the direction of traversal.			*/
 
-	next = nodePtr->child[direction];
-	nodePtr = next;
+    next = nodePtr->child[direction];
+    nodePtr = next;
 
-	/*	Now get leftmost node in that subtree if going RIGHT,
-	 *	rightmost node in that subtree if going LEFT.		*/
+    /*	Now get leftmost node in that subtree if going RIGHT,
+     *	rightmost node in that subtree if going LEFT.		*/
 
-	while (nodePtr->child[otherDirection] != NULL)
-	{
-		next = nodePtr->child[otherDirection];
-		nodePtr = next;
-	}
+    while (nodePtr->child[otherDirection] != NULL) {
+        next = nodePtr->child[otherDirection];
+        nodePtr = next;
+    }
 
-	return next;
+    return next;
 }
 
 /******************************************************************************
@@ -1315,19 +1225,16 @@ static RbtNode* traverseRbt(RbtNode *fromNode, int direction)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-RbtNode* rbt_traverse(RbtNode *fromNode, int direction)
-{
-	RbtNode *nextNode = NULL;
-	if (fromNode != NULL)
-	{
-		if (direction != LEFT)
-		{
-			direction = RIGHT;
-		}
+RbtNode *rbt_traverse(RbtNode *fromNode, int direction) {
+    RbtNode *nextNode = NULL;
+    if (fromNode != NULL) {
+        if (direction != LEFT) {
+            direction = RIGHT;
+        }
 
-		nextNode = traverseRbt(fromNode, direction);
-	}
-	return nextNode;
+        nextNode = traverseRbt(fromNode, direction);
+    }
+    return nextNode;
 }
 
 /******************************************************************************
@@ -1358,69 +1265,56 @@ RbtNode* rbt_traverse(RbtNode *fromNode, int direction)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-RbtNode* rbt_search(Rbt *rbtPtr, void *dataBuffer, RbtNode **successor)
-{
+RbtNode *rbt_search(Rbt *rbtPtr, void *dataBuffer, RbtNode **successor) {
 
-	RbtNode *node = NULL;
-	RbtNode *prevNode = NULL;
-	int direction = LEFT;
-	int result;
-	RbtCompareFn compare;
+    RbtNode *node = NULL;
+    RbtNode *prevNode = NULL;
+    int direction = LEFT;
+    int result;
+    RbtCompareFn compare;
 
-	if (rbtPtr != NULL)
-	{
-		compare = rbtPtr->compareFn;
-		node = rbtPtr->root;
-		prevNode = NULL;
-		while (node != NULL)
-		{
-			result = compare(node->data, dataBuffer);
-			if (result == 0) /*	Found the node.		*/
-			{
-				break;
-			}
+    if (rbtPtr != NULL) {
+        compare = rbtPtr->compareFn;
+        node = rbtPtr->root;
+        prevNode = NULL;
+        while (node != NULL) {
+            result = compare(node->data, dataBuffer);
+            if (result == 0) /*	Found the node.		*/
+            {
+                break;
+            }
 
-			prevNode = node;
-			if (result < 0) /*	Haven't reached that node yet.	*/
-			{
-				direction = RIGHT;
-			}
-			else /*	Seeking an earlier node.	*/
-			{
-				direction = LEFT;
-			}
+            prevNode = node;
+            if (result < 0) /*	Haven't reached that node yet.	*/
+            {
+                direction = RIGHT;
+            } else /*	Seeking an earlier node.	*/
+            {
+                direction = LEFT;
+            }
 
-			node = node->child[direction];
-		}
+            node = node->child[direction];
+        }
 
-		if (successor != NULL)
-		{
-			if (node == NULL) /*	Didn't find it; note position.	*/
-			{
-				if (direction == LEFT)
-				{
-					*successor = prevNode;
-				}
-				else
-				{
-					if (prevNode == NULL)
-					{
-						*successor = NULL;
-					}
-					else
-					{
-						*successor = traverseRbt(prevNode, RIGHT);
-					}
-				}
-			}
-			else /*	Successor is moot.		*/
-			{
-				*successor = NULL;
-			}
-		}
-
-	}
-	return node; /*	If NULL, didn't find matching node.	*/
+        if (successor != NULL) {
+            if (node == NULL) /*	Didn't find it; note position.	*/
+            {
+                if (direction == LEFT) {
+                    *successor = prevNode;
+                } else {
+                    if (prevNode == NULL) {
+                        *successor = NULL;
+                    } else {
+                        *successor = traverseRbt(prevNode, RIGHT);
+                    }
+                }
+            } else /*	Successor is moot.		*/
+            {
+                *successor = NULL;
+            }
+        }
+    }
+    return node; /*	If NULL, didn't find matching node.	*/
 }
 
 /******************************************************************************
@@ -1450,14 +1344,12 @@ RbtNode* rbt_search(Rbt *rbtPtr, void *dataBuffer, RbtNode **successor)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-Rbt* rbt_rbt(RbtNode *node)
-{
-	Rbt *rbt = NULL;
-	if (node != NULL)
-	{
-		rbt = node->rbt;
-	}
-	return rbt;
+Rbt *rbt_rbt(RbtNode *node) {
+    Rbt *rbt = NULL;
+    if (node != NULL) {
+        rbt = node->rbt;
+    }
+    return rbt;
 }
 
 /******************************************************************************
@@ -1487,156 +1379,136 @@ Rbt* rbt_rbt(RbtNode *node)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Ported function.
  *******************************************************************************/
-void* rbt_data(RbtNode *node)
-{
-	void *data = NULL;
-	if (node != NULL)
-	{
-		data = node->data;
-	}
-	return data;
+void *rbt_data(RbtNode *node) {
+    void *data = NULL;
+    if (node != NULL) {
+        data = node->data;
+    }
+    return data;
 }
 
-#if	RBT_DEBUG
-void	printTree(Rbt* rbt)
-{
-	RbtNode	*node;
-	int		depth;
-	int		descending;
-	int		i;
-	RbtNode*	prevNode;
+#if RBT_DEBUG
+void printTree(Rbt *rbt) {
+    RbtNode *node;
+    int depth;
+    int descending;
+    int i;
+    RbtNode *prevNode;
 
-	if(rbt != NULL){
-	node = rbt->root;
-	depth = 0;
-	descending = 1;
-	prevNode = NULL;
-	while (node != NULL)
-	{
-		if (descending)
-		{
-			for (i = 0; i < depth; i++)
-			{
-				printf("\t");
-			}
+    if (rbt != NULL) {
+        node = rbt->root;
+        depth = 0;
+        descending = 1;
+        prevNode = NULL;
+        while (node != NULL) {
+            if (descending) {
+                for (i = 0; i < depth; i++) {
+                    printf("\t");
+                }
 
-			printf("%lu (%c)\n", node->data,
-					node->isRed ? 'R' : 'B');
-			if (node->child[LEFT] != NULL)
-			{
-				depth++;
-				node = node->child[LEFT];
-				continue;
-			}
+                printf("%lu (%c)\n", node->data, node->isRed ? 'R' : 'B');
+                if (node->child[LEFT] != NULL) {
+                    depth++;
+                    node = node->child[LEFT];
+                    continue;
+                }
 
-			if (node->child[RIGHT])
-			{
-				depth++;
-				node = node->child[RIGHT];
-				continue;
-			}
+                if (node->child[RIGHT]) {
+                    depth++;
+                    node = node->child[RIGHT];
+                    continue;
+                }
 
-			/*	Time to pop up one level.		*/
+                /*	Time to pop up one level.		*/
 
-			descending = 0;
-			prevNode = node;
-			depth--;
-			node = node->parent;
-			continue;
-		}
+                descending = 0;
+                prevNode = node;
+                depth--;
+                node = node->parent;
+                continue;
+            }
 
-		/*	Ascending in tree.				*/
+            /*	Ascending in tree.				*/
 
-		if (node->child[RIGHT] != NULL
-		&& node->child[RIGHT] != prevNode)
-		{
-			/*	Descend other subtree.			*/
+            if (node->child[RIGHT] != NULL && node->child[RIGHT] != prevNode) {
+                /*	Descend other subtree.			*/
 
-			descending = 1;
-			depth++;
-			node = node->child[RIGHT];
-			continue;
-		}
+                descending = 1;
+                depth++;
+                node = node->child[RIGHT];
+                continue;
+            }
 
-		/*	Pop up one more level.				*/
+            /*	Pop up one more level.				*/
 
-		prevNode = node;
-		depth--;
-		node = node->parent;
-	}
+            prevNode = node;
+            depth--;
+            node = node->parent;
+        }
 
-	fflush(stdout);
-	puts("Tree printed.");
-	}
+        fflush(stdout);
+        puts("Tree printed.");
+    }
 }
 
-static int	subtreeBlackHeight(RbtNode* node)
-{
-	RbtNode	*childPtr[2];
-	int		blackHeight[2];
+static int subtreeBlackHeight(RbtNode *node) {
+    RbtNode *childPtr[2];
+    int blackHeight[2];
 
-	if (node == NULL)
-	{
-		return 1;	/*	Black pseudo-node.		*/
-	}
+    if (node == NULL) {
+        return 1; /*	Black pseudo-node.		*/
+    }
 
-	/*	Test for vertically consecutive red nodes.		*/
+    /*	Test for vertically consecutive red nodes.		*/
 
-	if (node->child[LEFT])
-	{
-		childPtr[LEFT] = node->child[LEFT];
-		if (node->isRed && child[LEFT]->isRed)
-		{
-			puts("Red violation (left).");
-			return 0;
-		}
-	}
+    if (node->child[LEFT]) {
+        childPtr[LEFT] = node->child[LEFT];
+        if (node->isRed && child[LEFT]->isRed) {
+            puts("Red violation (left).");
+            return 0;
+        }
+    }
 
-	if (nodePtr->child[RIGHT] != NULL)
-	{
-		childPtr[RIGHT] = node->child[RIGHT];
-		if (node->isRed && child[RIGHT]->isRed)
-		{
-			puts("Red violation (right).");
-			return 0;
-		}
-	}
+    if (nodePtr->child[RIGHT] != NULL) {
+        childPtr[RIGHT] = node->child[RIGHT];
+        if (node->isRed && child[RIGHT]->isRed) {
+            puts("Red violation (right).");
+            return 0;
+        }
+    }
 
-	blackHeight[LEFT] = subtreeBlackHeight(node->child[LEFT]);
-	blackHeight[RIGHT] = subtreeBlackHeight(nodePtr->child[RIGHT]);
-	if (blackHeight[LEFT] == 0 || blackHeight[RIGHT] == 0)
-	{
-		puts("No black nodes.");
-		return 0;
-	}
+    blackHeight[LEFT] = subtreeBlackHeight(node->child[LEFT]);
+    blackHeight[RIGHT] = subtreeBlackHeight(nodePtr->child[RIGHT]);
+    if (blackHeight[LEFT] == 0 || blackHeight[RIGHT] == 0) {
+        puts("No black nodes.");
+        return 0;
+    }
 
-	/*	Note: can't verify preservation of order in tree
-	 *	because only the application can correctly extract
-	 *	argData for presentation to the compare function.	*/
+    /*	Note: can't verify preservation of order in tree
+     *	because only the application can correctly extract
+     *	argData for presentation to the compare function.	*/
 
-	if (blackHeight[LEFT] != blackHeight[RIGHT])
-	{
-		puts("Black violation.");
-		return 0;
-	}
+    if (blackHeight[LEFT] != blackHeight[RIGHT]) {
+        puts("Black violation.");
+        return 0;
+    }
 
-	if (node->isRed == 0)	/*	This is a black node.	*/
-	{
-		blackHeight[0] += 1;
-	}
+    if (node->isRed == 0) /*	This is a black node.	*/
+    {
+        blackHeight[0] += 1;
+    }
 
-	return blackHeight[0];
+    return blackHeight[0];
 }
 
-int	treeBroken(Rbt* rbt)
-{
-	int result = -1;
+int treeBroken(Rbt *rbt) {
+    int result = -1;
 
-	if(rbt != NULL){
-		result = (subtreeBlackHeight(rbt->root) == 0);
-	}
+    if (rbt != NULL) {
+        result = (subtreeBlackHeight(rbt->root) == 0);
+    }
 
-	return result;
+    return result;
 }
 #endif
 
@@ -1667,20 +1539,17 @@ int	treeBroken(Rbt* rbt)
  *  -------- | --------------- | -----------------------------------------------
  *  05/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *******************************************************************************/
-int printTreeInOrder(Rbt *rbt, FILE *file, print_tree_node print_function)
-{
-	int result = 0;
-	RbtNode *elt;
+int printTreeInOrder(Rbt *rbt, FILE *file, print_tree_node print_function) {
+    int result = 0;
+    RbtNode *elt;
 
-	if (rbt != NULL && print_function != NULL && file != NULL)
-	{
-		result = 1;
-		for (elt = rbt_first(rbt); elt != NULL; elt = rbt_traverse(elt, 1))
-		{
-			print_function(file, elt->data);
-		}
-	}
+    if (rbt != NULL && print_function != NULL && file != NULL) {
+        result = 1;
+        for (elt = rbt_first(rbt); elt != NULL; elt = rbt_traverse(elt, 1)) {
+            print_function(file, elt->data);
+        }
+    }
 
-	return result;
+    return result;
 }
 #endif

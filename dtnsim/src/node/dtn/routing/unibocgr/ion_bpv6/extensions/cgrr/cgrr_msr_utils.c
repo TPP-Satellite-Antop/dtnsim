@@ -1,7 +1,7 @@
 /** \file cgrr_msr_utils.c
  *
- *  \brief  This file provides the implementations of the functions to optimize the use of CGRR Extension Block
- *          for Moderate Source Routing.
+ *  \brief  This file provides the implementations of the functions to optimize the use of CGRR
+ *Extension Block for Moderate Source Routing.
  *
  *
  ** \copyright Copyright (c) 2020, Alma Mater Studiorum, University of Bologna, All rights reserved.
@@ -62,46 +62,42 @@
  *  -------- | --------------- | -----------------------------------------------
  *  25/09/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static int encode_unique_cgrr_route(ExtensionBlock *blk, Object extBlkAddr, Bundle *bundle, CGRRoute *cgrr_route) {
-	unsigned int oldLength;
-	unsigned char * tempBuffer;
-	CGRRouteBlock tempBlk;
-	uvast tempLength;
-	int result;
+static int encode_unique_cgrr_route(ExtensionBlock *blk, Object extBlkAddr, Bundle *bundle,
+                                    CGRRoute *cgrr_route) {
+    unsigned int oldLength;
+    unsigned char *tempBuffer;
+    CGRRouteBlock tempBlk;
+    uvast tempLength;
+    int result;
 
-	cgrr_debugPrint("[cgrr_msr_utils.c/encode_unique_cgrr_route] Encoding route...");
+    cgrr_debugPrint("[cgrr_msr_utils.c/encode_unique_cgrr_route] Encoding route...");
 
-	oldLength = blk->length;
+    oldLength = blk->length;
 
-	// initialize CGRRouteBlock to 0
-	memset(&tempBlk, 0 ,sizeof(tempBlk));
+    // initialize CGRRouteBlock to 0
+    memset(&tempBlk, 0, sizeof(tempBlk));
 
-	memcpy(&(tempBlk.originalRoute), cgrr_route, sizeof(CGRRoute));
-	tempBuffer = cgrr_serializeCGRR(&tempLength, &tempBlk);
+    memcpy(&(tempBlk.originalRoute), cgrr_route, sizeof(CGRRoute));
+    tempBuffer = cgrr_serializeCGRR(&tempLength, &tempBlk);
 
-	if(tempBuffer == NULL) {
-		return -2;
-	}
+    if (tempBuffer == NULL) {
+        return -2;
+    }
 
-	blk->dataLength = tempLength;
+    blk->dataLength = tempLength;
 
-	result = serializeExtBlk(blk, NULL, (char *) tempBuffer);
-	MRELEASE(tempBuffer);
-	if (result >= 0)
-	{
-		processModifiedExtensionBlock(bundle, extBlkAddr, blk, oldLength, blk->size);
-		result = 0;
+    result = serializeExtBlk(blk, NULL, (char *)tempBuffer);
+    MRELEASE(tempBuffer);
+    if (result >= 0) {
+        processModifiedExtensionBlock(bundle, extBlkAddr, blk, oldLength, blk->size);
+        result = 0;
 
-		cgrr_debugPrint("[cgrr_msr_utils.c/encode_unique_cgrr_route] Route encoded!");
-	}
-	else
-	{
-		return -2;
-	}
+        cgrr_debugPrint("[cgrr_msr_utils.c/encode_unique_cgrr_route] Route encoded!");
+    } else {
+        return -2;
+    }
 
-	return result;
-
-
+    return result;
 }
 
 /******************************************************************************
@@ -132,32 +128,32 @@ static int encode_unique_cgrr_route(ExtensionBlock *blk, Object extBlkAddr, Bund
  *  -------- | --------------- | -----------------------------------------------
  *  25/09/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int storeMsrRoute(CGRRoute *cgrr_route, Bundle* bundle) {
-	Sdr 			sdr = getIonsdr();
-	Object 		elt;
-	Object		extBlkAddr;
+int storeMsrRoute(CGRRoute *cgrr_route, Bundle *bundle) {
+    Sdr sdr = getIonsdr();
+    Object elt;
+    Object extBlkAddr;
 
-	CHKERR(cgrr_route != NULL);
-	CHKERR(bundle != NULL);
+    CHKERR(cgrr_route != NULL);
+    CHKERR(bundle != NULL);
     CHKERR(cgrr_route->hopList != NULL);
     CHKERR(cgrr_route->hopCount);
 
     cgrr_debugPrint("[cgrr_msr_utils.c/storeMsrRoute] Entry point.");
 
-	if ((elt = findExtensionBlock(bundle, EXTENSION_TYPE_CGRR, 0, 0, 0)) <= 0 )
-	{
-		cgrr_debugPrint("[cgrr_msr_utils.c/storeMsrRoute] No CGRR Extension Block found in bundle.");
-		return -1;
-	}
+    if ((elt = findExtensionBlock(bundle, EXTENSION_TYPE_CGRR, 0, 0, 0)) <= 0) {
+        cgrr_debugPrint(
+            "[cgrr_msr_utils.c/storeMsrRoute] No CGRR Extension Block found in bundle.");
+        return -1;
+    }
 
-	extBlkAddr = sdr_list_data(sdr, elt);
-	CHKERR(extBlkAddr != 0);
+    extBlkAddr = sdr_list_data(sdr, elt);
+    CHKERR(extBlkAddr != 0);
 
-	OBJ_POINTER(ExtensionBlock, blk);
+    OBJ_POINTER(ExtensionBlock, blk);
 
-	GET_OBJ_POINTER(sdr, ExtensionBlock, blk, extBlkAddr);
+    GET_OBJ_POINTER(sdr, ExtensionBlock, blk, extBlkAddr);
 
-	return encode_unique_cgrr_route(blk, extBlkAddr, bundle, cgrr_route);
+    return encode_unique_cgrr_route(blk, extBlkAddr, bundle, cgrr_route);
 }
 
 /******************************************************************************
@@ -165,11 +161,12 @@ int storeMsrRoute(CGRRoute *cgrr_route, Bundle* bundle) {
  * \par Function Name:
  * 		updateLastCgrrRoute
  *
- * \brief This function takes the last route encoded into CGRR and remove all hops until the first hop
- *        of the CGRR route is the contact with this local node as "sender node"; then this reduced route
- *        will be the only route encoded into CGRR (so other routes will be discarded).
+ * \brief This function takes the last route encoded into CGRR and remove all hops until the first
+ *hop of the CGRR route is the contact with this local node as "sender node"; then this reduced
+ *route will be the only route encoded into CGRR (so other routes will be discarded).
  *
- * \details Helper function to decrease progressively CGRR's overhead size for Moderate Source Routing.
+ * \details Helper function to decrease progressively CGRR's overhead size for Moderate Source
+ *Routing.
  *
  * \par Date Written:
  * 		25/09/20
@@ -191,105 +188,97 @@ int storeMsrRoute(CGRRoute *cgrr_route, Bundle* bundle) {
  *  25/09/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 int updateLastCgrrRoute(Bundle *bundle) {
-	Sdr 			sdr = getIonsdr();
-	int 			result = 1;
-	Object			extBlkAddr, extBlkElt;
-	CGRRouteBlock *cgrrBlk;
-	CGRRoute *route, *aux_route;
-	int count;
-	uvast localNode;
+    Sdr sdr = getIonsdr();
+    int result = 1;
+    Object extBlkAddr, extBlkElt;
+    CGRRouteBlock *cgrrBlk;
+    CGRRoute *route, *aux_route;
+    int count;
+    uvast localNode;
 
-	cgrr_debugPrint("[cgrr_msr_utils.c/updateLastCgrrRoute] Entry point.");
+    cgrr_debugPrint("[cgrr_msr_utils.c/updateLastCgrrRoute] Entry point.");
 
-	if ((extBlkElt = findExtensionBlock(bundle, EXTENSION_TYPE_CGRR, 0, 0, 0)) <= 0 )
-	{
-		cgrr_debugPrint("[cgrr_msr_utils.c/updateLastCgrrRoute] No CGRR Extension Block found in bundle.");
-		return -1;
-	}
+    if ((extBlkElt = findExtensionBlock(bundle, EXTENSION_TYPE_CGRR, 0, 0, 0)) <= 0) {
+        cgrr_debugPrint(
+            "[cgrr_msr_utils.c/updateLastCgrrRoute] No CGRR Extension Block found in bundle.");
+        return -1;
+    }
 
-	extBlkAddr = sdr_list_data(sdr, extBlkElt);
-	CHKERR(extBlkAddr != 0); //Added by F. Marchetti
+    extBlkAddr = sdr_list_data(sdr, extBlkElt);
+    CHKERR(extBlkAddr != 0); // Added by F. Marchetti
 
-	OBJ_POINTER(ExtensionBlock, blk);
+    OBJ_POINTER(ExtensionBlock, blk);
 
-	GET_OBJ_POINTER(sdr, ExtensionBlock, blk, extBlkAddr);
+    GET_OBJ_POINTER(sdr, ExtensionBlock, blk, extBlkAddr);
 
-	cgrrBlk = MTAKE(sizeof(CGRRouteBlock));
+    cgrrBlk = MTAKE(sizeof(CGRRouteBlock));
 
-	if(cgrrBlk == NULL) {
-		return -2;
-	}
+    if (cgrrBlk == NULL) {
+        return -2;
+    }
 
-	memset(cgrrBlk, 0, sizeof(CGRRouteBlock));
+    memset(cgrrBlk, 0, sizeof(CGRRouteBlock));
 
-	result = cgrr_getCGRRFromExtensionBlock(blk, cgrrBlk);
+    result = cgrr_getCGRRFromExtensionBlock(blk, cgrrBlk);
 
-	if( result < 0)
-	{
-		cgrr_debugPrint("[cgrr_msr_utils.c/updateLastCgrrRoute] Cannot extract CGRR from Ext. Block.");
-		releaseCgrrBlkMemory(cgrrBlk);
-		return -2;
-	}
-	else if (result == 0)
-	{
-		cgrr_debugPrint("[cgrr_msr_utils.c/updateLastCgrrRoute] CGRR didn't pass sanity checks.");
-		releaseCgrrBlkMemory(cgrrBlk);
-		return -1;
-	}
+    if (result < 0) {
+        cgrr_debugPrint(
+            "[cgrr_msr_utils.c/updateLastCgrrRoute] Cannot extract CGRR from Ext. Block.");
+        releaseCgrrBlkMemory(cgrrBlk);
+        return -2;
+    } else if (result == 0) {
+        cgrr_debugPrint("[cgrr_msr_utils.c/updateLastCgrrRoute] CGRR didn't pass sanity checks.");
+        releaseCgrrBlkMemory(cgrrBlk);
+        return -1;
+    }
 
-	if(cgrrBlk->recRoutesLength > 0)
-	{
-		aux_route = &(cgrrBlk->recomputedRoutes[cgrrBlk->recRoutesLength - 1]);
-	}
-	else
-	{
-		aux_route = &(cgrrBlk->originalRoute);
-	}
+    if (cgrrBlk->recRoutesLength > 0) {
+        aux_route = &(cgrrBlk->recomputedRoutes[cgrrBlk->recRoutesLength - 1]);
+    } else {
+        aux_route = &(cgrrBlk->originalRoute);
+    }
 
-	localNode = getOwnNodeNbr();
+    localNode = getOwnNodeNbr();
 
-	for(count = 0; count < aux_route->hopCount; count++) {
-		if(aux_route->hopList[count].fromNode == localNode) {
-			break;
-		}
-	}
+    for (count = 0; count < aux_route->hopCount; count++) {
+        if (aux_route->hopList[count].fromNode == localNode) {
+            break;
+        }
+    }
 
-	//we don't touch the extension block if the first contact's sender node of the CGRR Route
-	//is the local node or if we don't find the local node in the set of sender nodes of the route.
-	if(count != 0 && count != aux_route->hopCount) {
-		route = MTAKE(sizeof(CGRRoute));
+    // we don't touch the extension block if the first contact's sender node of the CGRR Route
+    // is the local node or if we don't find the local node in the set of sender nodes of the route.
+    if (count != 0 && count != aux_route->hopCount) {
+        route = MTAKE(sizeof(CGRRoute));
 
-		if(route == NULL) {
-			releaseCgrrBlkMemory(cgrrBlk);
-			return -2;
-		}
+        if (route == NULL) {
+            releaseCgrrBlkMemory(cgrrBlk);
+            return -2;
+        }
 
-		route->hopCount = aux_route->hopCount - count;
-		route->hopList = MTAKE(sizeof(CGRRHop) * route->hopCount);
+        route->hopCount = aux_route->hopCount - count;
+        route->hopList = MTAKE(sizeof(CGRRHop) * route->hopCount);
 
-		if(route->hopList == NULL) {
-			releaseCgrrBlkMemory(cgrrBlk);
-			MRELEASE(route);
-			return -2;
-		}
+        if (route->hopList == NULL) {
+            releaseCgrrBlkMemory(cgrrBlk);
+            MRELEASE(route);
+            return -2;
+        }
 
-		memcpy(route->hopList, &(aux_route->hopList[count]), sizeof(CGRRHop) * route->hopCount);
+        memcpy(route->hopList, &(aux_route->hopList[count]), sizeof(CGRRHop) * route->hopCount);
 
-		result = encode_unique_cgrr_route(blk, extBlkAddr, bundle, route);
+        result = encode_unique_cgrr_route(blk, extBlkAddr, bundle, route);
 
-		MRELEASE(route->hopList);
-		MRELEASE(route);
-		releaseCgrrBlkMemory(cgrrBlk);
+        MRELEASE(route->hopList);
+        MRELEASE(route);
+        releaseCgrrBlkMemory(cgrrBlk);
 
-	}
-	else {
-		cgrr_debugPrint("[cgrr_msr_utils.c/updateLastCgrrRoute] No modifications needed for CGRR Ext. Block.");
-		releaseCgrrBlkMemory(cgrrBlk);
-		return -3;
-	}
+    } else {
+        cgrr_debugPrint(
+            "[cgrr_msr_utils.c/updateLastCgrrRoute] No modifications needed for CGRR Ext. Block.");
+        releaseCgrrBlkMemory(cgrrBlk);
+        return -3;
+    }
 
-
-	return result;
+    return result;
 }
-
-

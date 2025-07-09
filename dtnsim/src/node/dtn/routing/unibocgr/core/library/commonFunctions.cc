@@ -27,7 +27,6 @@
  *       Carlo Caini, carlo.caini@unibo.it
  */
 
-
 #include "src/node/dtn/routing/unibocgr/core/library/commonDefines.h"
 
 /******************************************************************************
@@ -52,10 +51,8 @@
  *  -------- | --------------- | -----------------------------------------------
  *  13/05/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void MDEPOSIT_wrapper(void *addr)
-{
-    if(addr != NULL)
-    {
+void MDEPOSIT_wrapper(void *addr) {
+    if (addr != NULL) {
         MDEPOSIT(addr);
     }
 }

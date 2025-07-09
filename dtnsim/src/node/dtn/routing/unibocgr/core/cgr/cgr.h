@@ -1,5 +1,5 @@
 /** \file cgr.h
- *  
+ *
  *  \brief  This files provides the declarations of the functions
  *          to start, call and stop the CGR; included in cgr.c .
  *
@@ -33,68 +33,60 @@
 
 #include <sys/time.h>
 
-#include "src/node/dtn/routing/unibocgr/core/bundles/bundles.h"
-#include "src/node/dtn/routing/unibocgr/core/library/commonDefines.h"
-#include "src/node/dtn/routing/unibocgr/core/contact_plan/ranges/ranges.h"
-#include "src/node/dtn/routing/unibocgr/core/contact_plan/nodes/nodes.h"
-#include "src/node/dtn/routing/unibocgr/core/contact_plan/contactPlan.h"
-#include "src/node/dtn/routing/unibocgr/core/contact_plan/contacts/contacts.h"
-#include "src/node/dtn/routing/unibocgr/core/cgr/cgr_phases.h"
 #include "../library/list/list_type.h"
 #include "../routes/routes.h"
+#include "src/node/dtn/routing/unibocgr/core/bundles/bundles.h"
+#include "src/node/dtn/routing/unibocgr/core/cgr/cgr_phases.h"
+#include "src/node/dtn/routing/unibocgr/core/contact_plan/contactPlan.h"
+#include "src/node/dtn/routing/unibocgr/core/contact_plan/contacts/contacts.h"
+#include "src/node/dtn/routing/unibocgr/core/contact_plan/nodes/nodes.h"
+#include "src/node/dtn/routing/unibocgr/core/contact_plan/ranges/ranges.h"
+#include "src/node/dtn/routing/unibocgr/core/library/commonDefines.h"
 
 typedef struct {
-	/**
-	 * \brief Purpose: count the calls to Unibo-CGR. (Currently used just for logging).
-	 */
-	unsigned int count_bundles;
-	/**
-	 * \brief The own ipn node.
-	 */
-	unsigned long long localNode;
+    /**
+     * \brief Purpose: count the calls to Unibo-CGR. (Currently used just for logging).
+     */
+    unsigned int count_bundles;
+    /**
+     * \brief The own ipn node.
+     */
+    unsigned long long localNode;
 
-	/**
-	 * \brief The last time when the CGR discarded all routes.
-	 */
-	struct timeval cgrEditTime;
-
-
+    /**
+     * \brief The last time when the CGR discarded all routes.
+     */
+    struct timeval cgrEditTime;
 
 } UniboCgrSAP;
 
-
-typedef enum {
-	unknown_algorithm = 0,
-	cgr = 1,
-	msr = 2
-} RoutingAlgorithm;
+typedef enum { unknown_algorithm = 0, cgr = 1, msr = 2 } RoutingAlgorithm;
 
 /**
  * \brief Used to keep in one place the data used by Unibo-CGR during a call.
  */
 typedef struct {
-	/**
-	 * \brief The file for the logs of the current call
-	 */
-	FILE *file_call;
-	/**
-	 * \brief The last time when Unibo-CGR has been called.
-	 */
-	time_t current_time;
-	/**
-	 * \brief The destination node for the current Bundle.
-	 */
-	Node *destinationNode;
-	/**
-	 * \brief The algorithm used (with success) for the current call (i.e. CGR or MSR).
-	 */
-	RoutingAlgorithm algorithm;
+    /**
+     * \brief The file for the logs of the current call
+     */
+    FILE *file_call;
+    /**
+     * \brief The last time when Unibo-CGR has been called.
+     */
+    time_t current_time;
+    /**
+     * \brief The destination node for the current Bundle.
+     */
+    Node *destinationNode;
+    /**
+     * \brief The algorithm used (with success) for the current call (i.e. CGR or MSR).
+     */
+    RoutingAlgorithm algorithm;
 
-} UniboCgrCurrentCallSAP; //originally in cgr.c(c)
+} UniboCgrCurrentCallSAP; // originally in cgr.c(c)
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 extern int getBestRoutes(time_t time, CgrBundle *bundle, List excludedNeighbors, List *routes);
@@ -108,12 +100,14 @@ extern void reset_cgr();
 
 #if (LOG == 1)
 /**
- * \brief Set the time for the log of the current call and print the call number in the main log file.
+ * \brief Set the time for the log of the current call and print the call number in the main log
+ * file.
  */
-#define start_call_log(time, count_bundles) do { \
-		setLogTime(time); \
-		writeLog("###### CGR: call n. %u ######", count_bundles); \
-} while(0)
+#define start_call_log(time, count_bundles)                                                        \
+    do {                                                                                           \
+        setLogTime(time);                                                                          \
+        writeLog("###### CGR: call n. %u ######", count_bundles);                                  \
+    } while (0)
 
 /**
  * \brief Print the sequence of characters that identify the end of the call.
@@ -121,8 +115,12 @@ extern void reset_cgr();
 #define end_call_log() writeLog("###############################")
 
 #else
-#define start_call_log(time, count_bundles) do {  } while(0)
-#define end_call_log() do {  } while(0)
+#define start_call_log(time, count_bundles)                                                        \
+    do {                                                                                           \
+    } while (0)
+#define end_call_log()                                                                             \
+    do {                                                                                           \
+    } while (0)
 #endif
 
 #ifdef __cplusplus

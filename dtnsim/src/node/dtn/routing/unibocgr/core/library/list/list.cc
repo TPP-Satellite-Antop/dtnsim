@@ -28,8 +28,8 @@
 
 #include "src/node/dtn/routing/unibocgr/core/library/list/list.h"
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 static void sort_list_algorithm(List, compare_function);
 static void erase_list(List);
@@ -65,22 +65,20 @@ static void erase_list(List);
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 List list_create(void *userData, delete_function delete_userData, compare_function compare,
-		delete_function delete_data_elt)
-{
-	List new_list = (List) MWITHDRAW(sizeof(struct liste));
+                 delete_function delete_data_elt) {
+    List new_list = (List)MWITHDRAW(sizeof(struct liste));
 
-	if (new_list != NULL)
-	{
-		new_list->userData = userData;
-		new_list->delete_userData = delete_userData;
-		new_list->compare = compare;
-		new_list->delete_data_elt = delete_data_elt;
-		new_list->first = NULL;
-		new_list->last = NULL;
-		new_list->length = 0;
-	}
+    if (new_list != NULL) {
+        new_list->userData = userData;
+        new_list->delete_userData = delete_userData;
+        new_list->compare = compare;
+        new_list->delete_data_elt = delete_data_elt;
+        new_list->first = NULL;
+        new_list->last = NULL;
+        new_list->length = 0;
+    }
 
-	return new_list;
+    return new_list;
 }
 
 /******************************************************************************
@@ -111,16 +109,14 @@ List list_create(void *userData, delete_function delete_userData, compare_functi
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void* list_get_userData(List list)
-{
-	void *userData = NULL;
+void *list_get_userData(List list) {
+    void *userData = NULL;
 
-	if (list != NULL)
-	{
-		userData = list->userData;
-	}
+    if (list != NULL) {
+        userData = list->userData;
+    }
 
-	return userData;
+    return userData;
 }
 
 /******************************************************************************
@@ -146,16 +142,14 @@ void* list_get_userData(List list)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-long unsigned int list_get_length(List list)
-{
-	long unsigned int length = 0;
+long unsigned int list_get_length(List list) {
+    long unsigned int length = 0;
 
-	if (list != NULL)
-	{
-		length = list->length;
-	}
+    if (list != NULL) {
+        length = list->length;
+    }
 
-	return length;
+    return length;
 }
 
 /******************************************************************************
@@ -186,56 +180,45 @@ long unsigned int list_get_length(List list)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int move_elt_to_other_list(ListElt *elt, List other)
-{
+int move_elt_to_other_list(ListElt *elt, List other) {
 
-	ListElt *next_elt, *prev_elt;
-	List eltList;
-	int result = -1;
-	if (elt != NULL && other != NULL && elt->list != NULL)
-	{
-		eltList = elt->list;
-		next_elt = elt->next;
-		prev_elt = elt->prev;
-		if (next_elt == NULL)
-		{
-			eltList->last = prev_elt;
-		}
-		else
-		{
-			next_elt->prev = prev_elt;
-		}
+    ListElt *next_elt, *prev_elt;
+    List eltList;
+    int result = -1;
+    if (elt != NULL && other != NULL && elt->list != NULL) {
+        eltList = elt->list;
+        next_elt = elt->next;
+        prev_elt = elt->prev;
+        if (next_elt == NULL) {
+            eltList->last = prev_elt;
+        } else {
+            next_elt->prev = prev_elt;
+        }
 
-		if (prev_elt == NULL)
-		{
-			eltList->first = next_elt;
-		}
-		else
-		{
-			prev_elt->next = next_elt;
-		}
+        if (prev_elt == NULL) {
+            eltList->first = next_elt;
+        } else {
+            prev_elt->next = next_elt;
+        }
 
-		eltList->length -= 1;
+        eltList->length -= 1;
 
-		elt->prev = NULL;
-		if (other->first == NULL)
-		{
-			other->last = elt;
-		}
-		else
-		{
-			other->first->prev = elt;
-		}
-		elt->next = other->first;
-		other->first = elt;
+        elt->prev = NULL;
+        if (other->first == NULL) {
+            other->last = elt;
+        } else {
+            other->first->prev = elt;
+        }
+        elt->next = other->first;
+        other->first = elt;
 
-		other->length += 1;
-		elt->list = other;
+        other->length += 1;
+        elt->list = other;
 
-		result = 0;
-	}
+        result = 0;
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -267,62 +250,50 @@ int move_elt_to_other_list(ListElt *elt, List other)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int move__a_elt__before__b_elt(ListElt *a_elt, ListElt *b_elt)
-{
-	ListElt *prev_a_elt, *next_a_elt, *prev_b_elt;
-	List a, b;
-	int result = -1;
-	if (a_elt != NULL && b_elt != NULL && a_elt != b_elt)
-	{
-		a = a_elt->list;
-		b = b_elt->list;
+int move__a_elt__before__b_elt(ListElt *a_elt, ListElt *b_elt) {
+    ListElt *prev_a_elt, *next_a_elt, *prev_b_elt;
+    List a, b;
+    int result = -1;
+    if (a_elt != NULL && b_elt != NULL && a_elt != b_elt) {
+        a = a_elt->list;
+        b = b_elt->list;
 
-		if (a != NULL && b != NULL)
-		{
+        if (a != NULL && b != NULL) {
 
-			prev_a_elt = a_elt->prev;
-			next_a_elt = a_elt->next;
-			if (next_a_elt != NULL)
-			{
-				next_a_elt->prev = prev_a_elt;
-			}
-			else
-			{
-				a->last = prev_a_elt;
-			}
-			if (prev_a_elt != NULL)
-			{
-				prev_a_elt->next = next_a_elt;
-			}
-			else
-			{
-				a->first = next_a_elt;
-			}
-			a->length -= 1;
+            prev_a_elt = a_elt->prev;
+            next_a_elt = a_elt->next;
+            if (next_a_elt != NULL) {
+                next_a_elt->prev = prev_a_elt;
+            } else {
+                a->last = prev_a_elt;
+            }
+            if (prev_a_elt != NULL) {
+                prev_a_elt->next = next_a_elt;
+            } else {
+                a->first = next_a_elt;
+            }
+            a->length -= 1;
 
-			prev_b_elt = b_elt->prev;
+            prev_b_elt = b_elt->prev;
 
-			a_elt->next = b_elt;
-			a_elt->prev = prev_b_elt;
-			b_elt->prev = a_elt;
-			if (prev_b_elt == NULL)
-			{
-				b->first = a_elt;
-			}
-			else
-			{
-				prev_b_elt->next = a_elt;
-			}
+            a_elt->next = b_elt;
+            a_elt->prev = prev_b_elt;
+            b_elt->prev = a_elt;
+            if (prev_b_elt == NULL) {
+                b->first = a_elt;
+            } else {
+                prev_b_elt->next = a_elt;
+            }
 
-			a_elt->list = b;
+            a_elt->list = b;
 
-			b->length += 1;
+            b->length += 1;
 
-			result = 0;
-		}
-	}
+            result = 0;
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -352,15 +323,13 @@ int move__a_elt__before__b_elt(ListElt *a_elt, ListElt *b_elt)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-ListElt* list_get_first_elt(List list)
-{
-	ListElt *elt = NULL;
-	if (list != NULL)
-	{
-		elt = list->first;
-	}
+ListElt *list_get_first_elt(List list) {
+    ListElt *elt = NULL;
+    if (list != NULL) {
+        elt = list->first;
+    }
 
-	return elt;
+    return elt;
 }
 
 /******************************************************************************
@@ -390,15 +359,13 @@ ListElt* list_get_first_elt(List list)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-ListElt* list_get_next_elt(ListElt *elt)
-{
-	ListElt *result = NULL;
-	if (elt != NULL)
-	{
-		result = elt->next;
-	}
+ListElt *list_get_next_elt(ListElt *elt) {
+    ListElt *result = NULL;
+    if (elt != NULL) {
+        result = elt->next;
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -427,15 +394,13 @@ ListElt* list_get_next_elt(ListElt *elt)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-ListElt* list_get_prev_elt(ListElt *elt)
-{
-	ListElt *result = NULL;
-	if (elt != NULL)
-	{
-		result = elt->prev;
-	}
+ListElt *list_get_prev_elt(ListElt *elt) {
+    ListElt *result = NULL;
+    if (elt != NULL) {
+        result = elt->prev;
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -465,15 +430,13 @@ ListElt* list_get_prev_elt(ListElt *elt)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-ListElt* list_get_last_elt(List list)
-{
-	ListElt *elt = NULL;
-	if (list != NULL)
-	{
-		elt = list->last;
-	}
+ListElt *list_get_last_elt(List list) {
+    ListElt *elt = NULL;
+    if (list != NULL) {
+        elt = list->last;
+    }
 
-	return elt;
+    return elt;
 }
 
 /******************************************************************************
@@ -507,35 +470,28 @@ ListElt* list_get_last_elt(List list)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-ListElt* list_get_first_equal_element(List list, void *data, compare_function compare,
-		ListElt *startElt)
-{
-	ListElt *current, *from, *result = NULL;
-	int equals_elements = -1;
+ListElt *list_get_first_equal_element(List list, void *data, compare_function compare,
+                                      ListElt *startElt) {
+    ListElt *current, *from, *result = NULL;
+    int equals_elements = -1;
 
-	if (data != NULL && compare != NULL && (list != NULL || startElt != NULL))
-	{
-		if (startElt != NULL)
-		{
-			from = startElt;
-		}
-		else
-		{
-			from = list->first;
-		}
+    if (data != NULL && compare != NULL && (list != NULL || startElt != NULL)) {
+        if (startElt != NULL) {
+            from = startElt;
+        } else {
+            from = list->first;
+        }
 
-		for (current = from; current != NULL && equals_elements != 0; current = current->next)
-		{
-			equals_elements = compare(current->data, data);
+        for (current = from; current != NULL && equals_elements != 0; current = current->next) {
+            equals_elements = compare(current->data, data);
 
-			if (equals_elements == 0)
-			{
-				result = current;
-			}
-		}
-	}
+            if (equals_elements == 0) {
+                result = current;
+            }
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -567,38 +523,31 @@ ListElt* list_get_first_equal_element(List list, void *data, compare_function co
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-List list_get_equals_elements(List list, void *data)
-{
-	List result = NULL;
-	ListElt *current = NULL;
+List list_get_equals_elements(List list, void *data) {
+    List result = NULL;
+    ListElt *current = NULL;
 
-	if (data != NULL && list != NULL)
-	{
-		if (list->compare != NULL)
-		{
-			result = list_create(list->userData, list->delete_userData, list->compare,
-					list->delete_data_elt);
-			if (result != NULL)
-			{
-				do
-				{
-					current = list_get_first_equal_element(list, data, list->compare, current);
-					if (current != NULL)
-					{
-						list_insert_last(result, current->data);
-						current = current->next;
-					}
-				} while (current != NULL);
+    if (data != NULL && list != NULL) {
+        if (list->compare != NULL) {
+            result = list_create(list->userData, list->delete_userData, list->compare,
+                                 list->delete_data_elt);
+            if (result != NULL) {
+                do {
+                    current = list_get_first_equal_element(list, data, list->compare, current);
+                    if (current != NULL) {
+                        list_insert_last(result, current->data);
+                        current = current->next;
+                    }
+                } while (current != NULL);
 
-				if (result->length == 0)
-				{
-					free_list(result);
-					result = NULL;
-				}
-			}
-		}
-	}
-	return result;
+                if (result->length == 0) {
+                    free_list(result);
+                    result = NULL;
+                }
+            }
+        }
+    }
+    return result;
 }
 
 /******************************************************************************
@@ -628,16 +577,14 @@ List list_get_equals_elements(List list, void *data)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void* listElt_get_data(ListElt *elt)
-{
-	void *data = NULL;
+void *listElt_get_data(ListElt *elt) {
+    void *data = NULL;
 
-	if (elt != NULL)
-	{
-		data = elt->data;
-	}
+    if (elt != NULL) {
+        data = elt->data;
+    }
 
-	return data;
+    return data;
 }
 
 /******************************************************************************
@@ -667,16 +614,14 @@ void* listElt_get_data(ListElt *elt)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-List listElt_get_list(ListElt *elt)
-{
-	List list = NULL;
+List listElt_get_list(ListElt *elt) {
+    List list = NULL;
 
-	if (elt != NULL)
-	{
-		list = elt->list;
-	}
+    if (elt != NULL) {
+        list = elt->list;
+    }
 
-	return list;
+    return list;
 }
 
 /******************************************************************************
@@ -701,15 +646,13 @@ List listElt_get_list(ListElt *elt)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void erase_elt(ListElt *elt)
-{
-	if (elt != NULL)
-	{
-		elt->data = NULL;
-		elt->list = NULL;
-		elt->next = NULL;
-		elt->prev = NULL;
-	}
+static void erase_elt(ListElt *elt) {
+    if (elt != NULL) {
+        elt->data = NULL;
+        elt->list = NULL;
+        elt->next = NULL;
+        elt->prev = NULL;
+    }
 }
 
 /******************************************************************************
@@ -734,18 +677,16 @@ static void erase_elt(ListElt *elt)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void erase_list(List list)
-{
-	if (list != NULL)
-	{
-		list->first = NULL;
-		list->last = NULL;
-		list->length = 0;
-		list->userData = NULL;
-		list->compare = NULL;
-		list->delete_data_elt = NULL;
-		list->delete_userData = NULL;
-	}
+static void erase_list(List list) {
+    if (list != NULL) {
+        list->first = NULL;
+        list->last = NULL;
+        list->length = 0;
+        list->userData = NULL;
+        list->compare = NULL;
+        list->delete_data_elt = NULL;
+        list->delete_userData = NULL;
+    }
 }
 
 /******************************************************************************
@@ -773,23 +714,19 @@ static void erase_list(List list)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void free_list(List list)
-{
-	if (list != NULL)
-	{
-		free_list_elts(list);
+void free_list(List list) {
+    if (list != NULL) {
+        free_list_elts(list);
 
-		if (list->delete_userData != NULL)
-		{
-			list->delete_userData(list->userData);
-		}
+        if (list->delete_userData != NULL) {
+            list->delete_userData(list->userData);
+        }
 
-		erase_list(list);
-		MDEPOSIT(list);
+        erase_list(list);
+        MDEPOSIT(list);
 
-		list = NULL;
-	}
-
+        list = NULL;
+    }
 }
 
 /******************************************************************************
@@ -817,42 +754,34 @@ void free_list(List list)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void free_list_elts(List list)
-{
-	ListElt *temp, *elt;
+void free_list_elts(List list) {
+    ListElt *temp, *elt;
 
-	if (list != NULL)
-	{
-		elt = list->first;
-		if (list->delete_data_elt != NULL)
-		{
-			while (elt != NULL)
-			{
-				if (elt->data != NULL)
-				{
-					list->delete_data_elt(elt->data);
-				}
-				temp = elt;
-				elt = temp->next;
-				erase_elt(temp);
-				MDEPOSIT(temp);
-			}
-		}
-		else
-		{
-			while (elt != NULL)
-			{
-				temp = elt;
-				elt = elt->next;
-				erase_elt(temp);
-				MDEPOSIT(temp);
-			}
-		}
+    if (list != NULL) {
+        elt = list->first;
+        if (list->delete_data_elt != NULL) {
+            while (elt != NULL) {
+                if (elt->data != NULL) {
+                    list->delete_data_elt(elt->data);
+                }
+                temp = elt;
+                elt = temp->next;
+                erase_elt(temp);
+                MDEPOSIT(temp);
+            }
+        } else {
+            while (elt != NULL) {
+                temp = elt;
+                elt = elt->next;
+                erase_elt(temp);
+                MDEPOSIT(temp);
+            }
+        }
 
-		list->first = NULL;
-		list->last = NULL;
-		list->length = 0;
-	}
+        list->first = NULL;
+        list->last = NULL;
+        list->length = 0;
+    }
 }
 
 /******************************************************************************
@@ -883,37 +812,32 @@ void free_list_elts(List list)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-ListElt* list_insert_first(List list, void *data)
-{
+ListElt *list_insert_first(List list, void *data) {
 
-	ListElt *first = NULL;
-	ListElt *oldFirst;
-	if (list != NULL && data != NULL)
-	{
-		first = (ListElt*) MWITHDRAW(sizeof(ListElt));
+    ListElt *first = NULL;
+    ListElt *oldFirst;
+    if (list != NULL && data != NULL) {
+        first = (ListElt *)MWITHDRAW(sizeof(ListElt));
 
-		if (first != NULL)
-		{
-			first->list = list;
-			oldFirst = list->first;
-			first->next = oldFirst;
-			first->prev = NULL;
-			first->data = data;
+        if (first != NULL) {
+            first->list = list;
+            oldFirst = list->first;
+            first->next = oldFirst;
+            first->prev = NULL;
+            first->data = data;
 
-			list->first = first;
-			list->length += 1;
-			if (list->last == NULL)
-			{
-				list->last = first;
-			}
-			else //the list had at least one element
-			{
-				oldFirst->prev = list->first;
-			}
-		}
-	}
+            list->first = first;
+            list->length += 1;
+            if (list->last == NULL) {
+                list->last = first;
+            } else // the list had at least one element
+            {
+                oldFirst->prev = list->first;
+            }
+        }
+    }
 
-	return first;
+    return first;
 }
 
 /******************************************************************************
@@ -944,39 +868,33 @@ ListElt* list_insert_first(List list, void *data)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-ListElt* list_insert_last(List list, void *data)
-{
-	ListElt *last = NULL;
-	ListElt *oldLast;
+ListElt *list_insert_last(List list, void *data) {
+    ListElt *last = NULL;
+    ListElt *oldLast;
 
-	if (list != NULL && data != NULL)
-	{
+    if (list != NULL && data != NULL) {
 
-		last = (ListElt*) MWITHDRAW(sizeof(ListElt));
+        last = (ListElt *)MWITHDRAW(sizeof(ListElt));
 
-		if (last != NULL)
-		{
-			last->list = list;
-			last->next = NULL;
-			oldLast = list->last;
-			last->prev = oldLast;
-			last->data = data;
+        if (last != NULL) {
+            last->list = list;
+            last->next = NULL;
+            oldLast = list->last;
+            last->prev = oldLast;
+            last->data = data;
 
-			list->last = last;
-			list->length += 1;
+            list->last = last;
+            list->length += 1;
 
-			if (list->first == NULL)
-			{
-				list->first = last;
-			}
-			else //the list had at least one element
-			{
-				oldLast->next = list->last;
-			}
-		}
-	}
-	return last;
-
+            if (list->first == NULL) {
+                list->first = last;
+            } else // the list had at least one element
+            {
+                oldLast->next = list->last;
+            }
+        }
+    }
+    return last;
 }
 
 /******************************************************************************
@@ -1003,32 +921,26 @@ ListElt* list_insert_last(List list, void *data)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void list_remove_first(List list)
-{
-	ListElt *first = NULL;
+void list_remove_first(List list) {
+    ListElt *first = NULL;
 
-	if (list != NULL && list->first != NULL)
-	{
-		first = list->first;
-		list->first = first->next;
-		list->length -= 1;
+    if (list != NULL && list->first != NULL) {
+        first = list->first;
+        list->first = first->next;
+        list->length -= 1;
 
-		if (list->first == NULL)
-		{
-			list->last = NULL;
-		}
-		else
-		{
-			list->first->prev = NULL;
-		}
+        if (list->first == NULL) {
+            list->last = NULL;
+        } else {
+            list->first->prev = NULL;
+        }
 
-		if (first->data != NULL && list->delete_data_elt != NULL)
-		{
-			list->delete_data_elt(first->data);
-		}
-		erase_elt(first);
-		MDEPOSIT(first);
-	}
+        if (first->data != NULL && list->delete_data_elt != NULL) {
+            list->delete_data_elt(first->data);
+        }
+        erase_elt(first);
+        MDEPOSIT(first);
+    }
 }
 
 /******************************************************************************
@@ -1055,33 +967,27 @@ void list_remove_first(List list)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void list_remove_last(List list)
-{
-	ListElt *last = NULL;
+void list_remove_last(List list) {
+    ListElt *last = NULL;
 
-	if (list != NULL && list->last != NULL)
-	{
-		last = list->last;
-		list->last = last->prev;
-		list->length -= 1;
+    if (list != NULL && list->last != NULL) {
+        last = list->last;
+        list->last = last->prev;
+        list->length -= 1;
 
-		if (list->last == NULL)
-		{
-			list->first = NULL;
-		}
-		else
-		{
-			list->last->next = NULL;
-		}
+        if (list->last == NULL) {
+            list->first = NULL;
+        } else {
+            list->last->next = NULL;
+        }
 
-		if (last->data != NULL && list->delete_data_elt != NULL)
-		{
-			list->delete_data_elt(last->data);
-		}
+        if (last->data != NULL && list->delete_data_elt != NULL) {
+            list->delete_data_elt(last->data);
+        }
 
-		erase_elt(last);
-		MDEPOSIT(last);
-	}
+        erase_elt(last);
+        MDEPOSIT(last);
+    }
 }
 
 /******************************************************************************
@@ -1100,8 +1006,8 @@ void list_remove_last(List list)
  * \retval ListElt*   The inserted element
  * \retval NULL       MWITHDRAW or arguments error (arguments NULL)
  *
- * \param[in]  *target   The element that we want to be preceded by the new element that point to data
- * \param[in]  *data     The data pointed by the new inserted element
+ * \param[in]  *target   The element that we want to be preceded by the new element that point to
+ *data \param[in]  *data     The data pointed by the new inserted element
  *
  * \par Notes:
  *      1. You must check that the return value of this function is not NULL.
@@ -1112,42 +1018,36 @@ void list_remove_last(List list)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-ListElt* list_insert_before(ListElt *target, void *data)
-{
-	ListElt *elt = NULL;
-	List list;
+ListElt *list_insert_before(ListElt *target, void *data) {
+    ListElt *elt = NULL;
+    List list;
 
-	if (target != NULL && data != NULL)
-	{
-		list = target->list;
+    if (target != NULL && data != NULL) {
+        list = target->list;
 
-		if (list != NULL)
-		{
-			elt = (ListElt*) MWITHDRAW(sizeof(ListElt));
-			if (elt != NULL)
-			{
-				list->length += 1;
+        if (list != NULL) {
+            elt = (ListElt *)MWITHDRAW(sizeof(ListElt));
+            if (elt != NULL) {
+                list->length += 1;
 
-				elt->data = data;
-				elt->list = list;
-				elt->next = target;
-				elt->prev = target->prev;
+                elt->data = data;
+                elt->list = list;
+                elt->next = target;
+                elt->prev = target->prev;
 
-				target->prev = elt;
+                target->prev = elt;
 
-				if (elt->prev != NULL)
-				{
-					elt->prev->next = elt;
-				}
-				else //target was the first element of the list
-				{
-					list->first = elt;
-				}
-			}
-		}
-	}
+                if (elt->prev != NULL) {
+                    elt->prev->next = elt;
+                } else // target was the first element of the list
+                {
+                    list->first = elt;
+                }
+            }
+        }
+    }
 
-	return elt;
+    return elt;
 }
 
 /******************************************************************************
@@ -1166,8 +1066,8 @@ ListElt* list_insert_before(ListElt *target, void *data)
  * \retval ListElt*  The inserted element
  * \retval NULL      MWITHDRAW or arguments error (arguments NULL)
  *
- * \param[in]  *target   The element that we want the new element (that point to data) is the successor.
- * \param[in]  *data     The data pointed by the new inserted element
+ * \param[in]  *target   The element that we want the new element (that point to data) is the
+ *successor. \param[in]  *data     The data pointed by the new inserted element
  *
  * \par Notes:
  *      1. You must check that the return value of this function is not NULL.
@@ -1178,42 +1078,36 @@ ListElt* list_insert_before(ListElt *target, void *data)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-ListElt* list_insert_after(ListElt *target, void *data)
-{
-	ListElt *elt = NULL;
-	List list;
+ListElt *list_insert_after(ListElt *target, void *data) {
+    ListElt *elt = NULL;
+    List list;
 
-	if (target != NULL && data != NULL)
-	{
-		list = target->list;
+    if (target != NULL && data != NULL) {
+        list = target->list;
 
-		if (list != NULL)
-		{
-			elt = (ListElt*) MWITHDRAW(sizeof(ListElt));
-			if (elt != NULL)
-			{
-				list->length += 1;
+        if (list != NULL) {
+            elt = (ListElt *)MWITHDRAW(sizeof(ListElt));
+            if (elt != NULL) {
+                list->length += 1;
 
-				elt->data = data;
-				elt->list = list;
-				elt->prev = target;
-				elt->next = target->next;
+                elt->data = data;
+                elt->list = list;
+                elt->prev = target;
+                elt->next = target->next;
 
-				target->next = elt;
+                target->next = elt;
 
-				if (elt->next != NULL)
-				{
-					elt->next->prev = elt;
-				}
-				else //target was the last element of the list
-				{
-					list->last = elt;
-				}
-			}
-		}
-	}
+                if (elt->next != NULL) {
+                    elt->next->prev = elt;
+                } else // target was the last element of the list
+                {
+                    list->last = elt;
+                }
+            }
+        }
+    }
 
-	return elt;
+    return elt;
 }
 
 /******************************************************************************
@@ -1240,46 +1134,38 @@ ListElt* list_insert_after(ListElt *target, void *data)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void list_remove_elt(ListElt *elt)
-{
-	List list;
+void list_remove_elt(ListElt *elt) {
+    List list;
 
-	if (elt != NULL)
-	{
-		list = elt->list;
-		if (list != NULL)
-		{
-			if (elt->prev != NULL)
-			{
-				elt->prev->next = elt->next;
-			}
-			if (elt->next != NULL)
-			{
-				elt->next->prev = elt->prev;
-			}
+    if (elt != NULL) {
+        list = elt->list;
+        if (list != NULL) {
+            if (elt->prev != NULL) {
+                elt->prev->next = elt->next;
+            }
+            if (elt->next != NULL) {
+                elt->next->prev = elt->prev;
+            }
 
-			list->length -= 1;
+            list->length -= 1;
 
-			if (list->first == elt)
-			{
-				list->first = elt->next;
-			}
-			if (list->last == elt)
-			{
-				list->last = elt->prev;
-			}
+            if (list->first == elt) {
+                list->first = elt->next;
+            }
+            if (list->last == elt) {
+                list->last = elt->prev;
+            }
 
-			if (list->delete_data_elt != NULL && elt->data != NULL)
-			{
-				list->delete_data_elt(elt->data);
-			}
-		}
+            if (list->delete_data_elt != NULL && elt->data != NULL) {
+                list->delete_data_elt(elt->data);
+            }
+        }
 
-		erase_elt(elt);
-		MDEPOSIT(elt);
-	}
+        erase_elt(elt);
+        MDEPOSIT(elt);
+    }
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -1311,13 +1197,11 @@ void list_remove_elt(ListElt *elt)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void list_remove_elt_by_data(List list, void *data)
-{
-	ListElt *elt = list_search_elt_by_data(list, data);
-	if (elt != NULL)
-	{
-		list_remove_elt(elt);
-	}
+void list_remove_elt_by_data(List list, void *data) {
+    ListElt *elt = list_search_elt_by_data(list, data);
+    if (elt != NULL) {
+        list_remove_elt(elt);
+    }
 }
 
 /******************************************************************************
@@ -1334,11 +1218,12 @@ void list_remove_elt_by_data(List list, void *data)
  * \return void
  *
  * \param[in]  list    The list from which we want to find the element
- * \param[in]  *data   The data that has to be equals by the data pointed from an element of the list
+ * \param[in]  *data   The data that has to be equals by the data pointed from an element of the
+ *list
  *
  * \par Notes:
- *			1. If the list->compare is not NULL we will check the equality with this function,
- *        	   but two element are also equals if they point to the same data.
+ *			1. If the list->compare is not NULL we will check the equality with this
+ *function, but two element are also equals if they point to the same data.
  *
  *
  * \par Revision History:
@@ -1347,38 +1232,29 @@ void list_remove_elt_by_data(List list, void *data)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-ListElt* list_search_elt_by_data(List list, void *data)
-{
-	ListElt *elt = NULL, *temp;
-	int found = 0;
+ListElt *list_search_elt_by_data(List list, void *data) {
+    ListElt *elt = NULL, *temp;
+    int found = 0;
 
-	if (list != NULL && data != NULL)
-	{
-		if (list->compare != NULL)
-		{
-			for (temp = list->first; temp != NULL && !found; temp = temp->next)
-			{
-				if (temp->data == data || list->compare(temp->data, data) == 0)
-				{
-					elt = temp;
-					found = 1; //esco dal ciclo
-				}
-			}
-		}
-		else
-		{
-			for (temp = list->first; temp != NULL && !found; temp = temp->next)
-			{
-				if (temp->data == data)
-				{
-					elt = temp;
-					found = 1; //esco dal ciclo
-				}
-			}
-		}
-	}
+    if (list != NULL && data != NULL) {
+        if (list->compare != NULL) {
+            for (temp = list->first; temp != NULL && !found; temp = temp->next) {
+                if (temp->data == data || list->compare(temp->data, data) == 0) {
+                    elt = temp;
+                    found = 1; // esco dal ciclo
+                }
+            }
+        } else {
+            for (temp = list->first; temp != NULL && !found; temp = temp->next) {
+                if (temp->data == data) {
+                    elt = temp;
+                    found = 1; // esco dal ciclo
+                }
+            }
+        }
+    }
 
-	return elt;
+    return elt;
 }
 
 /******************************************************************************
@@ -1404,80 +1280,70 @@ ListElt* list_search_elt_by_data(List list, void *data)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void sort_list_algorithm(List list, compare_function compare)
-{
-	/* BUBBLE SORT */
-	/* For security (although more expensive) I decided to order the list by swapping the prev and next pointers
-	 * keeping the data's pointer untouched, so any pointers external to the element x (be it ListElt or the data) of the list
-	 * in any case point to the correct element
-	 *
-	 * NOTE: by exchanging the date field (more efficient) any pointers external to the ListElt element
-	 * no longer point to the data they believe they are pointing
-	 */
+static void sort_list_algorithm(List list, compare_function compare) {
+    /* BUBBLE SORT */
+    /* For security (although more expensive) I decided to order the list by swapping the prev and
+     * next pointers keeping the data's pointer untouched, so any pointers external to the element x
+     * (be it ListElt or the data) of the list in any case point to the correct element
+     *
+     * NOTE: by exchanging the date field (more efficient) any pointers external to the ListElt
+     * element no longer point to the data they believe they are pointing
+     */
 
-	ListElt *current, *upper_bound, *old_ub_next;
-	ListElt *lower_elt, *higher_elt, *temp_elt;
-	int sorted = 0, current_is_greater;
+    ListElt *current, *upper_bound, *old_ub_next;
+    ListElt *lower_elt, *higher_elt, *temp_elt;
+    int sorted = 0, current_is_greater;
 
-	upper_bound = list->last;
-	if (upper_bound != NULL)
-	{
-		old_ub_next = upper_bound->next;
-		while (!sorted)
-		{
-			sorted = 1;
-			current = list->first;
-			while (current != upper_bound && current->next != NULL)
-			{
-				temp_elt = current->next;
-				current_is_greater = compare(current->data, temp_elt->data);
-				if (current_is_greater > 0) //swap
-				{
-					/*								current state:										  */
-					/* list->first -> ... -> lower_elt -> current -> temp_elt -> higher_elt -> ... -> list->last */
+    upper_bound = list->last;
+    if (upper_bound != NULL) {
+        old_ub_next = upper_bound->next;
+        while (!sorted) {
+            sorted = 1;
+            current = list->first;
+            while (current != upper_bound && current->next != NULL) {
+                temp_elt = current->next;
+                current_is_greater = compare(current->data, temp_elt->data);
+                if (current_is_greater > 0) // swap
+                {
+                    /*								current state:
+                     */
+                    /* list->first -> ... -> lower_elt -> current -> temp_elt -> higher_elt -> ...
+                     * -> list->last */
 
-					lower_elt = current->prev;
-					if (lower_elt != NULL)
-					{
-						lower_elt->next = temp_elt;
-					}
-					else
-					{ /* current is the first element of the list	*/
-						list->first = temp_elt;
-					}
+                    lower_elt = current->prev;
+                    if (lower_elt != NULL) {
+                        lower_elt->next = temp_elt;
+                    } else { /* current is the first element of the list	*/
+                        list->first = temp_elt;
+                    }
 
-					higher_elt = temp_elt->next;
-					if (higher_elt != NULL)
-					{
-						higher_elt->prev = current;
-					}
-					else
-					{/*	current->next is the last element of the lists	*/
-						list->last = current;
-					}
+                    higher_elt = temp_elt->next;
+                    if (higher_elt != NULL) {
+                        higher_elt->prev = current;
+                    } else { /*	current->next is the last element of the lists	*/
+                        list->last = current;
+                    }
 
-					current->prev = temp_elt;
-					current->next = higher_elt;
+                    current->prev = temp_elt;
+                    current->next = higher_elt;
 
-					temp_elt->prev = lower_elt;
-					temp_elt->next = current;
+                    temp_elt->prev = lower_elt;
+                    temp_elt->next = current;
 
-					//swapped
-					sorted = 0;
-				}
-				else /* not swapped */
-				{
-					current = temp_elt;
-				}
-			} //while(current!=upper_bound)
+                    // swapped
+                    sorted = 0;
+                } else /* not swapped */
+                {
+                    current = temp_elt;
+                }
+            } // while(current!=upper_bound)
 
-			if (old_ub_next == upper_bound->next)
-			{
-				upper_bound = upper_bound->prev;
-			}
-		} // while(!sorted)
-	}
-	return;
+            if (old_ub_next == upper_bound->next) {
+                upper_bound = upper_bound->prev;
+            }
+        } // while(!sorted)
+    }
+    return;
 }
 
 /******************************************************************************
@@ -1505,17 +1371,14 @@ static void sort_list_algorithm(List list, compare_function compare)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void sort_list(List list)
-{
-	if (list != NULL)
-	{
-		if (list->compare != NULL)
-		{
-			sort_list_algorithm(list, list->compare);
-		}
-	}
+void sort_list(List list) {
+    if (list != NULL) {
+        if (list->compare != NULL) {
+            sort_list_algorithm(list, list->compare);
+        }
+    }
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -1532,7 +1395,8 @@ void sort_list(List list)
  * \return void
  *
  * \param[in]  firstList   The list from which we want to remove the elements
- * \param[in]  secondList  The list that contains the element that we want to remove from the firstList
+ * \param[in]  secondList  The list that contains the element that we want to remove from the
+ *firstList
  *
  * \par Notes:
  * 		1. The element are compared by the compare of the firstList (firstList->compared)-
@@ -1546,38 +1410,31 @@ void sort_list(List list)
  *  -------- | --------------- | -----------------------------------------------
  *  07/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void remove_secondList_from_firstList(List firstList, List secondList)
-{
-	ListElt *currentFirstList, *currentSecondList, *temp;
-	int found, compare_result;
-	compare_function compare;
-	if (firstList != NULL && secondList != NULL)
-	{
-		if (firstList->compare != NULL)
-		{
-			compare = firstList->compare;
+void remove_secondList_from_firstList(List firstList, List secondList) {
+    ListElt *currentFirstList, *currentSecondList, *temp;
+    int found, compare_result;
+    compare_function compare;
+    if (firstList != NULL && secondList != NULL) {
+        if (firstList->compare != NULL) {
+            compare = firstList->compare;
 
-			for (currentSecondList = secondList->first; currentSecondList != NULL;
-					currentSecondList = currentSecondList->next)
-			{
-				found = 0;
-				for (currentFirstList = firstList->first; currentFirstList != NULL && !found;
-						currentFirstList = currentFirstList->next)
-				{
-					compare_result = compare(currentFirstList->data, currentSecondList->data);
+            for (currentSecondList = secondList->first; currentSecondList != NULL;
+                 currentSecondList = currentSecondList->next) {
+                found = 0;
+                for (currentFirstList = firstList->first; currentFirstList != NULL && !found;
+                     currentFirstList = currentFirstList->next) {
+                    compare_result = compare(currentFirstList->data, currentSecondList->data);
 
-					if (compare_result == 0)
-					{
-						temp = currentFirstList;
-						found = 1;
-					}
-				}
+                    if (compare_result == 0) {
+                        temp = currentFirstList;
+                        found = 1;
+                    }
+                }
 
-				if (found == 1)
-				{
-					list_remove_elt(temp);
-				}
-			}
-		}
-	}
+                if (found == 1) {
+                    list_remove_elt(temp);
+                }
+            }
+        }
+    }
 }

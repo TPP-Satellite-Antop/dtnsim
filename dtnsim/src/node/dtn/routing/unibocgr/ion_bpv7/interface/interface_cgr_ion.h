@@ -33,12 +33,9 @@
 
 #if UNIBO_CGR
 
-
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-
 
 #ifdef __cplusplus
 }

@@ -7,17 +7,16 @@
 #define LPUTILS_H_
 
 #include "ContactPlan.h"
-#include <boost/graph/adjacency_list.hpp>
-#include "utils/TopologyGraphInfo.h"
-#include "utils/RouterGraphInfo.h"
 #include "Lp.h"
+#include "utils/RouterGraphInfo.h"
+#include "utils/TopologyGraphInfo.h"
+#include <boost/graph/adjacency_list.hpp>
 #include <fstream>
+#include <map>
 #include <sstream>
 #include <string>
-#include <map>
 
-namespace lpUtils
-{
+namespace lpUtils {
 
 /// @brief Compute Flows of traffic from the Lp model.
 /// @return map that associate one RouterGraph per state

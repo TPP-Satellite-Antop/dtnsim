@@ -32,63 +32,62 @@
 #ifndef SOURCES_CONTACTS_PLAN_NODES_NODES_H_
 #define SOURCES_CONTACTS_PLAN_NODES_NODES_H_
 
+#include "../../library/list/list_type.h"
 #include "src/node/dtn/routing/unibocgr/core/library/commonDefines.h"
 #include "src/node/dtn/routing/unibocgr/core/library_from_ion/rbt/rbt.h"
-#include "../../library/list/list_type.h"
 
 typedef struct node Node;
 
-typedef struct
-{
-	/**
-	 * \brief Back-reference.
-	 */
-	Node *nodeAddr;
-	/**
-	 * \brief Computed routes list (and Yen's "list A")
-	 */
-	List selectedRoutes;
-	/**
-	 * \brief Yen's "list B"
-	 */
-	List knownRoutes;
-	/**
-	 * \brief Each element in this list is a pointer to the ListElt of the relative neighbor
-	 *        in the local node's neighbor list.
-	 *
-	 * \details  In this list we store the citations to only the neighbors that could
-	 *           be used to reach the Node (intended as destination node)
-	 *
-	 * \par Notes:
-	 *          1.  Cross-reference between relative citations elements in RtgObject and Neighbor
-	 */
-	List citations;
-	/**
-	 * \brief This is a bit mask
-	 * - Routes computed bit (SET_COMPUTED, UNSET_COMPUTED and ALREADY_COMPUTED macros)
-	 * - Routes not found bit (SET_ROUTES_NOT_FOUND, UNSET_ROUTES_NOT_FUND and ROUTES_NOT_FOUND macros)
-	 * - You can clear this mask with CLEAR_FLAGS macro
-	 */
-	unsigned char flags;
+typedef struct {
+    /**
+     * \brief Back-reference.
+     */
+    Node *nodeAddr;
+    /**
+     * \brief Computed routes list (and Yen's "list A")
+     */
+    List selectedRoutes;
+    /**
+     * \brief Yen's "list B"
+     */
+    List knownRoutes;
+    /**
+     * \brief Each element in this list is a pointer to the ListElt of the relative neighbor
+     *        in the local node's neighbor list.
+     *
+     * \details  In this list we store the citations to only the neighbors that could
+     *           be used to reach the Node (intended as destination node)
+     *
+     * \par Notes:
+     *          1.  Cross-reference between relative citations elements in RtgObject and Neighbor
+     */
+    List citations;
+    /**
+     * \brief This is a bit mask
+     * - Routes computed bit (SET_COMPUTED, UNSET_COMPUTED and ALREADY_COMPUTED macros)
+     * - Routes not found bit (SET_ROUTES_NOT_FOUND, UNSET_ROUTES_NOT_FUND and ROUTES_NOT_FOUND
+     * macros)
+     * - You can clear this mask with CLEAR_FLAGS macro
+     */
+    unsigned char flags;
 } RtgObject;
 
-struct node
-{
-	/**
-	 * \brief Ipn node number
-	 */
-	unsigned long long nodeNbr;
-	/**
-	 * \brief Where we store the routes computed to reach this node
-	 */
-	RtgObject *routingObject;
+struct node {
+    /**
+     * \brief Ipn node number
+     */
+    unsigned long long nodeNbr;
+    /**
+     * \brief Where we store the routes computed to reach this node
+     */
+    RtgObject *routingObject;
 };
 
 /**************** NODE & ROUTING OBJECT FLAGS MACROS ****************/
 
 // #define COMPUTED        (1) /* (00000001) */
 // #define NO_ROUTES       (2) /* (00000010) */
-#define NEIGHBORS       (4) /* (00000100) */
+#define NEIGHBORS (4) /* (00000100) */
 
 /*
 #define SET_COMPUTED(rtgObj) (((rtgObj)->flags) |= COMPUTED)
@@ -105,37 +104,38 @@ struct node
 
 /********************************************************************/
 
-typedef struct
-{
-	/**
-	 * \brief The ipn number of the local node's neighbor
-	 */
-	unsigned long long ipn_number;
-	/**
-	 * \brief The time when the last contact to this neighbor expires
-	 */
-	time_t toTime;
-	/**
-	 * \brief This is a bit mask
-	 * - Candidate routes already found for this neighbor bit (SET_CANDIDATE_ROUTES_FOUND, UNSET_CANDIDATE_ROUTE_FOUND and CANDIDATE_ROUTES_FOUND macros)
-	 * - There are already routes in subset bit (SET_ROUTES_IN_SUBSET, UNSET_ROUTES_IN_SUBSET and ROUTES_IN_SUBSET macros)
-	 * - You can clear this mask with CLEAR_FLAGS macro
-	 */
-	unsigned char flags;
-	/**
-	 * \brief Each element in this list is the ListElt element of the relative
-	 *        citation in RtgObject.
-	 *
-	 * \par Notes:
-	 *          1.  Cross-reference between relative citations elements in RtgObject and Neighbor
-	 */
-	List citations;
+typedef struct {
+    /**
+     * \brief The ipn number of the local node's neighbor
+     */
+    unsigned long long ipn_number;
+    /**
+     * \brief The time when the last contact to this neighbor expires
+     */
+    time_t toTime;
+    /**
+     * \brief This is a bit mask
+     * - Candidate routes already found for this neighbor bit (SET_CANDIDATE_ROUTES_FOUND,
+     * UNSET_CANDIDATE_ROUTE_FOUND and CANDIDATE_ROUTES_FOUND macros)
+     * - There are already routes in subset bit (SET_ROUTES_IN_SUBSET, UNSET_ROUTES_IN_SUBSET and
+     * ROUTES_IN_SUBSET macros)
+     * - You can clear this mask with CLEAR_FLAGS macro
+     */
+    unsigned char flags;
+    /**
+     * \brief Each element in this list is the ListElt element of the relative
+     *        citation in RtgObject.
+     *
+     * \par Notes:
+     *          1.  Cross-reference between relative citations elements in RtgObject and Neighbor
+     */
+    List citations;
 } Neighbor;
 
 /*********************** NEIGHBOR FLAGS MACROS ***********************/
 
 #define CANDIDATE_ROUTES (1) /* 00000001 */
-#define SUBSET_ROUTES    (2) /* 00000010 */
+#define SUBSET_ROUTES (2)    /* 00000010 */
 
 #define SET_CANDIDATE_ROUTES_FOUND(neighbor) (((neighbor)->flags) |= CANDIDATE_ROUTES)
 #define UNSET_CANDIDATE_ROUTES_FOUND(neighbor) (((neighbor)->flags) &= ~CANDIDATE_ROUTES)
@@ -151,28 +151,27 @@ typedef struct
  * \brief USed to keep in one place the data used for the neighbors management.
  *
  * \par Notes:
- *             1. A neighbor here is intended as a node (N) for which there is a direct contact from the local node to this node (N).
+ *             1. A neighbor here is intended as a node (N) for which there is a direct contact from
+ * the local node to this node (N).
  */
 typedef struct {
-	/**
-	 * \brief The list of all neighbors of the local node.
-	 */
-	List local_node_neighbors;
-	/**
-	 * \brief The last contact to a neighbor expires at this time.
-	 */
-	time_t timeNeighborToRemove;
-	/**
-	 * \brief 1 if has been performed the search of the local node's neighbors.
-	 */
-	int neighbors_list_builded;
+    /**
+     * \brief The list of all neighbors of the local node.
+     */
+    List local_node_neighbors;
+    /**
+     * \brief The last contact to a neighbor expires at this time.
+     */
+    time_t timeNeighborToRemove;
+    /**
+     * \brief 1 if has been performed the search of the local node's neighbors.
+     */
+    int neighbors_list_builded;
 } NeighborsSAP;
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-
 
 extern int create_NodesTree(bool newNode);
 
@@ -183,16 +182,16 @@ extern void discardAllRoutesFromNodesTree();
 NeighborsSAP *get_neighbors_sap(NeighborsSAP *newSap);
 
 extern int add_node_to_graph(unsigned long long nodeNbrToAdd);
-extern Node* add_node(unsigned long long nodeNbr);
+extern Node *add_node(unsigned long long nodeNbr);
 
 extern void remove_node_from_graph(unsigned long long nodeNbrToRemove);
 
-extern Node* get_node(unsigned long long nodeNbr);
+extern Node *get_node(unsigned long long nodeNbr);
 
 extern void reset_NodesTree();
 extern void destroy_NodesTree();
 
-extern Neighbor * get_neighbor(unsigned long long node_number);
+extern Neighbor *get_neighbor(unsigned long long node_number);
 extern long unsigned int get_local_node_neighbors_count();
 extern void reset_neighbors_temporary_fields();
 extern int insert_neighbors_to_reach_destination(List neighbors, Node *destination);

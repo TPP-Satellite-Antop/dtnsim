@@ -1,5 +1,5 @@
 /** \file log.c
- * 
+ *
  *  \brief  This file provides the implementation of a library
  *          to print various log files. Only for Unix-like systems.
  *
@@ -39,35 +39,35 @@
 #if (LOG == 1)
 
 typedef struct {
-	/**
-	 * \brief The main log file.
-	 */
-	FILE *file_log;
-	/**
-	 * \brief Path of the logs directory.
-	 */
-	char log_dir[256];
-	/**
-	 * \brief Boolean: '1' if we already checked the existence of the
-	 * log directory, '0' otherwise.
-	 */
-	char log_dir_exists;
-	/**
-	 * \brief Length of the log_dir string. (strlen)
-	 */
-	int len_log_dir;
-	/**
-	 * \brief The time used by the log files.
-	 */
-	time_t currentTime;
-	/**
-	 * \brief The last time when the logs have been printed.
-	 */
-	time_t lastFlushTime;
-	/**
-	 * \brief The buffer used to print the logs in the main log file.
-	 */
-	char buffer[256]; //don't touch the size of the buffer
+    /**
+     * \brief The main log file.
+     */
+    FILE *file_log;
+    /**
+     * \brief Path of the logs directory.
+     */
+    char log_dir[256];
+    /**
+     * \brief Boolean: '1' if we already checked the existence of the
+     * log directory, '0' otherwise.
+     */
+    char log_dir_exists;
+    /**
+     * \brief Length of the log_dir string. (strlen)
+     */
+    int len_log_dir;
+    /**
+     * \brief The time used by the log files.
+     */
+    time_t currentTime;
+    /**
+     * \brief The last time when the logs have been printed.
+     */
+    time_t lastFlushTime;
+    /**
+     * \brief The buffer used to print the logs in the main log file.
+     */
+    char buffer[256]; // don't touch the size of the buffer
 } LogSAP;
 
 /******************************************************************************
@@ -95,14 +95,14 @@ typedef struct {
  *  -------- | --------------- | -----------------------------------------------
  *  02/07/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static LogSAP * get_log_sap(LogSAP *newSap) {
-	static LogSAP sap;
+static LogSAP *get_log_sap(LogSAP *newSap) {
+    static LogSAP sap;
 
-	if(newSap != NULL) {
-		sap = *newSap;
-	}
+    if (newSap != NULL) {
+        sap = *newSap;
+    }
 
-	return &sap;
+    return &sap;
 }
 
 /******************************************************************************
@@ -127,24 +127,22 @@ static LogSAP * get_log_sap(LogSAP *newSap) {
  *  -------- | --------------- | -----------------------------------------------
  *  24/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void writeLog(const char *format, ...)
-{
-	va_list args;
-	LogSAP *sap = get_log_sap(NULL);
+void writeLog(const char *format, ...) {
+    va_list args;
+    LogSAP *sap = get_log_sap(NULL);
 
-	if (sap->file_log != NULL)
-	{
-		va_start(args, format);
+    if (sap->file_log != NULL) {
+        va_start(args, format);
 
-		fprintf(sap->file_log, "%s", sap->buffer); //[            time]:
-		vfprintf(sap->file_log, format, args);
-		fputc('\n', sap->file_log);
+        fprintf(sap->file_log, "%s", sap->buffer); //[            time]:
+        vfprintf(sap->file_log, format, args);
+        fputc('\n', sap->file_log);
 
-		debug_fflush(stdout);
+        debug_fflush(stdout);
 
-		va_end(args);
-	}
-	return;
+        va_end(args);
+    }
+    return;
 }
 
 /******************************************************************************
@@ -169,25 +167,22 @@ void writeLog(const char *format, ...)
  *  -------- | --------------- | -----------------------------------------------
  *  03/04/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void writeLogFlush(const char *format, ...)
-{
-	va_list args;
-	LogSAP *sap = get_log_sap(NULL);
+void writeLogFlush(const char *format, ...) {
+    va_list args;
+    LogSAP *sap = get_log_sap(NULL);
 
-	if (sap->file_log != NULL)
-	{
-		va_start(args, format);
+    if (sap->file_log != NULL) {
+        va_start(args, format);
 
-		fprintf(sap->file_log, "%s", sap->buffer); //[            time]:
-		vfprintf(sap->file_log, format, args);
-		fputc('\n', sap->file_log);
-		fflush(sap->file_log);
+        fprintf(sap->file_log, "%s", sap->buffer); //[            time]:
+        vfprintf(sap->file_log, format, args);
+        fputc('\n', sap->file_log);
+        fflush(sap->file_log);
 
-		va_end(args);
-	}
-	return;
+        va_end(args);
+    }
+    return;
 }
-
 
 /******************************************************************************
  *
@@ -209,14 +204,12 @@ void writeLogFlush(const char *format, ...)
  *  -------- | --------------- | -----------------------------------------------
  *  11/04/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void log_fflush()
-{
-	LogSAP *sap = get_log_sap(NULL);
-	if(sap->file_log != NULL)
-	{
-		fflush(sap->file_log);
-		sap->lastFlushTime = sap->currentTime;
-	}
+void log_fflush() {
+    LogSAP *sap = get_log_sap(NULL);
+    if (sap->file_log != NULL) {
+        fflush(sap->file_log);
+        sap->lastFlushTime = sap->currentTime;
+    }
 }
 
 /******************************************************************************
@@ -245,19 +238,17 @@ void log_fflush()
  *  -------- | --------------- | -----------------------------------------------
  *  24/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void setLogTime(time_t time)
-{
-	LogSAP *sap = get_log_sap(NULL);
-	if (time != sap->currentTime && time >= 0)
-	{
-		sap->currentTime = time;
-		sprintf(sap->buffer, "[%15ld]: ", (long int) sap->currentTime);
-		//set the first 19 characters of the buffer
-		if(sap->currentTime - sap->lastFlushTime > 5) // After 5 seconds.
-		{
-			log_fflush();
-		}
-	}
+void setLogTime(time_t time) {
+    LogSAP *sap = get_log_sap(NULL);
+    if (time != sap->currentTime && time >= 0) {
+        sap->currentTime = time;
+        sprintf(sap->buffer, "[%15ld]: ", (long int)sap->currentTime);
+        // set the first 19 characters of the buffer
+        if (sap->currentTime - sap->lastFlushTime > 5) // After 5 seconds.
+        {
+            log_fflush();
+        }
+    }
 }
 
 /******************************************************************************
@@ -286,19 +277,17 @@ void setLogTime(time_t time)
  *  -------- | --------------- | -----------------------------------------------
  *  24/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int print_string(FILE *file, char *toPrint)
-{
-	int result = -1;
-	if (file != NULL && toPrint != NULL)
-	{
-		result = fprintf(file, "%s", toPrint);
+int print_string(FILE *file, char *toPrint) {
+    int result = -1;
+    if (file != NULL && toPrint != NULL) {
+        result = fprintf(file, "%s", toPrint);
 
-		result = (result >= 0) ? 0 : -2;
+        result = (result >= 0) ? 0 : -2;
 
-		debug_fflush(stdout);
-	}
+        debug_fflush(stdout);
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -324,51 +313,46 @@ int print_string(FILE *file, char *toPrint)
  *  -------- | --------------- | -----------------------------------------------
  *  24/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int createLogDir()
-{
-	/*
-	 * Currently the directory is created under the current directory
-	 * with the name: cgr_log
-	 *
-	 * Relative path: ./cgr_log
-	 */
-	LogSAP *sap = get_log_sap(NULL);
+int createLogDir() {
+    /*
+     * Currently the directory is created under the current directory
+     * with the name: cgr_log
+     *
+     * Relative path: ./cgr_log
+     */
+    LogSAP *sap = get_log_sap(NULL);
 
-	int result = 0;
-//long unsigned int len;
-//char *homedir;
-	if (sap->log_dir_exists != '1')
-	{
-		/*
-		 homedir = getenv("HOME");
-		 if (homedir != NULL)
-		 {
-		 strcpy(log_dir, homedir);
-		 len = strlen(log_dir);
-		 if (len == 0 || (len > 0 && log_dir[len - 1] != '/'))
-		 {
-		 log_dir[len] = '/';
-		 log_dir[len + 1] = '\0';
-		 }
-		 strcat(log_dir, "cgr_log/");
-		 }
-		 */
-		strcpy(sap->log_dir, "./cgr_log/");
-		if (mkdir(sap->log_dir, 0777) != 0 && errno != EEXIST)
-		{
-			perror("Error CGR log dir cannot be created");
-			result = -1;
-			sap->len_log_dir = 0;
-		}
-		else
-		{
-			result = 1;
-			sap->log_dir_exists = '1';
-			sap->len_log_dir = strlen("./cgr_log/");
-		}
-	}
+    int result = 0;
+    // long unsigned int len;
+    // char *homedir;
+    if (sap->log_dir_exists != '1') {
+        /*
+         homedir = getenv("HOME");
+         if (homedir != NULL)
+         {
+         strcpy(log_dir, homedir);
+         len = strlen(log_dir);
+         if (len == 0 || (len > 0 && log_dir[len - 1] != '/'))
+         {
+         log_dir[len] = '/';
+         log_dir[len + 1] = '\0';
+         }
+         strcat(log_dir, "cgr_log/");
+         }
+         */
+        strcpy(sap->log_dir, "./cgr_log/");
+        if (mkdir(sap->log_dir, 0777) != 0 && errno != EEXIST) {
+            perror("Error CGR log dir cannot be created");
+            result = -1;
+            sap->len_log_dir = 0;
+        } else {
+            result = 1;
+            sap->log_dir_exists = '1';
+            sap->len_log_dir = strlen("./cgr_log/");
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -384,7 +368,7 @@ int createLogDir()
  *      24/01/20
  *
  * \return FILE*
- * 
+ *
  * \retval  FILE*   The file opened
  * \retval  NULL    Error case
  *
@@ -400,20 +384,18 @@ int createLogDir()
  *  -------- | --------------- | -----------------------------------------------
  *  24/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-FILE* openBundleFile(unsigned int num)
-{
-	FILE *file = NULL;
-	LogSAP *sap = get_log_sap(NULL);
+FILE *openBundleFile(unsigned int num) {
+    FILE *file = NULL;
+    LogSAP *sap = get_log_sap(NULL);
 
-	if (sap->len_log_dir > 0)
-	{
-		sprintf(sap->log_dir + sap->len_log_dir, "call_#%u", num);
-		file = fopen(sap->log_dir, "w");
+    if (sap->len_log_dir > 0) {
+        sprintf(sap->log_dir + sap->len_log_dir, "call_#%u", num);
+        file = fopen(sap->log_dir, "w");
 
-		sap->log_dir[sap->len_log_dir] = '\0';
-	}
+        sap->log_dir[sap->len_log_dir] = '\0';
+    }
 
-	return file;
+    return file;
 }
 
 /******************************************************************************
@@ -438,14 +420,12 @@ FILE* openBundleFile(unsigned int num)
  *  -------- | --------------- | -----------------------------------------------
  *  24/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void closeBundleFile(FILE **file_call)
-{
-	if (file_call != NULL && *file_call != NULL)
-	{
-		fflush(*file_call);
-		fclose(*file_call);
-		*file_call = NULL;
-	}
+void closeBundleFile(FILE **file_call) {
+    if (file_call != NULL && *file_call != NULL) {
+        fflush(*file_call);
+        fclose(*file_call);
+        *file_call = NULL;
+    }
 }
 
 /******************************************************************************
@@ -475,40 +455,33 @@ void closeBundleFile(FILE **file_call)
  *  -------- | --------------- | -----------------------------------------------
  *  24/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int cleanLogDir()
-{
-	int result = 0;
-	DIR *dir;
-	struct dirent *file;
-	LogSAP *sap = get_log_sap(NULL);
+int cleanLogDir() {
+    int result = 0;
+    DIR *dir;
+    struct dirent *file;
+    LogSAP *sap = get_log_sap(NULL);
 
-	if (sap->log_dir_exists == '1')
-	{
-		result = 1;
+    if (sap->log_dir_exists == '1') {
+        result = 1;
 
-		sap->len_log_dir = strlen(sap->log_dir);
-		if ((dir = opendir(sap->log_dir)) != NULL)
-		{
-			while ((file = readdir(dir)) != NULL)
-			{
-				if ((strcmp(file->d_name, ".") != 0) && (strcmp(file->d_name, "..") != 0)
-						&& (strcmp(file->d_name, "log.txt") != 0) && file->d_type == DT_REG)
-				{
-					strcpy(sap->log_dir + sap->len_log_dir, file->d_name);
-					remove(sap->log_dir);
-					sap->log_dir[sap->len_log_dir] = '\0';
-				}
-			}
+        sap->len_log_dir = strlen(sap->log_dir);
+        if ((dir = opendir(sap->log_dir)) != NULL) {
+            while ((file = readdir(dir)) != NULL) {
+                if ((strcmp(file->d_name, ".") != 0) && (strcmp(file->d_name, "..") != 0) &&
+                    (strcmp(file->d_name, "log.txt") != 0) && file->d_type == DT_REG) {
+                    strcpy(sap->log_dir + sap->len_log_dir, file->d_name);
+                    remove(sap->log_dir);
+                    sap->log_dir[sap->len_log_dir] = '\0';
+                }
+            }
 
-			closedir(dir);
-		}
-		else
-		{
-			result = -1;
-		}
-	}
+            closedir(dir);
+        } else {
+            result = -1;
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -523,7 +496,7 @@ int cleanLogDir()
  *      24/01/20
  *
  * \return int
- * 
+ *
  * \retval   1   Success case, main log file opened.
  * \retval   0   If we never called 'createLogDir' or the directory
  *               wasn't created due to an error or the main log file already exists
@@ -538,38 +511,31 @@ int cleanLogDir()
  *  -------- | --------------- | -----------------------------------------------
  *  24/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int openLogFile()
-{
-	int result = 0;
-	long unsigned int len;
-	LogSAP *sap = get_log_sap(NULL);
+int openLogFile() {
+    int result = 0;
+    long unsigned int len;
+    LogSAP *sap = get_log_sap(NULL);
 
-	if (sap->file_log != NULL)
-	{
-		result = 1;
-	}
-	else if (sap->log_dir_exists == '1')
-	{
-		sap->currentTime = -1;
-		len = strlen(sap->log_dir);
-		strcat(sap->log_dir, "log.txt");
+    if (sap->file_log != NULL) {
+        result = 1;
+    } else if (sap->log_dir_exists == '1') {
+        sap->currentTime = -1;
+        len = strlen(sap->log_dir);
+        strcat(sap->log_dir, "log.txt");
 
-		sap->file_log = fopen(sap->log_dir, "w");
+        sap->file_log = fopen(sap->log_dir, "w");
 
-		if (sap->file_log == NULL)
-		{
-			perror("Error file ./cgr_log/log.txt cannot be opened");
-			result = -1;
-		}
-		else
-		{
-			result = 1;
-		}
+        if (sap->file_log == NULL) {
+            perror("Error file ./cgr_log/log.txt cannot be opened");
+            result = -1;
+        } else {
+            result = 1;
+        }
 
-		sap->log_dir[len] = '\0';
-	}
+        sap->log_dir[len] = '\0';
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -594,15 +560,13 @@ int openLogFile()
  *  -------- | --------------- | -----------------------------------------------
  *  24/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void closeLogFile()
-{
-	LogSAP *sap = get_log_sap(NULL);
-	if (sap->file_log != NULL)
-	{
-		fflush(sap->file_log);
-		fclose(sap->file_log);
-		sap->file_log = NULL;
-	}
+void closeLogFile() {
+    LogSAP *sap = get_log_sap(NULL);
+    if (sap->file_log != NULL) {
+        fflush(sap->file_log);
+        fclose(sap->file_log);
+        sap->file_log = NULL;
+    }
 }
 
 /******************************************************************************
@@ -619,8 +583,8 @@ void closeLogFile()
  * \return void
  *
  * \par Notes:
- * 			1.	The contacts graph is printed in append mode in the file "contacts.txt"
- * 			2.	The ranges graph is printed in append mode in the file "ranges.txt"
+ * 			1.	The contacts graph is printed in append mode in the file
+ *"contacts.txt" 2.	The ranges graph is printed in append mode in the file "ranges.txt"
  *
  * \par Revision History:
  *
@@ -628,41 +592,37 @@ void closeLogFile()
  *  -------- | --------------- | -----------------------------------------------
  *  30/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void printCurrentState()
-{
-	long unsigned int len = 0;
-	FILE * file_contacts, *file_ranges;
-	LogSAP *sap = get_log_sap(NULL);
-	if (sap->log_dir_exists == '1')
-	{
-		len = strlen(sap->log_dir);
-		sap->log_dir[len] = '\0';
-		strcat(sap->log_dir, "contacts.txt");
-		if ((file_contacts = fopen(sap->log_dir, "a")) == NULL)
-		{
-			perror("Error contacts graph's file cannot be opened");
-			return;
-		}
-		sap->log_dir[len] = '\0';
-		strcat(sap->log_dir, "ranges.txt");
-		if ((file_ranges = fopen(sap->log_dir, "a")) == NULL)
-		{
-			perror("Error contacts graph's file cannot be opened");
-			fclose(file_contacts);
-			return;
-		}
-		sap->log_dir[len] = '\0';
+void printCurrentState() {
+    long unsigned int len = 0;
+    FILE *file_contacts, *file_ranges;
+    LogSAP *sap = get_log_sap(NULL);
+    if (sap->log_dir_exists == '1') {
+        len = strlen(sap->log_dir);
+        sap->log_dir[len] = '\0';
+        strcat(sap->log_dir, "contacts.txt");
+        if ((file_contacts = fopen(sap->log_dir, "a")) == NULL) {
+            perror("Error contacts graph's file cannot be opened");
+            return;
+        }
+        sap->log_dir[len] = '\0';
+        strcat(sap->log_dir, "ranges.txt");
+        if ((file_ranges = fopen(sap->log_dir, "a")) == NULL) {
+            perror("Error contacts graph's file cannot be opened");
+            fclose(file_contacts);
+            return;
+        }
+        sap->log_dir[len] = '\0';
 
-		printContactsGraph(file_contacts, sap->currentTime);
-		printRangesGraph(file_ranges, sap->currentTime);
+        printContactsGraph(file_contacts, sap->currentTime);
+        printRangesGraph(file_ranges, sap->currentTime);
 
-		fflush(file_contacts);
-		fclose(file_contacts);
-		fflush(file_ranges);
-		fclose(file_ranges);
-		file_contacts = NULL;
-		file_ranges = NULL;
-	}
+        fflush(file_contacts);
+        fclose(file_contacts);
+        fflush(file_ranges);
+        fclose(file_ranges);
+        file_contacts = NULL;
+        file_ranges = NULL;
+    }
 }
 
 /******************************************************************************
@@ -697,52 +657,41 @@ void printCurrentState()
  *  -------- | --------------- | -----------------------------------------------
  *  29/03/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int print_all_list(FILE *file, List list, const char *brief, const char *separator)
-{
-	int len, result = -1, temp;
-	ListElt *elt;
-	if (file != NULL && list != NULL && brief != NULL && separator != NULL)
-	{
-		result = 0;
-		len = fprintf(file, "%s", brief);
-		if (len < 0)
-		{
-			result = -2;
-		}
-		for (elt = list->first; elt != NULL && result == 0; elt = elt->next)
-		{
-			temp = fprintf(file, "%llu%s", *((unsigned long long*) elt->data),
-					(elt == list->last) ? "" : separator);
-			if (temp >= 0)
-			{
-				len += temp;
-			}
-			else
-			{
-				result = -2;
-			}
-			if (len > 85)
-			{
-				temp = fputc('\n', file);
+int print_all_list(FILE *file, List list, const char *brief, const char *separator) {
+    int len, result = -1, temp;
+    ListElt *elt;
+    if (file != NULL && list != NULL && brief != NULL && separator != NULL) {
+        result = 0;
+        len = fprintf(file, "%s", brief);
+        if (len < 0) {
+            result = -2;
+        }
+        for (elt = list->first; elt != NULL && result == 0; elt = elt->next) {
+            temp = fprintf(file, "%llu%s", *((unsigned long long *)elt->data),
+                           (elt == list->last) ? "" : separator);
+            if (temp >= 0) {
+                len += temp;
+            } else {
+                result = -2;
+            }
+            if (len > 85) {
+                temp = fputc('\n', file);
 
-				if (temp < 0)
-				{
-					result = -2;
-				}
+                if (temp < 0) {
+                    result = -2;
+                }
 
-				len = 0;
-			}
-		}
+                len = 0;
+            }
+        }
 
-		temp = fputc('\n', file);
-		if (temp < 0)
-		{
-			result = -2;
-		}
+        temp = fputc('\n', file);
+        if (temp < 0) {
+            result = -2;
+        }
+    }
 
-	}
-
-	return result;
+    return result;
 }
 
 #endif

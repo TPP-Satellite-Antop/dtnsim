@@ -34,7 +34,6 @@
 
 #include "src/node/dtn/routing/unibocgr/core/library_from_ion/rbt/rbt.h"
 
-
 #ifndef ADD_AND_REVISE_RANGE
 /**
  * \brief Boolean: set to 1 if you want to enable the behavior of REVISABLE_RANGE
@@ -56,13 +55,9 @@
 #define ADD_AND_REVISE_RANGE 1
 #endif
 
-
-static void erase_range(Range*);
-static Range* create_range(unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
-		time_t toTime, unsigned int owlt);
-
-
-
+static void erase_range(Range *);
+static Range *create_range(unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
+                           time_t toTime, unsigned int owlt);
 
 /******************************************************************************
  *
@@ -88,14 +83,14 @@ static Range* create_range(unsigned long long fromNode, unsigned long long toNod
  *  -------- | --------------- | -----------------------------------------------
  *  02/07/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-RangeGraphSAP *get_range_graph_sap(RangeGraphSAP *newSap) { //was static
-	static RangeGraphSAP sap;
+RangeGraphSAP *get_range_graph_sap(RangeGraphSAP *newSap) { // was static
+    static RangeGraphSAP sap;
 
-	if(newSap != NULL) {
-		sap = *newSap;
-	}
+    if (newSap != NULL) {
+        sap = *newSap;
+    }
 
-	return &sap;
+    return &sap;
 }
 
 /******************************************************************************
@@ -124,53 +119,38 @@ RangeGraphSAP *get_range_graph_sap(RangeGraphSAP *newSap) { //was static
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int compare_ranges(void *first, void *second)
-{
-	Range *a, *b;
-	int result = 0;
+int compare_ranges(void *first, void *second) {
+    Range *a, *b;
+    int result = 0;
 
-	if (first == second) //if they point to the same address
-	{
-		result = 0;
-	}
-	else if (first != NULL && second != NULL)
-	{
+    if (first == second) // if they point to the same address
+    {
+        result = 0;
+    } else if (first != NULL && second != NULL) {
 
-		a = (Range*) first;
-		b = (Range*) second;
+        a = (Range *)first;
+        b = (Range *)second;
 
-		if (a->fromNode < b->fromNode)
-		{
-			result = -1;
-		}
+        if (a->fromNode < b->fromNode) {
+            result = -1;
+        }
 
-		else if (a->fromNode > b->fromNode)
-		{
-			result = 1;
-		}
-		else if (a->toNode < b->toNode)
-		{
-			result = -1;
-		}
-		else if (a->toNode > b->toNode)
-		{
-			result = 1;
-		}
-		else if (a->fromTime < b->fromTime)
-		{
-			result = -1;
-		}
-		else if (a->fromTime > b->fromTime)
-		{
-			result = 1;
-		}
-		else
-		{
-			result = 0;
-		}
-	}
+        else if (a->fromNode > b->fromNode) {
+            result = 1;
+        } else if (a->toNode < b->toNode) {
+            result = -1;
+        } else if (a->toNode > b->toNode) {
+            result = 1;
+        } else if (a->fromTime < b->fromTime) {
+            result = -1;
+        } else if (a->fromTime > b->fromTime) {
+            result = 1;
+        } else {
+            result = 0;
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -194,13 +174,12 @@ int compare_ranges(void *first, void *second)
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void erase_range(Range *range)
-{
-	range->fromNode = 0;
-	range->toNode = 0;
-	range->fromTime = 0;
-	range->toTime = 0;
-	range->owlt = 0;
+static void erase_range(Range *range) {
+    range->fromNode = 0;
+    range->toNode = 0;
+    range->fromTime = 0;
+    range->toTime = 0;
+    range->owlt = 0;
 }
 
 /******************************************************************************
@@ -224,16 +203,14 @@ static void erase_range(Range *range)
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void free_range(void *range)
-{
-	Range *temp;
+void free_range(void *range) {
+    Range *temp;
 
-	if (range != NULL)
-	{
-		temp = (Range*) range;
-		erase_range(temp);
-		MDEPOSIT(temp);
-	}
+    if (range != NULL) {
+        temp = (Range *)range;
+        erase_range(temp);
+        MDEPOSIT(temp);
+    }
 }
 
 /******************************************************************************
@@ -267,21 +244,19 @@ void free_range(void *range)
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static Range* create_range(unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
-		time_t toTime, unsigned int owlt)
-{
-	Range *range = (Range*) MWITHDRAW(sizeof(Range));
+static Range *create_range(unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
+                           time_t toTime, unsigned int owlt) {
+    Range *range = (Range *)MWITHDRAW(sizeof(Range));
 
-	if (range != NULL)
-	{
-		range->fromNode = fromNode;
-		range->toNode = toNode;
-		range->fromTime = fromTime;
-		range->toTime = toTime;
-		range->owlt = owlt;
-	}
+    if (range != NULL) {
+        range->fromNode = fromNode;
+        range->toNode = toNode;
+        range->fromTime = fromTime;
+        range->toTime = toTime;
+        range->owlt = owlt;
+    }
 
-	return range;
+    return range;
 }
 
 /******************************************************************************
@@ -307,26 +282,21 @@ static Range* create_range(unsigned long long fromNode, unsigned long long toNod
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int create_RangesGraph()
-{
-	int result = 1;
-	RangeGraphSAP *sap = get_range_graph_sap(NULL);
+int create_RangesGraph() {
+    int result = 1;
+    RangeGraphSAP *sap = get_range_graph_sap(NULL);
 
-	if (sap->ranges == NULL)
-	{
-		sap->ranges = rbt_create(free_range, compare_ranges);
+    if (sap->ranges == NULL) {
+        sap->ranges = rbt_create(free_range, compare_ranges);
 
-		if (sap->ranges != NULL)
-		{
-			result = 1;
-			sap->timeRangeToRemove = MAX_POSIX_TIME;
-		}
-		else
-		{
-			result = -2;
-		}
-	}
-	return result;
+        if (sap->ranges != NULL) {
+            result = 1;
+            sap->timeRangeToRemove = MAX_POSIX_TIME;
+        } else {
+            result = -2;
+        }
+    }
+    return result;
 }
 
 /******************************************************************************
@@ -354,44 +324,36 @@ int create_RangesGraph()
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void removeExpiredRanges(time_t time)
-{
-	time_t min = MAX_POSIX_TIME;
-	Range *range;
-	RbtNode *node, *next;
-	unsigned int tot = 0;
-	RangeGraphSAP *sap = get_range_graph_sap(NULL);
+void removeExpiredRanges(time_t time) {
+    time_t min = MAX_POSIX_TIME;
+    Range *range;
+    RbtNode *node, *next;
+    unsigned int tot = 0;
+    RangeGraphSAP *sap = get_range_graph_sap(NULL);
 
-	if (time >= sap->timeRangeToRemove)
-	{
-		debug_printf("Remove the expired ranges.");
+    if (time >= sap->timeRangeToRemove) {
+        debug_printf("Remove the expired ranges.");
 
-		node = rbt_first(sap->ranges);
-		while (node != NULL)
-		{
-			next = rbt_next(node);
-			if (node->data != NULL)
-			{
-				range = (Range*) node->data;
+        node = rbt_first(sap->ranges);
+        while (node != NULL) {
+            next = rbt_next(node);
+            if (node->data != NULL) {
+                range = (Range *)node->data;
 
-				if (range->toTime <= time)
-				{
-					rbt_delete(sap->ranges, range);
-					tot++;
-				}
-				else if (range->toTime < min)
-				{
-					min = range->toTime;
-				}
-			}
-			node = next;
-		}
+                if (range->toTime <= time) {
+                    rbt_delete(sap->ranges, range);
+                    tot++;
+                } else if (range->toTime < min) {
+                    min = range->toTime;
+                }
+            }
+            node = next;
+        }
 
-		sap->timeRangeToRemove = min;
-		debug_printf("Removed %u ranges, next remove ranges time: %ld", tot,
-				(long int ) sap->timeRangeToRemove);
-	}
-
+        sap->timeRangeToRemove = min;
+        debug_printf("Removed %u ranges, next remove ranges time: %ld", tot,
+                     (long int)sap->timeRangeToRemove);
+    }
 }
 
 #if (REVISABLE_RANGE)
@@ -423,23 +385,21 @@ void removeExpiredRanges(time_t time)
  *  -------- | --------------- | -----------------------------------------------
  *  13/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int revise_owlt(unsigned long long fromNode, unsigned long long toNode, time_t fromTime, unsigned int owlt)
-{
-	int result = -2;
-	Range *range = NULL;
+int revise_owlt(unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
+                unsigned int owlt) {
+    int result = -2;
+    Range *range = NULL;
 
-	if (fromNode != 0 && toNode != 0 && fromTime >= 0)
-	{
-		range = get_range(fromNode, toNode, fromTime, NULL);
-		result = -1;
-		if(range != NULL)
-		{
-			range->owlt = owlt;
-			result = 0;
-		}
-	}
+    if (fromNode != 0 && toNode != 0 && fromTime >= 0) {
+        range = get_range(fromNode, toNode, fromTime, NULL);
+        result = -1;
+        if (range != NULL) {
+            range->owlt = owlt;
+            result = 0;
+        }
+    }
 
-	return result;
+    return result;
 }
 #endif
 
@@ -480,93 +440,70 @@ int revise_owlt(unsigned long long fromNode, unsigned long long toNode, time_t f
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 int add_range_to_graph(unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
-		time_t toTime, unsigned int owlt)
-{
-	int result, overlapped;
-	Range *range = NULL, *foundRange = NULL;
-	RbtNode *elt = NULL;
-	RangeGraphSAP *sap = get_range_graph_sap(NULL);
+                       time_t toTime, unsigned int owlt) {
+    int result, overlapped;
+    Range *range = NULL, *foundRange = NULL;
+    RbtNode *elt = NULL;
+    RangeGraphSAP *sap = get_range_graph_sap(NULL);
 
-	result = -1;
+    result = -1;
 
-	if (toTime == 0)
-	{
-		toTime = MAX_POSIX_TIME;
-	}
+    if (toTime == 0) {
+        toTime = MAX_POSIX_TIME;
+    }
 
-	if (toTime < 0 || fromTime < 0 || toTime < fromTime || fromNode == 0 || toNode == 0)
-	{
-		result = 0;
-	}
-	else
-	{
-		result = -1;
-		overlapped = 0;
-		foundRange = get_first_range_from_node_to_node(fromNode, toNode, &elt);
-		while (foundRange != NULL)
-		{
-			if (foundRange->fromNode == fromNode && foundRange->toNode == toNode)
-			{
-				if(foundRange->fromTime == fromTime && foundRange->toTime == toTime)
-				{
-					// Range exists in the ranges graph
+    if (toTime < 0 || fromTime < 0 || toTime < fromTime || fromNode == 0 || toNode == 0) {
+        result = 0;
+    } else {
+        result = -1;
+        overlapped = 0;
+        foundRange = get_first_range_from_node_to_node(fromNode, toNode, &elt);
+        while (foundRange != NULL) {
+            if (foundRange->fromNode == fromNode && foundRange->toNode == toNode) {
+                if (foundRange->fromTime == fromTime && foundRange->toTime == toTime) {
+                    // Range exists in the ranges graph
 #if (REVISABLE_RANGE && ADD_AND_REVISE_RANGE)
-					if(foundRange->owlt != owlt)
-					{
-						foundRange->owlt = owlt;
-						result = 2;
-						// Maybe you want to consider this as rilevant change to contact plan...
-						// (and in my opinion this makes sense)
-					}
+                    if (foundRange->owlt != owlt) {
+                        foundRange->owlt = owlt;
+                        result = 2;
+                        // Maybe you want to consider this as rilevant change to contact plan...
+                        // (and in my opinion this makes sense)
+                    }
 #endif
-					overlapped = 1;
-					foundRange = NULL; //I leave the loop
-				}
-				else if (foundRange->fromTime <= fromTime && fromTime < foundRange->toTime)
-				{
-					overlapped = 1;
-					foundRange = NULL; //I leave the loop
-				}
-				else if (foundRange->fromTime < toTime && toTime <= foundRange->toTime)
-				{
-					overlapped = 1;
-					foundRange = NULL; //I leave the loop
-				}
-				else if (toTime <= foundRange->fromTime)
-				{
-					//Ranges are ordered by fromTime
-					foundRange = NULL; //I leave the loop
-				}
-				else
-				{
-					foundRange = get_next_range(&elt);
-				}
-			}
-			else
-			{
-				foundRange = NULL; //I leave the loop
-			}
-		}
+                    overlapped = 1;
+                    foundRange = NULL; // I leave the loop
+                } else if (foundRange->fromTime <= fromTime && fromTime < foundRange->toTime) {
+                    overlapped = 1;
+                    foundRange = NULL; // I leave the loop
+                } else if (foundRange->fromTime < toTime && toTime <= foundRange->toTime) {
+                    overlapped = 1;
+                    foundRange = NULL; // I leave the loop
+                } else if (toTime <= foundRange->fromTime) {
+                    // Ranges are ordered by fromTime
+                    foundRange = NULL; // I leave the loop
+                } else {
+                    foundRange = get_next_range(&elt);
+                }
+            } else {
+                foundRange = NULL; // I leave the loop
+            }
+        }
 
-		if (overlapped == 0)
-		{
-			range = create_range(fromNode, toNode, fromTime, toTime, owlt);
-			elt = rbt_insert(sap->ranges, range);
+        if (overlapped == 0) {
+            range = create_range(fromNode, toNode, fromTime, toTime, owlt);
+            elt = rbt_insert(sap->ranges, range);
 
-			result = ((elt != NULL) ? 1 : -2);
+            result = ((elt != NULL) ? 1 : -2);
 
-			if (result == 0)
-			{
-				free_range(range);
-			}
-			else if (sap->timeRangeToRemove > toTime)
-			{
-				sap->timeRangeToRemove = toTime;
-			}
-		}
-	}
+            if (result == 0) {
+                free_range(range);
+            } else if (sap->timeRangeToRemove > toTime) {
+                sap->timeRangeToRemove = toTime;
+            }
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -592,37 +529,30 @@ int add_range_to_graph(unsigned long long fromNode, unsigned long long toNode, t
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void removeAllRanges(unsigned long long fromNode, unsigned long long toNode)
-{
-	Range *current;
-	RbtNode *node;
-	RangeGraphSAP *sap = get_range_graph_sap(NULL);
+static void removeAllRanges(unsigned long long fromNode, unsigned long long toNode) {
+    Range *current;
+    RbtNode *node;
+    RangeGraphSAP *sap = get_range_graph_sap(NULL);
 
-	current = get_first_range_from_node_to_node(fromNode, toNode, &node);
+    current = get_first_range_from_node_to_node(fromNode, toNode, &node);
 
-	while (current != NULL)
-	{
-		node = rbt_next(node);
-		rbt_delete(sap->ranges, current);
-		if (node != NULL)
-		{
-			current = (Range*) node->data;
-		}
-		else
-		{
-			current = NULL;
-		}
+    while (current != NULL) {
+        node = rbt_next(node);
+        rbt_delete(sap->ranges, current);
+        if (node != NULL) {
+            current = (Range *)node->data;
+        } else {
+            current = NULL;
+        }
 
-		if (current != NULL)
-		{
-			if ((current->fromNode != fromNode || current->toNode != toNode))
-			{
-				current = NULL;
-			}
-		}
-	}
+        if (current != NULL) {
+            if ((current->fromNode != fromNode || current->toNode != toNode)) {
+                current = NULL;
+            }
+        }
+    }
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -648,15 +578,13 @@ static void removeAllRanges(unsigned long long fromNode, unsigned long long toNo
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void remove_range_elt_from_graph(Range *range)
-{
-	RangeGraphSAP *sap = get_range_graph_sap(NULL);
-	if (range != NULL)
-	{
-		rbt_delete(sap->ranges, range);
-	}
+void remove_range_elt_from_graph(Range *range) {
+    RangeGraphSAP *sap = get_range_graph_sap(NULL);
+    if (range != NULL) {
+        rbt_delete(sap->ranges, range);
+    }
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -686,26 +614,22 @@ void remove_range_elt_from_graph(Range *range)
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 void remove_range_from_graph(time_t *fromTime, unsigned long long fromNode,
-		unsigned long long toNode)
-{
-	Range arg;
-	RangeGraphSAP *sap = get_range_graph_sap(NULL);
+                             unsigned long long toNode) {
+    Range arg;
+    RangeGraphSAP *sap = get_range_graph_sap(NULL);
 
-	if (fromTime != NULL)
-	{
-		arg.fromNode = fromNode;
-		arg.toNode = toNode;
-		arg.fromTime = *fromTime;
-		arg.toTime = 0; //compare function doesn't use it
-		arg.owlt = 0; //compare function doesn't use it
-		rbt_delete(sap->ranges, &arg);
-	}
-	else
-	{
-		removeAllRanges(fromNode, toNode);
-	}
+    if (fromTime != NULL) {
+        arg.fromNode = fromNode;
+        arg.toNode = toNode;
+        arg.fromTime = *fromTime;
+        arg.toTime = 0; // compare function doesn't use it
+        arg.owlt = 0;   // compare function doesn't use it
+        rbt_delete(sap->ranges, &arg);
+    } else {
+        removeAllRanges(fromNode, toNode);
+    }
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -728,11 +652,10 @@ void remove_range_from_graph(time_t *fromTime, unsigned long long fromNode,
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void reset_RangesGraph()
-{
-	RangeGraphSAP *sap = get_range_graph_sap(NULL);
-	rbt_clear(sap->ranges);
-	sap->timeRangeToRemove = MAX_POSIX_TIME;
+void reset_RangesGraph() {
+    RangeGraphSAP *sap = get_range_graph_sap(NULL);
+    rbt_clear(sap->ranges);
+    sap->timeRangeToRemove = MAX_POSIX_TIME;
 }
 
 /******************************************************************************
@@ -755,12 +678,11 @@ void reset_RangesGraph()
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-void destroy_RangesGraph()
-{
-	RangeGraphSAP *sap = get_range_graph_sap(NULL);
-	rbt_destroy(sap->ranges);
-	sap->ranges = NULL;
-	sap->timeRangeToRemove = MAX_POSIX_TIME;
+void destroy_RangesGraph() {
+    RangeGraphSAP *sap = get_range_graph_sap(NULL);
+    rbt_destroy(sap->ranges);
+    sap->ranges = NULL;
+    sap->timeRangeToRemove = MAX_POSIX_TIME;
 }
 
 /*
@@ -780,7 +702,7 @@ void destroy_RangesGraph()
  *
  * \return Range*
  *
- * \retval Range*  The range found 
+ * \retval Range*  The range found
  * \retval NULL    There isn't a range with this characteristics
  *
  * \param[in]      fromNode   The range's sender node
@@ -799,37 +721,33 @@ void destroy_RangesGraph()
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-Range* get_range(unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
-		RbtNode **node)
-{
-	Range arg, *result;
-	RbtNode *elt;
-	RangeGraphSAP *sap = get_range_graph_sap(NULL);
+Range *get_range(unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
+                 RbtNode **node) {
+    Range arg, *result;
+    RbtNode *elt;
+    RangeGraphSAP *sap = get_range_graph_sap(NULL);
 
-	result = NULL;
-	if (fromNode != 0 && toNode != 0 && fromTime >= 0)
-	{
-		arg.fromNode = fromNode;
-		arg.toNode = toNode;
-		arg.fromTime = fromTime;
-		arg.toTime = 0;
-		arg.owlt = 0;
+    result = NULL;
+    if (fromNode != 0 && toNode != 0 && fromTime >= 0) {
+        arg.fromNode = fromNode;
+        arg.toNode = toNode;
+        arg.fromTime = fromTime;
+        arg.toTime = 0;
+        arg.owlt = 0;
 
-		elt = rbt_search(sap->ranges, &arg, NULL);
-		if (elt != NULL)
-		{
-			if (elt->data != NULL)
-			{
-				result = (Range*) elt->data;
+        elt = rbt_search(sap->ranges, &arg, NULL);
+        if (elt != NULL) {
+            if (elt->data != NULL) {
+                result = (Range *)elt->data;
 
-				if (node != NULL) {
-				    *node = elt;
-				}
-			}
-		}
-	}
+                if (node != NULL) {
+                    *node = elt;
+                }
+            }
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -861,23 +779,20 @@ Range* get_range(unsigned long long fromNode, unsigned long long toNode, time_t 
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-Range* get_first_range(RbtNode **node)
-{
-	Range *result = NULL;
-	RbtNode *currentRange = NULL;
-	RangeGraphSAP *sap = get_range_graph_sap(NULL);
+Range *get_first_range(RbtNode **node) {
+    Range *result = NULL;
+    RbtNode *currentRange = NULL;
+    RangeGraphSAP *sap = get_range_graph_sap(NULL);
 
-	currentRange = rbt_first(sap->ranges);
-	if (currentRange != NULL)
-	{
-		result = (Range*) currentRange->data;
-		if (node != NULL)
-		{
-			*node = currentRange;
-		}
-	}
+    currentRange = rbt_first(sap->ranges);
+    if (currentRange != NULL) {
+        result = (Range *)currentRange->data;
+        if (node != NULL) {
+            *node = currentRange;
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -889,7 +804,7 @@ Range* get_first_range(RbtNode **node)
  *         passed as argument.
  *
  *
- * \par Date Written: 
+ * \par Date Written:
  *      19/01/20
  *
  * \return Range*
@@ -899,7 +814,8 @@ Range* get_first_range(RbtNode **node)
  *
  * \param[in]      fromNodeNbr   The Range's sender node (ipn node number)
  * \param[out]     **node        If node isn't NULL, at the end it will points to the
- *                               RbtNode that points to the Range returned by the function (or NULL).
+ *                               RbtNode that points to the Range returned by the function (or
+ *NULL).
  *
  * \par Notes:
  *              1. You must check that the return value of this function is not NULL.
@@ -911,35 +827,30 @@ Range* get_first_range(RbtNode **node)
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-Range* get_first_range_from_node(unsigned long long fromNodeNbr, RbtNode **node)
-{
-	Range arg, *result = NULL;
-	RbtNode *currentRange;
-	RangeGraphSAP *sap = get_range_graph_sap(NULL);
+Range *get_first_range_from_node(unsigned long long fromNodeNbr, RbtNode **node) {
+    Range arg, *result = NULL;
+    RbtNode *currentRange;
+    RangeGraphSAP *sap = get_range_graph_sap(NULL);
 
-	arg.fromNode = fromNodeNbr;
-	arg.toNode = 0;
-	arg.fromTime = -1;
-	arg.toTime = -1;
-	arg.owlt = 0;
+    arg.fromNode = fromNodeNbr;
+    arg.toNode = 0;
+    arg.fromTime = -1;
+    arg.toTime = -1;
+    arg.owlt = 0;
 
-	rbt_search(sap->ranges, &arg, &currentRange);
+    rbt_search(sap->ranges, &arg, &currentRange);
 
-	if (currentRange != NULL)
-	{
-		result = (Range*) currentRange->data;
+    if (currentRange != NULL) {
+        result = (Range *)currentRange->data;
 
-		if (result->fromNode != fromNodeNbr)
-		{
-			result = NULL;
-		}
-		else if (node != NULL)
-		{
-			*node = currentRange;
-		}
-	}
+        if (result->fromNode != fromNodeNbr) {
+            result = NULL;
+        } else if (node != NULL) {
+            *node = currentRange;
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -956,7 +867,7 @@ Range* get_first_range_from_node(unsigned long long fromNodeNbr, RbtNode **node)
  *
  * \return Range*
  *
- * \retval Range*  The range found 
+ * \retval Range*  The range found
  * \retval NULL    There isn't a Range that has this {fromNode, toNode} fields.
  *
  * \param[in]    fromNodeNbr   The Range's sender node (ipn node number)
@@ -973,35 +884,30 @@ Range* get_first_range_from_node(unsigned long long fromNodeNbr, RbtNode **node)
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-Range* get_first_range_from_node_to_node(unsigned long long fromNodeNbr,
-		unsigned long long toNodeNbr, RbtNode **node)
-{
-	Range arg;
-	Range *result = NULL;
-	RbtNode *currentRange = NULL;
-	RangeGraphSAP *sap = get_range_graph_sap(NULL);
+Range *get_first_range_from_node_to_node(unsigned long long fromNodeNbr,
+                                         unsigned long long toNodeNbr, RbtNode **node) {
+    Range arg;
+    Range *result = NULL;
+    RbtNode *currentRange = NULL;
+    RangeGraphSAP *sap = get_range_graph_sap(NULL);
 
-	arg.fromNode = fromNodeNbr;
-	arg.toNode = toNodeNbr;
-	arg.fromTime = -1;
-	arg.toTime = -1;
-	arg.owlt = 0;
+    arg.fromNode = fromNodeNbr;
+    arg.toNode = toNodeNbr;
+    arg.fromTime = -1;
+    arg.toTime = -1;
+    arg.owlt = 0;
 
-	rbt_search(sap->ranges, &arg, &currentRange);
-	if (currentRange != NULL)
-	{
-		result = (Range*) currentRange->data;
-		if (result->fromNode != fromNodeNbr || result->toNode != toNodeNbr)
-		{
-			result = NULL;
-		}
-		else if (node != NULL)
-		{
-			*node = currentRange;
-		}
-	}
+    rbt_search(sap->ranges, &arg, &currentRange);
+    if (currentRange != NULL) {
+        result = (Range *)currentRange->data;
+        if (result->fromNode != fromNodeNbr || result->toNode != toNodeNbr) {
+            result = NULL;
+        } else if (node != NULL) {
+            *node = currentRange;
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -1017,7 +923,7 @@ Range* get_first_range_from_node_to_node(unsigned long long fromNodeNbr,
  *
  * \return Range*
  *
- * \retval Range*  The range found 
+ * \retval Range*  The range found
  * \retval NULL    There isn't the next range
  *
  * \param[in,out] **node  If this arguments isn't NULL, at the end it will
@@ -1035,22 +941,19 @@ Range* get_first_range_from_node_to_node(unsigned long long fromNodeNbr,
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-Range* get_next_range(RbtNode **node)
-{
-	Range *result = NULL;
-	RbtNode *temp = NULL;
+Range *get_next_range(RbtNode **node) {
+    Range *result = NULL;
+    RbtNode *temp = NULL;
 
-	if (node != NULL)
-	{
-		temp = rbt_next(*node);
-		if (temp != NULL)
-		{
-			result = (Range*) temp->data;
-		}
+    if (node != NULL) {
+        temp = rbt_next(*node);
+        if (temp != NULL) {
+            result = (Range *)temp->data;
+        }
 
-		*node = temp;
-	}
-	return result;
+        *node = temp;
+    }
+    return result;
 }
 
 /******************************************************************************
@@ -1084,22 +987,19 @@ Range* get_next_range(RbtNode **node)
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-Range* get_prev_range(RbtNode **node)
-{
-	Range *result = NULL;
-	RbtNode *temp = NULL;
+Range *get_prev_range(RbtNode **node) {
+    Range *result = NULL;
+    RbtNode *temp = NULL;
 
-	if (node != NULL)
-	{
-		temp = rbt_prev(*node);
-		if (temp != NULL)
-		{
-			result = (Range*) temp->data;
-		}
+    if (node != NULL) {
+        temp = rbt_prev(*node);
+        if (temp != NULL) {
+            result = (Range *)temp->data;
+        }
 
-		*node = temp;
-	}
-	return result;
+        *node = temp;
+    }
+    return result;
 }
 
 /******************************************************************************
@@ -1133,47 +1033,34 @@ Range* get_prev_range(RbtNode **node)
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 int get_applicable_range(unsigned long long fromNode, unsigned long long toNode, time_t targetTime,
-		unsigned int *owltResult)
-{
-	RbtNode *temp = NULL;
-	int result = -1;
-	Range *current;
+                         unsigned int *owltResult) {
+    RbtNode *temp = NULL;
+    int result = -1;
+    Range *current;
 
-	if (owltResult != NULL)
-	{
-		current = get_first_range_from_node_to_node(fromNode, toNode, &temp);
+    if (owltResult != NULL) {
+        current = get_first_range_from_node_to_node(fromNode, toNode, &temp);
 
-		while (current != NULL)
-		{
-			if (current->fromNode == fromNode && current->toNode == toNode)
-			{
-				if (current->fromTime <= targetTime && targetTime < current->toTime)
-				{
-					*owltResult = current->owlt;
-					current = NULL; //I leave the loop
-					result = 0;
-				}
-				else if (current->toTime < targetTime)
-				{
-					current = get_next_range(&temp);
-				}
-				else
-				{
-					current = NULL;
-				}
-			}
-			else
-			{
-				current = NULL; //I leave the loop
-			}
-		}
-	}
-	else
-	{
-		result = -2;
-	}
+        while (current != NULL) {
+            if (current->fromNode == fromNode && current->toNode == toNode) {
+                if (current->fromTime <= targetTime && targetTime < current->toTime) {
+                    *owltResult = current->owlt;
+                    current = NULL; // I leave the loop
+                    result = 0;
+                } else if (current->toTime < targetTime) {
+                    current = get_next_range(&temp);
+                } else {
+                    current = NULL;
+                }
+            } else {
+                current = NULL; // I leave the loop
+            }
+        }
+    } else {
+        result = -2;
+    }
 
-	return result;
+    return result;
 }
 
 #if (LOG == 1)
@@ -1206,24 +1093,20 @@ int get_applicable_range(unsigned long long fromNode, unsigned long long toNode,
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static int printRange(FILE *file, void *data)
-{
-	Range *range;
-	int result = -1;
+static int printRange(FILE *file, void *data) {
+    Range *range;
+    int result = -1;
 
-	if (data != NULL && file != NULL)
-	{
-		result = 0;
-		range = (Range*) data;
-		fprintf(file, "%-15llu %-15llu %-15ld %-15ld %u\n", range->fromNode, range->toNode,
-				(long int) range->fromTime, (long int) range->toTime, range->owlt);
-	}
-	else
-	{
-		fprintf(file, "RANGE: NULL\n");
-	}
+    if (data != NULL && file != NULL) {
+        result = 0;
+        range = (Range *)data;
+        fprintf(file, "%-15llu %-15llu %-15ld %-15ld %u\n", range->fromNode, range->toNode,
+                (long int)range->fromTime, (long int)range->toTime, range->owlt);
+    } else {
+        fprintf(file, "RANGE: NULL\n");
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -1238,7 +1121,7 @@ static int printRange(FILE *file, void *data)
  *      19/01/20
  *
  * \return int
- * 
+ *
  * \retval   1  Success case, ranges graph printed
  * \retval   0  The file is NULL
  *
@@ -1253,33 +1136,28 @@ static int printRange(FILE *file, void *data)
  *  -------- | --------------- | -----------------------------------------------
  *  19/01/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-int printRangesGraph(FILE *file, time_t currentTime)
-{
-	int result = 0;
-	RangeGraphSAP *sap = get_range_graph_sap(NULL);
+int printRangesGraph(FILE *file, time_t currentTime) {
+    int result = 0;
+    RangeGraphSAP *sap = get_range_graph_sap(NULL);
 
-	if (file != NULL)
-	{
-		result = 1;
-		fprintf(file, "\n---------------------------- RANGES GRAPH ----------------------------\n");
+    if (file != NULL) {
+        result = 1;
+        fprintf(file, "\n---------------------------- RANGES GRAPH ----------------------------\n");
 
-		fprintf(file, "Time: %ld\n%-15s %-15s %-15s %-15s %s\n", (long int) currentTime, "FromNode",
-				"ToNode", "FromTime", "ToTime", "OWLT");
-		result = printTreeInOrder(sap->ranges, file, printRange);
+        fprintf(file, "Time: %ld\n%-15s %-15s %-15s %-15s %s\n", (long int)currentTime, "FromNode",
+                "ToNode", "FromTime", "ToTime", "OWLT");
+        result = printTreeInOrder(sap->ranges, file, printRange);
 
-		if (result == 1)
-		{
-			fprintf(file,
-					"\n----------------------------------------------------------------------\n");
+        if (result == 1) {
+            fprintf(file,
+                    "\n----------------------------------------------------------------------\n");
 
-		}
-		else
-		{
-			fprintf(file, "\n---------- RANGES GRAPH ERROR ----------\n");
-		}
-	}
+        } else {
+            fprintf(file, "\n---------- RANGES GRAPH ERROR ----------\n");
+        }
+    }
 
-	return result;
+    return result;
 }
 
 #endif

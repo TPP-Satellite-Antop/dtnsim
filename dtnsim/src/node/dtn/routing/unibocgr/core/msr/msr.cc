@@ -38,9 +38,15 @@ static void print_msr_proposed_routes(FILE *file_call, CgrBundle *bundle);
 static void print_msr_candidate_routes(FILE *file_call);
 static void print_msr_best_routes(FILE *file_call);
 #else
-#define print_msr_proposed_routes(file_call, bundle) do {  } while(0)
-#define print_msr_candidate_routes(file_call) do {  } while(0)
-#define print_msr_best_routes(file_call) do {  } while(0)
+#define print_msr_proposed_routes(file_call, bundle)                                               \
+    do {                                                                                           \
+    } while (0)
+#define print_msr_candidate_routes(file_call)                                                      \
+    do {                                                                                           \
+    } while (0)
+#define print_msr_best_routes(file_call)                                                           \
+    do {                                                                                           \
+    } while (0)
 #endif
 
 /******************************************************************************
@@ -69,13 +75,13 @@ static void print_msr_best_routes(FILE *file_call);
  *  02/07/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 static List get_routes(List newRoutes) {
-	static List routes;
+    static List routes;
 
-	if(newRoutes != NULL) {
-		routes = newRoutes;
-	}
+    if (newRoutes != NULL) {
+        routes = newRoutes;
+    }
 
-	return routes;
+    return routes;
 }
 
 /******************************************************************************
@@ -100,23 +106,18 @@ static List get_routes(List newRoutes) {
  *  -------- | --------------- |  -----------------------------------------------
  *  23/04/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-int initialize_msr()
-{
-	int result = 1;
-	List routes = list_create(NULL,NULL,NULL,NULL);
-	if(routes == NULL)
-	{
-		result = -2;
-	}
-	else
-	{
-		result = 1;
-		get_routes(routes); // save
-	}
+int initialize_msr() {
+    int result = 1;
+    List routes = list_create(NULL, NULL, NULL, NULL);
+    if (routes == NULL) {
+        result = -2;
+    } else {
+        result = 1;
+        get_routes(routes); // save
+    }
 
-	return result;
+    return result;
 }
-
 
 /******************************************************************************
  *
@@ -137,12 +138,11 @@ int initialize_msr()
  *  -------- | --------------- |  -----------------------------------------------
  *  23/04/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-void destroy_msr()
-{
-	List routes = get_routes(NULL);
-	free_list(routes);
-	routes = NULL;
-	get_routes(routes); // save
+void destroy_msr() {
+    List routes = get_routes(NULL);
+    free_list(routes);
+    routes = NULL;
+    get_routes(routes); // save
 }
 
 /******************************************************************************
@@ -150,8 +150,9 @@ void destroy_msr()
  * \par Function Name:
  * 		tryMSR
  *
- * \brief Moderate Source Routing: this function checks if the route stored in bundle->msrRoute is viable
- *        for the forwarding of the bundle. In affermative case then we propose this route as "best route".
+ * \brief Moderate Source Routing: this function checks if the route stored in bundle->msrRoute is
+ *viable for the forwarding of the bundle. In affermative case then we propose this route as "best
+ *route".
  *
  * \par Date Written:
  * 		23/04/20
@@ -165,13 +166,11 @@ void destroy_msr()
  * \retval       -4    Critical bundle, MSR is not optimal for a critical bundle so we
  *                     don't perform the MSR algorithm
  *
- * \param[in]   current_time       The current (differential from interface) time from the start of Unibo-CGR
- * \param[in]   *bundle            The bundle to forward
- * \param[in]   excludedNeighbors  The excluded nodes list SABR 3.2.5.2
- * \param[in]   file_call          The file where we print some informations about
- *                                 what has been done during the MSR algorithm.
- * \param[out]  *bestRoutes        The MSR's output, the list of "best routes" if there
- *                                 are any.
+ * \param[in]   current_time       The current (differential from interface) time from the start of
+ *Unibo-CGR \param[in]   *bundle            The bundle to forward \param[in]   excludedNeighbors The
+ *excluded nodes list SABR 3.2.5.2 \param[in]   file_call          The file where we print some
+ *informations about what has been done during the MSR algorithm. \param[out]  *bestRoutes The MSR's
+ *output, the list of "best routes" if there are any.
  *
  *
  * \par Revision History:
@@ -180,65 +179,51 @@ void destroy_msr()
  *  -------- | --------------- |  -----------------------------------------------
  *  23/04/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-int tryMSR(time_t current_time, CgrBundle *bundle, List excludedNeighbors, FILE* file_call, List *bestRoutes)
-{
-	int result = -3;
-	List routes = get_routes(NULL);
+int tryMSR(time_t current_time, CgrBundle *bundle, List excludedNeighbors, FILE *file_call,
+           List *bestRoutes) {
+    int result = -3;
+    List routes = get_routes(NULL);
 
-	debug_printf("Entry point.");
+    debug_printf("Entry point.");
 
-	if(bundle != NULL && excludedNeighbors != NULL && bestRoutes != NULL)
-	{
-		free_list_elts(routes);
+    if (bundle != NULL && excludedNeighbors != NULL && bestRoutes != NULL) {
+        free_list_elts(routes);
 
-		if(IS_CRITICAL(bundle))
-		{
-			result = -4;
-		}
-		else if(bundle->msrRoute == NULL)
-		{
-			print_msr_proposed_routes(file_call, bundle);
-			debug_printf("MSR route not found.");
-			result = 0;
-		}
-		else
-		{
-			result = checkRoute(current_time, get_local_node(), bundle,excludedNeighbors, bundle->msrRoute);
-			if(result == -2)
-			{
-				writeLog("Check route: MWITHDRAW error.");
-			}
-			else if(result != 0)
-			{
-				print_msr_proposed_routes(file_call, bundle);
-				print_msr_candidate_routes(file_call);
-				debug_printf("MSR route isn't viable.");
-				result = -1;
-			}
-			else
-			{
-				print_msr_proposed_routes(file_call, bundle);
-				debug_printf("MSR route is viable.");
-				if(list_insert_last(routes, bundle->msrRoute) != NULL)
-				{
-					print_msr_candidate_routes(file_call);
-					// go directly to phase three
-					result = chooseBestRoutes(bundle, routes);
-					if(result > 0)
-					{
-						*bestRoutes = routes;
-					}
-					print_msr_best_routes(file_call);
-				}
-				else
-				{
-					result = -2;
-				}
-			}
-		}
-	}
+        if (IS_CRITICAL(bundle)) {
+            result = -4;
+        } else if (bundle->msrRoute == NULL) {
+            print_msr_proposed_routes(file_call, bundle);
+            debug_printf("MSR route not found.");
+            result = 0;
+        } else {
+            result = checkRoute(current_time, get_local_node(), bundle, excludedNeighbors,
+                                bundle->msrRoute);
+            if (result == -2) {
+                writeLog("Check route: MWITHDRAW error.");
+            } else if (result != 0) {
+                print_msr_proposed_routes(file_call, bundle);
+                print_msr_candidate_routes(file_call);
+                debug_printf("MSR route isn't viable.");
+                result = -1;
+            } else {
+                print_msr_proposed_routes(file_call, bundle);
+                debug_printf("MSR route is viable.");
+                if (list_insert_last(routes, bundle->msrRoute) != NULL) {
+                    print_msr_candidate_routes(file_call);
+                    // go directly to phase three
+                    result = chooseBestRoutes(bundle, routes);
+                    if (result > 0) {
+                        *bestRoutes = routes;
+                    }
+                    print_msr_best_routes(file_call);
+                } else {
+                    result = -2;
+                }
+            }
+        }
+    }
 
-	return result;
+    return result;
 }
 
 #if (LOG == 1)
@@ -266,49 +251,40 @@ int tryMSR(time_t current_time, CgrBundle *bundle, List excludedNeighbors, FILE*
  *  -------- | --------------- |  -----------------------------------------------
  *  23/04/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static void print_msr_proposed_route(FILE *file, Route *route, unsigned int num)
-{
-	ListElt *elt;
-	UniboContact *contact;
+static void print_msr_proposed_route(FILE *file, Route *route, unsigned int num) {
+    ListElt *elt;
+    UniboContact *contact;
 
-	/* If you have to work with very large numbers change all fields in %-20 */
+    /* If you have to work with very large numbers change all fields in %-20 */
 
-	if (file != NULL && route != NULL)
-	{
-		route->num = num;
+    if (file != NULL && route != NULL) {
+        route->num = num;
 
-		fprintf(file,
-				"\n%u)\n%-15s %-15s %-15s %-15s %-15s %-15s %s\n",
-				route->num, "Neighbor", "FromTime", "ToTime", "ArrivalTime", "OwltSum", "Confidence", "Hops");
-		fprintf(file, "%-15llu %-15ld %-15ld %-15ld %-15u %-15.2f ", route->neighbor,
-				(long int) route->fromTime, (long int) route->toTime, (long int) route->arrivalTime,
-				route->owltSum, route->arrivalConfidence);
+        fprintf(file, "\n%u)\n%-15s %-15s %-15s %-15s %-15s %-15s %s\n", route->num, "Neighbor",
+                "FromTime", "ToTime", "ArrivalTime", "OwltSum", "Confidence", "Hops");
+        fprintf(file, "%-15llu %-15ld %-15ld %-15ld %-15u %-15.2f ", route->neighbor,
+                (long int)route->fromTime, (long int)route->toTime, (long int)route->arrivalTime,
+                route->owltSum, route->arrivalConfidence);
 
-		if (route->hops == NULL)
-		{
-			fprintf(file, "NULL\n");
-		}
-		else if (route->hops != NULL)
-		{
-			fprintf(file, "%lu\n%-15s %-15s %-15s %-15s %-15s %-15s %-15s %-15s %s\n",
-					route->hops->length, "FromNode", "ToNode", "FromTime", "ToTime", "XmitRate",
-					"Confidence", "MTV[Bulk]", "MTV[Normal]", "MTV[Expedited]");
-			for (elt = route->hops->first; elt != NULL; elt = elt->next)
-			{
-				if (elt->data != NULL)
-				{
-					contact = (UniboContact*) elt->data;
-					fprintf(file,
-							"%-15llu %-15llu %-15ld %-15ld %-15lu %-10.2f%-5s %-15g %-15g %g\n",
-							contact->fromNode, contact->toNode, (long int) contact->fromTime,
-							(long int) contact->toTime, contact->xmitRate, contact->confidence,
-							(elt == route->rootOfSpur) ? " x" : "", contact->mtv[0],
-							contact->mtv[1], contact->mtv[2]);
-				}
-			}
-		}
-
-	}
+        if (route->hops == NULL) {
+            fprintf(file, "NULL\n");
+        } else if (route->hops != NULL) {
+            fprintf(file, "%lu\n%-15s %-15s %-15s %-15s %-15s %-15s %-15s %-15s %s\n",
+                    route->hops->length, "FromNode", "ToNode", "FromTime", "ToTime", "XmitRate",
+                    "Confidence", "MTV[Bulk]", "MTV[Normal]", "MTV[Expedited]");
+            for (elt = route->hops->first; elt != NULL; elt = elt->next) {
+                if (elt->data != NULL) {
+                    contact = (UniboContact *)elt->data;
+                    fprintf(file,
+                            "%-15llu %-15llu %-15ld %-15ld %-15lu %-10.2f%-5s %-15g %-15g %g\n",
+                            contact->fromNode, contact->toNode, (long int)contact->fromTime,
+                            (long int)contact->toTime, contact->xmitRate, contact->confidence,
+                            (elt == route->rootOfSpur) ? " x" : "", contact->mtv[0],
+                            contact->mtv[1], contact->mtv[2]);
+                }
+            }
+        }
+    }
 }
 
 /******************************************************************************
@@ -334,61 +310,53 @@ static void print_msr_proposed_route(FILE *file, Route *route, unsigned int num)
  *  -------- | --------------- |  -----------------------------------------------
  *  23/04/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int print_msr_candidate_route(FILE *file, Route *route)
-{
-	int result = -1;
-	char num[20];
+static int print_msr_candidate_route(FILE *file, Route *route) {
+    int result = -1;
+    char num[20];
 #if (CGR_AVOID_LOOP > 0)
-	char *temp;
+    char *temp;
 #endif
 
-	if (file != NULL && route != NULL)
-	{
+    if (file != NULL && route != NULL) {
 #if (CGR_AVOID_LOOP > 0)
-		if (route->checkValue == NO_LOOP)
-		{
-			temp = "No loop";
-		}
+        if (route->checkValue == NO_LOOP) {
+            temp = "No loop";
+        }
 #if (CGR_AVOID_LOOP == 2 || CGR_AVOID_LOOP == 3)
-		else if (route->checkValue == POSSIBLE_LOOP)
-		{
-			temp = "Possible loop";
-		}
-		else if (route->checkValue == CLOSING_LOOP)
-		{
-			temp = "Closing loop";
-		}
+        else if (route->checkValue == POSSIBLE_LOOP) {
+            temp = "Possible loop";
+        } else if (route->checkValue == CLOSING_LOOP) {
+            temp = "Closing loop";
+        }
 #endif
 #if (CGR_AVOID_LOOP == 1 || CGR_AVOID_LOOP == 3)
-		else if (route->checkValue == FAILED_NEIGHBOR)
-		{
-			temp = "Failed neighbor";
-		}
+        else if (route->checkValue == FAILED_NEIGHBOR) {
+            temp = "Failed neighbor";
+        }
 #endif
-		else
-		{
-			temp = "";
-		}
+        else {
+            temp = "";
+        }
 #endif
 
-		result = 0;
-		num[0] = '\0';
-		sprintf(num, "%u)", route->num);
+        result = 0;
+        num[0] = '\0';
+        sprintf(num, "%u)", route->num);
 
 #if (CGR_AVOID_LOOP > 0)
-		fprintf(file, "%-15s %-15ld %-15ld %-15g %-15s %-15ld %-15ld %-15ld %ld\n", num,
-				(long int) route->eto, (long int) route->pbat, route->routeVolumeLimit, temp,
-				route->overbooked.gigs, route->overbooked.units, route->committed.gigs,
-				route->committed.units);
+        fprintf(file, "%-15s %-15ld %-15ld %-15g %-15s %-15ld %-15ld %-15ld %ld\n", num,
+                (long int)route->eto, (long int)route->pbat, route->routeVolumeLimit, temp,
+                route->overbooked.gigs, route->overbooked.units, route->committed.gigs,
+                route->committed.units);
 #else
-		fprintf(file, "%-15s %-15ld %-15ld %-15g %-15ld %-15ld %-15ld %ld\n", num,
-				(long int) route->eto, (long int) route->pbat, route->routeVolumeLimit, route->overbooked.gigs,
-				route->overbooked.units, route->committed.gigs, route->committed.units);
+        fprintf(file, "%-15s %-15ld %-15ld %-15g %-15ld %-15ld %-15ld %ld\n", num,
+                (long int)route->eto, (long int)route->pbat, route->routeVolumeLimit,
+                route->overbooked.gigs, route->overbooked.units, route->committed.gigs,
+                route->committed.units);
 #endif
+    }
 
-	}
-
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -416,26 +384,21 @@ static int print_msr_candidate_route(FILE *file, Route *route)
  *  -------- | --------------- | -----------------------------------------------
  *  13/02/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static int print_msr_best_route(FILE *file, Route *route)
-{
-	int len = -1, result = -1;
-	char num[20];
+static int print_msr_best_route(FILE *file, Route *route) {
+    int len = -1, result = -1;
+    char num[20];
 
-	if (file != NULL && route != NULL)
-	{
-		result = 0;
-		num[0] = '\0';
-		len = sprintf(num, "%u)", route->num);
-		if (len >= 0)
-		{
-			fprintf(file, "%-15s %llu\n", num, route->neighbor);
-		}
+    if (file != NULL && route != NULL) {
+        result = 0;
+        num[0] = '\0';
+        len = sprintf(num, "%u)", route->num);
+        if (len >= 0) {
+            fprintf(file, "%-15s %llu\n", num, route->neighbor);
+        }
+    }
 
-	}
-
-	return result;
+    return result;
 }
-
 
 /******************************************************************************
  *
@@ -462,28 +425,24 @@ static int print_msr_best_route(FILE *file, Route *route)
  *  -------- | --------------- |  -----------------------------------------------
  *  23/04/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static void print_msr_proposed_routes(FILE *file, CgrBundle *bundle)
-{
-	unsigned int count = 1;
+static void print_msr_proposed_routes(FILE *file, CgrBundle *bundle) {
+    unsigned int count = 1;
 
-	if(file != NULL)
-	{
+    if (file != NULL) {
 
-		fprintf(file,
-				"\n------------------------------------------------------------ MSR: PROPOSED ROUTES -------------------------------------------------------------\n");
-		if(bundle->msrRoute != NULL)
-		{
-			print_msr_proposed_route(file, bundle->msrRoute, count);
-		}
-		else
-		{
-			fprintf(file, "\n0 proposed routes.\n");
-		}
-		fprintf(file,
-				"\n-----------------------------------------------------------------------------------------------------------------------------------------------\n");
+        fprintf(file,
+                "\n------------------------------------------------------------ MSR: PROPOSED "
+                "ROUTES -------------------------------------------------------------\n");
+        if (bundle->msrRoute != NULL) {
+            print_msr_proposed_route(file, bundle->msrRoute, count);
+        } else {
+            fprintf(file, "\n0 proposed routes.\n");
+        }
+        fprintf(file, "\n--------------------------------------------------------------------------"
+                      "---------------------------------------------------------------------\n");
 
-		debug_fflush(file);
-	}
+        debug_fflush(file);
+    }
 }
 
 /******************************************************************************
@@ -508,45 +467,38 @@ static void print_msr_proposed_routes(FILE *file, CgrBundle *bundle)
  *  -------- | --------------- |  -----------------------------------------------
  *  23/04/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static void print_msr_candidate_routes(FILE *file)
-{
-	ListElt *elt;
-	List routes = get_routes(NULL);
+static void print_msr_candidate_routes(FILE *file) {
+    ListElt *elt;
+    List routes = get_routes(NULL);
 
-	if (file != NULL)
-	{
-		fprintf(file,
-				"\n------------------------------------------------------------ MSR: CANDIDATE ROUTES ------------------------------------------------------------\n");
-		if (routes != NULL && routes->length > 0)
-		{
+    if (file != NULL) {
+        fprintf(file,
+                "\n------------------------------------------------------------ MSR: CANDIDATE "
+                "ROUTES ------------------------------------------------------------\n");
+        if (routes != NULL && routes->length > 0) {
 
 #if (CGR_AVOID_LOOP > 0)
-			fprintf(file, "\n%-15s %-15s %-15s %-15s %-15s %-15s %-15s %-15s %s\n", "Route n.",
-					"ETO", "PBAT", "RVL", "Type", "Overbooked (G)", "Overbooked (U)",
-					"Protected (G)", "Protected (U)");
+            fprintf(file, "\n%-15s %-15s %-15s %-15s %-15s %-15s %-15s %-15s %s\n", "Route n.",
+                    "ETO", "PBAT", "RVL", "Type", "Overbooked (G)", "Overbooked (U)",
+                    "Protected (G)", "Protected (U)");
 #else
-			fprintf(file, "\n%-15s %-15s %-15s %-15s %-15s %-15s %-15s %s\n",
-					"Route n.", "ETO", "PBAT", "RVL", "Overbooked (G)", "Overbooked (U)",
-					"Protected (G)", "Protected (U)");
+            fprintf(file, "\n%-15s %-15s %-15s %-15s %-15s %-15s %-15s %s\n", "Route n.", "ETO",
+                    "PBAT", "RVL", "Overbooked (G)", "Overbooked (U)", "Protected (G)",
+                    "Protected (U)");
 #endif
-			for (elt = routes->last; elt != NULL; elt = elt->prev)
-			{
-				print_msr_candidate_route(file, (Route*) elt->data);
-			}
-		}
-		else
-		{
-			fprintf(file, "\n0 candidate routes.\n");
-		}
+            for (elt = routes->last; elt != NULL; elt = elt->prev) {
+                print_msr_candidate_route(file, (Route *)elt->data);
+            }
+        } else {
+            fprintf(file, "\n0 candidate routes.\n");
+        }
 
-		fprintf(file,
-				"\n-----------------------------------------------------------------------------------------------------------------------------------------------\n");
+        fprintf(file, "\n--------------------------------------------------------------------------"
+                      "---------------------------------------------------------------------\n");
 
-		debug_fflush(file);
-
-	}
+        debug_fflush(file);
+    }
 }
-
 
 /******************************************************************************
  *
@@ -570,34 +522,25 @@ static void print_msr_candidate_routes(FILE *file)
  *  -------- | --------------- | -----------------------------------------------
  *  23/04/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-static void print_msr_best_routes(FILE *file)
-{
-	ListElt *elt;
-	List routes = get_routes(NULL);
+static void print_msr_best_routes(FILE *file) {
+    ListElt *elt;
+    List routes = get_routes(NULL);
 
-	if (file != NULL)
-	{
-		fprintf(file, "\n---------------- MSR: BEST ROUTES ----------------\n");
+    if (file != NULL) {
+        fprintf(file, "\n---------------- MSR: BEST ROUTES ----------------\n");
 
-		if (routes != NULL && routes->length > 0)
-		{
-			fprintf(file, "\n%-15s %s\n", "Route n.", "Neighbor");
-			for (elt = routes->first; elt != NULL; elt = elt->next)
-			{
-				print_msr_best_route(file, (Route*) elt->data);
-			}
-		}
-		else
-		{
-			fprintf(file, "\n0 best routes.\n");
-		}
-		fprintf(file, "\n--------------------------------------------------\n");
+        if (routes != NULL && routes->length > 0) {
+            fprintf(file, "\n%-15s %s\n", "Route n.", "Neighbor");
+            for (elt = routes->first; elt != NULL; elt = elt->next) {
+                print_msr_best_route(file, (Route *)elt->data);
+            }
+        } else {
+            fprintf(file, "\n0 best routes.\n");
+        }
+        fprintf(file, "\n--------------------------------------------------\n");
 
-		debug_fflush(file);
-	}
+        debug_fflush(file);
+    }
 }
 
-
-
 #endif
-

@@ -28,67 +28,59 @@
  *       Carlo Caini, carlo.caini@unibo.it
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+#include "../contact_plan/nodes/nodes.h"
+#include "../routes/routes.h"
 #include "src/node/dtn/routing/unibocgr/core/cgr/cgr_phases.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/contacts/contacts.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/ranges/ranges.h"
 #include "src/node/dtn/routing/unibocgr/core/library/list/list.h"
 #include "src/node/dtn/routing/unibocgr/core/time_analysis/time.h"
-#include "../contact_plan/nodes/nodes.h"
-#include "../routes/routes.h"
-
-
-
-
 
 /**
  * \brief Not ordered queue used during Dijkstra's second loop.
  */
 typedef struct {
-	/**
-	 * \brief The first contact in the queue
-	 */
-	UniboContact *firstContact;
-	/**
-	 * \brief The last contact in the queue
-	 */
-	UniboContact *lastContact;
+    /**
+     * \brief The first contact in the queue
+     */
+    UniboContact *firstContact;
+    /**
+     * \brief The last contact in the queue
+     */
+    UniboContact *lastContact;
 } DijkstraQueue;
 
-typedef enum
-{
-	ClearTotally = 1, // Clear all the graph to known values
-	ClearPartially = 2, // Keep in mind the previous range found or not found
-	ClearYen = 3 // ClearPartially and keep suppress the contact's with suppressed field equals to 2
+typedef enum {
+    ClearTotally = 1,   // Clear all the graph to known values
+    ClearPartially = 2, // Keep in mind the previous range found or not found
+    ClearYen = 3 // ClearPartially and keep suppress the contact's with suppressed field equals to 2
 } ClearRule;
 
-typedef enum
-{
-	// You can remember
-	// the range's value found for a contact during the current call
-	// because in phase one we search the range
-	// always at the same time (contact's start time)
-	RangeNotFound = -1, // Range searched but not found
-	RangeNotSearched = 0, // Range not searched
-	RangeFound = 1 // Range searched and found
+typedef enum {
+    // You can remember
+    // the range's value found for a contact during the current call
+    // because in phase one we search the range
+    // always at the same time (contact's start time)
+    RangeNotFound = -1,   // Range searched but not found
+    RangeNotSearched = 0, // Range not searched
+    RangeFound = 1        // Range searched and found
 } RangeFlag;
 
-typedef enum
-{
-	DijkstraNotSuppressed = 0, // The contact is in the graph
-	DijkstraSuppressed = 1, // The contact is excluded from the graph
-	SuppressedFromNodeForYenLoop = 2, // The contact is excluded from the graph due a loop
-	                                  // caused by the fromNode field
-	SuppressedToNodeForYenLoop = 3    // The contact is excluded from the graph due a loop
+typedef enum {
+    DijkstraNotSuppressed = 0,        // The contact is in the graph
+    DijkstraSuppressed = 1,           // The contact is excluded from the graph
+    SuppressedFromNodeForYenLoop = 2, // The contact is excluded from the graph due a loop
+                                      // caused by the fromNode field
+    SuppressedToNodeForYenLoop = 3    // The contact is excluded from the graph due a loop
                                       // caused by the toNode field
 } SuppressedFlag;
 
 static int computeOneRoutePerNeighbor(Node *terminusNode, long unsigned int missingNeighbors);
-
 
 /******************************************************************************
  *
@@ -113,11 +105,10 @@ static int computeOneRoutePerNeighbor(Node *terminusNode, long unsigned int miss
  *  02/07/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 static DijkstraQueue *get_dijkstra_queue() {
-	static DijkstraQueue dq;
+    static DijkstraQueue dq;
 
-	return &dq;
+    return &dq;
 }
-
 
 /******************************************************************************
  *
@@ -143,9 +134,9 @@ static DijkstraQueue *get_dijkstra_queue() {
  *  02/07/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 static UniboContact *get_first_contact_from_queue() {
-	DijkstraQueue *dq = get_dijkstra_queue();
+    DijkstraQueue *dq = get_dijkstra_queue();
 
-	return dq->firstContact;
+    return dq->firstContact;
 }
 
 /******************************************************************************
@@ -169,9 +160,9 @@ static UniboContact *get_first_contact_from_queue() {
  *  02/07/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 static void reset_dijkstra_queue() {
-	DijkstraQueue *dq = get_dijkstra_queue();
-	dq->firstContact = NULL;
-	dq->lastContact = NULL;
+    DijkstraQueue *dq = get_dijkstra_queue();
+    dq->firstContact = NULL;
+    dq->lastContact = NULL;
 }
 
 /******************************************************************************
@@ -194,30 +185,26 @@ static void reset_dijkstra_queue() {
  *  02/07/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
 static void add_contact_in_queue(UniboContact *last) {
-	DijkstraQueue *dq;
+    DijkstraQueue *dq;
 
-	// if not NULL (safety check) and if is not already in queue
-	if (last != NULL &&
-			last->routingObject->nextContactInDijkstraQueue == NULL)
-	{
-		dq = get_dijkstra_queue();
+    // if not NULL (safety check) and if is not already in queue
+    if (last != NULL && last->routingObject->nextContactInDijkstraQueue == NULL) {
+        dq = get_dijkstra_queue();
 
-		if (dq->lastContact == NULL) //empty queue
-		{
-			dq->firstContact = last;
-			dq->lastContact = last;
-		}
-		else if (last != dq->lastContact) // is not in queue
-		{
-			// previous last contact
-			dq->lastContact->routingObject->nextContactInDijkstraQueue = last;
-			// new last contact
-			dq->lastContact = last;
-		}
-	}
+        if (dq->lastContact == NULL) // empty queue
+        {
+            dq->firstContact = last;
+            dq->lastContact = last;
+        } else if (last != dq->lastContact) // is not in queue
+        {
+            // previous last contact
+            dq->lastContact->routingObject->nextContactInDijkstraQueue = last;
+            // new last contact
+            dq->lastContact = last;
+        }
+    }
 
-	return;
-
+    return;
 }
 
 /******************************************************************************
@@ -233,7 +220,8 @@ static void add_contact_in_queue(UniboContact *last) {
  *
  * \return PhaseOneSAP*
  *
- * \retval  PhaseOneSAP*   The reference to the struct with all values used by phase one for the current call.
+ * \retval  PhaseOneSAP*   The reference to the struct with all values used by phase one for the
+ *current call.
  *
  *
  * \par Revision History:
@@ -242,14 +230,14 @@ static void add_contact_in_queue(UniboContact *last) {
  *  -------- | --------------- | -----------------------------------------------
  *  02/07/20 | L. Persampieri  |  Initial Implementation and documentation.
  *****************************************************************************/
-PhaseOneSAP *get_phase_one_sap(PhaseOneSAP * newSap) { //was static
-	static PhaseOneSAP sap;
+PhaseOneSAP *get_phase_one_sap(PhaseOneSAP *newSap) { // was static
+    static PhaseOneSAP sap;
 
-	if(newSap != NULL) {
-		sap = *newSap;
-	}
+    if (newSap != NULL) {
+        sap = *newSap;
+    }
 
-	return &sap;
+    return &sap;
 }
 
 /******************************************************************************
@@ -281,39 +269,34 @@ PhaseOneSAP *get_phase_one_sap(PhaseOneSAP * newSap) { //was static
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-int initialize_phase_one(unsigned long long ownNode)
-{
-	int result = 1;
-	PhaseOneSAP *sap = get_phase_one_sap(NULL);
+int initialize_phase_one(unsigned long long ownNode) {
+    int result = 1;
+    PhaseOneSAP *sap = get_phase_one_sap(NULL);
 
-	sap->alreadyExcluded = 0;
-	sap->knownRoutesUpdated = 0;
-	sap->graphCleaned = 0;
+    sap->alreadyExcluded = 0;
+    sap->knownRoutesUpdated = 0;
+    sap->graphCleaned = 0;
 
-	if (sap->excludedNeighbors == NULL)
-	{
-		//don't set delete_data_elt in this list !
-		// We get the pointer to the neighbor with &(route->neighbor)
-		sap->excludedNeighbors = list_create(NULL, NULL, NULL, NULL);
-	}
-	if (sap->excludedNeighbors == NULL)
-	{
-		result = -2;
-	}
-	else
-	{
-		free_list_elts(sap->excludedNeighbors);
-		memset(&(sap->graphRoot), 0, sizeof(UniboContact));
-		sap->graphRoot.fromNode = ownNode;
-		sap->graphRoot.toNode = ownNode;
-		sap->graphRoot.type = TypeScheduled;
-		sap->graphRoot.toTime = MAX_POSIX_TIME;
-		memset(&(sap->graphRootWork), 0, sizeof(ContactNote));
-		sap->graphRoot.routingObject = &(sap->graphRootWork);
-		sap->graphRoot.routingObject->arrivalConfidence = 1.0F;
-	}
+    if (sap->excludedNeighbors == NULL) {
+        // don't set delete_data_elt in this list !
+        //  We get the pointer to the neighbor with &(route->neighbor)
+        sap->excludedNeighbors = list_create(NULL, NULL, NULL, NULL);
+    }
+    if (sap->excludedNeighbors == NULL) {
+        result = -2;
+    } else {
+        free_list_elts(sap->excludedNeighbors);
+        memset(&(sap->graphRoot), 0, sizeof(UniboContact));
+        sap->graphRoot.fromNode = ownNode;
+        sap->graphRoot.toNode = ownNode;
+        sap->graphRoot.type = TypeScheduled;
+        sap->graphRoot.toTime = MAX_POSIX_TIME;
+        memset(&(sap->graphRootWork), 0, sizeof(ContactNote));
+        sap->graphRoot.routingObject = &(sap->graphRootWork);
+        sap->graphRoot.routingObject->arrivalConfidence = 1.0F;
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -336,18 +319,17 @@ int initialize_phase_one(unsigned long long ownNode)
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-void destroy_phase_one()
-{
-	PhaseOneSAP *sap  = get_phase_one_sap(NULL);
-	free_list(sap->excludedNeighbors);
-	sap->excludedNeighbors = NULL;
-	sap->alreadyExcluded = 0;
-	sap->knownRoutesUpdated = 0;
-	sap->graphCleaned = 0;
-	sap->destination = 0;
-	sap->regionNbr = 0;
+void destroy_phase_one() {
+    PhaseOneSAP *sap = get_phase_one_sap(NULL);
+    free_list(sap->excludedNeighbors);
+    sap->excludedNeighbors = NULL;
+    sap->alreadyExcluded = 0;
+    sap->knownRoutesUpdated = 0;
+    sap->graphCleaned = 0;
+    sap->destination = 0;
+    sap->regionNbr = 0;
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -376,17 +358,16 @@ void destroy_phase_one()
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-void reset_phase_one()
-{
-	PhaseOneSAP *sap = get_phase_one_sap(NULL);
-	free_list_elts(sap->excludedNeighbors);
-	sap->alreadyExcluded = 0;
-	sap->knownRoutesUpdated = 0;
-	sap->graphCleaned = 0;
-	sap->destination = 0;
-	sap->regionNbr = 0;
+void reset_phase_one() {
+    PhaseOneSAP *sap = get_phase_one_sap(NULL);
+    free_list_elts(sap->excludedNeighbors);
+    sap->alreadyExcluded = 0;
+    sap->knownRoutesUpdated = 0;
+    sap->graphCleaned = 0;
+    sap->destination = 0;
+    sap->regionNbr = 0;
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -418,50 +399,44 @@ void reset_phase_one()
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static void clear_work_areas(ClearRule rule)
-{
-	UniboContact *current;
-	RbtNode *node;
-	ContactNote *work;
-	PhaseOneSAP *sap;
+static void clear_work_areas(ClearRule rule) {
+    UniboContact *current;
+    RbtNode *node;
+    ContactNote *work;
+    PhaseOneSAP *sap;
 
-	current = get_first_contact(&node);
-	while (current != NULL)
-	{
-		work = current->routingObject;
-		work->predecessor = NULL;
-		if(rule == ClearTotally)
-		{
-			work->suppressed = 0;
-			work->rangeFlag = 0;
-			work->owlt = 0;
-		}
-		else if(rule == ClearPartially || work->suppressed == DijkstraSuppressed)
-		{
-			work->suppressed = 0;
-		}
+    current = get_first_contact(&node);
+    while (current != NULL) {
+        work = current->routingObject;
+        work->predecessor = NULL;
+        if (rule == ClearTotally) {
+            work->suppressed = 0;
+            work->rangeFlag = 0;
+            work->owlt = 0;
+        } else if (rule == ClearPartially || work->suppressed == DijkstraSuppressed) {
+            work->suppressed = 0;
+        }
 
-		work->visited = 0;
-		work->owltSum = 0;
-		work->successProbability = 0;
-		work->arrivalTime = MAX_POSIX_TIME;
-		work->hopCount = 0;
-		work->arrivalConfidence = 1.0F;
+        work->visited = 0;
+        work->owltSum = 0;
+        work->successProbability = 0;
+        work->arrivalTime = MAX_POSIX_TIME;
+        work->hopCount = 0;
+        work->arrivalConfidence = 1.0F;
 
-		work->nextContactInDijkstraQueue = NULL;
+        work->nextContactInDijkstraQueue = NULL;
 
-		current = get_next_contact(&node);
-	}
+        current = get_next_contact(&node);
+    }
 
-	if(rule == ClearTotally)
-	{
-		sap = get_phase_one_sap(NULL);
-		sap->graphCleaned = 1;
-	}
+    if (rule == ClearTotally) {
+        sap = get_phase_one_sap(NULL);
+        sap->graphCleaned = 1;
+    }
 
-	reset_dijkstra_queue(); //initialize queue
+    reset_dijkstra_queue(); // initialize queue
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -491,27 +466,22 @@ static void clear_work_areas(ClearRule rule)
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int neighbor_is_excluded(unsigned long long neighbor)
-{
-	int result = 0;
-	ListElt *elt;
-	unsigned long long *current;
-	PhaseOneSAP *sap = get_phase_one_sap(NULL);
+static int neighbor_is_excluded(unsigned long long neighbor) {
+    int result = 0;
+    ListElt *elt;
+    unsigned long long *current;
+    PhaseOneSAP *sap = get_phase_one_sap(NULL);
 
-	for (elt = sap->excludedNeighbors->first; elt != NULL && result == 0; elt = elt->next)
-	{
-		if (elt->data != NULL)
-		{
-			current = (unsigned long long*) elt->data;
-			if (*current == neighbor)
-			{
-				result = 1;
-			}
-		}
-	}
+    for (elt = sap->excludedNeighbors->first; elt != NULL && result == 0; elt = elt->next) {
+        if (elt->data != NULL) {
+            current = (unsigned long long *)elt->data;
+            if (*current == neighbor) {
+                result = 1;
+            }
+        }
+    }
 
-	return result;
-
+    return result;
 }
 
 /******************************************************************************
@@ -544,25 +514,20 @@ static int neighbor_is_excluded(unsigned long long neighbor)
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int exclude_current_neighbor(Route *route)
-{
-	int result = -1;
-	PhaseOneSAP *sap;
+static int exclude_current_neighbor(Route *route) {
+    int result = -1;
+    PhaseOneSAP *sap;
 
-	if(route != NULL)
-	{
-		sap = get_phase_one_sap(NULL);
-		if (list_insert_first(sap->excludedNeighbors, &(route->neighbor)) != NULL)
-		{
-			result = 0;
-		}
-		else
-		{
-			result = -2;
-		}
-	}
+    if (route != NULL) {
+        sap = get_phase_one_sap(NULL);
+        if (list_insert_first(sap->excludedNeighbors, &(route->neighbor)) != NULL) {
+            result = 0;
+        } else {
+            result = -2;
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -594,27 +559,23 @@ static int exclude_current_neighbor(Route *route)
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int exclude_all_neighbors_from_computed_routes(List computedRoutes)
-{
-	int stop = 0, result = 0;
-	Route *route;
-	ListElt *elt;
+static int exclude_all_neighbors_from_computed_routes(List computedRoutes) {
+    int stop = 0, result = 0;
+    Route *route;
+    ListElt *elt;
 
-	for (elt = computedRoutes->first; elt != NULL && !stop; elt = elt->next)
-	{
-		result++; //count the routes added by the add_route
-		route = (Route*) elt->data;
-		if (!neighbor_is_excluded(route->neighbor))
-		{
-			if (exclude_current_neighbor(route) < 0)
-			{
-				result = -2;
-				stop = 1;
-			}
-		}
-	}
+    for (elt = computedRoutes->first; elt != NULL && !stop; elt = elt->next) {
+        result++; // count the routes added by the add_route
+        route = (Route *)elt->data;
+        if (!neighbor_is_excluded(route->neighbor)) {
+            if (exclude_current_neighbor(route) < 0) {
+                result = -2;
+                stop = 1;
+            }
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -661,69 +622,59 @@ static int exclude_all_neighbors_from_computed_routes(List computedRoutes)
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int populate_route(PhaseOneSAP *sap, time_t current_time, UniboContact *finalContact, UniboContact *rootContact, Route *resultRoute)
-{
-	int result = 0;
-	time_t earliestEndTime;
-	UniboContact *contact, *firstContact = NULL;
-	ContactNote *current_work;
-	ListElt *elt;
+static int populate_route(PhaseOneSAP *sap, time_t current_time, UniboContact *finalContact,
+                          UniboContact *rootContact, Route *resultRoute) {
+    int result = 0;
+    time_t earliestEndTime;
+    UniboContact *contact, *firstContact = NULL;
+    ContactNote *current_work;
+    ListElt *elt;
 
-	resultRoute->arrivalTime = finalContact->routingObject->arrivalTime;
-	resultRoute->arrivalConfidence = finalContact->routingObject->arrivalConfidence;
-	resultRoute->owltSum = finalContact->routingObject->owltSum;
-	resultRoute->computedAtTime = current_time;
+    resultRoute->arrivalTime = finalContact->routingObject->arrivalTime;
+    resultRoute->arrivalConfidence = finalContact->routingObject->arrivalConfidence;
+    resultRoute->owltSum = finalContact->routingObject->owltSum;
+    resultRoute->computedAtTime = current_time;
 
-	earliestEndTime = MAX_POSIX_TIME;
-	contact = finalContact;
+    earliestEndTime = MAX_POSIX_TIME;
+    contact = finalContact;
 
-	while (contact != &(sap->graphRoot))
-	{
-		current_work = contact->routingObject;
-		if (contact->toTime < earliestEndTime)
-		{
-			earliestEndTime = contact->toTime;
-		}
+    while (contact != &(sap->graphRoot)) {
+        current_work = contact->routingObject;
+        if (contact->toTime < earliestEndTime) {
+            earliestEndTime = contact->toTime;
+        }
 
-		elt = list_insert_first(resultRoute->hops, contact);
+        elt = list_insert_first(resultRoute->hops, contact);
 
-		if (elt == NULL)
-		{
-			result = -2;
-			contact = NULL; //I leave the loop
-		}
-		else
-		{
-			if (contact == rootContact)
-			{
-				//Spur route
-				resultRoute->rootOfSpur = elt;
-			}
+        if (elt == NULL) {
+            result = -2;
+            contact = NULL; // I leave the loop
+        } else {
+            if (contact == rootContact) {
+                // Spur route
+                resultRoute->rootOfSpur = elt;
+            }
 
-			elt = list_insert_last(contact->citations, elt);
+            elt = list_insert_last(contact->citations, elt);
 
-			if (elt == NULL)
-			{
-				result = -2;
-				contact = NULL; //I leave the loop
-			}
-			else
-			{
-				firstContact = contact;
-				contact = current_work->predecessor;
-			}
-		}
-	}
+            if (elt == NULL) {
+                result = -2;
+                contact = NULL; // I leave the loop
+            } else {
+                firstContact = contact;
+                contact = current_work->predecessor;
+            }
+        }
+    }
 
-	if (result == 0)
-	{
-		resultRoute->neighbor = firstContact->toNode;
-		resultRoute->fromTime = firstContact->fromTime;
-		resultRoute->toTime = earliestEndTime;
-		resultRoute->successProbability = get_probability_if_this_route_is_chosen(resultRoute);
-	}
+    if (result == 0) {
+        resultRoute->neighbor = firstContact->toNode;
+        resultRoute->fromTime = firstContact->fromTime;
+        resultRoute->toTime = earliestEndTime;
+        resultRoute->successProbability = get_probability_if_this_route_is_chosen(resultRoute);
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -756,56 +707,38 @@ static int populate_route(PhaseOneSAP *sap, time_t current_time, UniboContact *f
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int compare_dijkstra_edges(ContactNote *first, ContactNote *second)
-{
-	int result = 1;
+static int compare_dijkstra_edges(ContactNote *first, ContactNote *second) {
+    int result = 1;
 
-	if (first->successProbability > second->successProbability)
-	{
-		result = -1;
-	}
-	else if (first->successProbability == second->successProbability)
-	{
-	if (first->arrivalTime < second->arrivalTime)
-	{
-		result = -1;
-	}
-	else if (first->arrivalTime == second->arrivalTime)
-	{
-		if (first->hopCount < second->hopCount)
-		{
-			result = -1;
-		}
-		else if (first->hopCount == second->hopCount)
-		{
-			if (first->owltSum < second->owltSum)
-			{
-				result = -1;
-			}
-			else if (first->owltSum == second->owltSum)
-			{
+    if (first->successProbability > second->successProbability) {
+        result = -1;
+    } else if (first->successProbability == second->successProbability) {
+        if (first->arrivalTime < second->arrivalTime) {
+            result = -1;
+        } else if (first->arrivalTime == second->arrivalTime) {
+            if (first->hopCount < second->hopCount) {
+                result = -1;
+            } else if (first->hopCount == second->hopCount) {
+                if (first->owltSum < second->owltSum) {
+                    result = -1;
+                } else if (first->owltSum == second->owltSum) {
 #if (NEGLECT_CONFIDENCE == 0)
-				if (first->arrivalConfidence > second->arrivalConfidence)
-				{
-					result = -1;
-				}
-				else if (first->arrivalConfidence < second->arrivalConfidence)
-				{
-					result = 1;
-				}
-				else
-				{
-					result = 0;
-				}
+                    if (first->arrivalConfidence > second->arrivalConfidence) {
+                        result = -1;
+                    } else if (first->arrivalConfidence < second->arrivalConfidence) {
+                        result = 1;
+                    } else {
+                        result = 0;
+                    }
 #else
-				result = 0;
+                    result = 0;
 #endif
-			}
-		}
-	}
-	}
+                }
+            }
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -846,136 +779,122 @@ static int compare_dijkstra_edges(ContactNote *first, ContactNote *second)
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static void compute_new_distances(PhaseOneSAP *sap, time_t current_time, UniboContact *current)
-{
-	int go_to_next = 0;
-	UniboContact *contact;
-	RbtNode *rbtNode;
-	unsigned int owlt;
-	unsigned int owltMargin;
-	time_t earliestTransmissionTime;
-	ContactNote *work, *currentWork, tempWork;
+static void compute_new_distances(PhaseOneSAP *sap, time_t current_time, UniboContact *current) {
+    int go_to_next = 0;
+    UniboContact *contact;
+    RbtNode *rbtNode;
+    unsigned int owlt;
+    unsigned int owltMargin;
+    time_t earliestTransmissionTime;
+    ContactNote *work, *currentWork, tempWork;
 
-	currentWork = current->routingObject;
+    currentWork = current->routingObject;
 
-	for (contact = get_first_contact_from_node(sap->regionNbr, current->toNode, &rbtNode); contact != NULL;
-			contact = get_next_contact(&rbtNode))
-	{
-		if (contact->fromNode != current->toNode || contact->regionNbr != sap->regionNbr)
-		{
-			rbtNode = NULL; //I leave the loop
-		}
-		else if ((contact->toNode != current->fromNode && contact->fromNode != contact->toNode)
-				|| (current == &(sap->graphRoot)))
-		{
-			//don't route back and permits loopback
-			//only for the local node (SABR)
-			work = contact->routingObject;
+    for (contact = get_first_contact_from_node(sap->regionNbr, current->toNode, &rbtNode);
+         contact != NULL; contact = get_next_contact(&rbtNode)) {
+        if (contact->fromNode != current->toNode || contact->regionNbr != sap->regionNbr) {
+            rbtNode = NULL; // I leave the loop
+        } else if ((contact->toNode != current->fromNode && contact->fromNode != contact->toNode) ||
+                   (current == &(sap->graphRoot))) {
+            // don't route back and permits loopback
+            // only for the local node (SABR)
+            work = contact->routingObject;
 
-			if(work->suppressed == SuppressedFromNodeForYenLoop)
-			{
-				// The work is suppressed due to a Yen loop caused by the fromNode,
-				// All the contacts in this loop will have the same fromNode so
-				// all contacts will be suppressed due to a Yen loop caused by the fromNode,
-				// stop the loop and remember this for the currentWork in the next iterations
-				// of the Yen's algotithm
-				currentWork->suppressed = SuppressedToNodeForYenLoop;
-				rbtNode = NULL;
-			}
-			else if (!work->suppressed && !work->visited)
-			{
-				earliestTransmissionTime = contact->fromTime;
-				if (current == &(sap->graphRoot))
-				{
-					if (contact->fromTime < current_time) //SABR 3.2.4.1.1
-					{
-						earliestTransmissionTime = current_time;
-					}
-					if (neighbor_is_excluded(contact->toNode))
-					{
-						//helpful for "one route per neighbor"
-						work->suppressed = DijkstraSuppressed;
-						go_to_next = 1;
-					}
+            if (work->suppressed == SuppressedFromNodeForYenLoop) {
+                // The work is suppressed due to a Yen loop caused by the fromNode,
+                // All the contacts in this loop will have the same fromNode so
+                // all contacts will be suppressed due to a Yen loop caused by the fromNode,
+                // stop the loop and remember this for the currentWork in the next iterations
+                // of the Yen's algotithm
+                currentWork->suppressed = SuppressedToNodeForYenLoop;
+                rbtNode = NULL;
+            } else if (!work->suppressed && !work->visited) {
+                earliestTransmissionTime = contact->fromTime;
+                if (current == &(sap->graphRoot)) {
+                    if (contact->fromTime < current_time) // SABR 3.2.4.1.1
+                    {
+                        earliestTransmissionTime = current_time;
+                    }
+                    if (neighbor_is_excluded(contact->toNode)) {
+                        // helpful for "one route per neighbor"
+                        work->suppressed = DijkstraSuppressed;
+                        go_to_next = 1;
+                    }
 #if (NEGLECT_CONFIDENCE == 0 && REVISABLE_CONFIDENCE == 0)
-					/* TODO Removed check due to the insertion of opportunistic contacts
-					else if (contact->confidence < 1.0F)
-					{
-						// first hop must be certain
-						work->suppressed = Suppressed;
-						go_to_next = 1;
-					}
-					 */
+                    /* TODO Removed check due to the insertion of opportunistic contacts
+                    else if (contact->confidence < 1.0F)
+                    {
+                            // first hop must be certain
+                            work->suppressed = Suppressed;
+                            go_to_next = 1;
+                    }
+                     */
 #endif
-				}
-				else if (contact->fromTime < currentWork->arrivalTime) //SABR 3.2.4.1.1
-				{
-					earliestTransmissionTime = currentWork->arrivalTime;
-				}
+                } else if (contact->fromTime < currentWork->arrivalTime) // SABR 3.2.4.1.1
+                {
+                    earliestTransmissionTime = currentWork->arrivalTime;
+                }
 
-				if (go_to_next)
-				{
-					go_to_next = 0; //reset for the next iteration
-				}
-				else if (contact->toTime > earliestTransmissionTime)
-				{
-					// in phase one we search the range ALWAYS at the start time of the contact
-					// this depends on the destination's neighbors management.
+                if (go_to_next) {
+                    go_to_next = 0; // reset for the next iteration
+                } else if (contact->toTime > earliestTransmissionTime) {
+                    // in phase one we search the range ALWAYS at the start time of the contact
+                    // this depends on the destination's neighbors management.
 
-					owlt = work->owlt; //initialize to work value
+                    owlt = work->owlt; // initialize to work value
 
-					if (work->rangeFlag == RangeNotFound
-							|| (work->rangeFlag == RangeNotSearched
-									&& get_applicable_range(contact->fromNode, contact->toNode, contact->fromTime, &owlt) < 0))
-					{
-						work->rangeFlag = RangeNotFound; //range not found at start time, this contact cannot be used to compute a route
-						work->suppressed = DijkstraSuppressed;
-					}
-					//if rangeFlag == RangeFound, we use the work->owlt
-					else
-					{
-						// Ok, range found at contact's start time
-						work->rangeFlag = RangeFound;
-						work->owlt = owlt;
+                    if (work->rangeFlag == RangeNotFound ||
+                        (work->rangeFlag == RangeNotSearched &&
+                         get_applicable_range(contact->fromNode, contact->toNode, contact->fromTime,
+                                              &owlt) < 0)) {
+                        work->rangeFlag =
+                            RangeNotFound; // range not found at start time, this contact cannot be
+                                           // used to compute a route
+                        work->suppressed = DijkstraSuppressed;
+                    }
+                    // if rangeFlag == RangeFound, we use the work->owlt
+                    else {
+                        // Ok, range found at contact's start time
+                        work->rangeFlag = RangeFound;
+                        work->owlt = owlt;
 
-						owltMargin = ((MAX_SPEED_MPH / 3600) * owlt) / 186282;
-						owlt += owltMargin;
+                        owltMargin = ((MAX_SPEED_MPH / 3600) * owlt) / 186282;
+                        owlt += owltMargin;
 
-						tempWork.arrivalTime = earliestTransmissionTime + owlt;
+                        tempWork.arrivalTime = earliestTransmissionTime + owlt;
 
-						tempWork.owltSum = owlt + currentWork->owltSum;
-						tempWork.hopCount = currentWork->hopCount;
-						tempWork.arrivalConfidence = contact->confidence
-								* currentWork->arrivalConfidence;
-						tempWork.successProbability =  0 ;// get_probability_if_this_contact_is_chosen(contact, earliestTransmissionTime);
+                        tempWork.owltSum = owlt + currentWork->owltSum;
+                        tempWork.hopCount = currentWork->hopCount;
+                        tempWork.arrivalConfidence =
+                            contact->confidence * currentWork->arrivalConfidence;
+                        tempWork.successProbability = 0; // get_probability_if_this_contact_is_chosen(contact,
+                                                         // earliestTransmissionTime);
 
-						if (contact->toNode != contact->fromNode)
-						{
-							tempWork.hopCount += 1;
-						}
+                        if (contact->toNode != contact->fromNode) {
+                            tempWork.hopCount += 1;
+                        }
 
-						if (compare_dijkstra_edges(&tempWork, work) < 0)
-						{
-							//found a new lower distance
-							work->arrivalTime = tempWork.arrivalTime;
-							work->hopCount = tempWork.hopCount;
-							work->owltSum = tempWork.owltSum;
-							work->predecessor = current;
-							work->arrivalConfidence = tempWork.arrivalConfidence;
-							work->successProbability = tempWork.successProbability;
+                        if (compare_dijkstra_edges(&tempWork, work) < 0) {
+                            // found a new lower distance
+                            work->arrivalTime = tempWork.arrivalTime;
+                            work->hopCount = tempWork.hopCount;
+                            work->owltSum = tempWork.owltSum;
+                            work->predecessor = current;
+                            work->arrivalConfidence = tempWork.arrivalConfidence;
+                            work->successProbability = tempWork.successProbability;
 
-							// insert in queue (if not present)
-							add_contact_in_queue(contact);
-						}
-					}
-				}
-			}
-		}
-	}
+                            // insert in queue (if not present)
+                            add_contact_in_queue(contact);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-	currentWork->visited = 1;
+    currentWork->visited = 1;
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -1016,46 +935,42 @@ static void compute_new_distances(PhaseOneSAP *sap, time_t current_time, UniboCo
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *  20/06/20 | L. Persampieri  |   Added queue (code optimization)
  *****************************************************************************/
-static UniboContact* find_best_contact(unsigned long long toNode, unsigned long long localNode)
-{
-	UniboContact *contact;
-//	RbtNode *rbtNode = NULL;
-	ContactNote *work, tempWork;
+static UniboContact *find_best_contact(unsigned long long toNode, unsigned long long localNode) {
+    UniboContact *contact;
+    //	RbtNode *rbtNode = NULL;
+    ContactNote *work, tempWork;
 
-	tempWork.arrivalTime = MAX_POSIX_TIME;
-	tempWork.hopCount = UINT_MAX;
-	tempWork.owltSum = UINT_MAX;
-	tempWork.predecessor = NULL;
-	tempWork.arrivalConfidence = 0.0F;
-	tempWork.successProbability = 0;
+    tempWork.arrivalTime = MAX_POSIX_TIME;
+    tempWork.hopCount = UINT_MAX;
+    tempWork.owltSum = UINT_MAX;
+    tempWork.predecessor = NULL;
+    tempWork.arrivalConfidence = 0.0F;
+    tempWork.successProbability = 0;
 
-	// currently the queue is unordered, so we have to compare all contacts
-	contact = get_first_contact_from_queue();
+    // currently the queue is unordered, so we have to compare all contacts
+    contact = get_first_contact_from_queue();
 
-	while(contact != NULL)
-	{
-		work = contact->routingObject;
+    while (contact != NULL) {
+        work = contact->routingObject;
 
-		if (!(work->suppressed) && !(work->visited) && work->arrivalTime != MAX_POSIX_TIME)
-		{
-			if (work->hopCount != 0 || toNode == localNode) //loopback only for the local node
-			{
-				if (compare_dijkstra_edges(work, &tempWork) < 0)
-				{
-					tempWork.predecessor = contact;
-					tempWork.arrivalTime = work->arrivalTime;
-					tempWork.hopCount = work->hopCount;
-					tempWork.owltSum = work->owltSum;
-					tempWork.arrivalConfidence = work->arrivalConfidence;
-					tempWork.successProbability = work->successProbability;
-				}
-			}
-		}
+        if (!(work->suppressed) && !(work->visited) && work->arrivalTime != MAX_POSIX_TIME) {
+            if (work->hopCount != 0 || toNode == localNode) // loopback only for the local node
+            {
+                if (compare_dijkstra_edges(work, &tempWork) < 0) {
+                    tempWork.predecessor = contact;
+                    tempWork.arrivalTime = work->arrivalTime;
+                    tempWork.hopCount = work->hopCount;
+                    tempWork.owltSum = work->owltSum;
+                    tempWork.arrivalConfidence = work->arrivalConfidence;
+                    tempWork.successProbability = work->successProbability;
+                }
+            }
+        }
 
-		contact = work->nextContactInDijkstraQueue;
-	}
+        contact = work->nextContactInDijkstraQueue;
+    }
 
-	return tempWork.predecessor; //best contact found
+    return tempWork.predecessor; // best contact found
 }
 
 /******************************************************************************
@@ -1089,47 +1004,42 @@ static UniboContact* find_best_contact(unsigned long long toNode, unsigned long 
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int dijkstra_search(UniboContact *rootContact, unsigned long long toNode, Route *resultRoute)
-{
-	int result = 0, stop = 0;
-	UniboContact *current;
-	UniboContact *finalContact = NULL;
-	PhaseOneSAP *sap = get_phase_one_sap(NULL);
-	time_t current_time = get_current_time();
-	unsigned long long localNode = get_local_node();
+static int dijkstra_search(UniboContact *rootContact, unsigned long long toNode,
+                           Route *resultRoute) {
+    int result = 0, stop = 0;
+    UniboContact *current;
+    UniboContact *finalContact = NULL;
+    PhaseOneSAP *sap = get_phase_one_sap(NULL);
+    time_t current_time = get_current_time();
+    unsigned long long localNode = get_local_node();
 
-	current = rootContact;
+    current = rootContact;
 
-	while (!stop)
-	{
-		compute_new_distances(sap, current_time, current);
+    while (!stop) {
+        compute_new_distances(sap, current_time, current);
 
-		current = find_best_contact(toNode, localNode);
+        current = find_best_contact(toNode, localNode);
 
-		if (current != NULL)
-		{
-			if (current->toNode == toNode) //route found
-			{
-				finalContact = current;
-				stop = 1; //I leave the loop
-			}
-		}
-		else //route not found
-		{
-			stop = 1; //I leave the loop
-		}
-	}
+        if (current != NULL) {
+            if (current->toNode == toNode) // route found
+            {
+                finalContact = current;
+                stop = 1; // I leave the loop
+            }
+        } else // route not found
+        {
+            stop = 1; // I leave the loop
+        }
+    }
 
-	if (finalContact != NULL) //route found
-	{
-		result = populate_route(sap, current_time, finalContact, rootContact, resultRoute);
-	}
-	else
-	{
-		result = -1; //route not found
-	}
+    if (finalContact != NULL) // route found
+    {
+        result = populate_route(sap, current_time, finalContact, rootContact, resultRoute);
+    } else {
+        result = -1; // route not found
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -1161,75 +1071,67 @@ static int dijkstra_search(UniboContact *rootContact, unsigned long long toNode,
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int update_cost_values(time_t current_time, Route *route)
-{
-	ListElt *elt, *first;
-	UniboContact *contact;
-	time_t arrivalTime, earliestTransmissionTime;
-	unsigned int owlt, owltMargin, owltSum;
-	int result = 0;
+static int update_cost_values(time_t current_time, Route *route) {
+    ListElt *elt, *first;
+    UniboContact *contact;
+    time_t arrivalTime, earliestTransmissionTime;
+    unsigned int owlt, owltMargin, owltSum;
+    int result = 0;
 
-	first = route->hops->first;
-	contact = (UniboContact*) first->data;
-	owlt = 1;
-	owltSum = 0;
-	arrivalTime = current_time;
+    first = route->hops->first;
+    contact = (UniboContact *)first->data;
+    owlt = 1;
+    owltSum = 0;
+    arrivalTime = current_time;
 
-	/*
-	 * This function could be called before the clear_work_areas, so don't assume
-	 * anything about previous range found
-	 */
+    /*
+     * This function could be called before the clear_work_areas, so don't assume
+     * anything about previous range found
+     */
 
-	for (elt = first; elt != NULL && result == 0; elt = elt->next)
-	{
-		contact = (UniboContact*) elt->data;
-		owlt = 1;
-		earliestTransmissionTime =
-				(contact->fromTime > arrivalTime) ? contact->fromTime : arrivalTime;
-		if (earliestTransmissionTime > contact->toTime)
-		{
-			//The best-case delivery time for the contact is greater than
-			//the end time of the contact
-			arrivalTime = MAX_POSIX_TIME;
-			owltSum = UINT_MAX;
-			result = -2;
-			verbose_debug_printf("Can't update route's values.");
-		}
-		// in phase one we search the range ALWAYS at the start time of the contact
-		// this depends on the destination's neighbors management.
-		else if (get_applicable_range(contact->fromNode, contact->toNode,
-				contact->fromTime, &owlt) < 0)
-		{
-			//Range not found
-			contact->routingObject->rangeFlag = RangeNotFound;
+    for (elt = first; elt != NULL && result == 0; elt = elt->next) {
+        contact = (UniboContact *)elt->data;
+        owlt = 1;
+        earliestTransmissionTime =
+            (contact->fromTime > arrivalTime) ? contact->fromTime : arrivalTime;
+        if (earliestTransmissionTime > contact->toTime) {
+            // The best-case delivery time for the contact is greater than
+            // the end time of the contact
+            arrivalTime = MAX_POSIX_TIME;
+            owltSum = UINT_MAX;
+            result = -2;
+            verbose_debug_printf("Can't update route's values.");
+        }
+        // in phase one we search the range ALWAYS at the start time of the contact
+        // this depends on the destination's neighbors management.
+        else if (get_applicable_range(contact->fromNode, contact->toNode, contact->fromTime,
+                                      &owlt) < 0) {
+            // Range not found
+            contact->routingObject->rangeFlag = RangeNotFound;
 
-			result = -1;
-			arrivalTime = MAX_POSIX_TIME;
-			owltSum = UINT_MAX;
-			verbose_debug_printf("Can't update route's values.");
-		}
-		else
-		{
-			contact->routingObject->rangeFlag = RangeFound;
-			contact->routingObject->owlt = owlt;
+            result = -1;
+            arrivalTime = MAX_POSIX_TIME;
+            owltSum = UINT_MAX;
+            verbose_debug_printf("Can't update route's values.");
+        } else {
+            contact->routingObject->rangeFlag = RangeFound;
+            contact->routingObject->owlt = owlt;
 
-			owltMargin = ((MAX_SPEED_MPH / 3600) * owlt) / 186282;
-			owlt += owltMargin;
-			owltSum += owlt;
+            owltMargin = ((MAX_SPEED_MPH / 3600) * owlt) / 186282;
+            owlt += owltMargin;
+            owltSum += owlt;
 
-			arrivalTime = earliestTransmissionTime + owlt;
-		}
+            arrivalTime = earliestTransmissionTime + owlt;
+        }
+    }
 
-	}
+    if (result == 0) {
+        route->arrivalTime = arrivalTime;
+        route->owltSum = owltSum;
+        route->successProbability = get_probability_if_this_route_is_chosen(route);
+    }
 
-	if (result == 0)
-	{
-		route->arrivalTime = arrivalTime;
-		route->owltSum = owltSum;
-		route->successProbability = get_probability_if_this_route_is_chosen(route);
-	}
-
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -1260,85 +1162,64 @@ static int update_cost_values(time_t current_time, Route *route)
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static Route* get_best_known_route(RtgObject *rtgObj, unsigned long long neighbor)
-{
-	Route *bestRoute = NULL, *current;
-	ListElt *elt;
+static Route *get_best_known_route(RtgObject *rtgObj, unsigned long long neighbor) {
+    Route *bestRoute = NULL, *current;
+    ListElt *elt;
 
-	for (elt = rtgObj->knownRoutes->first; elt != NULL; elt = elt->next)
-	{
-		if (elt->data != NULL)
-		{
-			current = (Route*) elt->data;
+    for (elt = rtgObj->knownRoutes->first; elt != NULL; elt = elt->next) {
+        if (elt->data != NULL) {
+            current = (Route *)elt->data;
 
 #if (MAX_DIJKSTRA_ROUTES != 1)
-			if (current->neighbor == neighbor)
-			{
+            if (current->neighbor == neighbor) {
 #endif
-				if (bestRoute == NULL)
-				{
-					bestRoute = current;
-				}
-				else if (bestRoute->successProbability < current->successProbability)
-				{
-					bestRoute = current;
-				}
-				else if (bestRoute->successProbability == current->successProbability)
-				{
-					if (bestRoute->arrivalTime > current->arrivalTime)
-				{
-					bestRoute = current;
-				}
-				else if (bestRoute->arrivalTime == current->arrivalTime)
-				{
-					if (bestRoute->hops->length > current->hops->length)
-					{
-						bestRoute = current;
-					}
-					else if (bestRoute->hops->length == current->hops->length)
-					{
-						if (bestRoute->owltSum > current->owltSum)
-						{
-							bestRoute = current;
-						}
-						else if (bestRoute->owltSum == current->owltSum)
-						{
-							if (bestRoute->arrivalConfidence < current->arrivalConfidence)
-							{
-								bestRoute = current;
-							}
+                if (bestRoute == NULL) {
+                    bestRoute = current;
+                } else if (bestRoute->successProbability < current->successProbability) {
+                    bestRoute = current;
+                } else if (bestRoute->successProbability == current->successProbability) {
+                    if (bestRoute->arrivalTime > current->arrivalTime) {
+                        bestRoute = current;
+                    } else if (bestRoute->arrivalTime == current->arrivalTime) {
+                        if (bestRoute->hops->length > current->hops->length) {
+                            bestRoute = current;
+                        } else if (bestRoute->hops->length == current->hops->length) {
+                            if (bestRoute->owltSum > current->owltSum) {
+                                bestRoute = current;
+                            } else if (bestRoute->owltSum == current->owltSum) {
+                                if (bestRoute->arrivalConfidence < current->arrivalConfidence) {
+                                    bestRoute = current;
+                                }
 #if (MAX_DIJKSTRA_ROUTES == 1)
-							else if (bestRoute->arrivalConfidence == current->arrivalConfidence)
-							{
-								if (bestRoute->neighbor > current->neighbor)
-								{
-									bestRoute = current;
-								}
-							}
+                                else if (bestRoute->arrivalConfidence ==
+                                         current->arrivalConfidence) {
+                                    if (bestRoute->neighbor > current->neighbor) {
+                                        bestRoute = current;
+                                    }
+                                }
 #endif
-						}
-					}
-				}
-				}
+                            }
+                        }
+                    }
+                }
 
 #if (MAX_DIJKSTRA_ROUTES != 1)
-			}
+            }
 #endif
-		}
-	}
+        }
+    }
 
-	if (bestRoute != NULL && bestRoute->arrivalTime == MAX_POSIX_TIME
-			&& bestRoute->owltSum == UINT_MAX)
-	{
-		//Route for which we know that there isn't a range for some contact
-		//or the arrivalTime of some contact is greater than the end time of the contact.
-		//This route will be discarded in phase two.
-		bestRoute = NULL;
-		verbose_debug_printf(
-				"Best known route found but its values hasn't been updated, discard it.");
-	}
+    if (bestRoute != NULL && bestRoute->arrivalTime == MAX_POSIX_TIME &&
+        bestRoute->owltSum == UINT_MAX) {
+        // Route for which we know that there isn't a range for some contact
+        // or the arrivalTime of some contact is greater than the end time of the contact.
+        // This route will be discarded in phase two.
+        bestRoute = NULL;
+        verbose_debug_printf(
+            "Best known route found but its values hasn't been updated, discard it.");
+    }
 
-	return bestRoute;
+    return bestRoute;
 }
 
 /******************************************************************************
@@ -1370,30 +1251,25 @@ static Route* get_best_known_route(RtgObject *rtgObj, unsigned long long neighbo
  *  -------- | --------------- |  -----------------------------------------------
  *  04/05/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static void suppress_root_path_ipn_node(unsigned long long fromNode)
-{
-	int stop = 0;
-	UniboContact *contact;
-	RbtNode *rbtNode;
-	PhaseOneSAP *sap = get_phase_one_sap(NULL);
+static void suppress_root_path_ipn_node(unsigned long long fromNode) {
+    int stop = 0;
+    UniboContact *contact;
+    RbtNode *rbtNode;
+    PhaseOneSAP *sap = get_phase_one_sap(NULL);
 
-	for (contact = get_first_contact_from_node(sap->regionNbr, fromNode, &rbtNode);
-			contact != NULL && !stop; contact = get_next_contact(&rbtNode))
-	{
-		if (contact->fromNode != fromNode)
-		{
-			stop = 1;
-		}
-		else
-		{
-			//We want to exclude this contact even for the successive iteration
-			//of Yen's algorithm on the current route
-			//for this reason we set a distinguishable suppressed flag
-			contact->routingObject->suppressed = SuppressedFromNodeForYenLoop;
-		}
-	}
+    for (contact = get_first_contact_from_node(sap->regionNbr, fromNode, &rbtNode);
+         contact != NULL && !stop; contact = get_next_contact(&rbtNode)) {
+        if (contact->fromNode != fromNode) {
+            stop = 1;
+        } else {
+            // We want to exclude this contact even for the successive iteration
+            // of Yen's algorithm on the current route
+            // for this reason we set a distinguishable suppressed flag
+            contact->routingObject->suppressed = SuppressedFromNodeForYenLoop;
+        }
+    }
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -1431,113 +1307,101 @@ static void suppress_root_path_ipn_node(unsigned long long fromNode)
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int initialize_root_path(time_t current_time, ListElt *rootOfSpur, int isFirstSpurRoute)
-{
-	UniboContact *contact, *rootOfSpurContact, *prevContact;
-	ListElt *elt, *first;
-	ContactNote *work = NULL;
-	unsigned int owlt = 0, owltSum = 0;
-	float arrivalConfidence = 1.0F;
-	time_t transmitTime;
-	unsigned int hop = 0;
-	int result = 0;
-	PhaseOneSAP *sap = get_phase_one_sap(NULL);
+static int initialize_root_path(time_t current_time, ListElt *rootOfSpur, int isFirstSpurRoute) {
+    UniboContact *contact, *rootOfSpurContact, *prevContact;
+    ListElt *elt, *first;
+    ContactNote *work = NULL;
+    unsigned int owlt = 0, owltSum = 0;
+    float arrivalConfidence = 1.0F;
+    time_t transmitTime;
+    unsigned int hop = 0;
+    int result = 0;
+    PhaseOneSAP *sap = get_phase_one_sap(NULL);
 
-	rootOfSpurContact = (UniboContact*) rootOfSpur->data;
-	prevContact = &(sap->graphRoot);
-	first = rootOfSpur->list->first;
+    rootOfSpurContact = (UniboContact *)rootOfSpur->data;
+    prevContact = &(sap->graphRoot);
+    first = rootOfSpur->list->first;
 
-	elt = first;
-	while (elt != NULL)
-	{
-		contact = (UniboContact*) elt->data;
+    elt = first;
+    while (elt != NULL) {
+        contact = (UniboContact *)elt->data;
 
-		if (elt == first)
-		{
-			transmitTime = (contact->fromTime > current_time) ? contact->fromTime : current_time;
-		}
-		else
-		{
-			//work is referred to the previous contact
-			transmitTime =
-					(contact->fromTime > work->arrivalTime) ? contact->fromTime : work->arrivalTime;
-		}
+        if (elt == first) {
+            transmitTime = (contact->fromTime > current_time) ? contact->fromTime : current_time;
+        } else {
+            // work is referred to the previous contact
+            transmitTime =
+                (contact->fromTime > work->arrivalTime) ? contact->fromTime : work->arrivalTime;
+        }
 
-		work = contact->routingObject;
-		owlt = work->owlt; //initialize with the work->owlt
+        work = contact->routingObject;
+        owlt = work->owlt; // initialize with the work->owlt
 
-		/*
-		 * if(transmitTime > contact->toTime) == true ???
-		 *
-		 * My current choice: use the return value of this function,
-		 * stop the Yen's algorithm and choose a route from the Yen's "list B".
-		 *
-		 */
-		if (transmitTime > contact->toTime)
-		{
-			result = -2;
-			elt = NULL;
-			verbose_debug_printf("The transmit time is greater than the arrivalTime\n");
-		}
-		// in phase one we search the range ALWAYS at the start time of the contact
-		// this depends on the destination's neighbors management.
-		// Search the range only if you haven't searched it previously.
-		else if (work->rangeFlag == RangeNotFound ||
-				(work->rangeFlag == RangeNotSearched && get_applicable_range(contact->fromNode, contact->toNode, contact->fromTime, &owlt) < 0))
-		{
-			work->rangeFlag = RangeNotFound;
-			result = -1;
-			elt = NULL;
-			verbose_debug_printf("Range not found.\n");
-		}
-		else
-		{
-			//Ok, range found
-			work->owlt = owlt;
-			work->rangeFlag = RangeFound;
+        /*
+         * if(transmitTime > contact->toTime) == true ???
+         *
+         * My current choice: use the return value of this function,
+         * stop the Yen's algorithm and choose a route from the Yen's "list B".
+         *
+         */
+        if (transmitTime > contact->toTime) {
+            result = -2;
+            elt = NULL;
+            verbose_debug_printf("The transmit time is greater than the arrivalTime\n");
+        }
+        // in phase one we search the range ALWAYS at the start time of the contact
+        // this depends on the destination's neighbors management.
+        // Search the range only if you haven't searched it previously.
+        else if (work->rangeFlag == RangeNotFound ||
+                 (work->rangeFlag == RangeNotSearched &&
+                  get_applicable_range(contact->fromNode, contact->toNode, contact->fromTime,
+                                       &owlt) < 0)) {
+            work->rangeFlag = RangeNotFound;
+            result = -1;
+            elt = NULL;
+            verbose_debug_printf("Range not found.\n");
+        } else {
+            // Ok, range found
+            work->owlt = owlt;
+            work->rangeFlag = RangeFound;
 
-			owlt += ((MAX_SPEED_MPH / 3600) * owlt) / 186282;
-			work->arrivalTime = transmitTime + owlt;
-			owltSum += owlt;
-			work->owltSum = owltSum;
-			arrivalConfidence *= contact->confidence;
-			work->arrivalConfidence = arrivalConfidence;
-			hop += 1;
-			work->hopCount = hop;
-			work->predecessor = prevContact;
-			prevContact = contact;
+            owlt += ((MAX_SPEED_MPH / 3600) * owlt) / 186282;
+            work->arrivalTime = transmitTime + owlt;
+            owltSum += owlt;
+            work->owltSum = owltSum;
+            arrivalConfidence *= contact->confidence;
+            work->arrivalConfidence = arrivalConfidence;
+            hop += 1;
+            work->hopCount = hop;
+            work->predecessor = prevContact;
+            prevContact = contact;
 
-			//This contacts will be suppressed also for the next spur routes
-			work->suppressed = SuppressedFromNodeForYenLoop;
+            // This contacts will be suppressed also for the next spur routes
+            work->suppressed = SuppressedFromNodeForYenLoop;
 
-			if (contact != rootOfSpurContact) //Important check
-			{
-				elt = elt->next;
-				if(isFirstSpurRoute)
-				{
-					// Only for the first spur route, for the other spur routes
-					// the root path ipn nodes are already excluded (except the root vertex
-					// that we exclude in the "else" condition)
-					suppress_root_path_ipn_node(contact->fromNode);
-				}
-			}
-			else
-			{
-				elt = NULL;
-				// suppress the root vertex node
-				suppress_root_path_ipn_node(contact->fromNode);
-			}
-		}
+            if (contact != rootOfSpurContact) // Important check
+            {
+                elt = elt->next;
+                if (isFirstSpurRoute) {
+                    // Only for the first spur route, for the other spur routes
+                    // the root path ipn nodes are already excluded (except the root vertex
+                    // that we exclude in the "else" condition)
+                    suppress_root_path_ipn_node(contact->fromNode);
+                }
+            } else {
+                elt = NULL;
+                // suppress the root vertex node
+                suppress_root_path_ipn_node(contact->fromNode);
+            }
+        }
+    }
 
-	}
+    if (result < 0) {
+        // don't compute a route from this root path
+        rootOfSpurContact->routingObject->arrivalTime = MAX_POSIX_TIME;
+    }
 
-	if (result < 0)
-	{
-		//don't compute a route from this root path
-		rootOfSpurContact->routingObject->arrivalTime = MAX_POSIX_TIME;
-	}
-
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -1569,64 +1433,55 @@ static int initialize_root_path(time_t current_time, ListElt *rootOfSpur, int is
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static void avoid_duplicate_routes(Node *terminusNode, ListElt *rootOfSpur)
-{
-	int stop = 0;
-	RtgObject *rtgObj = terminusNode->routingObject;
-	ListElt *elt, *temp, *rootPathContactElt;
-	UniboContact *suppressMe;
-	Route *route;
-	List hops;
+static void avoid_duplicate_routes(Node *terminusNode, ListElt *rootOfSpur) {
+    int stop = 0;
+    RtgObject *rtgObj = terminusNode->routingObject;
+    ListElt *elt, *temp, *rootPathContactElt;
+    UniboContact *suppressMe;
+    Route *route;
+    List hops;
 
-	for (elt = list_get_first_elt(rtgObj->selectedRoutes); elt != NULL; elt = elt->next)
-	{
-		route = (Route*) elt->data;
+    for (elt = list_get_first_elt(rtgObj->selectedRoutes); elt != NULL; elt = elt->next) {
+        route = (Route *)elt->data;
 
-		if (rootOfSpur == NULL)
-		{
-			temp = list_get_first_elt(route->hops);
-			suppressMe = (UniboContact*) temp->data;
-			if(suppressMe->routingObject->suppressed == DijkstraNotSuppressed) //just for safety
-			{
-				suppressMe->routingObject->suppressed = DijkstraSuppressed;
-			}
-		}
-		else
-		{
-			hops = rootOfSpur->list;
-			stop = 0;
-			rootPathContactElt = list_get_first_elt(hops);
-			for (temp = list_get_first_elt(route->hops); temp != NULL && !stop; temp = temp->next)
-			{
-				if (temp->data == rootPathContactElt->data) //same contact
-				{
-					if (rootPathContactElt == rootOfSpur) //same root path
-					{
-						if (temp->next != NULL)
-						{
-							suppressMe = (UniboContact*) temp->next->data; //suppress next contact
-							if(suppressMe->routingObject->suppressed == DijkstraNotSuppressed) //just for safety
-							{
-								suppressMe->routingObject->suppressed = DijkstraSuppressed;
-							}
-						}
-						stop = 1;
-					}
-					else //same partial root path
-					{
-						rootPathContactElt = rootPathContactElt->next;
-					}
-				}
-				else //different root path
-				{
-					stop = 1;
-				}
-			}
-		}
+        if (rootOfSpur == NULL) {
+            temp = list_get_first_elt(route->hops);
+            suppressMe = (UniboContact *)temp->data;
+            if (suppressMe->routingObject->suppressed == DijkstraNotSuppressed) // just for safety
+            {
+                suppressMe->routingObject->suppressed = DijkstraSuppressed;
+            }
+        } else {
+            hops = rootOfSpur->list;
+            stop = 0;
+            rootPathContactElt = list_get_first_elt(hops);
+            for (temp = list_get_first_elt(route->hops); temp != NULL && !stop; temp = temp->next) {
+                if (temp->data == rootPathContactElt->data) // same contact
+                {
+                    if (rootPathContactElt == rootOfSpur) // same root path
+                    {
+                        if (temp->next != NULL) {
+                            suppressMe = (UniboContact *)temp->next->data; // suppress next contact
+                            if (suppressMe->routingObject->suppressed ==
+                                DijkstraNotSuppressed) // just for safety
+                            {
+                                suppressMe->routingObject->suppressed = DijkstraSuppressed;
+                            }
+                        }
+                        stop = 1;
+                    } else // same partial root path
+                    {
+                        rootPathContactElt = rootPathContactElt->next;
+                    }
+                } else // different root path
+                {
+                    stop = 1;
+                }
+            }
+        }
+    }
 
-	}
-
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -1655,29 +1510,26 @@ static void avoid_duplicate_routes(Node *terminusNode, ListElt *rootOfSpur)
  *  -------- | --------------- |  -----------------------------------------------
  *  06/05/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-void remove_neighbor_from_known_routes(List knownRoutes, unsigned long long neighbor)
-{
-	Route *route;
-	ListElt *elt, *next;
+void remove_neighbor_from_known_routes(List knownRoutes, unsigned long long neighbor) {
+    Route *route;
+    ListElt *elt, *next;
 
-	elt = knownRoutes->first;
-	while(elt != NULL)
-	{
-		next = elt->next;
-		if(elt->data != NULL)
-		{
-			route = (Route *) elt->data;
-			if(route->neighbor == neighbor)
-			{
-				delete_cgr_route(route);
-//				verbose_debug_printf("Remove from knownRoutes (neighbor: %llu)...", neighbor);
-			}
-		}
+    elt = knownRoutes->first;
+    while (elt != NULL) {
+        next = elt->next;
+        if (elt->data != NULL) {
+            route = (Route *)elt->data;
+            if (route->neighbor == neighbor) {
+                delete_cgr_route(route);
+                //				verbose_debug_printf("Remove from knownRoutes (neighbor:
+                //%llu)...", neighbor);
+            }
+        }
 
-		elt = next;
-	}
+        elt = next;
+    }
 
-	return;
+    return;
 }
 
 /******************************************************************************
@@ -1723,72 +1575,55 @@ void remove_neighbor_from_known_routes(List knownRoutes, unsigned long long neig
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int compute_spur_route(time_t current_time, Route *fromRoute, int isFirstSpurRoute, ListElt *rootOfSpur, Node *terminusNode,
-		Route *resultRoute)
-{
-	int result = 0;
-	UniboContact *rootOfSpurContact;
-	PhaseOneSAP *sap = get_phase_one_sap(NULL);
+static int compute_spur_route(time_t current_time, Route *fromRoute, int isFirstSpurRoute,
+                              ListElt *rootOfSpur, Node *terminusNode, Route *resultRoute) {
+    int result = 0;
+    UniboContact *rootOfSpurContact;
+    PhaseOneSAP *sap = get_phase_one_sap(NULL);
 
-	if(isFirstSpurRoute)
-	{
-		if(!sap->graphCleaned)
-		{
-			// first time in the current call
-			clear_work_areas(ClearTotally);
-		}
-		else
-		{
-			// first time in the current Yen's algorithm
-			clear_work_areas(ClearPartially);
-		}
-	}
-	else
-	{
-		clear_work_areas(ClearYen);
-	}
+    if (isFirstSpurRoute) {
+        if (!sap->graphCleaned) {
+            // first time in the current call
+            clear_work_areas(ClearTotally);
+        } else {
+            // first time in the current Yen's algorithm
+            clear_work_areas(ClearPartially);
+        }
+    } else {
+        clear_work_areas(ClearYen);
+    }
 
-	if (rootOfSpur == NULL)
-	{
-		rootOfSpurContact = &(sap->graphRoot);
-	}
-	else
-	{
-		rootOfSpurContact = (UniboContact*) rootOfSpur->data;
+    if (rootOfSpur == NULL) {
+        rootOfSpurContact = &(sap->graphRoot);
+    } else {
+        rootOfSpurContact = (UniboContact *)rootOfSpur->data;
 
-		if (initialize_root_path(current_time, rootOfSpur, isFirstSpurRoute) < 0)
-		{
-			result = -3; //the root path can't be used
-		}
-	}
+        if (initialize_root_path(current_time, rootOfSpur, isFirstSpurRoute) < 0) {
+            result = -3; // the root path can't be used
+        }
+    }
 
-	if (result == 0)
-	{
-		avoid_duplicate_routes(terminusNode, rootOfSpur);
+    if (result == 0) {
+        avoid_duplicate_routes(terminusNode, rootOfSpur);
 
-		result = dijkstra_search(rootOfSpurContact, terminusNode->nodeNbr, resultRoute);
+        result = dijkstra_search(rootOfSpurContact, terminusNode->nodeNbr, resultRoute);
 
-		if (result == 0)
-		{
+        if (result == 0) {
 #if (MAX_DIJKSTRA_ROUTES != 1)
-			if (resultRoute->neighbor == fromRoute->neighbor)
-			{
+            if (resultRoute->neighbor == fromRoute->neighbor) {
 #endif
-				resultRoute->citationToFather = list_insert_last(fromRoute->children, resultRoute);
-				if (resultRoute->citationToFather == NULL)
-				{
-					result = -2;
-				}
+                resultRoute->citationToFather = list_insert_last(fromRoute->children, resultRoute);
+                if (resultRoute->citationToFather == NULL) {
+                    result = -2;
+                }
 
 #if (MAX_DIJKSTRA_ROUTES != 1)
-			}
+            }
 #endif
+        }
+    }
 
-		}
-	}
-
-	return result;
-
+    return result;
 }
 
 /******************************************************************************
@@ -1835,170 +1670,141 @@ static int compute_spur_route(time_t current_time, Route *fromRoute, int isFirst
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int compute_all_spurs(Route *fromRoute, Node *terminusNode, ListElt *upperBound, int *allNeighborsFound)
-{
+static int compute_all_spurs(Route *fromRoute, Node *terminusNode, ListElt *upperBound,
+                             int *allNeighborsFound) {
 
-	int result = 0, stop = 0;
-	int ok, created = 0;
-	int isFirstSpurRoute;
-	ListElt *rootOfNextSpur, *rootOfSpur, *elt = NULL;
-	Route *last_computed_route = NULL;
-	RtgObject *rtgObj = NULL;
-	unsigned long long *current = NULL;
-	ListElt *foundElt = NULL;
-	int otherNeighbor = 0;
-	PhaseOneSAP *sap = get_phase_one_sap(NULL);
-	time_t current_time = get_current_time();
+    int result = 0, stop = 0;
+    int ok, created = 0;
+    int isFirstSpurRoute;
+    ListElt *rootOfNextSpur, *rootOfSpur, *elt = NULL;
+    Route *last_computed_route = NULL;
+    RtgObject *rtgObj = NULL;
+    unsigned long long *current = NULL;
+    ListElt *foundElt = NULL;
+    int otherNeighbor = 0;
+    PhaseOneSAP *sap = get_phase_one_sap(NULL);
+    time_t current_time = get_current_time();
 
-	stop = 0;
-	*allNeighborsFound = 0;
+    stop = 0;
+    *allNeighborsFound = 0;
 
-	rootOfSpur = fromRoute->rootOfSpur;
+    rootOfSpur = fromRoute->rootOfSpur;
 
-	if (fromRoute->rootOfSpur == NULL)
-	{
-		// Only for a route computed from the graph root (so rootOfSpur is NULL)
-		for (elt = sap->excludedNeighbors->first; elt != NULL && !stop; elt = elt->next)
-		{
-			current = (unsigned long long*) elt->data;
-			if(current != NULL && *current == fromRoute->neighbor)
-			{
-				//remove temporarily the neighbor from the excluded list
-				foundElt = elt;
-				elt->data = NULL;
-				stop = 1;
-			}
-		}
+    if (fromRoute->rootOfSpur == NULL) {
+        // Only for a route computed from the graph root (so rootOfSpur is NULL)
+        for (elt = sap->excludedNeighbors->first; elt != NULL && !stop; elt = elt->next) {
+            current = (unsigned long long *)elt->data;
+            if (current != NULL && *current == fromRoute->neighbor) {
+                // remove temporarily the neighbor from the excluded list
+                foundElt = elt;
+                elt->data = NULL;
+                stop = 1;
+            }
+        }
 
-		rootOfNextSpur = list_get_first_elt(fromRoute->hops);
-	}
-	else
-	{
-		rootOfNextSpur = rootOfSpur->next;
-	}
+        rootOfNextSpur = list_get_first_elt(fromRoute->hops);
+    } else {
+        rootOfNextSpur = rootOfSpur->next;
+    }
 
-	rtgObj = terminusNode->routingObject;
-	created = 0;
-	stop = 0;
-	result = 0;
-	isFirstSpurRoute = 1;
+    rtgObj = terminusNode->routingObject;
+    created = 0;
+    stop = 0;
+    result = 0;
+    isFirstSpurRoute = 1;
 
-	while (!stop)
-	{
-		if (!created)
-		{
-			last_computed_route = create_cgr_route();
-			created = 1;
-		}
-		if (last_computed_route == NULL)
-		{
-			result = -2;
-			stop = 1;
-		}
-		else
-		{
-			otherNeighbor = 0;
+    while (!stop) {
+        if (!created) {
+            last_computed_route = create_cgr_route();
+            created = 1;
+        }
+        if (last_computed_route == NULL) {
+            result = -2;
+            stop = 1;
+        } else {
+            otherNeighbor = 0;
 
-			ok = compute_spur_route(current_time, fromRoute, isFirstSpurRoute, rootOfSpur, terminusNode, last_computed_route);
-			isFirstSpurRoute = 0;
+            ok = compute_spur_route(current_time, fromRoute, isFirstSpurRoute, rootOfSpur,
+                                    terminusNode, last_computed_route);
+            isFirstSpurRoute = 0;
 
-			if (ok == 0)
-			{
-				result++;
+            if (ok == 0) {
+                result++;
 #if (MAX_DIJKSTRA_ROUTES == 1)
-				if (insert_known_route(rtgObj, last_computed_route) < 0)
-				{
-					result = -2;
-					stop = 1;
-				}
+                if (insert_known_route(rtgObj, last_computed_route) < 0) {
+                    result = -2;
+                    stop = 1;
+                }
 
 #else
-				if (last_computed_route->neighbor == fromRoute->neighbor)
-				{
-					if (insert_known_route(rtgObj, last_computed_route) < 0)
-					{
-						result = -2;
-						stop = 1;
-					}
-				}
-				else
-				{
-					// --------- DISCOVERED ROUTE FROM NEW NEIGHBOR ---------
-					//New neighbor, add route directly in Yen's "list A"
-					//Always insert as first in selectedRoutes
-					if (insert_selected_route(rtgObj, last_computed_route) == 0)
-					{
-						debug_printf("Discovered route from new neighbor (%llu).", last_computed_route->neighbor);
-						otherNeighbor = 1;
-						if (exclude_current_neighbor(last_computed_route) < 0)
-						{
-							result = -2;
-							stop = 1;
-						}
-						// just to avoid future duplicate routes
-						remove_neighbor_from_known_routes(rtgObj->knownRoutes, last_computed_route->neighbor);
-					}
-					else
-					{
-						result = -2;
-						stop = 1;
-					}
-				}
+                if (last_computed_route->neighbor == fromRoute->neighbor) {
+                    if (insert_known_route(rtgObj, last_computed_route) < 0) {
+                        result = -2;
+                        stop = 1;
+                    }
+                } else {
+                    // --------- DISCOVERED ROUTE FROM NEW NEIGHBOR ---------
+                    // New neighbor, add route directly in Yen's "list A"
+                    // Always insert as first in selectedRoutes
+                    if (insert_selected_route(rtgObj, last_computed_route) == 0) {
+                        debug_printf("Discovered route from new neighbor (%llu).",
+                                     last_computed_route->neighbor);
+                        otherNeighbor = 1;
+                        if (exclude_current_neighbor(last_computed_route) < 0) {
+                            result = -2;
+                            stop = 1;
+                        }
+                        // just to avoid future duplicate routes
+                        remove_neighbor_from_known_routes(rtgObj->knownRoutes,
+                                                          last_computed_route->neighbor);
+                    } else {
+                        result = -2;
+                        stop = 1;
+                    }
+                }
 #endif
 
-				if (result != -2) //Success case
-				{
-					created = 0;
-				}
-			}
-			else if (ok == -2) //MWITHDRAW error
-			{
-				result = -2;
-				stop = 1;
-			}
-			else if (ok == -3) //Root path can't be used
-			{
-				stop = 1;
-				verbose_debug_printf("Yen's algorithm must be stopped for the current route.");
-			}
-			else if(rootOfSpur == NULL)
-			{
-				//We have a route for all neighbors
-				//Here we done a search from the graph's root and
-				//we didn't find a new route, so we are sure
-				//that there aren't route for other neighbors
-				*allNeighborsFound = 1;
-			}
+                if (result != -2) // Success case
+                {
+                    created = 0;
+                }
+            } else if (ok == -2) // MWITHDRAW error
+            {
+                result = -2;
+                stop = 1;
+            } else if (ok == -3) // Root path can't be used
+            {
+                stop = 1;
+                verbose_debug_printf("Yen's algorithm must be stopped for the current route.");
+            } else if (rootOfSpur == NULL) {
+                // We have a route for all neighbors
+                // Here we done a search from the graph's root and
+                // we didn't find a new route, so we are sure
+                // that there aren't route for other neighbors
+                *allNeighborsFound = 1;
+            }
 
-			if (!otherNeighbor)
-			{
-				rootOfSpur = rootOfNextSpur;
-				if (rootOfSpur != fromRoute->hops->last && rootOfSpur != upperBound)
-				{
-					rootOfNextSpur = rootOfNextSpur->next;
-				}
-				else
-				{
-					stop = 1;
-					//reached destination or upper bound
-				}
+            if (!otherNeighbor) {
+                rootOfSpur = rootOfNextSpur;
+                if (rootOfSpur != fromRoute->hops->last && rootOfSpur != upperBound) {
+                    rootOfNextSpur = rootOfNextSpur->next;
+                } else {
+                    stop = 1;
+                    // reached destination or upper bound
+                }
+            }
+        }
+    }
+    if (created) {
+        delete_cgr_route(last_computed_route);
+    }
 
-			}
+    if (foundElt != NULL) {
+        // re-include the neighbor in the excluded list
+        foundElt->data = current;
+    }
 
-		}
-	}
-	if (created)
-	{
-		delete_cgr_route(last_computed_route);
-	}
-
-	if (foundElt != NULL)
-	{
-		//re-include the neighbor in the excluded list
-		foundElt->data = current;
-	}
-
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -2042,70 +1848,58 @@ static int compute_all_spurs(Route *fromRoute, Node *terminusNode, ListElt *uppe
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int compute_another_route(Route *fromRoute, Node *terminusNode, int *allNeighborsFound)
-{
-	int result = -4, totComputed = 0, computedNow = 0;
-	Route *route;
-	RtgObject *rtgObj = terminusNode->routingObject;
-	ListElt *tempRootOfSpur;
+static int compute_another_route(Route *fromRoute, Node *terminusNode, int *allNeighborsFound) {
+    int result = -4, totComputed = 0, computedNow = 0;
+    Route *route;
+    RtgObject *rtgObj = terminusNode->routingObject;
+    ListElt *tempRootOfSpur;
 
-	*allNeighborsFound = 0;
+    *allNeighborsFound = 0;
 
-	if (fromRoute->spursComputed == 0)
-	{
-		if (fromRoute->children->length == 0)
-		{
+    if (fromRoute->spursComputed == 0) {
+        if (fromRoute->children->length == 0) {
 
-			//Only if this route hasn't children alive
-			totComputed = compute_all_spurs(fromRoute, terminusNode, NULL, allNeighborsFound);
-			computedNow = 1;
-		}
+            // Only if this route hasn't children alive
+            totComputed = compute_all_spurs(fromRoute, terminusNode, NULL, allNeighborsFound);
+            computedNow = 1;
+        }
 
-		if (totComputed >= 0)
-		{
-			fromRoute->spursComputed = 1;
-			result = 0;
+        if (totComputed >= 0) {
+            fromRoute->spursComputed = 1;
+            result = 0;
 
-			route = get_best_known_route(rtgObj, fromRoute->neighbor);
+            route = get_best_known_route(rtgObj, fromRoute->neighbor);
 
-			if(route == NULL && fromRoute->rootOfSpur != NULL)
-			{
-				// 0 route found to the neighbor but we started from rootOfSpur
-				// This must be done due to the use of the Lawler's modification to the Yen's algorithm
-				// Remember that this is time-dependent graph
-				tempRootOfSpur = fromRoute->rootOfSpur;
-				fromRoute->rootOfSpur = NULL;
-				result = compute_all_spurs(fromRoute, terminusNode, tempRootOfSpur, allNeighborsFound);
-				fromRoute->rootOfSpur = tempRootOfSpur;
+            if (route == NULL && fromRoute->rootOfSpur != NULL) {
+                // 0 route found to the neighbor but we started from rootOfSpur
+                // This must be done due to the use of the Lawler's modification to the Yen's
+                // algorithm Remember that this is time-dependent graph
+                tempRootOfSpur = fromRoute->rootOfSpur;
+                fromRoute->rootOfSpur = NULL;
+                result =
+                    compute_all_spurs(fromRoute, terminusNode, tempRootOfSpur, allNeighborsFound);
+                fromRoute->rootOfSpur = tempRootOfSpur;
 
-				if(result > 0)
-				{
-					route = get_best_known_route(rtgObj, fromRoute->neighbor);
-				}
-			}
+                if (result > 0) {
+                    route = get_best_known_route(rtgObj, fromRoute->neighbor);
+                }
+            }
 
-			if(result != -2)
-			{
-				result = move_route_from_known_to_selected(route);
-			}
+            if (result != -2) {
+                result = move_route_from_known_to_selected(route);
+            }
 
-			if (result == 0)
-			{
-				route->selectedFather = fromRoute;
-				fromRoute->selectedChild = route;
-			}
-			else if(result == -1 && computedNow == 0)
-			{
-				result = -3;
-			}
-		}
-		else
-		{
-			result = totComputed;
-		}
-
-	}
-	return result;
+            if (result == 0) {
+                route->selectedFather = fromRoute;
+                fromRoute->selectedChild = route;
+            } else if (result == -1 && computedNow == 0) {
+                result = -3;
+            }
+        } else {
+            result = totComputed;
+        }
+    }
+    return result;
 }
 
 /******************************************************************************
@@ -2145,107 +1939,94 @@ static int compute_another_route(Route *fromRoute, Node *terminusNode, int *allN
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int computeOtherRoutes(Node *terminusNode, List subsetComputedRoutes, long unsigned int missingNeighbors)
-{
-	int result = 0, computed = 0, stop = 0;
-	int yenPerformedCorrectly = 0, discoveredAllNeighbors = 0, updateNeighbors = 0;
-	long unsigned temp;
-	RtgObject *rtgObj = terminusNode->routingObject;
-	ListElt *elt, *next;
-	Route *currentRoute;
-	PhaseOneSAP *sap = get_phase_one_sap(NULL);
-	time_t current_time = get_current_time();
+static int computeOtherRoutes(Node *terminusNode, List subsetComputedRoutes,
+                              long unsigned int missingNeighbors) {
+    int result = 0, computed = 0, stop = 0;
+    int yenPerformedCorrectly = 0, discoveredAllNeighbors = 0, updateNeighbors = 0;
+    long unsigned temp;
+    RtgObject *rtgObj = terminusNode->routingObject;
+    ListElt *elt, *next;
+    Route *currentRoute;
+    PhaseOneSAP *sap = get_phase_one_sap(NULL);
+    time_t current_time = get_current_time();
 
-	if (!sap->knownRoutesUpdated && subsetComputedRoutes != NULL && subsetComputedRoutes->length > 0)
-	{
-		//Only one time for CGR call and only if I'm effectively calling the Yen's algorithm
-		//For all previously computed known routes
-		elt = rtgObj->knownRoutes->first;
-		while (elt != NULL)
-		{
-			next = elt->next;
-			currentRoute = (Route*) elt->data;
-			if (currentRoute->computedAtTime != current_time)
-			{
-				update_cost_values(current_time, currentRoute);
-			}
+    if (!sap->knownRoutesUpdated && subsetComputedRoutes != NULL &&
+        subsetComputedRoutes->length > 0) {
+        // Only one time for CGR call and only if I'm effectively calling the Yen's algorithm
+        // For all previously computed known routes
+        elt = rtgObj->knownRoutes->first;
+        while (elt != NULL) {
+            next = elt->next;
+            currentRoute = (Route *)elt->data;
+            if (currentRoute->computedAtTime != current_time) {
+                update_cost_values(current_time, currentRoute);
+            }
 
-			elt = next;
-		}
+            elt = next;
+        }
 
-		sap->knownRoutesUpdated = 1;
-	}
+        sap->knownRoutesUpdated = 1;
+    }
 
 #if (MAX_DIJKSTRA_ROUTES != 1)
-	if (!sap->alreadyExcluded)
-	{
-		if(exclude_all_neighbors_from_computed_routes(rtgObj->selectedRoutes) < 0)
-		{
-			result = -2;
-		}
+    if (!sap->alreadyExcluded) {
+        if (exclude_all_neighbors_from_computed_routes(rtgObj->selectedRoutes) < 0) {
+            result = -2;
+        }
 
-		sap->alreadyExcluded = 1;
-	}
+        sap->alreadyExcluded = 1;
+    }
 #endif
 
-	yenPerformedCorrectly = 0;
-	updateNeighbors = 0;
-	if (result != -2 && subsetComputedRoutes != NULL && subsetComputedRoutes->length > 0)
-	{
-		temp = rtgObj->selectedRoutes->length;
-		stop = 0;
+    yenPerformedCorrectly = 0;
+    updateNeighbors = 0;
+    if (result != -2 && subsetComputedRoutes != NULL && subsetComputedRoutes->length > 0) {
+        temp = rtgObj->selectedRoutes->length;
+        stop = 0;
 
-		debug_printf("Try Yen's algorithm on %lu routes", subsetComputedRoutes->length);
+        debug_printf("Try Yen's algorithm on %lu routes", subsetComputedRoutes->length);
 
-		for(elt = subsetComputedRoutes->first; elt != NULL && !stop; elt = elt->next)
-		{
-			currentRoute = (Route*) elt->data;
-			if (currentRoute != NULL)
-			{
-				computed = compute_another_route(currentRoute, terminusNode, &discoveredAllNeighbors);
+        for (elt = subsetComputedRoutes->first; elt != NULL && !stop; elt = elt->next) {
+            currentRoute = (Route *)elt->data;
+            if (currentRoute != NULL) {
+                computed =
+                    compute_another_route(currentRoute, terminusNode, &discoveredAllNeighbors);
 
-				if (computed == -2)
-				{
-					stop = 1;
-					result = -2;
-				}
-				else if(computed != -3 && computed != -4)
-				{
-					//at least one time
-					yenPerformedCorrectly = 1;
-				}
+                if (computed == -2) {
+                    stop = 1;
+                    result = -2;
+                } else if (computed != -3 && computed != -4) {
+                    // at least one time
+                    yenPerformedCorrectly = 1;
+                }
 
-				if(discoveredAllNeighbors == 1)
-				{
-					updateNeighbors = 1;
-				}
-			}
-		}
+                if (discoveredAllNeighbors == 1) {
+                    updateNeighbors = 1;
+                }
+            }
+        }
 
-		if (result != -2)
-		{
-			//set result to the new computed routes number
-			result = (int) (rtgObj->selectedRoutes->length - temp);
+        if (result != -2) {
+            // set result to the new computed routes number
+            result = (int)(rtgObj->selectedRoutes->length - temp);
 
-			if(updateNeighbors)
-			{
-				exclude_all_neighbors_from_computed_routes(rtgObj->selectedRoutes);
-			}
-		}
+            if (updateNeighbors) {
+                exclude_all_neighbors_from_computed_routes(rtgObj->selectedRoutes);
+            }
+        }
+    }
 
-	}
+    if (result != -2 && missingNeighbors > 0 && !yenPerformedCorrectly) {
+        // Yen doesn't performed and missing neighbors
 
-	if(result != -2 && missingNeighbors > 0 && !yenPerformedCorrectly)
-	{
-		// Yen doesn't performed and missing neighbors
+        // phase two want a route for each "missing" neighbor
+        // get at most one route for each "missing" neighbor
+        debug_printf("Try Dijkstra's algorithm to find a route for %lu neighbors",
+                     missingNeighbors);
+        result = computeOneRoutePerNeighbor(terminusNode, missingNeighbors);
+    }
 
-		//phase two want a route for each "missing" neighbor
-		//get at most one route for each "missing" neighbor
-		debug_printf("Try Dijkstra's algorithm to find a route for %lu neighbors", missingNeighbors);
-		result = computeOneRoutePerNeighbor(terminusNode, missingNeighbors);
-	}
-
-	return result;
+    return result;
 }
 
 #if (ADD_COMPUTED_ROUTE_TO_INTERMEDIATE_NODES == 1)
@@ -2282,55 +2063,45 @@ static int computeOtherRoutes(Node *terminusNode, List subsetComputedRoutes, lon
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int add_route(Node *node, ListElt *lastHopToNode, unsigned long long neighbor)
-{
-	int result = -1, found;
-	UniboContact *finalContact;
-	Route *route;
-	RtgObject *rtgObj = node->routingObject;
-	ListElt *elt;
+static int add_route(Node *node, ListElt *lastHopToNode, unsigned long long neighbor) {
+    int result = -1, found;
+    UniboContact *finalContact;
+    Route *route;
+    RtgObject *rtgObj = node->routingObject;
+    ListElt *elt;
 
-	found = 0;
-	for (elt = rtgObj->selectedRoutes->first; elt != NULL && !found; elt = elt->next)
-	{
-		route = (Route*) elt->data;
+    found = 0;
+    for (elt = rtgObj->selectedRoutes->first; elt != NULL && !found; elt = elt->next) {
+        route = (Route *)elt->data;
 
-		if (route->neighbor == neighbor)
-		{
-			found = 1;
-		}
-	}
+        if (route->neighbor == neighbor) {
+            found = 1;
+        }
+    }
 
-	if (!found)
-	{
-		route = create_cgr_route();
+    if (!found) {
+        route = create_cgr_route();
 
-		if (route != NULL)
-		{
-			finalContact = (UniboContact*) lastHopToNode->data;
-			result = populate_route(finalContact, &graphRoot, route);
+        if (route != NULL) {
+            finalContact = (UniboContact *)lastHopToNode->data;
+            result = populate_route(finalContact, &graphRoot, route);
 
-			if (result == 0)
-			{
-				//Always insert as first in selectedRoutes!!!
-				if(insert_selected_route(rtgObj, route) < 0)
-				{
-					result = -2;
-				}
-			}
+            if (result == 0) {
+                // Always insert as first in selectedRoutes!!!
+                if (insert_selected_route(rtgObj, route) < 0) {
+                    result = -2;
+                }
+            }
 
-			if (result != 0)
-			{
-				delete_cgr_route(route);
-			}
-		}
-		else
-		{
-			result = -2;
-		}
-	}
+            if (result != 0) {
+                delete_cgr_route(route);
+            }
+        } else {
+            result = -2;
+        }
+    }
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -2366,42 +2137,35 @@ static int add_route(Node *node, ListElt *lastHopToNode, unsigned long long neig
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static int add_computed_route_to_intermediate_nodes(Route *route)
-{
-	ListElt *elt, *last;
-	UniboContact *current;
-	Node *currentNode;
-	int result = 0, count = 0;
-	unsigned long long neighbor;
+static int add_computed_route_to_intermediate_nodes(Route *route) {
+    ListElt *elt, *last;
+    UniboContact *current;
+    Node *currentNode;
+    int result = 0, count = 0;
+    unsigned long long neighbor;
 
-	last = route->hops->last;
-	current = (UniboContact*) route->hops->first->data;
-	neighbor = current->toNode;
+    last = route->hops->last;
+    current = (UniboContact *)route->hops->first->data;
+    neighbor = current->toNode;
 
-	for (elt = route->hops->first; elt != last && result != -2; elt = elt->next)
-	{
-		current = (UniboContact*) elt->data;
-		currentNode = add_node(current->toNode);
-		if (currentNode != NULL)
-		{
-			result = add_route(currentNode, elt, neighbor);
-			if (result == 0)
-			{
-				count++;
-			}
-		}
-		else
-		{
-			result = -2;
-		}
-	}
+    for (elt = route->hops->first; elt != last && result != -2; elt = elt->next) {
+        current = (UniboContact *)elt->data;
+        currentNode = add_node(current->toNode);
+        if (currentNode != NULL) {
+            result = add_route(currentNode, elt, neighbor);
+            if (result == 0) {
+                count++;
+            }
+        } else {
+            result = -2;
+        }
+    }
 
-	if (result != -2)
-	{
-		result = count;
-	}
+    if (result != -2) {
+        result = count;
+    }
 
-	return result;
+    return result;
 }
 #endif
 
@@ -2422,9 +2186,8 @@ static int add_computed_route_to_intermediate_nodes(Route *route)
  * \retval      -2	MWITHDRAW error
  *
  * \param[in]  *terminusNode     The Node (destination) for which we are computing the routes
- * \param[in]  missingNeighbors  The number of routes to compute (one route for each missing neighbor)
- *                               MUST be greater than 0.
- * \warning terminusNode doesn't have to be NULL.
+ * \param[in]  missingNeighbors  The number of routes to compute (one route for each missing
+ *neighbor) MUST be greater than 0. \warning terminusNode doesn't have to be NULL.
  *
  * \par Revision History:
  *
@@ -2433,138 +2196,114 @@ static int add_computed_route_to_intermediate_nodes(Route *route)
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *  27/04/20 | L. Persampieri  |   Refactoring
  *****************************************************************************/
-static int computeOneRoutePerNeighbor(Node *terminusNode, long unsigned int missingNeighbors)
-{
-	int result, stop = 0;
-	int ok;
-	Route *route;
-	RtgObject *rtgObj;
-	ClearRule rule;
-	PhaseOneSAP *sap = get_phase_one_sap(NULL);
+static int computeOneRoutePerNeighbor(Node *terminusNode, long unsigned int missingNeighbors) {
+    int result, stop = 0;
+    int ok;
+    Route *route;
+    RtgObject *rtgObj;
+    ClearRule rule;
+    PhaseOneSAP *sap = get_phase_one_sap(NULL);
 
-	/*
-	 * Every time we compute a route we add the neighbor to the excluded list,
-	 * so the next routes branches off from another neighbor. At the first
-	 * dijkstra's failed search we have computed the routes for all neighbors
-	 * that have a path to destination.
-	 */
+    /*
+     * Every time we compute a route we add the neighbor to the excluded list,
+     * so the next routes branches off from another neighbor. At the first
+     * dijkstra's failed search we have computed the routes for all neighbors
+     * that have a path to destination.
+     */
 
-	result = 0;
-	rtgObj = terminusNode->routingObject;
+    result = 0;
+    rtgObj = terminusNode->routingObject;
 
-	// Only for the first time that we compute routes for the destination
-	// Note: the computeOtherRoutes function excluded all the neighbors
-	// for which we already have a route and set alreadyExcluded to 1
-	if(!(sap->alreadyExcluded))
-	{
-		result = exclude_all_neighbors_from_computed_routes(rtgObj->selectedRoutes);
+    // Only for the first time that we compute routes for the destination
+    // Note: the computeOtherRoutes function excluded all the neighbors
+    // for which we already have a route and set alreadyExcluded to 1
+    if (!(sap->alreadyExcluded)) {
+        result = exclude_all_neighbors_from_computed_routes(rtgObj->selectedRoutes);
 
-		if(result < 0)
-		{
-			stop = 1;
-		}
-		else
-		{
-			result = 0;
-		}
+        if (result < 0) {
+            stop = 1;
+        } else {
+            result = 0;
+        }
 
-		sap->alreadyExcluded = 1;
+        sap->alreadyExcluded = 1;
+    }
+    /*
+     * We have excluded all neighbors for whom we already have at least a route
+     *
+     * For each new route found (necessarily from a new neighbor) we exclude the new neighbor
+     *
+     */
 
-	}
-	/*
-	 * We have excluded all neighbors for whom we already have at least a route
-	 *
-	 * For each new route found (necessarily from a new neighbor) we exclude the new neighbor
-	 *
-	 */
+    ok = 0;
+    if (!(sap->graphCleaned)) {
+        // first time during the current call
+        rule = ClearTotally;
+    } else {
+        rule = ClearPartially;
+    }
 
-	ok = 0;
-	if(!(sap->graphCleaned))
-	{
-		// first time during the current call
-		rule = ClearTotally;
-	}
-	else
-	{
-		rule = ClearPartially;
-	}
+    if (missingNeighbors > 0) {
+        while (!stop) {
+            route = create_cgr_route();
+            if (route != NULL) {
+                clear_work_areas(rule);
 
-	if(missingNeighbors > 0)
-	{
-		while (!stop)
-		{
-			route = create_cgr_route();
-			if (route != NULL)
-			{
-				clear_work_areas(rule);
+                ok = dijkstra_search(&(sap->graphRoot), terminusNode->nodeNbr, route);
 
-				ok = dijkstra_search(&(sap->graphRoot), terminusNode->nodeNbr, route);
+                rule = ClearPartially; // for each following Dijkstra's search
 
-				rule = ClearPartially; //for each following Dijkstra's search
+                if (ok == 0) {
+                    route->rootOfSpur = NULL;
+                    // Always insert as first element in selectedRoutes
+                    if (insert_selected_route(rtgObj, route) == 0) {
+                        result++;
+                        remove_neighbor_from_known_routes(rtgObj->knownRoutes, route->neighbor);
 
-				if (ok == 0)
-				{
-					route->rootOfSpur = NULL;
-					//Always insert as first element in selectedRoutes
-					if (insert_selected_route(rtgObj, route) == 0)
-					{
-						result++;
-						remove_neighbor_from_known_routes(rtgObj->knownRoutes, route->neighbor);
-
-						if (result >= missingNeighbors)
-						{
-							stop = 1;
-						}
-						// Necessarily a new neighbor
-						if (exclude_current_neighbor(route) < 0)
-						{
-							result = -2;
-							stop = 1; //I leave the loop
-						}
+                        if (result >= missingNeighbors) {
+                            stop = 1;
+                        }
+                        // Necessarily a new neighbor
+                        if (exclude_current_neighbor(route) < 0) {
+                            result = -2;
+                            stop = 1; // I leave the loop
+                        }
 #if (ADD_COMPUTED_ROUTE_TO_INTERMEDIATE_NODES == 1)
-						if(add_computed_route_to_intermediate_nodes(route) < 0)
-						{
-							result = -2;
-							stop = 1; //I leave the loop
-						}
+                        if (add_computed_route_to_intermediate_nodes(route) < 0) {
+                            result = -2;
+                            stop = 1; // I leave the loop
+                        }
 #endif
-					}
-					else
-					{
-						delete_cgr_route(route);
-						stop = 1;
-						result = -2;
-					}
-				}
-				else if (ok == -1) //no more routes
-				{
-					delete_cgr_route(route);
-					stop = 1;
-				}
-				else //MWITHDRAW error
-				{
-					delete_cgr_route(route);
-					stop = 1;
-					result = -2;
-				}
-			}
-			else //MWITHDRAW error
-			{
-				result = -2;
-				stop = 1;
-			}
-		}
-	}
-	else
-	{
-		verbose_debug_printf("0 missing neighbors...");
-	}
+                    } else {
+                        delete_cgr_route(route);
+                        stop = 1;
+                        result = -2;
+                    }
+                } else if (ok == -1) // no more routes
+                {
+                    delete_cgr_route(route);
+                    stop = 1;
+                } else // MWITHDRAW error
+                {
+                    delete_cgr_route(route);
+                    stop = 1;
+                    result = -2;
+                }
+            } else // MWITHDRAW error
+            {
+                result = -2;
+                stop = 1;
+            }
+        }
+    } else {
+        verbose_debug_printf("0 missing neighbors...");
+    }
 
 #if (MAX_DIJKSTRA_ROUTES == 1)
-	free_list_elts(sap->excludedNeighbors);
+    free_list_elts(sap->excludedNeighbors);
 #endif
 
-	return result;
+    return result;
 }
 
 /******************************************************************************
@@ -2597,70 +2336,59 @@ static int computeOneRoutePerNeighbor(Node *terminusNode, long unsigned int miss
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-int computeRoutes(unsigned long regionNbr, Node *terminusNode, List subsetComputedRoutes, long unsigned int missingNeighbors)
-{
+int computeRoutes(unsigned long regionNbr, Node *terminusNode, List subsetComputedRoutes,
+                  long unsigned int missingNeighbors) {
 
-	int result = -1;
-	RtgObject *rtgObj = NULL;
-	PhaseOneSAP *sap = get_phase_one_sap(NULL);
+    int result = -1;
+    RtgObject *rtgObj = NULL;
+    PhaseOneSAP *sap = get_phase_one_sap(NULL);
 
-	record_phases_start_time(phaseOne);
+    record_phases_start_time(phaseOne);
 
-	debug_printf("Entry point phase one.");
+    debug_printf("Entry point phase one.");
 
-	if (missingNeighbors > 0 && terminusNode != NULL)
-	{
-		// Assumption: terminusNode is correctly initialized
+    if (missingNeighbors > 0 && terminusNode != NULL) {
+        // Assumption: terminusNode is correctly initialized
 
-		sap->regionNbr = regionNbr;
-		sap->destination = terminusNode->nodeNbr;
+        sap->regionNbr = regionNbr;
+        sap->destination = terminusNode->nodeNbr;
 
-		rtgObj = terminusNode->routingObject;
+        rtgObj = terminusNode->routingObject;
 
-			if (rtgObj->selectedRoutes->length == 0)
-			{
-				sap = get_phase_one_sap(NULL);
-				sap->knownRoutesUpdated = 1;
+        if (rtgObj->selectedRoutes->length == 0) {
+            sap = get_phase_one_sap(NULL);
+            sap->knownRoutesUpdated = 1;
 
-				//reset knownRoutes, all the selectedRoutes are expired
-				//I can't know who are the shortest path looking only
-				//in knownRoutes
-				clear_routes_list(rtgObj->knownRoutes); //reset the list
+            // reset knownRoutes, all the selectedRoutes are expired
+            // I can't know who are the shortest path looking only
+            // in knownRoutes
+            clear_routes_list(rtgObj->knownRoutes); // reset the list
 
-				result = computeOneRoutePerNeighbor(terminusNode, missingNeighbors);
+            result = computeOneRoutePerNeighbor(terminusNode, missingNeighbors);
 
-			}
-			else //Compute the next shortest path for each route in the subset
-			{
-				result = computeOtherRoutes(terminusNode, subsetComputedRoutes, missingNeighbors);
-			}
+        } else // Compute the next shortest path for each route in the subset
+        {
+            result = computeOtherRoutes(terminusNode, subsetComputedRoutes, missingNeighbors);
+        }
 
-		if (result != -2 && rtgObj->selectedRoutes->length == 0)
-		{
-			result = -1; // no routes to reach destination
-		}
-	}
-	else
-	{
-		result = -3;
-	}
+        if (result != -2 && rtgObj->selectedRoutes->length == 0) {
+            result = -1; // no routes to reach destination
+        }
+    } else {
+        result = -3;
+    }
 
-	if(result == -1)
-	{
-		debug_printf("No routes to destination");
-	}
-	else if(result >= 0)
-	{
-		debug_printf("New routes computed: %d", result);
-	}
-	else
-	{
-		debug_printf("Result -> %d", result);
-	}
+    if (result == -1) {
+        debug_printf("No routes to destination");
+    } else if (result >= 0) {
+        debug_printf("New routes computed: %d", result);
+    } else {
+        debug_printf("Result -> %d", result);
+    }
 
-	record_phases_stop_time(phaseOne);
+    record_phases_stop_time(phaseOne);
 
-	return result;
+    return result;
 }
 
 #if (LOG == 1)
@@ -2690,59 +2418,52 @@ int computeRoutes(unsigned long regionNbr, Node *terminusNode, List subsetComput
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-static void print_phase_one_route(FILE *file, Route *route, unsigned int num)
-{
-	ListElt *elt;
-	UniboContact *contact;
-	char temp[20];
-	Route *father;
+static void print_phase_one_route(FILE *file, Route *route, unsigned int num) {
+    ListElt *elt;
+    UniboContact *contact;
+    char temp[20];
+    Route *father;
 
-	/* If you have to work with very large numbers change all fields in %-20 */
+    /* If you have to work with very large numbers change all fields in %-20 */
 
-	if (file != NULL && route != NULL)
-	{
-		route->num = num;
-		father = get_route_father(route);
+    if (file != NULL && route != NULL) {
+        route->num = num;
+        father = get_route_father(route);
 
-		temp[0] = '\0';
-		if (father != NULL)
-		{
-			sprintf(temp, "%u)", father->num);
-		}
-		fprintf(file,
-				"\n%u) ComputedAtTime: %ld\n%-15s %-15s %-15s %-15s %-15s %-15s %-15s %-15s %-15s %s\n",
-				route->num, (long int) route->computedAtTime, "Neighbor", "FromTime", "ToTime",
-				"ArrivalTime", "OwltSum", "Confidence", "Children", "Father", "Hops", "SP");
-		fprintf(file, "%-15llu %-15ld %-15ld %-15ld %-15u %-15.2f %-15lu %-15s ", route->neighbor,
-				(long int) route->fromTime, (long int) route->toTime, (long int) route->arrivalTime,
-				route->owltSum, route->arrivalConfidence, route->children->length,
-				(father != NULL) ? temp : "no");
+        temp[0] = '\0';
+        if (father != NULL) {
+            sprintf(temp, "%u)", father->num);
+        }
+        fprintf(
+            file,
+            "\n%u) ComputedAtTime: %ld\n%-15s %-15s %-15s %-15s %-15s %-15s %-15s %-15s %-15s %s\n",
+            route->num, (long int)route->computedAtTime, "Neighbor", "FromTime", "ToTime",
+            "ArrivalTime", "OwltSum", "Confidence", "Children", "Father", "Hops", "SP");
+        fprintf(file, "%-15llu %-15ld %-15ld %-15ld %-15u %-15.2f %-15lu %-15s ", route->neighbor,
+                (long int)route->fromTime, (long int)route->toTime, (long int)route->arrivalTime,
+                route->owltSum, route->arrivalConfidence, route->children->length,
+                (father != NULL) ? temp : "no");
 
-		if (route->hops == NULL)
-		{
-			fprintf(file, "NULL\n");
-		}
-		else if (route->hops != NULL)
-		{
-			fprintf(file, "%-15lu %f\n%-15s %-15s %-15s %-15s %-15s %-15s %-15s %-15s %s\n",
-					route->hops->length, route->successProbability, "FromNode", "ToNode", "FromTime", "ToTime", "XmitRate",
-					"Confidence", "MTV[Bulk]", "MTV[Normal]", "MTV[Expedited]");
-			for (elt = route->hops->first; elt != NULL; elt = elt->next)
-			{
-				if (elt->data != NULL)
-				{
-					contact = (UniboContact*) elt->data;
-					fprintf(file,
-							"%-15llu %-15llu %-15ld %-15ld %-15lu %-10.2f%-5s %-15g %-15g %g\n",
-							contact->fromNode, contact->toNode, (long int) contact->fromTime,
-							(long int) contact->toTime, contact->xmitRate, contact->confidence,
-							(elt == route->rootOfSpur) ? " x" : "", contact->mtv[0],
-							contact->mtv[1], contact->mtv[2]);
-				}
-			}
-		}
-
-	}
+        if (route->hops == NULL) {
+            fprintf(file, "NULL\n");
+        } else if (route->hops != NULL) {
+            fprintf(file, "%-15lu %f\n%-15s %-15s %-15s %-15s %-15s %-15s %-15s %-15s %s\n",
+                    route->hops->length, route->successProbability, "FromNode", "ToNode",
+                    "FromTime", "ToTime", "XmitRate", "Confidence", "MTV[Bulk]", "MTV[Normal]",
+                    "MTV[Expedited]");
+            for (elt = route->hops->first; elt != NULL; elt = elt->next) {
+                if (elt->data != NULL) {
+                    contact = (UniboContact *)elt->data;
+                    fprintf(file,
+                            "%-15llu %-15llu %-15ld %-15ld %-15lu %-10.2f%-5s %-15g %-15g %g\n",
+                            contact->fromNode, contact->toNode, (long int)contact->fromTime,
+                            (long int)contact->toTime, contact->xmitRate, contact->confidence,
+                            (elt == route->rootOfSpur) ? " x" : "", contact->mtv[0],
+                            contact->mtv[1], contact->mtv[2]);
+                }
+            }
+        }
+    }
 }
 
 /******************************************************************************
@@ -2768,34 +2489,28 @@ static void print_phase_one_route(FILE *file, Route *route, unsigned int num)
  *  -------- | --------------- |  -----------------------------------------------
  *  30/01/20 | L. Persampieri  |   Initial Implementation and documentation.
  *****************************************************************************/
-void print_phase_one_routes(FILE *file, List computedRoutes)
-{
-	ListElt *elt;
-	unsigned int count = 1;
+void print_phase_one_routes(FILE *file, List computedRoutes) {
+    ListElt *elt;
+    unsigned int count = 1;
 
-	if(file != NULL)
-	{
+    if (file != NULL) {
 
-		fprintf(file,
-				"\n--------------------------------------------------------- PHASE ONE: COMPUTED ROUTES ----------------------------------------------------------\n");
-		if (computedRoutes != NULL && computedRoutes->length > 0)
-		{
-			for (elt = computedRoutes->last; elt != NULL; elt = elt->prev)
-			{
-				print_phase_one_route(file, (Route*) elt->data, count);
-				count++;
-			}
-		}
-		else
-		{
-			fprintf(file, "\n0 computed routes.\n");
-		}
-		fprintf(file,
-				"\n-----------------------------------------------------------------------------------------------------------------------------------------------\n");
+        fprintf(file,
+                "\n--------------------------------------------------------- PHASE ONE: COMPUTED "
+                "ROUTES ----------------------------------------------------------\n");
+        if (computedRoutes != NULL && computedRoutes->length > 0) {
+            for (elt = computedRoutes->last; elt != NULL; elt = elt->prev) {
+                print_phase_one_route(file, (Route *)elt->data, count);
+                count++;
+            }
+        } else {
+            fprintf(file, "\n0 computed routes.\n");
+        }
+        fprintf(file, "\n--------------------------------------------------------------------------"
+                      "---------------------------------------------------------------------\n");
 
-		debug_fflush(file);
-	}
+        debug_fflush(file);
+    }
 }
 
 #endif
-

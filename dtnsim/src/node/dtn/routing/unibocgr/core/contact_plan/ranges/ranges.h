@@ -50,28 +50,27 @@
 #define REVISABLE_RANGE 1
 #endif
 
-typedef struct
-{
-	/**
-	 * \brief Start time
-	 */
-	time_t fromTime;
-	/**
-	 * \brief End time
-	 */
-	time_t toTime;
-	/**
-	 * \brief Sender ipn node
-	 */
-	unsigned long long fromNode;
-	/**
-	 * \brief Receiver ipn node
-	 */
-	unsigned long long toNode;
-	/**
-	 * \brief One-Way-Light-Time
-	 */
-	unsigned int owlt;
+typedef struct {
+    /**
+     * \brief Start time
+     */
+    time_t fromTime;
+    /**
+     * \brief End time
+     */
+    time_t toTime;
+    /**
+     * \brief Sender ipn node
+     */
+    unsigned long long fromNode;
+    /**
+     * \brief Receiver ipn node
+     */
+    unsigned long long toNode;
+    /**
+     * \brief One-Way-Light-Time
+     */
+    unsigned int owlt;
 } Range;
 
 /**
@@ -79,23 +78,22 @@ typedef struct
  *        the range graph library.
  */
 typedef struct {
-	/**
-	 * \brief The range graph.
-	 */
-	Rbt *ranges;
-	/**
-	 * \brief The time when the next Range expires.
-	 */
-	time_t timeRangeToRemove;
+    /**
+     * \brief The range graph.
+     */
+    Rbt *ranges;
+    /**
+     * \brief The time when the next Range expires.
+     */
+    time_t timeRangeToRemove;
 } RangeGraphSAP;
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 extern int compare_ranges(void *first, void *second);
-extern void free_range(void*);
+extern void free_range(void *);
 RangeGraphSAP *get_range_graph_sap(RangeGraphSAP *newSap);
 
 extern int create_RangesGraph();
@@ -103,33 +101,36 @@ extern int create_RangesGraph();
 extern void removeExpiredRanges(time_t time);
 
 extern int add_range_to_graph(unsigned long long fromNode, unsigned long long toNode,
-		time_t fromTime, time_t toTime, unsigned int owlt);
+                              time_t fromTime, time_t toTime, unsigned int owlt);
 extern void remove_range_from_graph(time_t *fromTime, unsigned long long fromNode,
-		unsigned long long toNode);
+                                    unsigned long long toNode);
 extern void remove_range_elt_from_graph(Range *range);
 
-extern Range* get_range(unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
-		RbtNode **node);
-extern Range* get_first_range(RbtNode **node);
-extern Range* get_first_range_from_node(unsigned long long fromNodeNbr, RbtNode **node);
-extern Range* get_first_range_from_node_to_node(unsigned long long fromNodeNbr,
-		unsigned long long toNodeNbr, RbtNode **node);
-extern Range* get_next_range(RbtNode **node);
-extern Range* get_prev_range(RbtNode **node);
+extern Range *get_range(unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
+                        RbtNode **node);
+extern Range *get_first_range(RbtNode **node);
+extern Range *get_first_range_from_node(unsigned long long fromNodeNbr, RbtNode **node);
+extern Range *get_first_range_from_node_to_node(unsigned long long fromNodeNbr,
+                                                unsigned long long toNodeNbr, RbtNode **node);
+extern Range *get_next_range(RbtNode **node);
+extern Range *get_prev_range(RbtNode **node);
 extern int get_applicable_range(unsigned long long fromNode, unsigned long long toNode,
-		time_t targetTime, unsigned int *owltResult);
+                                time_t targetTime, unsigned int *owltResult);
 
 extern void reset_RangesGraph();
 extern void destroy_RangesGraph();
 
 #if (REVISABLE_RANGE)
-extern int revise_owlt(unsigned long long fromNode, unsigned long long toNode, time_t fromTime, unsigned int owlt);
+extern int revise_owlt(unsigned long long fromNode, unsigned long long toNode, time_t fromTime,
+                       unsigned int owlt);
 #endif
 
 #if (LOG == 1)
 extern int printRangesGraph(FILE *file, time_t currentTime);
 #else
-#define printRangesGraph(file, current_time) do {  } while(0)
+#define printRangesGraph(file, current_time)                                                       \
+    do {                                                                                           \
+    } while (0)
 #endif
 
 #ifdef __cplusplus

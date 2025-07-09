@@ -35,15 +35,10 @@
 #include "src/node/dtn/routing/unibocgr/core/config.h"
 #include "src/node/dtn/routing/unibocgr/core/library/commonDefines.h"
 
-typedef enum {
-	phaseOne = 1,
-	phaseTwo = 2,
-	phaseThree = 3
-} UniboCgrPhase;
+typedef enum { phaseOne = 1, phaseTwo = 2, phaseThree = 3 } UniboCgrPhase;
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #if (TIME_ANALYSIS_ENABLED)
@@ -54,12 +49,17 @@ extern void print_time_results(time_t currentTime, unsigned int callNumber, CgrB
 
 #else
 
-#define initialize_time_analysis() do {  } while(0)
-#define destroy_time_analysis() do {  } while(0)
-#define print_time_results(currentTime, callNumber, id) do {  } while(0)
+#define initialize_time_analysis()                                                                 \
+    do {                                                                                           \
+    } while (0)
+#define destroy_time_analysis()                                                                    \
+    do {                                                                                           \
+    } while (0)
+#define print_time_results(currentTime, callNumber, id)                                            \
+    do {                                                                                           \
+    } while (0)
 
 #endif
-
 
 #if (COMPUTE_TOTAL_CORE_TIME)
 
@@ -68,8 +68,12 @@ extern void record_total_core_stop_time();
 
 #else
 
-#define record_total_core_start_time() do {  } while(0)
-#define record_total_core_stop_time() do {  } while(0)
+#define record_total_core_start_time()                                                             \
+    do {                                                                                           \
+    } while (0)
+#define record_total_core_stop_time()                                                              \
+    do {                                                                                           \
+    } while (0)
 
 #endif
 
@@ -80,8 +84,12 @@ extern void record_total_interface_stop_time();
 
 #else
 
-#define record_total_interface_start_time() do {  } while(0)
-#define record_total_interface_stop_time() do {  } while(0)
+#define record_total_interface_start_time()                                                        \
+    do {                                                                                           \
+    } while (0)
+#define record_total_interface_stop_time()                                                         \
+    do {                                                                                           \
+    } while (0)
 
 #endif
 
@@ -92,14 +100,17 @@ extern void record_phases_stop_time(UniboCgrPhase phase);
 
 #else
 
-#define record_phases_start_time(phase) do {  } while(0)
-#define record_phases_stop_time(phase) do {  } while(0)
+#define record_phases_start_time(phase)                                                            \
+    do {                                                                                           \
+    } while (0)
+#define record_phases_stop_time(phase)                                                             \
+    do {                                                                                           \
+    } while (0)
 
 #endif
 
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif /* SRC_NODE_DTN_ROUTING_UNIBOCGR_CORE_TIME_ANALYSIS_TIME_H_ */
