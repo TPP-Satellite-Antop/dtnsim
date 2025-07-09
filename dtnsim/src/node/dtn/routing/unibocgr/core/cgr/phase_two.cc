@@ -315,11 +315,10 @@ int reached_neighbors_limit(long unsigned int neighborsFound, long unsigned int 
  * \return int
  *
  * \retval          0	There is at least one contact from the local node to the neighbor
- * 						with a start time less or equal than the route's first
- *contact start time.
- * \retval         -1	No contacts found from the local node to the neighbor with a start time
- * 				   		less or equal than the route's first contact, that case
- *should never happens
+ * 						with a start time less or equal than the route's
+ *first contact start time. \retval         -1	No contacts found from the local node to the
+ *neighbor with a start time less or equal than the route's first contact, that case should never
+ *happens
  *
  * \param[in]   current_time               The time used during the current call
  * \param[in]   localNode                  The IPN number of the node on which Unibo-CGR is running
@@ -1143,7 +1142,7 @@ static int phase_one_conversation_management(PhaseTwoRouteFlag routeFlag, Route 
         // we already reached the neighbors limit, we don't go back to phase one
         // so there isn't a conversation to manage.
         //		debug_printf("Nothing to do (nF %lu, miss %lu, supp %lu, tot %lu)..." ,
-        //neighborsFound, missing_neighbors, suppressedNeighbors->length, max_neighbors_number);
+        // neighborsFound, missing_neighbors, suppressedNeighbors->length, max_neighbors_number);
         result = 1;
     } else if ((neighbor = get_neighbor(route->neighbor)) == NULL) {
         result = -1;

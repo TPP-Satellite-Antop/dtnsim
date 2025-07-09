@@ -92,7 +92,7 @@ int rgr_attach(Bundle *bundle, ExtensionBlock *blk, GeoRoute *rgrBlk) {
 
     // rgr_debugPrint("i rgr_attach databuffer size: %u\n"
     //			"blk->size: %u\nblk->dataLength: %u\n", sizeof(dataBuffer), blk->size,
-    //blk->dataLength);
+    // blk->dataLength);
     dataBuffer[dataBufferSize] = '\0';
     result = serializeExtBlk(blk, NULL, dataBuffer);
     MRELEASE(dataBuffer);

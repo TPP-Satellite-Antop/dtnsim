@@ -131,163 +131,180 @@ void Dtn::initialize(int stage) {
             }
         }
 
-		// Initialize routing
-		this->sdr_.setEid(eid_);
-		this->sdr_.setSize(par("sdrSize"));
-		this->sdr_.setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
-		this->sdr_.setContactPlan(&contactTopology_);
+        // Initialize routing
+        this->initializeRouting(routeString);
 
-		if (routeString.compare("direct") == 0)
-			routing = new RoutingDirect(eid_, &sdr_, &contactPlan_);
-		else if (routeString.compare("cgrModel350") == 0)
-			routing = new RoutingCgrModel350(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
-		else if (routeString.compare("cgrModel350_Hops") == 0)
-			routing = new RoutingCgrModel350_Hops(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
-		else if (routeString.compare("cgrModelYen") == 0)
-			routing = new RoutingCgrModelYen(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
-		else if (routeString.compare("cgrModelRev17") == 0)
-		{
-			ContactPlan *globalContactPlan = ((Dtn*) this->getParentModule()->getParentModule()->getSubmodule("node", 0)->getSubmodule("dtn"))->getContactPlanPointer();
-			routing = new RoutingCgrModelRev17(eid_, this->getParentModule()->getVectorSize(), &sdr_, &contactPlan_, globalContactPlan, par("routingType"), par("printRoutingDebug"));
-		}
-		else if (routeString.compare("epidemic") == 0)
-		{
-			routing = new RoutingEpidemic(eid_, &sdr_, this);
-		}
-		else if (routeString.compare("sprayAndWait") == 0)
-		{
-			int bundlesCopies = par("bundlesCopies");
-			routing = new RoutingSprayAndWait(eid_, &sdr_, this, bundlesCopies, false, this->metricCollector_);
-		}
-		else if (routeString.compare("binarySprayAndWait") == 0)
-		{
-			int bundlesCopies = par("bundlesCopies");
-			routing = new RoutingSprayAndWait(eid_, &sdr_, this, bundlesCopies, true, this->metricCollector_);
-		}
-		else if (routeString.compare("PRoPHET") == 0)
-		{
-			int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
-			double p_enc_max = par("pEncouterMax");
-			double p_enc_first = par("pEncouterFirst");
-			double p_first_thresh = par("pFirstThreshold");
-			double forw_tresh = par("ForwThresh");
-			double alpha = par("alpha");
-			double beta = par("beta");
-			double gamma = par("gamma");
-			double delta = par("delta");
-			routing = new RoutingPRoPHET(eid_, &sdr_, this, p_enc_max, p_enc_first, p_first_thresh, forw_tresh, alpha, beta, gamma, delta, numOfNodes, this->metricCollector_);
-		}
-		else if (routeString.compare("cgrModel350_2Copies") == 0)
-			routing = new RoutingCgrModel350_2Copies(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"), this);
-		else if (routeString.compare("cgrModel350_Probabilistic") == 0)
-		{
-			double sContactProb = par("sContactProb");
-			routing = new RoutingCgrModel350_Probabilistic(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"), this, sContactProb);
-		}
-		else if (routeString.compare("uncertainUniboCgr") == 0)
-		{
-			bool useUncertainty = this->getParentModule()->getParentModule()->getSubmodule("central")->par("useUncertainty");
-			int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
-			int repetition = this->getParentModule()->getParentModule()->getSubmodule("central")->par("repetition");
-			routing = new RoutingUncertainUniboCgr(eid_, &sdr_, &contactPlan_, this, this->metricCollector_, -1, useUncertainty, repetition, numOfNodes);
-		}
-		else if (routeString.compare("uniboCgr") == 0)
-		{
-			int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
-			int repetition = this->getParentModule()->getParentModule()->getSubmodule("central")->par("repetition");
-			routing = new RoutingUncertainUniboCgr(eid_, &sdr_, &contactPlan_, this, this->metricCollector_, -1, false, repetition, numOfNodes);
-		}
-		else if (routeString.compare("ORUCOP") == 0)
-		{
-			int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
-			int repetition = this->getParentModule()->getParentModule()->getSubmodule("central")->par("repetition");
-			routing = new RoutingORUCOP(eid_, &sdr_, &contactPlan_, this, this->metricCollector_, 2, repetition, numOfNodes);
-		} //2 bundles for now.
-		else if (routeString.compare("BRUF1T") == 0)
-		{
-			string frouting = par("frouting");
-			routing = new RoutingBRUF1T(eid_, &sdr_, &contactPlan_, frouting);
-		}
-		else if (routeString.compare("BRUFNCopies") == 0)
-		{
-			string frouting = par("frouting");
-			int bundlesCopies = par("bundlesCopies");
-			int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
-			double pf = this->getParentModule()->getParentModule()->getSubmodule("central")->par("failureProbability");
-			pf = -1.00;
-			//routing = new RoutingBRUFNCopies(eid_, &sdr_, &contactPlan_, bundlesCopies, numOfNodes, frouting, ".json");
-			ostringstream prefix;
-			prefix << frouting << "pf=" << fixed << setprecision(2) << pf << "/todtnsim-";
-			ostringstream posfix;
-			posfix << "-" << fixed << setprecision(2) << pf << ".json";
+        // Register signals
+        dtnBundleSentToCom = registerSignal("dtnBundleSentToCom");
+        dtnBundleSentToApp = registerSignal("dtnBundleSentToApp");
+        dtnBundleSentToAppHopCount = registerSignal("dtnBundleSentToAppHopCount");
+        dtnBundleSentToAppRevisitedHops = registerSignal("dtnBundleSentToAppRevisitedHops");
+        dtnBundleReceivedFromCom = registerSignal("dtnBundleReceivedFromCom");
+        dtnBundleReceivedFromApp = registerSignal("dtnBundleReceivedFromApp");
+        dtnBundleReRouted = registerSignal("dtnBundleReRouted");
+        sdrBundleStored = registerSignal("sdrBundleStored");
+        sdrBytesStored = registerSignal("sdrBytesStored");
+        routeCgrDijkstraCalls = registerSignal("routeCgrDijkstraCalls");
+        routeCgrDijkstraLoops = registerSignal("routeCgrDijkstraLoops");
+        routeCgrRouteTableEntriesCreated = registerSignal("routeCgrRouteTableEntriesCreated");
+        routeCgrRouteTableEntriesExplored = registerSignal("routeCgrRouteTableEntriesExplored");
 
-			routing = new RoutingBRUFNCopies(eid_, &sdr_, &contactPlan_, bundlesCopies, numOfNodes, prefix.str(), posfix.str());
-		}
-		else if (routeString.compare("CGR_BRUFPowered") == 0)
-		{
-			string frouting = par("frouting");
-			int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
-			double pf = this->getParentModule()->getParentModule()->getSubmodule("central")->par("failureProbability");
-			int ts_duration = par("ts_duration");
+        if (eid_ != 0) {
+            emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
+            emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
+        }
 
-			//Parse parameter ts_start_times
-			const char *str_ts_start_times = par("ts_start_times");
-			cStringTokenizer ts_start_Tokenizer(str_ts_start_times, ",");
-			std::vector<int> ts_start_times;
-			while (ts_start_Tokenizer.hasMoreTokens())
-				ts_start_times.push_back(atoi(ts_start_Tokenizer.nextToken()));
+        // Initialize BundleMap
+        this->saveBundleMap_ = par("saveBundleMap");
+        if (saveBundleMap_ && eid_ != 0) {
+            // create result folder if it doesn't exist
+            struct stat st = {0};
+            if (stat("results", &st) == -1) {
+                mkdir("results", 0700);
+            }
 
-			ostringstream prefix;
-			prefix << frouting << "pf=" << fixed << setprecision(2) << pf << "/todtnsim-";
-			ostringstream posfix;
-			posfix << "-" << fixed << setprecision(2) << pf << ".json";
+            string fileStr = "results/BundleMap_Node" + to_string(eid_) + ".csv";
+            bundleMap_.open(fileStr);
+            bundleMap_ << "SimTime"
+                       << ","
+                       << "SRC"
+                       << ","
+                       << "DST"
+                       << ","
+                       << "TSRC"
+                       << ","
+                       << "TDST"
+                       << ","
+                       << "BitLenght"
+                       << ","
+                       << "DurationSec" << endl;
+        }
+    }
+}
 
-			routing = new CGRBRUFPowered(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"), pf, ts_duration, ts_start_times, numOfNodes, prefix.str(), posfix.str());
-		}
-		else
-		{
-			cout << "dtnsim error: unknown routing type: " << routeString << endl;
-			exit(1);
-		}
+void Dtn::initializeRouting(string routeString) {
+    this->sdr_.setEid(eid_);
+    this->sdr_.setSize(par("sdrSize"));
+    this->sdr_.setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
+    this->sdr_.setContactPlan(&contactTopology_);
 
-		// Register signals
-		dtnBundleSentToCom = registerSignal("dtnBundleSentToCom");
-		dtnBundleSentToApp = registerSignal("dtnBundleSentToApp");
-		dtnBundleSentToAppHopCount = registerSignal("dtnBundleSentToAppHopCount");
-		dtnBundleSentToAppRevisitedHops = registerSignal("dtnBundleSentToAppRevisitedHops");
-		dtnBundleReceivedFromCom = registerSignal("dtnBundleReceivedFromCom");
-		dtnBundleReceivedFromApp = registerSignal("dtnBundleReceivedFromApp");
-		dtnBundleReRouted = registerSignal("dtnBundleReRouted");
-		sdrBundleStored = registerSignal("sdrBundleStored");
-		sdrBytesStored = registerSignal("sdrBytesStored");
-		routeCgrDijkstraCalls = registerSignal("routeCgrDijkstraCalls");
-		routeCgrDijkstraLoops = registerSignal("routeCgrDijkstraLoops");
-		routeCgrRouteTableEntriesCreated = registerSignal("routeCgrRouteTableEntriesCreated");
-		routeCgrRouteTableEntriesExplored = registerSignal("routeCgrRouteTableEntriesExplored");
+    if (routeString.compare("direct") == 0)
+        routing = new RoutingDirect(eid_, &sdr_, &contactPlan_);
+    else if (routeString.compare("antop") == 0)
+        routing = new RoutingAntop(eid_, &sdr_, &contactPlan_);
+    else if (routeString.compare("cgrModel350") == 0)
+        routing = new RoutingCgrModel350(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
+    else if (routeString.compare("cgrModel350_Hops") == 0)
+        routing = new RoutingCgrModel350_Hops(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
+    else if (routeString.compare("cgrModelYen") == 0)
+        routing = new RoutingCgrModelYen(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
+    else if (routeString.compare("cgrModelRev17") == 0) {
+        ContactPlan *globalContactPlan = ((Dtn *)this->getParentModule()
+                                              ->getParentModule()
+                                              ->getSubmodule("node", 0)
+                                              ->getSubmodule("dtn"))
+                                             ->getContactPlanPointer();
+        routing = new RoutingCgrModelRev17(eid_, this->getParentModule()->getVectorSize(), &sdr_,
+                                           &contactPlan_, globalContactPlan, par("routingType"),
+                                           par("printRoutingDebug"));
+    } else if (routeString.compare("epidemic") == 0) {
+        routing = new RoutingEpidemic(eid_, &sdr_, this);
+    } else if (routeString.compare("sprayAndWait") == 0) {
+        int bundlesCopies = par("bundlesCopies");
+        routing = new RoutingSprayAndWait(eid_, &sdr_, this, bundlesCopies, false,
+                                          this->metricCollector_);
+    } else if (routeString.compare("binarySprayAndWait") == 0) {
+        int bundlesCopies = par("bundlesCopies");
+        routing =
+            new RoutingSprayAndWait(eid_, &sdr_, this, bundlesCopies, true, this->metricCollector_);
+    } else if (routeString.compare("PRoPHET") == 0) {
+        int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
+        double p_enc_max = par("pEncouterMax");
+        double p_enc_first = par("pEncouterFirst");
+        double p_first_thresh = par("pFirstThreshold");
+        double forw_tresh = par("ForwThresh");
+        double alpha = par("alpha");
+        double beta = par("beta");
+        double gamma = par("gamma");
+        double delta = par("delta");
+        routing = new RoutingPRoPHET(eid_, &sdr_, this, p_enc_max, p_enc_first, p_first_thresh,
+                                     forw_tresh, alpha, beta, gamma, delta, numOfNodes,
+                                     this->metricCollector_);
+    } else if (routeString.compare("cgrModel350_2Copies") == 0)
+        routing = new RoutingCgrModel350_2Copies(eid_, &sdr_, &contactPlan_,
+                                                 par("printRoutingDebug"), this);
+    else if (routeString.compare("cgrModel350_Probabilistic") == 0) {
+        double sContactProb = par("sContactProb");
+        routing = new RoutingCgrModel350_Probabilistic(
+            eid_, &sdr_, &contactPlan_, par("printRoutingDebug"), this, sContactProb);
+    } else if (routeString.compare("uncertainUniboCgr") == 0) {
+        bool useUncertainty =
+            this->getParentModule()->getParentModule()->getSubmodule("central")->par(
+                "useUncertainty");
+        int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
+        int repetition =
+            this->getParentModule()->getParentModule()->getSubmodule("central")->par("repetition");
+        routing =
+            new RoutingUncertainUniboCgr(eid_, &sdr_, &contactPlan_, this, this->metricCollector_,
+                                         -1, useUncertainty, repetition, numOfNodes);
+    } else if (routeString.compare("uniboCgr") == 0) {
+        int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
+        int repetition =
+            this->getParentModule()->getParentModule()->getSubmodule("central")->par("repetition");
+        routing =
+            new RoutingUncertainUniboCgr(eid_, &sdr_, &contactPlan_, this, this->metricCollector_,
+                                         -1, false, repetition, numOfNodes);
+    } else if (routeString.compare("ORUCOP") == 0) {
+        int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
+        int repetition =
+            this->getParentModule()->getParentModule()->getSubmodule("central")->par("repetition");
+        routing = new RoutingORUCOP(eid_, &sdr_, &contactPlan_, this, this->metricCollector_, 2,
+                                    repetition, numOfNodes);
+    } // 2 bundles for now.
+    else if (routeString.compare("BRUF1T") == 0) {
+        string frouting = par("frouting");
+        routing = new RoutingBRUF1T(eid_, &sdr_, &contactPlan_, frouting);
+    } else if (routeString.compare("BRUFNCopies") == 0) {
+        string frouting = par("frouting");
+        int bundlesCopies = par("bundlesCopies");
+        int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
+        double pf = this->getParentModule()->getParentModule()->getSubmodule("central")->par(
+            "failureProbability");
+        pf = -1.00;
 
-		if (eid_ != 0)
-		{
-			emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
-			emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
-		}
+        ostringstream prefix;
+        prefix << frouting << "pf=" << fixed << setprecision(2) << pf << "/todtnsim-";
+        ostringstream posfix;
+        posfix << "-" << fixed << setprecision(2) << pf << ".json";
 
-		// Initialize BundleMap
-		this->saveBundleMap_ = par("saveBundleMap");
-		if (saveBundleMap_ && eid_ != 0)
-		{
-			// create result folder if it doesn't exist
-			struct stat st =
-			{ 0 };
-			if (stat("results", &st) == -1)
-			{
-				mkdir("results", 0700);
-			}
+        routing = new RoutingBRUFNCopies(eid_, &sdr_, &contactPlan_, bundlesCopies, numOfNodes,
+                                         prefix.str(), posfix.str());
+    } else if (routeString.compare("CGR_BRUFPowered") == 0) {
+        string frouting = par("frouting");
+        int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
+        double pf = this->getParentModule()->getParentModule()->getSubmodule("central")->par(
+            "failureProbability");
+        int ts_duration = par("ts_duration");
 
-			string fileStr = "results/BundleMap_Node" + to_string(eid_) + ".csv";
-			bundleMap_.open(fileStr);
-			bundleMap_ << "SimTime" << "," << "SRC" << "," << "DST" << "," << "TSRC" << "," << "TDST" << "," << "BitLenght" << "," << "DurationSec" << endl;
-		}
-	}
+        // Parse parameter ts_start_times
+        const char *str_ts_start_times = par("ts_start_times");
+        cStringTokenizer ts_start_Tokenizer(str_ts_start_times, ",");
+        std::vector<int> ts_start_times;
+        while (ts_start_Tokenizer.hasMoreTokens())
+            ts_start_times.push_back(atoi(ts_start_Tokenizer.nextToken()));
+
+        ostringstream prefix;
+        prefix << frouting << "pf=" << fixed << setprecision(2) << pf << "/todtnsim-";
+        ostringstream posfix;
+        posfix << "-" << fixed << setprecision(2) << pf << ".json";
+
+        routing =
+            new CGRBRUFPowered(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"), pf,
+                               ts_duration, ts_start_times, numOfNodes, prefix.str(), posfix.str());
+    } else {
+        cout << "dtnsim error: unknown routing type: " << routeString << endl;
+        exit(1);
+    }
 }
 
 void Dtn::finish() {

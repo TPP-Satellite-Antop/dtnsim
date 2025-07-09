@@ -14,9 +14,9 @@
  * contact's destination if target node has not received it. Here we assume that there isn't any
  * cost associated to get this information. This bundles are deleted from bundles_ list.
  *
- * 		2) Enqueue to send those bundles, intended to other nodes, which has not been received
- * by the other yet. Again, we assume that there isn't any cost associated to get this information.
- * 		   This bundles aren't deleted from bundles_ list, since these will be sent again in
+ * 		2) Enqueue to send those bundles, intended to other nodes, which has not been
+ * received by the other yet. Again, we assume that there isn't any cost associated to get this
+ * information. This bundles aren't deleted from bundles_ list, since these will be sent again in
  * the next contact opportunity.
  */
 

@@ -65,7 +65,7 @@ class BRUFNCopies1TOracle {
     vector<int> currentCopiesByNode_; // Current network state which evolves according bundle
                                       // transmissions. When the state has to be updated it must be
                                       // equal to one of the state's children.
-    int currentTimestamp_; // Current time stamp (it is not strictly needed)
+    int currentTimestamp_;            // Current time stamp (it is not strictly needed)
 
     int numOfCopies_;  // Number of copies which have the bundle modeled by this MarcovChain
     const int source_; // The source of the bundled modeled by this MarcovChain.

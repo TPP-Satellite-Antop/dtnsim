@@ -9,10 +9,10 @@
  *schemes.
  *
  * 	2) Stochastic:
- * 						In this class, the schemes assume that no prior information
- *about the node movement or network topology is available and thus, path selections are based
- *simply on heuristics, e.g., forwarding to neighbor nodes (like epidemic routing), or based on the
- *mobility pattern of nodes, or link forwarding probability based.
+ * 						In this class, the schemes assume that no prior
+ *information about the node movement or network topology is available and thus, path selections are
+ *based simply on heuristics, e.g., forwarding to neighbor nodes (like epidemic routing), or based
+ *on the mobility pattern of nodes, or link forwarding probability based.
  *
  * This class provides a implementation by default for inherited Routing's methods that result
  * suitable for the major stochastic schemes implemented here.

@@ -165,14 +165,14 @@ static void remove_reference_from_son(void *data) {
  * 							selectedFather and selectedChild
  *
  * \par Notes:
- * 			1. The children of this route at the end will have the father field setted to
- *NULL.
- * 			2. The father of this route at the end will not see anymore this route in the
- *children list.
+ * 			1. The children of this route at the end will have the father field setted
+ *to NULL.
+ * 			2. The father of this route at the end will not see anymore this route in
+ *the children list.
  * 			3. The selectedFather of this route at the end will acquire as selectedChild
  *the selectedChild of this route.
- *			4. The selectedChild of this route at the end will acquire as selectedFather the
- *selectedFather of this route.
+ *			4. The selectedChild of this route at the end will acquire as selectedFather
+ *the selectedFather of this route.
  *			5. If this route has a selectedChild field setted to NULL we set to 0 the
  *spursComputed field of the selectedFather.
  *
@@ -298,8 +298,8 @@ void delete_cgr_route(void *data) {
  *
  * \par Notes:
  * 			1. The free_list_elts can't be used to delete a list of Route, due to the
- * 			   delete_cgr_route setted as delete_function that remove the element from the
- *list.
+ * 			   delete_cgr_route setted as delete_function that remove the element from
+ *the list.
  * 			2. All references will be managed by the delete_cgr_route called by this
  *function
  *
@@ -349,8 +349,8 @@ void clear_routes_list(List routes) {
  *
  * \par Notes:
  * 			1. The free_list can't be used to delete a list of Route, due to the
- * 			   delete_cgr_route setted as delete_function that remove the element from the
- *list.
+ * 			   delete_cgr_route setted as delete_function that remove the element from
+ *the list.
  * 			2. All references will be managed by the delete_cgr_route called by this
  *function
  *

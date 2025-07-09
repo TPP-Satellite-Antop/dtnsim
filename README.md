@@ -15,7 +15,7 @@ The simulator is still under development: this is a beta version. Nonetheless, f
 
 * Open dtnsim_demo.ini config file from the use cases folder.
 * Run the simulation. If using Omnet++ IDE, the Qtenv environment will be started. 
-* Results (scalar and vectorial statistics) will be stored in the results folder.
+* Results (scalar and vectorial statistics) will be stored in the results' folder.
 
 Note: Nodes will remain static in the simulation visualization. Indeed, the dynamic of the network is captured in the "contact plans" which comprises a list of all time-bound communication opportunities between nodes. In other words, if simulating mobile network, the mobility should be captured in such contact plans and provided to DTNSIM as input.
 

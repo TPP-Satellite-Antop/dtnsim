@@ -33,9 +33,10 @@ RoutingBRUF1T::RoutingBRUF1T(int eid, SdrModel *sdr, ContactPlan *contactPlan,
 
     // cout << "[RoutingBRUF1T] node "<< eid << endl;
     //	for (map<int, map<int,int> >::iterator it=routing_decisions_.begin();
-    //it!=routing_decisions_.end(); ++it) 		for (map<int,int>::iterator it2= (it->second).begin();
-    //it2!=(it->second).end(); ++it2) 			cout <<"TO: "<< it->first << " TS: " <<  it2->first << "
-    //Contact_id_ " << it2->second <<endl;
+    // it!=routing_decisions_.end(); ++it) 		for (map<int,int>::iterator it2=
+    // (it->second).begin();
+    // it2!=(it->second).end(); ++it2) 			cout <<"TO: "<< it->first << " TS: " <<  it2->first
+    // << " Contact_id_ " << it2->second <<endl;
 }
 
 RoutingBRUF1T::~RoutingBRUF1T() {}

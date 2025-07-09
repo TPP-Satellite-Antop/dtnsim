@@ -210,7 +210,7 @@ void cgrr_release(ExtensionBlock *blk) {
     Sdr sdr = getIonsdr();
 
     //	cgrr_debugPrint("[cgrr.c/cgrr_release] Releasing CGRRouteBlock sdr memory...(%lu)(%u)",
-    //blk->object, blk->size);
+    // blk->object, blk->size);
 
     CHKVOID(blk);
 

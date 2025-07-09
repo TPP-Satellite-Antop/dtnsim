@@ -19,8 +19,8 @@
  *
  *	 In both moments, it enqueue a bundle to send according following criteria:
  *
- *		1) 	If there is a bundle whose destination is the contact destination, enqueue to
- *send one copy of this.
+ *		1) 	If there is a bundle whose destination is the contact destination, enqueue
+ *to send one copy of this.
  *
  * 		2)  If there aren't any bundle to that destination, enqueue a bundle with
  *bundlesCopies > 1. Since if bundleCopy == 1 it must be delivered to destination only. If

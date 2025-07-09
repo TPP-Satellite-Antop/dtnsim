@@ -1,4 +1,4 @@
-# Name of target to be created (-o option)
+#Name of target to be created(-o option)
 TARGET_DIR = .
 TARGET_NAME = dtnsim$(D)
 TARGET = $(TARGET_NAME)$(EXE_SUFFIX)
@@ -6,27 +6,27 @@ TARGET_IMPLIB = $(TARGET_NAME)$(IMPLIB_SUFFIX)
 TARGET_IMPDEF = $(TARGET_NAME)$(IMPDEF_SUFFIX)
 TARGET_FILES = $(TARGET_DIR)/$(TARGET)
 
-# User interface (uncomment one) (-u option)
+#User interface(uncomment one)(-u option)
 USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(CMDENV_LIBS)
 #USERIF_LIBS = $(QTENV_LIBS)
 
 PYTHON_VERSION=3.11
-# C++ include paths (with -I)
+#C++ include paths(with - I)
 INCLUDE_PATH = -I. -I/usr/include/python$(PYTHON_VERSION)
 
-# Additional object and library files to link with
+#Additional object and library files to link with
 EXTRA_OBJS =
 
-# Additional libraries (-L, -l options)
+#Additional libraries(-L, -l options)
 LIBS =  -lpython$(PYTHON_VERSION)
 
-# Output directory
+#Output directory
 PROJECT_OUTPUT_DIR = out
 PROJECTRELATIVE_PATH =
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
-# Object files for local .cc, .msg and .sm files
+#Object files for local.cc, .msg and.sm files
 OBJS = \
     $O/src/central/Central.o \
     $O/src/node/app/App.o \
@@ -88,16 +88,16 @@ OBJS = \
     $O/src/utils/TopologyUtils.o \
     $O/src/dtnsim_m.o
 
-# Message files
+#Message files
 MSGFILES = \
     src/dtnsim.msg
 
-# SM files
+#SM files
 SMFILES =
 
-#------------------------------------------------------------------------------
+#-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-# Pull in OMNeT++ configuration (Makefile.inc)
+#Pull in OMNeT++ configuration(Makefile.inc)
 
 ifneq ("$(OMNETPP_CONFIGFILE)","")
 CONFIGFILE = $(OMNETPP_CONFIGFILE)
@@ -111,29 +111,29 @@ endif
 
 include $(CONFIGFILE)
 
-# Simulation kernel and user interface libraries
+#Simulation kernel and user interface libraries
 OMNETPP_LIBS = $(OPPMAIN_LIB) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 
 COPTS = $(CFLAGS) $(IMPORT_DEFINES)  $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 MSGCOPTS = $(INCLUDE_PATH)
 SMCOPTS =
 
-# we want to recompile everything if COPTS changes,
-# so we store COPTS into $COPTS_FILE (if COPTS has changed since last build)
-# and make the object files depend on it
+#we want to recompile everything if COPTS changes,
+#so we store COPTS into $COPTS_FILE(if COPTS has changed since last build)
+#and make the object files depend on it
 COPTS_FILE = $O/.last-copts
 ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
   $(shell $(MKPATH) "$O")
   $(file >$(COPTS_FILE),$(COPTS))
 endif
 
-#------------------------------------------------------------------------------
-# User-supplied makefile fragment(s)
+#-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+#User - supplied makefile fragment(s)
 -include makefrag
 
-#------------------------------------------------------------------------------
+#-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-# Main target
+#Main target
 all: $(TARGET_FILES)
 
 $(TARGET_DIR)/% :: $O/%
@@ -152,7 +152,7 @@ $O/$(TARGET): $(OBJS)  $(wildcard $(EXTRA_OBJS)) Makefile $(CONFIGFILE)
 
 .PHONY: all clean cleanall depend msgheaders smheaders
 
-# disabling all implicit rules
+#disabling all implicit rules
 .SUFFIXES :
 .PRECIOUS : %_m.h %_m.cc
 
@@ -189,5 +189,5 @@ help:
 	@echo "$$HELP_VARIABLES"
 	@echo "$$HELP_EXAMPLES"
 
-# include all dependencies
+#include all dependencies
 -include $(OBJS:%=%.d) $(MSGFILES:%.msg=$O/%_m.h.d)

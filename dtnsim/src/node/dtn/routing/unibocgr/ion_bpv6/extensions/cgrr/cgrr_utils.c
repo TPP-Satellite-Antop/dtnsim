@@ -297,8 +297,8 @@ int cgrr_deserializeCGRR(AcqExtBlock *blk, AcqWorkArea *wk) {
     // cgrrBlk.originalRoute.hopCount);
 
     /* Step 1.2 - If the Hop Count is grater than 0, we allocate memory.
-     * 				If there is no hop count, it means that a orute was not computer at the
-     * source so the block is not needed and we can scratch it. */
+     * 				If there is no hop count, it means that a orute was not computer at
+     * the source so the block is not needed and we can scratch it. */
     if (cgrrBlk.originalRoute.hopCount > 0) {
         // Modified by G.M. De Cola
         cgrrBlk.originalRoute.hopList =
@@ -352,7 +352,8 @@ int cgrr_deserializeCGRR(AcqExtBlock *blk, AcqWorkArea *wk) {
     }
 
     /* Step 1.4 - If the recomputed legth is greater than one we will be allocating memory for
-     * 				each ecomputed route's hopList, just like we did for the original route.
+     * 				each ecomputed route's hopList, just like we did for the original
+     * route.
      */
     for (j = 0; j < cgrrBlk.recRoutesLength; j++) {
         extractSmallSdnv(&itemp, &cursor, &unparsedBytes);
@@ -487,8 +488,8 @@ int cgrr_getCGRRFromExtensionBlock(ExtensionBlock *blk, CGRRouteBlock *cgrrBlk) 
     //	sdrCgrrBlk.recRoutesLength = appo->recRoutesLength;
     //	sdrCgrrBlk.originalRoute.hopCount = appo->originalRoute.hopCount;
     //	sdrCgrrBlk.originalRoute.hopList = (Hop*) malloc(sizeof(Hop) *
-    //appo->originalRoute.hopCount); 	memcpy((char*) sdrCgrrBlk.originalRoute.hopList,
-    //appo->originalRoute.hopList, sizeof(Hop) * appo->originalRoute.hopCount);
+    // appo->originalRoute.hopCount); 	memcpy((char*) sdrCgrrBlk.originalRoute.hopList,
+    // appo->originalRoute.hopList, sizeof(Hop) * appo->originalRoute.hopCount);
     //	sdrCgrrBlk.recomputedRoutes = (CGRRoute* ) malloc(sizeof(CGRRoute) * appo->recRoutesLength);
     //
     //	cgrr_debugPrint("cgrr_record: beginning data extraction...");
@@ -498,8 +499,9 @@ int cgrr_getCGRRFromExtensionBlock(ExtensionBlock *blk, CGRRouteBlock *cgrrBlk) 
     //	for (myIndex = 0; myIndex < appo->recRoutesLength; ++myIndex)
     //	{
     //		sdrCgrrBlk.recomputedRoutes[myIndex].hopCount =
-    //appo->recomputedRoutes[myIndex].hopCount; 		sdrCgrrBlk.recomputedRoutes[myIndex].hopList =
-    //(Hop*) malloc(sizeof(Hop) * appo->recomputedRoutes[myIndex].hopCount);
+    // appo->recomputedRoutes[myIndex].hopCount;
+    // sdrCgrrBlk.recomputedRoutes[myIndex].hopList = (Hop*) malloc(sizeof(Hop) *
+    // appo->recomputedRoutes[myIndex].hopCount);
     //		memcpy(sdrCgrrBlk.recomputedRoutes[myIndex].hopList,
     //				appo->recomputedRoutes[myIndex].hopList,
     //				sizeof(Hop) * appo->recomputedRoutes[myIndex].hopCount);
@@ -553,8 +555,8 @@ int cgrr_getCGRRFromExtensionBlock(ExtensionBlock *blk, CGRRouteBlock *cgrrBlk) 
                     cgrrBlk->originalRoute.hopCount);
 
     /* Step 1.2 - If the Hop Count is greater than 0, we allocate memory.
-     * 				If there is no hop count, it means that a route was either not computed at the
-     * source or it's being processed at source node.
+     * 				If there is no hop count, it means that a route was either not computed
+     * at the source or it's being processed at source node.
      */
     if (cgrrBlk->originalRoute.hopCount > 0) {
         // Modified by G.M. De Cola
@@ -620,7 +622,8 @@ int cgrr_getCGRRFromExtensionBlock(ExtensionBlock *blk, CGRRouteBlock *cgrrBlk) 
     }
 
     /* Step 1.4 - If the reocmputed legth is greater than one we will be allocating memory for
-     * 				each ecomputed route's hopList, just like we did for the original route.
+     * 				each ecomputed route's hopList, just like we did for the original
+     * route.
      */
     for (j = 0; j < cgrrBlk->recRoutesLength; j++) {
         extractSmallSdnv(&itemp, &cursor, &unparsedBytes);
@@ -804,10 +807,10 @@ int saveRouteToExtBlock(int hopCount, CGRRHop *hopList, Bundle *bundle) {
  * \par Function Name: addRoute
  *
  * \par Purpose: This utility function accepts a bundle, an elt address representing the
- * 				 CGRREB in sdr memory and a route to add to the extension block. This
- *function is called by the saveRouteToExtBlock() and its purpose is to create a new CGRRouteBlock
- *from the one already contained in the EB and add to it the given route. Then it calls the
- *cgrr_attach() fucntion to save the modified information to the sdr Bundle.
+ * 				 CGRREB in sdr memory and a route to add to the extension block.
+ *This function is called by the saveRouteToExtBlock() and its purpose is to create a new
+ *CGRRouteBlock from the one already contained in the EB and add to it the given route. Then it
+ *calls the cgrr_attach() fucntion to save the modified information to the sdr Bundle.
  *
  * \par Date Written:  22/11/18
  *
@@ -863,7 +866,7 @@ int addRoute(Bundle *bundle, Object extBlockElt, CGRRoute *routeToAdd) {
     GET_OBJ_POINTER(sdr, ExtensionBlock, blk, extBlkAddr);
     // cgrr_debugPrint("addRoute: retrieved Extension Block of values:\n %u blk address: %lu, blk
     // length %u, blk dataLength %u, blk size %u", 		blk->type, blk->object, blk->length,
-    //blk->dataLength, blk->size);
+    // blk->dataLength, blk->size);
 
     /* Step 0.2 - Initialize CGRRouteBlock to host serialized block. */
     oldCgrrBlk = (CGRRouteBlock *)MTAKE(sizeof(CGRRouteBlock));
@@ -1031,8 +1034,9 @@ int processModifiedExtensionBlock(Bundle *bundle, Object blkAddr, ExtensionBlock
                 wasSuppressed = blk->suppressed;
 
                 // cgrr_debugPrint("processModifiedExtensionBlock: %u address: %lu, length %u,
-                // datalen %u, size %u", 		blk->type, blk->object, blk->length, blk->dataLength,
-                //blk->size);
+                // datalen %u, size %u", 		blk->type, blk->object, blk->length,
+                // blk->dataLength,
+                // blk->size);
 
                 if (blk->length == 0) /*	Scratched.	*/
                 {
@@ -1076,8 +1080,8 @@ int processModifiedExtensionBlock(Bundle *bundle, Object blkAddr, ExtensionBlock
                 }
 
                 // cgrr_debugPrint("processModifiedExtensionBlock: %u address: %lu, length %u,
-                // datalen %u, size %u", 						blk->type, blk->object, blk->length, blk->dataLength,
-                //blk->size);
+                // datalen %u, size %u", 						blk->type,
+                // blk->object, blk->length, blk->dataLength, blk->size);
 
                 // cgrr_debugPrint("addRoute: writing modified Extension Block to sdr...");
                 // CHKERR(sdr_begin_xn(bpSdr));
@@ -1128,14 +1132,16 @@ void copyCGRRoute(CGRRoute *dest, CGRRoute *src) {
     for (j = 0; j < src->hopCount; j++) {
         dest->hopList[j].fromNode = src->hopList[j].fromNode;
         // cgrr_debugPrint("[cgrr_utils.c/copyCGRRoute] Added dest->hopList[%d].fromNode = "
-        // UVAST_FIELDSPEC ".", 					j, dest->hopList[j].fromNode); //Modified by F. Marchetti
+        // UVAST_FIELDSPEC ".", 					j, dest->hopList[j].fromNode);
+        // //Modified by F. Marchetti
         dest->hopList[j].toNode = src->hopList[j].toNode;
         // cgrr_debugPrint("[cgrr_utils.c/copyCGRRoute] Added dest->hopList[%d].toNode = "
-        // UVAST_FIELDSPEC ".", 					j, dest->hopList[j].toNode); //Modified by F. Marchetti
+        // UVAST_FIELDSPEC ".", 					j, dest->hopList[j].toNode); //Modified
+        // by F. Marchetti
         dest->hopList[j].fromTime = src->hopList[j].fromTime;
         // cgrr_debugPrint("copyCGRRoute: Added dest->hopList[%d].fromTime = %ld.",
         //					j, dest->hopList[j].fromTime); //Modified by F.
-        //Marchetti
+        // Marchetti
     }
 
     return; // Added by F. Marchetti

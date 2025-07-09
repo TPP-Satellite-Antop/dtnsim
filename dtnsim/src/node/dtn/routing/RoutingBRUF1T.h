@@ -12,7 +12,7 @@ class RoutingBRUF1T : public RoutingDeterministic {
 
   private:
     //<source_node_id, target_node_id, time up to the routing decision is valid, outgoing
-    //contact_id>
+    // contact_id>
     std::map<int, std::map<int, std::map<int, int>>> routing_decisions_;
 };
 

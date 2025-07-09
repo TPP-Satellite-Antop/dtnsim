@@ -654,14 +654,14 @@ fatal error
                                                             // Intentional compilation error
                                                             // CGR_UNIBO_SUGGESTED_SETTINGS must be
                                                             // 0 or 1.
-                                                                fatal error
+                                                            fatal error
 #endif
 
 #if (CCSDS_SABR_DEFAULTS != 0 && CCSDS_SABR_DEFAULTS != 1)
-                                                                    // Intentional compilation error
-                                                                    // CCSDS_SABR_DEFAULTS must be 0
-                                                                    // or 1.
-                                                                        fatal error
+                                                                // Intentional compilation error
+                                                                // CCSDS_SABR_DEFAULTS must be 0
+                                                                // or 1.
+                                                                fatal error
 #endif
 
 #if ((CCSDS_SABR_DEFAULTS &&                                                                       \
@@ -672,18 +672,18 @@ fatal error
       (UNIBO_CGR_SUGGESTED_SETTINGS || MSR_CONFIG || CCSDS_SABR_DEFAULTS)) ||                      \
      (MSR_PRECONF && (UNIBO_CGR_SUGGESTED_SETTINGS || CCSDS_SABR_DEFAULTS ||                       \
                       UNIBO_CGR_ENH_WITHOUT_EXP_EXTENSIONS)))
-                                                                            fatal error
+                                                                    fatal error
 // Intentional compilation error
 // CGR_UNIBO_SUGGESTED_SETTINGS, CCSDS_SABR_DEFAULTS and CGR_ION_3_7_0 must be mutually exclusive.
 #endif
 
 #if (MIN_CONVERGENCE_LAYER_OVERHEAD < 0)
-                                                                                // Intentional
-                                                                                // compilation error
-                                                                                // MIN_CONVERGENCE_LAYER_OVERHEAD
-                                                                                // cannot be
-                                                                                // negative.
-                                                                                    fatal error
+                                                                        // Intentional
+                                                                        // compilation error
+                                                                        // MIN_CONVERGENCE_LAYER_OVERHEAD
+                                                                        // cannot be
+                                                                        // negative.
+                                                                        fatal error
 #endif
 /**
  * \endcond

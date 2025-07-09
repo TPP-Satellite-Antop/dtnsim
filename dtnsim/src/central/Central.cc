@@ -17,7 +17,7 @@ void Central::initialize() {
     //	for (int i = 0; i < nodesNumber_; i++)
     //	{
     //		string routing = this->getParentModule()->getSubmodule("node",
-    //i)->getSubmodule("dtn")->par("routing"); 		if (routing == "cgrIon350")
+    // i)->getSubmodule("dtn")->par("routing"); 		if (routing == "cgrIon350")
     //		{
     //			ionNodes_ = true;
     //			break;

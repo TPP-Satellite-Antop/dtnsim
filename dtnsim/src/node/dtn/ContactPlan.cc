@@ -28,8 +28,8 @@ ContactPlan::ContactPlan(ContactPlan &contactPlan) {
  * @param fileName: The name of the contact plan .txt file
  * 		  nodesNumber: The number of nodes
  * 		  mode: The chosen mode for the simulation (0, 1, 2)
- * 		  failureProb: The failure probability every contact should have, -1 if the probability
- * from the contact plan file should be taken
+ * 		  failureProb: The failure probability every contact should have, -1 if the
+ * probability from the contact plan file should be taken
  *
  * @authors: original implementation from the authors of DTNSim, then modified by Simon Rink
  */
@@ -122,8 +122,8 @@ void ContactPlan::parseContactPlanFile(string fileName, int nodesNumber, int mod
  * @param fileName: The name of the contact plan .txt file
  * 		  nodesNumber: The number of nodes
  * 		  mode: The chosen mode for the simulation (0, 1, 2)
- * 		  failureProb: The failure probability every contact should have, -1 if the probability
- * from the contact plan file should be taken
+ * 		  failureProb: The failure probability every contact should have, -1 if the
+ * probability from the contact plan file should be taken
  *
  * @authors: adapted from parseContactPlanFile() from the authors of DTNSim, then ported and
  * modified by Simon Rink
