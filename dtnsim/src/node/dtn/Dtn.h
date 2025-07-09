@@ -93,11 +93,10 @@ class Dtn : public cSimpleModule, public Observer {
 
     virtual void dispatchBundle(BundlePkt *bundle);
 
-private:
-
-	int eid_;
-	bool onFault = false;
-	void initializeRouting(string routingString);
+  private:
+    int eid_;
+    bool onFault = false;
+    void initializeRouting(string routingString);
 
     // Pointer to grahics module
     Graphics *graphicsModule;

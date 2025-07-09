@@ -975,15 +975,15 @@ int CGRBRUFPowered::get_ts_for_contact(Contact *c) {
 //		if (route_initial_ts == get_ts_for_contact(*it))
 //			first_ts_contacts.push_back(*it);
 //		else
-//			break; // When a contact does not belong to the same time stamp that first then
-//the following contacts neither.
+//			break; // When a contact does not belong to the same time stamp that first
+//then the following contacts neither.
 //
 //
 //	int last_hop_destination_in_initial = first_ts_contacts.back()->getDestinationEid(); //At
-//which node this bundle will arrive in current timestamp is all go well
+// which node this bundle will arrive in current timestamp is all go well
 //
 //	double route_successful_probability = get_node_future_delivery_probability(source_eid,
-//target_eid, last_hop_destination_in_initial, route_initial_ts + 1); 	for(vector<Contact
+// target_eid, last_hop_destination_in_initial, route_initial_ts + 1); 	for(vector<Contact
 //*>::iterator it = first_ts_contacts.begin(); it != first_ts_contacts.end(); it++)
 //	{
 //		route_successful_probability *= 1 - failure_pr[(*it)->getId()];
@@ -996,8 +996,8 @@ int CGRBRUFPowered::get_ts_for_contact(Contact *c) {
 //			case_pr *= 1 - failure_pr[first_ts_contacts.at(j)->getId()];
 //
 //		route_successful_probability += case_pr *
-//get_node_future_delivery_probability(source_eid, target_eid,
-//first_ts_contacts.at(i)->getSourceEid(), route_initial_ts + 1);
+// get_node_future_delivery_probability(source_eid, target_eid,
+// first_ts_contacts.at(i)->getSourceEid(), route_initial_ts + 1);
 //	}
 //
 //	return route_successful_probability;

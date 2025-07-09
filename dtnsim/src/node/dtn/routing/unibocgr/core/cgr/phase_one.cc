@@ -867,8 +867,9 @@ static void compute_new_distances(PhaseOneSAP *sap, time_t current_time, UniboCo
                         tempWork.hopCount = currentWork->hopCount;
                         tempWork.arrivalConfidence =
                             contact->confidence * currentWork->arrivalConfidence;
-                        tempWork.successProbability = 0; // get_probability_if_this_contact_is_chosen(contact,
-                                                         // earliestTransmissionTime);
+                        tempWork.successProbability =
+                            0; // get_probability_if_this_contact_is_chosen(contact,
+                               // earliestTransmissionTime);
 
                         if (contact->toNode != contact->fromNode) {
                             tempWork.hopCount += 1;
@@ -1521,8 +1522,8 @@ void remove_neighbor_from_known_routes(List knownRoutes, unsigned long long neig
             route = (Route *)elt->data;
             if (route->neighbor == neighbor) {
                 delete_cgr_route(route);
-                //				verbose_debug_printf("Remove from knownRoutes (neighbor:
-                //%llu)...", neighbor);
+                //				verbose_debug_printf("Remove from knownRoutes
+                //(neighbor: %llu)...", neighbor);
             }
         }
 

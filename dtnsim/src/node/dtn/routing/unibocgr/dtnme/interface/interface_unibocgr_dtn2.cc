@@ -842,8 +842,8 @@ static int exclude_neighbors() {
  *
  * \param[in]     time              The current time
  * \param[in]     *bundle           The DTN2's bundle that has to be forwarded
- * \param[out]    *res          	The list of best routes found written on a string separated by
- *a space
+ * \param[out]    *res          	The list of best routes found written on a string separated
+ *by a space
  *
  *
  * \par Revision History:

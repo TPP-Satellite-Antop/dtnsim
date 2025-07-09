@@ -109,22 +109,21 @@ bool BRUFNCopies1TOracle::incSolvedCopies(int copies) {
             //			for(it = children.begin(); it != children.end(); ++it)
             //			{
             //				State child = mcStates_.at(*it);
-            //				if(accumulate(child.copies_by_nodes_.begin(), child.copies_by_nodes_.end(), 0)
-            //> numOfCopies_)
+            //				if(accumulate(child.copies_by_nodes_.begin(), child.copies_by_nodes_.end(),
+            //0) > numOfCopies_)
             //				{
             //					//Sink state was reached
             //					currentMCState_ = (*it);
-            //					cout<<"BRUFNCopies1TOracle::incSolvedCopies() Traffic"<<source_<<" ->
+            //					cout<<"BRUFNCopies1TOracle::incSolvedCopies() Traffic"<<source_<<"
+            //->
             //"<<target_<<" Sink state([Python_id = "<< child.id_python <<"]) was reached."<<endl;
             //					return true;
             //				}
             //			}
-            //			cout<<"BRUFNCopies1TOracle::incSolvedCopies() "<<source_<<" -> "<<target_<<"
-            //Error must update child but it fails. [Current MC State Python_id = " <<
-            //mcStates_.at(currentMCState_).id_python; 			cout<<"] Current network state: ";
-            //			printEstado();
-            //			cout<<endl;
-            //			exit(1);
+            //			cout<<"BRUFNCopies1TOracle::incSolvedCopies() "<<source_<<" ->
+            //"<<target_<<" Error must update child but it fails. [Current MC State Python_id = " <<
+            // mcStates_.at(currentMCState_).id_python; 			cout<<"] Current network state:
+            // "; 			printEstado(); 			cout<<endl; 			exit(1);
         } else {
             // othewise a final state was reached
             cout << "BRUFNCopies1TOracle::incSolvedCopies() : Final state [Python_id = "

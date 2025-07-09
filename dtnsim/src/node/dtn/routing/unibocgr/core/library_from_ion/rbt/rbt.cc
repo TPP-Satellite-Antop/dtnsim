@@ -594,8 +594,8 @@ static RbtNode *createNode(Rbt *rbt, RbtNode *parent, void *data, RbtNode **buff
  * \param[in]  *data  The data pointed by the new RbtNode
  *
  * \par Notes:
- * 			1. The compareFn will be used to find the position where the new node will be
- *inserted.
+ * 			1. The compareFn will be used to find the position where the new node will
+ *be inserted.
  *
  * \par Revision History:
  *
