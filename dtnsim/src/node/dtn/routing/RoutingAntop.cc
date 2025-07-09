@@ -1,16 +1,16 @@
-#include "src/node/dtn/routing/RoutingDirect.h"
+#include "src/node/dtn/routing/RoutingAntop.h"
 
-RoutingDirect::RoutingDirect(int eid, SdrModel * sdr, ContactPlan * contactPlan)
+RoutingAntop::RoutingAntop(int eid, SdrModel * sdr, ContactPlan * contactPlan)
 	: RoutingDeterministic(eid, sdr, contactPlan)
 {
 }
 
-RoutingDirect::~RoutingDirect()
+RoutingAntop::~RoutingAntop()
 {
 
 }
 
-void RoutingDirect::routeAndQueueBundle(BundlePkt * bundle, double simTime)
+void RoutingAntop::routeAndQueueBundle(BundlePkt * bundle, double simTime)
 {
 	int contactId=0; // contact 0 is the limbo
 
