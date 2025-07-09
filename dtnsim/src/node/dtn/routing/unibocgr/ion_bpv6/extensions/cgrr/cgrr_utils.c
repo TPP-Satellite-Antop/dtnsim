@@ -499,8 +499,9 @@ int cgrr_getCGRRFromExtensionBlock(ExtensionBlock *blk, CGRRouteBlock *cgrrBlk) 
     //	for (myIndex = 0; myIndex < appo->recRoutesLength; ++myIndex)
     //	{
     //		sdrCgrrBlk.recomputedRoutes[myIndex].hopCount =
-    // appo->recomputedRoutes[myIndex].hopCount; 		sdrCgrrBlk.recomputedRoutes[myIndex].hopList
-    // = (Hop*) malloc(sizeof(Hop) * appo->recomputedRoutes[myIndex].hopCount);
+    // appo->recomputedRoutes[myIndex].hopCount;
+    // sdrCgrrBlk.recomputedRoutes[myIndex].hopList = (Hop*) malloc(sizeof(Hop) *
+    // appo->recomputedRoutes[myIndex].hopCount);
     //		memcpy(sdrCgrrBlk.recomputedRoutes[myIndex].hopList,
     //				appo->recomputedRoutes[myIndex].hopList,
     //				sizeof(Hop) * appo->recomputedRoutes[myIndex].hopCount);
@@ -554,8 +555,8 @@ int cgrr_getCGRRFromExtensionBlock(ExtensionBlock *blk, CGRRouteBlock *cgrrBlk) 
                     cgrrBlk->originalRoute.hopCount);
 
     /* Step 1.2 - If the Hop Count is greater than 0, we allocate memory.
-     * 				If there is no hop count, it means that a route was either not computed at
-     * the source or it's being processed at source node.
+     * 				If there is no hop count, it means that a route was either not computed
+     * at the source or it's being processed at source node.
      */
     if (cgrrBlk->originalRoute.hopCount > 0) {
         // Modified by G.M. De Cola
@@ -1079,9 +1080,8 @@ int processModifiedExtensionBlock(Bundle *bundle, Object blkAddr, ExtensionBlock
                 }
 
                 // cgrr_debugPrint("processModifiedExtensionBlock: %u address: %lu, length %u,
-                // datalen %u, size %u", 						blk->type, blk->object,
-                // blk->length, blk->dataLength,
-                // blk->size);
+                // datalen %u, size %u", 						blk->type,
+                // blk->object, blk->length, blk->dataLength, blk->size);
 
                 // cgrr_debugPrint("addRoute: writing modified Extension Block to sdr...");
                 // CHKERR(sdr_begin_xn(bpSdr));
@@ -1132,12 +1132,12 @@ void copyCGRRoute(CGRRoute *dest, CGRRoute *src) {
     for (j = 0; j < src->hopCount; j++) {
         dest->hopList[j].fromNode = src->hopList[j].fromNode;
         // cgrr_debugPrint("[cgrr_utils.c/copyCGRRoute] Added dest->hopList[%d].fromNode = "
-        // UVAST_FIELDSPEC ".", 					j, dest->hopList[j].fromNode); //Modified
-        // by F. Marchetti
+        // UVAST_FIELDSPEC ".", 					j, dest->hopList[j].fromNode);
+        // //Modified by F. Marchetti
         dest->hopList[j].toNode = src->hopList[j].toNode;
         // cgrr_debugPrint("[cgrr_utils.c/copyCGRRoute] Added dest->hopList[%d].toNode = "
-        // UVAST_FIELDSPEC ".", 					j, dest->hopList[j].toNode); //Modified by
-        // F. Marchetti
+        // UVAST_FIELDSPEC ".", 					j, dest->hopList[j].toNode); //Modified
+        // by F. Marchetti
         dest->hopList[j].fromTime = src->hopList[j].fromTime;
         // cgrr_debugPrint("copyCGRRoute: Added dest->hopList[%d].fromTime = %ld.",
         //					j, dest->hopList[j].fromTime); //Modified by F.

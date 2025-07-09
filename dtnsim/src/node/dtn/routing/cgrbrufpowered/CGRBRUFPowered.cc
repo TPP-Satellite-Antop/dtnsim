@@ -976,7 +976,7 @@ int CGRBRUFPowered::get_ts_for_contact(Contact *c) {
 //			first_ts_contacts.push_back(*it);
 //		else
 //			break; // When a contact does not belong to the same time stamp that first
-//then the following contacts neither.
+// then the following contacts neither.
 //
 //
 //	int last_hop_destination_in_initial = first_ts_contacts.back()->getDestinationEid(); //At
