@@ -1,0 +1,3 @@
+[submodule "external/lib"]
+	path = external/lib
+	url = git@github.com:TPP-Satellite-Antop/satellite-antop.git
