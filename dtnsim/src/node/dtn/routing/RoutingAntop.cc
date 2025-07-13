@@ -1,4 +1,5 @@
 #include "src/node/dtn/routing/RoutingAntop.h"
+#include "Antop.h"
 
 RoutingAntop::RoutingAntop(int eid, SdrModel *sdr, ContactPlan *contactPlan)
     : RoutingDeterministic(eid, sdr, contactPlan) {}

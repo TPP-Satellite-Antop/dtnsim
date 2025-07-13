@@ -12,6 +12,7 @@
 #include <src/node/dtn/CustodyModel.h>
 #include <src/node/dtn/SdrModel.h>
 #include <src/node/dtn/routing/Routing.h>
+#include <src/node/dtn/routing/RoutingAntop.h>
 #include <src/node/dtn/routing/RoutingBRUF1T.h>
 #include <src/node/dtn/routing/RoutingCgrModel350.h>
 #include <src/node/dtn/routing/RoutingCgrModel350_Probabilistic.h>
