@@ -38,6 +38,7 @@ OBJS = \
     $O/src/node/dtn/Dtn.o \
     $O/src/node/dtn/SdrModel.o \
     $O/src/node/dtn/SdrStatus.o \
+    $O/src/node/dtn/routing/RoutingAntop.o \
     $O/src/node/dtn/routing/RoutingBRUF1T.o \
     $O/src/node/dtn/routing/RoutingCgrModel350.o \
     $O/src/node/dtn/routing/RoutingCgrModel350_2Copies.o \
@@ -191,3 +192,8 @@ help:
 
 #include all dependencies
 -include $(OBJS:%=%.d) $(MSGFILES:%.msg=$O/%_m.h.d)
+
+external/lib/build/libantop.a:
+	cd external/lib && mkdir -p build && cd build && cmake .. && make
+
+$(TARGET_FILES): external/lib/build/libantop.a

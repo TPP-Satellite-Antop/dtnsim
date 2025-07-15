@@ -82,6 +82,7 @@ int SdrModel::getBytesStoredInSdr() {
     return bytesStored_;
 }
 
+// Returns the total number of bytes stored in the SDR that are intended to be sent to `eid` when a contact becomes available.
 int SdrModel::getBytesStoredToNeighbor(int eid) {
     int size = 0;
 

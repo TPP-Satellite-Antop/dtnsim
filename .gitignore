@@ -19,3 +19,4 @@ dtnsim/simulations/iccAnalysis/**/resultsRandom/
 dtnsim/simulations/tutorial/**/results/
 
 .idea
+.vscode

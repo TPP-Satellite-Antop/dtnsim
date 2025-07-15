@@ -1,11 +1,10 @@
 
 
-cplusplus {
-    {
+cplusplus {{
 #include "src/node/dtn/routing/CgrRoute.h"
-        typedef std::list<int> intList;
-    }
-}
+typedef std::list<int> intList;
+}}
+
 
 class CgrRoute {
     @existingClass;
