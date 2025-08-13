@@ -7,7 +7,7 @@ dtnsim/out/
 dtnsim/dtnsim
 
 # Ignore results files in simulations folder
-dtnsim/simulations/**/results/
+dtnsim/simulations/*/results/
 
 dtnsim/simulations/opportunistic/**/.sca
 dtnsim/simulations/opportunistic/**/.vci
