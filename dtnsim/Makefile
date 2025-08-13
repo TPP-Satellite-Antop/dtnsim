@@ -193,7 +193,6 @@ help:
 #include all dependencies
 -include $(OBJS:%=%.d) $(MSGFILES:%.msg=$O/%_m.h.d)
 
-external/lib/build/libantop.a:
-	cd external/lib && mkdir -p build && cd build && cmake .. && make
+#external/lib/build/libantop.a: cd external/lib && mkdir -p build && cd build && cmake .. && make
 
-$(TARGET_FILES): external/lib/build/libantop.a
+# $(TARGET_FILES): external/lib/build/libantop.a

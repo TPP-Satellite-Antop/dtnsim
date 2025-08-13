@@ -1,10 +1,12 @@
 #!/bin/bash
 
-# delete old generated files
-rm -rf ../results/dtnsim.*.pdf
-rm -rf ../results/dtnsim.*.pdf
-rm -rf ../results/dtnsim.*.pdf
+directory="$1"
+if [ -z "$directory" ]; then
+  echo "Usage: $0 <path_to_dtnsim_results_directory>"
+  exit 1
+fi
 
-#generate new pdf files from .vec and .sca files
-python3 mainVec.py ../results ../results
-python3 mainSca.py ../results ../results
+rm -rf "$directory"/dtnsim.*.pdf
+
+python3 mainVec.py "$directory" "$directory"
+python3 mainSca.py "$directory" "$directory"
