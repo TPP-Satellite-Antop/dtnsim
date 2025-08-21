@@ -20,6 +20,6 @@ plots can be done in the python script.
 
 Note:
 The following python libraries are needed: 
-matplotlib, math 
+matplotlib
 
 
