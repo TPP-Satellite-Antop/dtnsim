@@ -20,7 +20,10 @@ The simulator is still under development: this is a beta version. Nonetheless, f
 Note: Nodes will remain static in the simulation visualization. Indeed, the dynamic of the network is captured in the "contact plans" which comprises a list of all time-bound communication opportunities between nodes. In other words, if simulating mobile network, the mobility should be captured in such contact plans and provided to DTNSIM as input.
 
 2. Using command line
-* Update the submodules: `git submodule update --init --recursive`
+* Move to `external/lib` and pull changes from the submodule:
+```sh
+git pull
+```
 * Add to you PATH envar the path to omnetpp/bin. For example: `export PATH=/home/user/omnetpp-6.1/bin:$PATH`
 * `cd` to /dtnsim
 * Change the variable "PYTHON_VERSION" in the Makefile to your python version. (Just mayor and minor).
