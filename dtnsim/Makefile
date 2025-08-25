@@ -13,7 +13,7 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
 
 PYTHON_VERSION=3.11
 #C++ include paths(with - I)
-INCLUDE_PATH = -I. -I/usr/include/python$(PYTHON_VERSION)
+INCLUDE_PATH = -I. -I/usr/include/python$(PYTHON_VERSION) -I../external/lib/include -I../external/lib/h3/src/h3lib/include
 
 #Additional object and library files to link with
 EXTRA_OBJS = ../external/lib/build/libSatelliteAntopLib.a
@@ -40,6 +40,7 @@ OBJS = \
     $O/src/node/dtn/SdrStatus.o \
     $O/src/node/dtn/routing/RoutingBRUF1T.o \
     $O/src/node/dtn/routing/RoutingCgrModel350.o \
+    $O/src/node/dtn/routing/RoutingAntop.o \
     $O/src/node/dtn/routing/RoutingCgrModel350_2Copies.o \
     $O/src/node/dtn/routing/RoutingCgrModel350_Hops.o \
     $O/src/node/dtn/routing/RoutingCgrModel350_Probabilistic.o \

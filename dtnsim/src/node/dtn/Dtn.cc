@@ -1,6 +1,5 @@
 #include "src/node/dtn/Dtn.h"
 #include "src/node/app/App.h"
-#include "src/node/dtn/routing/RoutingAntop.h"
 
 Define_Module(Dtn);
 
