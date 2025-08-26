@@ -12,8 +12,9 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(QTENV_LIBS)
 
 PYTHON_VERSION=3.11
+
 #C++ include paths(with - I)
-INCLUDE_PATH = -I. -I/usr/include/python$(PYTHON_VERSION) -I../external/lib/include -I../external/lib/h3/src/h3lib/include
+INCLUDE_PATH = -I. -I/usr/include/python$(PYTHON_VERSION) -I../external/lib/include -I../external/lib/build/_deps/h3-src/src/h3lib/include -I../external/lib/build/_deps/h3-build/src/h3lib/include
 
 #Additional object and library files to link with
 EXTRA_OBJS = ../external/lib/build/libSatelliteAntopLib.a
