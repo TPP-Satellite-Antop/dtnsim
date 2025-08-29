@@ -11,16 +11,16 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(CMDENV_LIBS)
 #USERIF_LIBS = $(QTENV_LIBS)
 
-PYTHON_VERSION=3.11
+PYTHON_VERSION := $(shell python3 -c "import sys; print(f'{sys.version_info[0]}.{sys.version_info[1]}')")
 
 #C++ include paths(with - I)
-INCLUDE_PATH = -I. -I/usr/include/python$(PYTHON_VERSION) -I../external/lib/include -I../external/lib/build/_deps/h3-src/src/h3lib/include -I../external/lib/build/_deps/h3-build/src/h3lib/include
+INCLUDE_PATH = -I. -I/usr/include/python$(PYTHON_VERSION) -I$(HOME)/.local/include -I$(HOME)/.local/include/h3
 
 #Additional object and library files to link with
-EXTRA_OBJS = ../external/lib/build/libSatelliteAntopLib.a
+EXTRA_OBJS = 
 
 #Additional libraries(-L, -l options)
-LIBS =  -lpython$(PYTHON_VERSION)
+LIBS =  -lpython$(PYTHON_VERSION) -L$(HOME)/.local/lib -lSatelliteAntopLib -lh3
 
 #Output directory
 PROJECT_OUTPUT_DIR = out
@@ -193,8 +193,3 @@ help:
 
 #include all dependencies
 -include $(OBJS:%=%.d) $(MSGFILES:%.msg=$O/%_m.h.d)
-
-../external/lib/build/libSatelliteAntopLib.a:
-	cd ../external/lib && ./local-build.sh
-
-$O/$(TARGET): ../external/lib/build/libSatelliteAntopLib.a

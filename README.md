@@ -26,8 +26,7 @@ git pull
 ```
 * Add to you PATH envar the path to omnetpp/bin. For example: `export PATH=/home/user/omnetpp-6.1/bin:$PATH`
 * `cd` to /dtnsim
-* Change the variable "PYTHON_VERSION" in the Makefile to your python version. (Just mayor and minor).
-* Run `make`
+* Run `./compile.sh` to build the project (antop lib is built too).
 
 
 ## ION Support ##
