@@ -44,6 +44,7 @@ class ContactPlan {
     vector<Contact> getDiscoveredContacts();
     vector<int> getCurrentNeighbors();
     Contact *getContactBySrcDstStart(int sourceEid, int destinationEid, double start);
+    int getNodesNumber();
     double getRangeBySrcDst(int Src, int Dst);
     void parseContactPlanFile(string fileName, int nodesNumber, int mode, double failureProb);
     void parseOpportunisticContactPlanFile(string fileName, int nodesNumber, int mode,
@@ -83,6 +84,7 @@ class ContactPlan {
     vector<int> contactIdShift_ = {0}; // create dummy element for limbo contact
     simtime_t lastEditTime;
     string contactsFile_;
+    int nodesNumber_;
 };
 
 #endif /* CONTACTPLAN_H_ */

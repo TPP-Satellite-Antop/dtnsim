@@ -13,6 +13,7 @@ ContactPlan::ContactPlan(ContactPlan &contactPlan) {
     this->contactIdShift_ = contactPlan.contactIdShift_;
     this->contactIdsBySrc_ = contactPlan.contactIdsBySrc_;
 
+
     for (size_t i = 0; i < contacts_.size(); i++) {
         contacts_.at(i).work = NULL;
     }
@@ -35,6 +36,8 @@ ContactPlan::ContactPlan(ContactPlan &contactPlan) {
  */
 void ContactPlan::parseContactPlanFile(string fileName, int nodesNumber, int mode,
                                        double failureProb) {
+
+    this->nodesNumber_ = nodesNumber;
     this->contactIdsBySrc_.resize(nodesNumber + 1);
 
     double start = 0.0;
@@ -114,6 +117,10 @@ void ContactPlan::parseContactPlanFile(string fileName, int nodesNumber, int mod
     this->setContactsFile(fileName);
     this->updateContactRanges();
     this->sortContactIdsBySrcByStartTime();
+}
+
+int ContactPlan::getNodesNumber() {
+    return this->nodesNumber_;
 }
 
 /**
