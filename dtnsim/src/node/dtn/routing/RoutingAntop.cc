@@ -4,6 +4,7 @@
 RoutingAntop::RoutingAntop(int eid, SdrModel *sdr, ContactPlan *contactPlan): RoutingDeterministic(eid, sdr, contactPlan) {
     this->antopAlgorithm = new Antop();
     this->antopAlgorithm->init(contactPlan->getNodesNumber());
+    //TODO init h3IndexToEid
 }
 
 RoutingAntop::~RoutingAntop() {}

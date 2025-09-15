@@ -13,7 +13,6 @@ ContactPlan::ContactPlan(ContactPlan &contactPlan) {
     this->contactIdShift_ = contactPlan.contactIdShift_;
     this->contactIdsBySrc_ = contactPlan.contactIdsBySrc_;
 
-
     for (size_t i = 0; i < contacts_.size(); i++) {
         contacts_.at(i).work = NULL;
     }
