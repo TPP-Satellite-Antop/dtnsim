@@ -6,6 +6,7 @@ RoutingAntop::RoutingAntop(int eid, SdrModel *sdr, ContactPlan *contactPlan): Ro
     this->antopAlgorithm = new Antop();
     this->nodePositions = contactPlan->getNodePositions();
     this->antopAlgorithm->init(contactPlan->getNodesNumber());
+    this->prevSrc = 0;
 }
 
 RoutingAntop::~RoutingAntop() {}
