@@ -15,7 +15,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         bundle->getSourceEid(),
         bundle->getDestinationEid(),
         this->prevSrc,
-        this->isNextHopValid
+        [this](H3Index idx){ return this->isNextHopValid(idx); }
     );
 
     if (nextHopId != 0) {
