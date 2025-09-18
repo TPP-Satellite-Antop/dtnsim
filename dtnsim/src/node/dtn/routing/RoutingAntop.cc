@@ -19,6 +19,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     );
 
     if (nextHopId != 0) {
+        this->prevSrc = bundle->getSourceEid();
         bundle->setNextHopEid(contactPlan_->getContactById(nextHopId)->getDestinationEid());
     }
 
