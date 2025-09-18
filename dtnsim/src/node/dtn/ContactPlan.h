@@ -92,7 +92,7 @@ class ContactPlan {
     simtime_t lastEditTime;
     string contactsFile_;
     int nodesNumber_;
-    unordered_map<TimeInterval, vector<PositionEntry>> nodePositions_; // Eid -> list of positions
+    unordered_map<TimeInterval, vector<PositionEntry>> nodePositions_;
 };
 
 #endif /* CONTACTPLAN_H_ */
