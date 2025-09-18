@@ -47,6 +47,7 @@ class ContactPlan {
     vector<int> getCurrentNeighbors();
     Contact *getContactBySrcDstStart(int sourceEid, int destinationEid, double start);
     int getNodesNumber();
+    unordered_map<TimeInterval, vector<PositionEntry>> getNodePositions();
     double getRangeBySrcDst(int Src, int Dst);
     void parseContactPlanFile(string fileName, int nodesNumber, int mode, double failureProb);
     void parseAction(std::string &command, double start, double end, int sourceEid,
@@ -91,7 +92,7 @@ class ContactPlan {
     simtime_t lastEditTime;
     string contactsFile_;
     int nodesNumber_;
-    unordered_map<int, vector<PositionEntry>> nodePositions_; // Eid -> list of positions
+    unordered_map<TimeInterval, vector<PositionEntry>> nodePositions_; // Eid -> list of positions
 };
 
 #endif /* CONTACTPLAN_H_ */

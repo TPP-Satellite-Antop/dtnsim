@@ -1,6 +1,10 @@
 #include "ContactPlan.h"
 #include <src/node/dtn/ContactPlan.h>
 
+double toRadians(double degree) {
+    return degree * M_PI / 180.0;
+}
+
 ContactPlan::~ContactPlan() {}
 
 ContactPlan::ContactPlan() {}
@@ -173,12 +177,14 @@ void ContactPlan::parseOpportunisticContactPlanFile(string fileName, int nodesNu
                 stringLine >> lat >> lon;
 
                 PositionEntry entry;
-                entry.tStart = start;
-                entry.tEnd   = end;
-                entry.lat    = lat;
-                entry.lon    = lon;
+                entry.latLng = LatLng{toRadians(lat), toRadians(lon)};
+                entry.eId    = sourceEid;
 
-                this->nodePositions_[sourceEid].push_back(entry);
+                TimeInterval interval;
+                interval.tStart = start;
+                interval.tEnd   = end;
+
+                this->nodePositions_[interval].push_back(entry);
             }else{
                 stringstream stringLine(fileLine);
                 stringLine >> destinationEid >>
@@ -736,4 +742,8 @@ void ContactPlan::deleteOldContacts() {
             it->second.clear();
         }
     }
+}
+
+unordered_map<TimeInterval, vector<PositionEntry>> ContactPlan::getNodePositions() {
+    return this->nodePositions_;
 }
