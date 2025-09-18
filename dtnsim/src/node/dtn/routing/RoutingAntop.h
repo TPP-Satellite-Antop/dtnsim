@@ -16,7 +16,6 @@ class RoutingAntop : public RoutingDeterministic {
 
   private:
     Antop* antopAlgorithm;
-    std::unordered_map<H3Index, int> h3IndexToEid;
 };
 
 #endif /* SRC_NODE_DTN_ROUTINGANTOP_H_ */

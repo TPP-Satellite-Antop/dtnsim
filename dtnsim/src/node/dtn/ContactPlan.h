@@ -3,10 +3,12 @@
 
 #include <algorithm>
 #include <fstream>
+#include <unordered_map>
 #include <omnetpp.h>
 #include <queue>
 #include <src/node/dtn/Contact.h>
 #include <vector>
+#include "PositionEntry.h"
 
 using namespace std;
 using namespace omnetpp;
@@ -47,8 +49,12 @@ class ContactPlan {
     int getNodesNumber();
     double getRangeBySrcDst(int Src, int Dst);
     void parseContactPlanFile(string fileName, int nodesNumber, int mode, double failureProb);
+    void parseAction(std::string &command, double start, double end, int sourceEid,
+                     int destinationEid, double dataRateOrRange, double failureProbability,
+                     int mode, std::string &fileLine, int &retFlag);
     void parseOpportunisticContactPlanFile(string fileName, int nodesNumber, int mode,
                                            double failureProb);
+    void setFailureProb(double failureProb, double &failureProbability);
     void setContactsFile(string contactsFile);
     const string &getContactsFile() const;
     simtime_t getLastEditTime();
@@ -85,6 +91,7 @@ class ContactPlan {
     simtime_t lastEditTime;
     string contactsFile_;
     int nodesNumber_;
+    unordered_map<int, vector<PositionEntry>> nodePositions_; // Eid -> list of positions
 };
 
 #endif /* CONTACTPLAN_H_ */

@@ -1,3 +1,4 @@
+#include "ContactPlan.h"
 #include <src/node/dtn/ContactPlan.h>
 
 ContactPlan::~ContactPlan() {}
@@ -164,40 +165,57 @@ void ContactPlan::parseOpportunisticContactPlanFile(string fileName, int nodesNu
 
         // This seems to be a valid command line, parse it
         stringstream stringLine(fileLine);
-        stringLine >> a >> command >> start >> end >> sourceEid >> destinationEid >>
-            dataRateOrRange >> failureProbability;
-
-        if (failureProb >= 0) {
-            failureProbability = failureProb;
-        }
+        stringLine >> a >> command >> start >> end >> sourceEid;
 
         if (a.compare("a") == 0) {
-            if ((command.compare("contact") == 0)) {
+            if ((command.compare("position") == 0)){
+                double lat, lon;
+                stringLine >> lat >> lon;
+
+                PositionEntry entry;
+                entry.tStart = start;
+                entry.tEnd   = end;
+                entry.lat    = lat;
+                entry.lon    = lon;
+
+                this->nodePositions_[sourceEid].push_back(entry);
+            }else{
+                stringstream stringLine(fileLine);
+                stringLine >> destinationEid >>
+                    dataRateOrRange >> failureProbability;
+
+                if (failureProb >= 0) {
+                    failureProbability = failureProb;
+                }
+
+                if ((command.compare("contact") == 0)) {
                 this->addContact(start, end, sourceEid, destinationEid, dataRateOrRange,
                                  (double)1.0, (double)failureProbability / 100);
-            } else if ((command.compare("range") == 0)) {
-                this->addRange(start, end, sourceEid, destinationEid, dataRateOrRange, (double)1.0);
-            } else if ((command.compare("ocontact") == 0)) {
-                if (mode < 1) {
-                    continue;
+                } else if ((command.compare("range") == 0)) {
+                    this->addRange(start, end, sourceEid, destinationEid, dataRateOrRange, (double)1.0);
+                } else if ((command.compare("ocontact") == 0)) {
+                    if (mode < 1) {
+                        continue;
+                    } else {
+                        this->addDiscoveredContact(start, end, sourceEid, destinationEid,
+                                                dataRateOrRange, (double)1.0, 0);
+                        this->addDiscoveredContact(start, end, destinationEid, sourceEid,
+                                                dataRateOrRange, (double)1.0, 0);
+                    }
+                } else if ((command.compare("orange") == 0)) {
+                    if (mode < 1) {
+                        continue;
+                    } else {
+                        this->addRange(start, end, sourceEid, destinationEid, dataRateOrRange,
+                                    (double)1.0);
+                        this->addRange(start, end, destinationEid, sourceEid, dataRateOrRange,
+                                    (double)1.0);
+                    }
                 } else {
-                    this->addDiscoveredContact(start, end, sourceEid, destinationEid,
-                                               dataRateOrRange, (double)1.0, 0);
-                    this->addDiscoveredContact(start, end, destinationEid, sourceEid,
-                                               dataRateOrRange, (double)1.0, 0);
+                    cout << "dtnsim error: unknown contact plan command type: a " << fileLine << endl;
                 }
-            } else if ((command.compare("orange") == 0)) {
-                if (mode < 1) {
-                    continue;
-                } else {
-                    this->addRange(start, end, sourceEid, destinationEid, dataRateOrRange,
-                                   (double)1.0);
-                    this->addRange(start, end, destinationEid, sourceEid, dataRateOrRange,
-                                   (double)1.0);
                 }
-            } else {
-                cout << "dtnsim error: unknown contact plan command type: a " << fileLine << endl;
-            }
+            
         }
     }
 
