@@ -22,6 +22,8 @@ class RoutingAntop : public RoutingDeterministic {
     H3Index prevSrc; // for example: we want to send bundle from 1 to 4. First call to getNextHopId(1,4,0) returns 2. 
                      // In next call prevSrc is 1: getNextHopId(2,4,1).
     bool isNextHopValid(H3Index nextHop) const;
+    H3Index getH3IndexFromEid(int eid);
+    int getEidFromH3Index(H3Index idx);
 };
 
 #endif /* SRC_NODE_DTN_ROUTINGANTOP_H_ */

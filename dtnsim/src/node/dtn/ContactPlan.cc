@@ -27,93 +27,88 @@ ContactPlan::ContactPlan(ContactPlan &contactPlan) {
     }
 }
 
-/**
- * Sets up the contactPlan for the simulations
- *
- * @param fileName: The name of the contact plan .txt file
- * 		  nodesNumber: The number of nodes
- * 		  mode: The chosen mode for the simulation (0, 1, 2)
- * 		  failureProb: The failure probability every contact should have, -1 if the
- * probability from the contact plan file should be taken
- *
- * @authors: original implementation from the authors of DTNSim, then modified by Simon Rink
- */
-void ContactPlan::parseContactPlanFile(string fileName, int nodesNumber, int mode,
-                                       double failureProb) {
+int ContactPlan::getNodesNumber() {
+    return this->nodesNumber_;
+}
 
-    this->nodesNumber_ = nodesNumber;
-    this->contactIdsBySrc_.resize(nodesNumber + 1);
+void ContactPlan::processContactPlanLine(
+    const std::string& fileLine,
+    int mode,
+    double failureProb,
+    bool opportunistic)
+{
+    if (fileLine.empty() || fileLine.at(0) == '#')
+        return;
 
-    double start = 0.0;
-    double end = 0.0;
-    int sourceEid = 0;
-    int destinationEid = 0;
-    double dataRateOrRange = 0.0;
-    double failureProbability = 0.0;
+    std::string a, command;
+    double start = 0.0, end = 0.0, dataRateOrRange = 0.0, failureProbability = 0.0;
+    int sourceEid = 0, destinationEid = 0;
 
-    string fileLine = "#";
-    string a;
-    string command;
-    ifstream file;
+    std::stringstream stringLine(fileLine);
+    stringLine >> a >> command >> start >> end >> sourceEid;
 
-    file.open(fileName.c_str());
+    if (a != "a") return;
 
-    if (!file.is_open())
-        throw cException("%s", ("Error: wrong path to contacts file " + fileName).c_str());
+    if (command == "position") {
+        double lat, lon;
+        stringLine >> lat >> lon;
 
-    while (getline(file, fileLine)) {
-        if (fileLine.empty())
-            continue;
+        PositionEntry entry;
+        entry.latLng = LatLng{toRadians(lat), toRadians(lon)};
+        entry.eId    = sourceEid;
 
-        if (fileLine.at(0) == '#')
-            continue;
+        TimeInterval interval;
+        interval.tStart = start;
+        interval.tEnd   = end;
 
-        // This seems to be a valid command line, parse it
-        stringstream stringLine(fileLine);
-        stringLine >> a >> command >> start >> end >> sourceEid >> destinationEid >>
-            dataRateOrRange >> failureProbability;
-
+        this->nodePositions_[interval].push_back(entry);
+    } else {
+        stringLine >> destinationEid >> dataRateOrRange >> failureProbability;
         if (failureProb >= 0) {
             failureProbability = failureProb;
         }
 
-        if (a.compare("a") == 0) {
-            if ((command.compare("contact") == 0)) {
-                this->addContact(start, end, sourceEid, destinationEid, dataRateOrRange,
-                                 (double)1.0, (double)failureProbability / 100);
-            } else if ((command.compare("range") == 0)) {
-                this->addRange(start, end, sourceEid, destinationEid, dataRateOrRange, (double)1.0);
-            } else if ((command.compare("ocontact") == 0)) {
-                if (mode < 2) {
-                    continue;
-                } else {
-                    this->addContact(start, end, sourceEid, destinationEid, dataRateOrRange,
-                                     (double)1.0, 0);
-                    this->addContact(start, end, destinationEid, sourceEid, dataRateOrRange,
-                                     (double)1.0, 0);
-                }
-            } else if ((command.compare("orange") == 0)) {
-                if (mode < 2) {
-                    continue;
-                } else {
-                    this->addRange(start, end, sourceEid, destinationEid, dataRateOrRange,
-                                   (double)1.0);
-                    this->addRange(start, end, destinationEid, sourceEid, dataRateOrRange,
-                                   (double)1.0);
-                }
+        if (command == "contact") {
+            this->addContact(start, end, sourceEid, destinationEid, dataRateOrRange,
+                             1.0, failureProbability / 100);
+        } else if (command == "range") {
+            this->addRange(start, end, sourceEid, destinationEid, dataRateOrRange, 1.0);
+        } else if (command == "ocontact") {
+            int requiredMode = opportunistic ? 1 : 2;
+            if (mode < requiredMode) return;
+            if (opportunistic) {
+                this->addDiscoveredContact(start, end, sourceEid, destinationEid,
+                                           dataRateOrRange, 1.0, 0);
+                this->addDiscoveredContact(start, end, destinationEid, sourceEid,
+                                           dataRateOrRange, 1.0, 0);
             } else {
-                cout << "dtnsim error: unknown contact plan command type: a " << fileLine << endl;
+                this->addContact(start, end, sourceEid, destinationEid, dataRateOrRange,
+                                 1.0, 0);
+                this->addContact(start, end, destinationEid, sourceEid, dataRateOrRange,
+                                 1.0, 0);
             }
+        } else if (command == "orange") {
+            int requiredMode = opportunistic ? 1 : 2;
+            if (mode < requiredMode) return;
+            this->addRange(start, end, sourceEid, destinationEid, dataRateOrRange, 1.0);
+            this->addRange(start, end, destinationEid, sourceEid, dataRateOrRange, 1.0);
+        } else {
+            std::cout << "dtnsim error: unknown contact plan command type: a " << fileLine << std::endl;
         }
     }
+}
 
-    if (cin.bad()) {
-        // IO error
-    } else if (!cin.eof()) {
-        // format error (not possible with getline but possible with operator>>)
-    } else {
-        // format error (not possible with getline but possible with operator>>)
-        // or end of file (can't make the difference)
+void ContactPlan::parseContactPlanFile(std::string fileName, int nodesNumber, int mode, double failureProb) {
+    this->nodesNumber_ = nodesNumber;
+    this->contactIdsBySrc_.resize(nodesNumber + 1);
+
+    std::ifstream file(fileName.c_str());
+    if (!file.is_open())
+        throw cException("%s", ("Error: wrong path to contacts file " + fileName).c_str());
+
+    std::string fileLine;
+    while (getline(file, fileLine)) {
+        processContactPlanLine(fileLine, mode, failureProb, false);
     }
 
     file.close();
@@ -123,115 +118,16 @@ void ContactPlan::parseContactPlanFile(string fileName, int nodesNumber, int mod
     this->sortContactIdsBySrcByStartTime();
 }
 
-int ContactPlan::getNodesNumber() {
-    return this->nodesNumber_;
-}
-
-/**
- * Sets up the contactTopology for the simulations
- *
- * @param fileName: The name of the contact plan .txt file
- * 		  nodesNumber: The number of nodes
- * 		  mode: The chosen mode for the simulation (0, 1, 2)
- * 		  failureProb: The failure probability every contact should have, -1 if the
- * probability from the contact plan file should be taken
- *
- * @authors: adapted from parseContactPlanFile() from the authors of DTNSim, then ported and
- * modified by Simon Rink
- */
-void ContactPlan::parseOpportunisticContactPlanFile(string fileName, int nodesNumber, int mode,
-                                                    double failureProb) {
+void ContactPlan::parseOpportunisticContactPlanFile(std::string fileName, int nodesNumber, int mode, double failureProb) {
     this->contactIdsBySrc_.resize(nodesNumber + 1);
 
-    double start = 0.0;
-    double end = 0.0;
-    int sourceEid = 0;
-    int destinationEid = 0;
-    double dataRateOrRange = 0.0;
-    double failureProbability = 0;
-
-    string fileLine = "#";
-    string a;
-    string command;
-    ifstream file;
-
-    file.open(fileName.c_str());
-
+    std::ifstream file(fileName.c_str());
     if (!file.is_open())
         throw cException("%s", ("Error: wrong path to contacts file " + fileName).c_str());
 
+    std::string fileLine;
     while (getline(file, fileLine)) {
-        if (fileLine.empty())
-            continue;
-
-        if (fileLine.at(0) == '#')
-            continue;
-
-        // This seems to be a valid command line, parse it
-        stringstream stringLine(fileLine);
-        stringLine >> a >> command >> start >> end >> sourceEid;
-
-        if (a.compare("a") == 0) {
-            if ((command.compare("position") == 0)){
-                double lat, lon;
-                stringLine >> lat >> lon;
-
-                PositionEntry entry;
-                entry.latLng = LatLng{toRadians(lat), toRadians(lon)};
-                entry.eId    = sourceEid;
-
-                TimeInterval interval;
-                interval.tStart = start;
-                interval.tEnd   = end;
-
-                this->nodePositions_[interval].push_back(entry);
-            }else{
-                stringstream stringLine(fileLine);
-                stringLine >> destinationEid >>
-                    dataRateOrRange >> failureProbability;
-
-                if (failureProb >= 0) {
-                    failureProbability = failureProb;
-                }
-
-                if ((command.compare("contact") == 0)) {
-                this->addContact(start, end, sourceEid, destinationEid, dataRateOrRange,
-                                 (double)1.0, (double)failureProbability / 100);
-                } else if ((command.compare("range") == 0)) {
-                    this->addRange(start, end, sourceEid, destinationEid, dataRateOrRange, (double)1.0);
-                } else if ((command.compare("ocontact") == 0)) {
-                    if (mode < 1) {
-                        continue;
-                    } else {
-                        this->addDiscoveredContact(start, end, sourceEid, destinationEid,
-                                                dataRateOrRange, (double)1.0, 0);
-                        this->addDiscoveredContact(start, end, destinationEid, sourceEid,
-                                                dataRateOrRange, (double)1.0, 0);
-                    }
-                } else if ((command.compare("orange") == 0)) {
-                    if (mode < 1) {
-                        continue;
-                    } else {
-                        this->addRange(start, end, sourceEid, destinationEid, dataRateOrRange,
-                                    (double)1.0);
-                        this->addRange(start, end, destinationEid, sourceEid, dataRateOrRange,
-                                    (double)1.0);
-                    }
-                } else {
-                    cout << "dtnsim error: unknown contact plan command type: a " << fileLine << endl;
-                }
-                }
-            
-        }
-    }
-
-    if (cin.bad()) {
-        // IO error
-    } else if (!cin.eof()) {
-        // format error (not possible with getline but possible with operator>>)
-    } else {
-        // format error (not possible with getline but possible with operator>>)
-        // or end of file (can't make the difference)
+        processContactPlanLine(fileLine, mode, failureProb, true);
     }
 
     file.close();
@@ -381,6 +277,13 @@ vector<Contact> *ContactPlan::getRanges() {
 }
 
 vector<int> *ContactPlan::getContactIdsBySrc(int Src) {
+    printf("Getting contact IDs for source %d\n", Src);
+    printf("Contact IDs: ");
+    for (const auto& id : contactIdsBySrc_.at(Src)) {
+        printf("%d ", id);
+    }
+    printf("\n");
+    
     return &contactIdsBySrc_.at(Src);
 }
 
