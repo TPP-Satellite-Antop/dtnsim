@@ -277,13 +277,6 @@ vector<Contact> *ContactPlan::getRanges() {
 }
 
 vector<int> *ContactPlan::getContactIdsBySrc(int Src) {
-    printf("Getting contact IDs for source %d\n", Src);
-    printf("Contact IDs: ");
-    for (const auto& id : contactIdsBySrc_.at(Src)) {
-        printf("%d ", id);
-    }
-    printf("\n");
-    
     return &contactIdsBySrc_.at(Src);
 }
 

@@ -55,7 +55,7 @@ bool RoutingAntop::isNextHopValid(H3Index nextHop) const {
     return forEachCurrentPosition(this->nodePositions, currTime, [&](const PositionEntry& pos) {
         H3Index cell;
         latLngToCell(&pos.latLng, this->antopAlgorithm->getResolution(), &cell);
-        cout << "cell: " << cell << " (" << (unsigned long)cell << "), nextHop: " << nextHop << " (" << (unsigned long)nextHop << ")" << std::endl;
+        cout << "cell: " << cell << " nextHop: " << nextHop << std::endl;
         if (cell == nextHop) {
             printf("Next hop is valid\n");
             return true;
