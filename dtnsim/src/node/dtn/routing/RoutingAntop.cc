@@ -25,10 +25,10 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     );
 
     int nextHopEid = getEidFromH3Index(nextHopIndex);
+    cout << "Next eid: " << nextHopEid << endl;
     if (nextHopEid != -1) {
-        printf("Next hop for bundle %ld is %d\n", bundle->getBundleId(), nextHopEid);
         this->prevSrc = srcIndex;
-        bundle->setNextHopEid(contactPlan_->getContactById(nextHopEid)->getDestinationEid());
+       // bundle->setNextHopEid(nextHopEid);
     }
 
     //todo: esto deberia estar en el if?
@@ -57,7 +57,7 @@ bool RoutingAntop::isNextHopValid(H3Index nextHop) const {
         latLngToCell(&pos.latLng, this->antopAlgorithm->getResolution(), &cell);
         cout << "cell: " << cell << " nextHop: " << nextHop << std::endl;
         if (cell == nextHop) {
-            printf("Next hop is valid\n");
+            cout << "Next hop is valid: " << nextHop << std::endl;
             return true;
         }
         return false;
