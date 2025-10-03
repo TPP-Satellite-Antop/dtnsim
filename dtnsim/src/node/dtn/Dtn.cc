@@ -344,7 +344,8 @@ void Dtn::handleMessage(cMessage *msg) {
     ///////////////////////////////////////////
     // New Bundle (from App or Com):
     ///////////////////////////////////////////
-    if (msg->getKind() == BUNDLE || msg->getKind() == BUNDLE_CUSTODY_REPORT) {
+	switch(msg->getKind()) {
+	case BUNDLE, BUNDLE_CUSTODY_REPORT:
         if (msg->arrivedOn("gateToCom$i"))
             emit(dtnBundleReceivedFromCom, true);
         if (msg->arrivedOn("gateToApp$i"))
@@ -352,8 +353,8 @@ void Dtn::handleMessage(cMessage *msg) {
 
         BundlePkt *bundle = check_and_cast<BundlePkt *>(msg);
         dispatchBundle(bundle);
-    } else if (msg->getKind() == CONTACT_FAILED) // A failed contact was noticed!
-    {
+		break;
+    case CONTACT_FAILED: // A failed contact was noticed!
         ContactMsg *contactMsg = check_and_cast<ContactMsg *>(msg);
 
         RoutingUncertainUniboCgr *uniboRouting =
@@ -363,13 +364,11 @@ void Dtn::handleMessage(cMessage *msg) {
         this->refreshForwarding();
 
         delete contactMsg;
-    }
-
-    ///////////////////////////////////////////
+		break;
+	///////////////////////////////////////////
     // Contact Start and End
     ///////////////////////////////////////////
-    else if (msg->getKind() == DISC_CONTACT_START_TIMER) // Discovered contact was found
-    {
+	case DISC_CONTACT_START_TIMER: // Discovered contact was found
         ContactMsg *contactMsg = check_and_cast<ContactMsg *>(msg);
 
         Dtn *controller = check_and_cast<Dtn *>(
@@ -380,23 +379,19 @@ void Dtn::handleMessage(cMessage *msg) {
             .syncDiscoveredContact(contactTopology_.getContactById(contactMsg->getId()), true);
 
         delete contactMsg;
-
-    } else if (msg->getKind() == DISC_CONTACT_END_TIMER) // Discovered contact ended
-    {
+		break;
+	case DISC_CONTACT_END_TIMER: // Discovered contact ended
         ContactMsg *contactMsg = check_and_cast<ContactMsg *>(msg);
 
         Dtn *controller = check_and_cast<Dtn *>(
             this->getParentModule()->getParentModule()->getSubmodule("node", 0)->getSubmodule(
                 "dtn"));
 
-        (*controller)
-            .syncDiscoveredContact(contactTopology_.getContactById(contactMsg->getId()), false);
+        (*controller).syncDiscoveredContact(contactTopology_.getContactById(contactMsg->getId()), false);
 
         delete contactMsg;
-    }
-
-    else if (msg->getKind() == CONTACT_START_TIMER) {
-
+		break;
+	case CONTACT_START_TIMER:
         // Schedule end of contact
         ContactMsg *contactMsg = check_and_cast<ContactMsg *>(msg);
 
@@ -425,7 +420,8 @@ void Dtn::handleMessage(cMessage *msg) {
         scheduleAt(simTime(), forwardingMsg);
 
         delete contactMsg;
-    } else if (msg->getKind() == CONTACT_END_TIMER) {
+		break;
+    case CONTACT_END_TIMER:
         // Finish transmission: If bundles are left in contact re-route them
         ContactMsg *contactMsg = check_and_cast<ContactMsg *>(msg);
 
@@ -450,12 +446,11 @@ void Dtn::handleMessage(cMessage *msg) {
         cancelAndDelete(forwardingMsgs_[contactMsg->getId()]);
         forwardingMsgs_.erase(contactMsg->getId());
         delete contactMsg;
-    }
-
+		break;
     ///////////////////////////////////////////
     // Forwarding Stage
     ///////////////////////////////////////////
-    else if (msg->getKind() == FORWARDING_MSG_START) {
+    case FORWARDING_MSG_START:
         ForwardingMsgStart *forwardingMsgStart = check_and_cast<ForwardingMsgStart *>(msg);
         int neighborEid = forwardingMsgStart->getNeighborEid();
         int contactId = forwardingMsgStart->getContactId();
@@ -481,8 +476,7 @@ void Dtn::handleMessage(cMessage *msg) {
 
                 Contact *contact = contactTopology_.getContactById(contactId);
 
-                // if the message can be fully transmitted before the end of the contact, transmit
-                // it
+                // if the message can be fully transmitted before the end of the contact, transmit it
                 if ((simTime() + txDuration + linkDelay) <= contact->getEnd()) {
                     // Set bundle metadata (set by intermediate nodes)
                     bundle->setSenderEid(eid_);
@@ -520,14 +514,12 @@ void Dtn::handleMessage(cMessage *msg) {
                     scheduleAt(simTime() + txDuration, forwardingMsgStart);
 
                     // Schedule forwarding message end
-                    ForwardingMsgEnd *forwardingMsgEnd =
-                        new ForwardingMsgEnd("forwardingMsgEnd", FORWARDING_MSG_END);
+                    ForwardingMsgEnd *forwardingMsgEnd = new ForwardingMsgEnd("forwardingMsgEnd", FORWARDING_MSG_END);
                     forwardingMsgEnd->setSchedulingPriority(FORWARDING_MSG_END);
                     forwardingMsgEnd->setNeighborEid(neighborEid);
                     forwardingMsgEnd->setContactId(contactId);
                     forwardingMsgEnd->setBundleId(bundle->getBundleId());
-                    forwardingMsgEnd->setSentToDestination(neighborEid ==
-                                                           bundle->getDestinationEid());
+                    forwardingMsgEnd->setSentToDestination(neighborEid == bundle->getDestinationEid());
                     scheduleAt(simTime() + txDuration, forwardingMsgEnd);
                 }
             } else {
@@ -539,24 +531,19 @@ void Dtn::handleMessage(cMessage *msg) {
             // Do nothing, if new data arrives, a refreshForwarding
             // will wake up this forwarding thread
         }
-    } else if (msg->getKind() == FORWARDING_MSG_END) {
-        // A bundle was successfully forwarded. Notify routing schema in order to it makes proper
-        // decisions.
+    case FORWARDING_MSG_END: // A bundle was successfully forwarded. Notify routing schema in order to it makes proper decisions.
         ForwardingMsgEnd *forwardingMsgEnd = check_and_cast<ForwardingMsgEnd *>(msg);
         int bundleId = forwardingMsgEnd->getBundleId();
         int contactId = forwardingMsgEnd->getContactId();
         Contact *contact = contactTopology_.getContactById(contactId);
 
-        routing->successfulBundleForwarded(bundleId, contact,
-                                           forwardingMsgEnd->getSentToDestination());
+        routing->successfulBundleForwarded(bundleId, contact, forwardingMsgEnd->getSentToDestination());
         delete forwardingMsgEnd;
-    }
+		break;
     ///////////////////////////////////////////
     // Custody retransmission timer
     ///////////////////////////////////////////
-    else if (msg->getKind() == CUSTODY_TIMEOUT) {
-        // Custody timer expired, check if bundle still in custody memory space and retransmit it if
-        // positive
+    case CUSTODY_TIMEOUT: // Custody timer expired, check if bundle still in custody memory space and retransmit it if positive
         CustodyTimout *custodyTimout = check_and_cast<CustodyTimout *>(msg);
         BundlePkt *reSendBundle = this->custodyModel_.custodyTimerExpired(custodyTimout);
 
@@ -564,7 +551,8 @@ void Dtn::handleMessage(cMessage *msg) {
             this->dispatchBundle(reSendBundle);
 
         delete custodyTimout;
-    }
+		break;
+	}
 }
 
 void Dtn::dispatchBundle(BundlePkt *bundle) {
