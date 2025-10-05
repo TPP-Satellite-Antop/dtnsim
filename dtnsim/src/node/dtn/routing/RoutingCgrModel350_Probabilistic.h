@@ -3,10 +3,10 @@
 #define SRC_NODE_DTN_ROUTINGCGRMODEL_PROBABILISTIC_H_
 
 #include "src/node/dtn/SdrModel.h"
-#include "src/node/dtn/routing/CgrRoute.h"
-#include "src/node/dtn/routing/RoutingDeterministic.h"
 #include "src/node/dtn/contactplan/Contact.h"
 #include "src/node/dtn/contactplan/ContactPlan.h"
+#include "src/node/dtn/routing/CgrRoute.h"
+#include "src/node/dtn/routing/RoutingDeterministic.h"
 
 class RoutingCgrModel350_Probabilistic : public RoutingDeterministic {
   public:
