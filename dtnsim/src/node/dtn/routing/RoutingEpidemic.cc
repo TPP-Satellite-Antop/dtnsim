@@ -1,5 +1,6 @@
 #include "src/node/dtn/routing/RoutingEpidemic.h"
-#include "src/node/dtn/Dtn.h"
+#include "src/node/dtn/contactplan/Contact.h"
+#include "src/node/dtn/contactplan/Dtn.h"
 
 RoutingEpidemic::RoutingEpidemic(int eid, SdrModel *sdr, cModule *dtn)
     : RoutingStochastic(eid, sdr, dtn) {}

@@ -1,4 +1,6 @@
-#include <src/node/dtn/Dtn.h>
+#include "src/node/dtn/contactplan/Contact.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
+#include "src/node/dtn/contactplan/Dtn.h"
 #include <src/node/dtn/routing/RoutingCgrModel350_Probabilistic.h>
 
 RoutingCgrModel350_Probabilistic::RoutingCgrModel350_Probabilistic(int eid, SdrModel *sdr,

@@ -6,6 +6,8 @@
  */
 
 #include <src/node/dtn/routing/cgrbrufpowered/CGRBRUFPowered.h>
+#include "src/node/dtn/contactplan/ContactPlan.h"
+#include "src/node/dtn/contactplan/Contact.h"
 
 CGRBRUFPowered::CGRBRUFPowered(int eid, SdrModel *sdr, ContactPlan *contactPlan, bool printDebug,
                                double probability_of_failure, int ts_duration,

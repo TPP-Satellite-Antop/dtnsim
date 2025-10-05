@@ -1,9 +1,10 @@
 #include "src/node/dtn/routing/RoutingSprayAndWait.h"
-#include "src/node/dtn/Dtn.h"
+#include "src/node/dtn/contactplan/Dtn.h"
+#include "RoutingStochastic.h"
 
 RoutingSprayAndWait::RoutingSprayAndWait(int eid, SdrModel *sdr, cModule *dtn, int amountOfCopies,
                                          bool binary, MetricCollector *metricCollector)
-    : RoutingStochastic(eid, sdr, dtn) {
+    : ::RoutingStochastic(eid, sdr, dtn) {
     this->binary = binary;
     this->amountOfCopies = amountOfCopies;
     this->metricCollector = metricCollector;

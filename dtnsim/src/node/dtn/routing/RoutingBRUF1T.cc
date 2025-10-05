@@ -6,6 +6,7 @@
  */
 
 #include <src/node/dtn/routing/RoutingBRUF1T.h>
+#include "src/node/dtn/contactplan/ContactPlan.h"
 
 RoutingBRUF1T::RoutingBRUF1T(int eid, SdrModel *sdr, ContactPlan *contactPlan,
                              string path_to_routing)

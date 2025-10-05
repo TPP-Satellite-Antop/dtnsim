@@ -1,4 +1,5 @@
 #include <src/node/dtn/routing/RoutingCgrModel350.h>
+#include "src/node/dtn/contactplan/ContactPlan.h"
 
 RoutingCgrModel350::RoutingCgrModel350(int eid, SdrModel *sdr, ContactPlan *contactPlan,
                                        bool printDebug)

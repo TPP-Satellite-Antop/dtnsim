@@ -1,53 +1,23 @@
 #ifndef _DTN_H_
 #define _DTN_H_
 
-#include <cstdio>
 #include <fstream>
 #include <map>
 #include <omnetpp.h>
-#include <queue>
-#include <set>
-#include <src/node/dtn/ContactHistory.h>
-#include <src/node/dtn/ContactPlan.h>
-#include <src/node/dtn/CustodyModel.h>
-#include <src/node/dtn/SdrModel.h>
-#include <src/node/dtn/routing/Routing.h>
-#include <src/node/dtn/routing/RoutingAntop.h>
-#include <src/node/dtn/routing/RoutingBRUF1T.h>
-#include <src/node/dtn/routing/RoutingCgrModel350.h>
-#include <src/node/dtn/routing/RoutingCgrModel350_Probabilistic.h>
-#include <src/node/dtn/routing/RoutingCgrModelRev17.h>
-#include <src/node/dtn/routing/RoutingCgrModelYen.h>
-#include <src/node/dtn/routing/RoutingDirect.h>
-#include <src/node/dtn/routing/RoutingEpidemic.h>
-#include <src/node/dtn/routing/RoutingORUCOP.h>
-#include <src/node/dtn/routing/RoutingOpportunistic.h>
-#include <src/node/dtn/routing/RoutingPRoPHET.h>
-#include <src/node/dtn/routing/RoutingSprayAndWait.h>
-#include <src/node/dtn/routing/RoutingUncertainUniboCgr.h>
-#include <src/node/dtn/routing/brufncopies/RoutingBRUFNCopies.h>
-#include <src/node/dtn/routing/cgrbrufpowered/CGRBRUFPowered.h>
-#include <sstream>
 #include <string>
-
-#include "src/Config.h"
+#include "src/node/dtn/contactplan/Contact.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
+#include "src/node/dtn/contactplan/ContactHistory.h"
 #include "src/dtnsim_m.h"
-#include "src/node/MsgTypes.h"
-
-#include "src/node/dtn/routing/Routing.h"
 #include "src/node/graphics/Graphics.h"
-#include "src/utils/ContactPlanUtils.h"
 #include "src/utils/MetricCollector.h"
 #include "src/utils/Observer.h"
 #include "src/utils/RouterUtils.h"
 #include "src/utils/TopologyUtils.h"
-
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#include "routing/RoutingCgrModel350_2Copies.h"
-#include "routing/RoutingCgrModel350_Hops.h"
+#include "src/node/dtn/CustodyModel.h"
+#include "src/node/dtn/SdrModel.h"
+#include "src/node/dtn/routing/Routing.h"
+#include "src/node/dtn/routing/RoutingORUCOP.h"
 
 using namespace omnetpp;
 using namespace std;
@@ -65,7 +35,7 @@ class Dtn : public cSimpleModule, public Observer {
     virtual void setMetricCollector(MetricCollector *metricCollector);
     virtual Routing *getRouting();
 
-    virtual void update(void);
+    virtual void update();
 
     // Opportunistic procedures
     void syncDiscoveredContact(Contact *c, bool start);

@@ -1,29 +1,16 @@
 #ifndef __CENTRAL_H_
 #define __CENTRAL_H_
 
-#include <iostream>
-#include <limits>
 #include <map>
 #include <omnetpp.h>
-#include <src/node/com/Com.h>
-#include <src/node/dtn/ContactPlan.h>
-#include <src/node/dtn/Dtn.h>
-#include <string>
 #include <utility>
 #include <vector>
-
-#include "../utils/Lp.h"
-#include "src/node/app/App.h"
-#include "src/utils/LpUtils.h"
+#include "../node/dtn/contactplan/ContactPlan.h"
 #include "src/utils/MetricCollector.h"
 #include "src/utils/RouterUtils.h"
 #include "src/utils/TopologyUtils.h"
-
-#include "src/node/dtn/SdrModel.h"
 #include "src/node/dtn/routing/RoutingCgrModel350.h"
-
 #include "src/dtnsim_m.h"
-#include "src/node/MsgTypes.h"
 
 using namespace omnetpp;
 using namespace std;

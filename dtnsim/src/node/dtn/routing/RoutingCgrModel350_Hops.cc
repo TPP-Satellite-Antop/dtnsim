@@ -1,8 +1,13 @@
 #include "RoutingCgrModel350_Hops.h"
+#include "CgrRoute.h"
+#include "RoutingDeterministic.h"
+#include "src/node/dtn/SdrModel.h"
+#include "src/node/dtn/contactplan/Contact.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
 
 RoutingCgrModel350_Hops::RoutingCgrModel350_Hops(int eid, SdrModel *sdr, ContactPlan *contactPlan,
                                                  bool printDebug)
-    : RoutingDeterministic(eid, sdr, contactPlan) {
+    : ::RoutingDeterministic(eid, sdr, contactPlan) {
     eid_ = eid;
     sdr_ = sdr;
     contactPlan_ = contactPlan;

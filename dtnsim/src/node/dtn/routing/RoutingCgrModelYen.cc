@@ -1,8 +1,10 @@
 #include "src/node/dtn/routing/RoutingCgrModelYen.h"
+#include "RoutingDeterministic.h"
+#include "src/node/dtn/SdrModel.h"
 
 RoutingCgrModelYen::RoutingCgrModelYen(int eid, SdrModel *sdr, ContactPlan *contactPlan,
                                        bool printDebug)
-    : RoutingDeterministic(eid, sdr, contactPlan) {
+    : ::RoutingDeterministic(eid, sdr, contactPlan) {
     printDebug_ = printDebug;
 }
 

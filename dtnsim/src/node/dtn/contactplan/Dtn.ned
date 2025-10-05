@@ -1,4 +1,4 @@
-package src.node.dtn;
+package src.node.dtn.contactplan;
 
 simple Dtn
 {

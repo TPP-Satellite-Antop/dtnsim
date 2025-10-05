@@ -5,6 +5,7 @@
  *      Author: fraverta
  */
 
+#include <fstream>
 #include <src/node/dtn/routing/brufncopies/BRUFNCopies1TOracle.h>
 
 void from_json(const json &j, Action &a) {

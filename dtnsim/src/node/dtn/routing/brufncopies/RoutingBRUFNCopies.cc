@@ -6,6 +6,8 @@
  */
 
 #include <src/node/dtn/routing/brufncopies/RoutingBRUFNCopies.h>
+#include "src/node/dtn/contactplan/Contact.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
 
 RoutingBRUFNCopies::RoutingBRUFNCopies(int eid, SdrModel *sdr, ContactPlan *contactPlan,
                                        int bundlesCopies, int numOfNodes, string pathPrefix,

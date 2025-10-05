@@ -16,7 +16,7 @@
 #ifndef __DTNSIM_FAULT_H_
 #define __DTNSIM_FAULT_H_
 
-#include "src/node/dtn/Dtn.h"
+#include "../dtn/contactplan/Dtn.h"
 #include <omnetpp.h>
 
 #include "src/dtnsim_m.h"

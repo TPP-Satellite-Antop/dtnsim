@@ -10,6 +10,8 @@
 
 #include <src/node/dtn/SdrModel.h>
 #include <src/node/dtn/routing/RoutingDeterministic.h>
+#include "src/node/dtn/contactplan/Contact.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
 
 class RoutingCgrModelYen : public RoutingDeterministic {
   public:

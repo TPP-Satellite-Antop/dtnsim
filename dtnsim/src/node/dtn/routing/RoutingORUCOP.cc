@@ -6,6 +6,7 @@
  */
 
 #include "RoutingORUCOP.h"
+#include "src/node/dtn/contactplan/Dtn.h"
 
 namespace fs = std::filesystem;
 

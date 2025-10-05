@@ -1,5 +1,6 @@
-#include "ContactPlan.h"
-#include <src/node/dtn/ContactPlan.h>
+#include <algorithm>
+#include "src/node/dtn/contactplan/Contact.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
 
 double toRadians(double degree) {
     return degree * M_PI / 180.0;

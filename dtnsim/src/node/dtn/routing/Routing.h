@@ -11,14 +11,10 @@
 #ifndef SRC_NODE_NET_ROUTING_H_
 #define SRC_NODE_NET_ROUTING_H_
 
-#include "src/dtnsim_m.h"
 #include <algorithm>
-#include <limits>
-#include <map>
-#include <queue>
-#include <src/node/dtn/ContactPlan.h>
 #include <src/node/dtn/SdrModel.h>
-#include <unordered_set>
+#include "src/dtnsim_m.h"
+#include "src/node/dtn/contactplan/Contact.h"
 
 using namespace omnetpp;
 using namespace std;

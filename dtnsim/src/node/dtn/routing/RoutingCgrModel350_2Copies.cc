@@ -1,5 +1,9 @@
 #include "RoutingCgrModel350_2Copies.h"
-#include <src/node/dtn/Dtn.h>
+#include "src/node/dtn/SdrModel.h"
+#include "src/node/dtn/contactplan/Contact.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
+#include "src/node/dtn/contactplan/Dtn.h"
+#include <vector>
 
 RoutingCgrModel350_2Copies::RoutingCgrModel350_2Copies(int eid, SdrModel *sdr,
                                                        ContactPlan *contactPlan, bool printDebug,

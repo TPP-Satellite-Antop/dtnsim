@@ -8,10 +8,11 @@
 #include "h3api.h"
 #include "antop.h"
 #include <src/node/dtn/routing/RoutingDeterministic.h>
+#include <src/node/dtn/PositionEntry.h>
 
 class RoutingAntop : public RoutingDeterministic {
   public:
-    RoutingAntop(int eid, SdrModel *sdr, ContactPlan *contactPlan);
+    RoutingAntop(int eid, SdrModel *sdr);
     virtual ~RoutingAntop();
     virtual void routeAndQueueBundle(BundlePkt *bundle, double simTime);
 

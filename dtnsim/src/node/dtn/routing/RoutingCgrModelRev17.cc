@@ -1,3 +1,4 @@
+#include "CgrRoute.h"
 #include <src/node/dtn/routing/RoutingCgrModelRev17.h>
 
 // This function initializes the routing class:

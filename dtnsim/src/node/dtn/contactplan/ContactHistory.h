@@ -8,14 +8,10 @@
 #ifndef SRC_NODE_DTN_CONTACTHISTORY_H_
 #define SRC_NODE_DTN_CONTACTHISTORY_H_
 
-#include <cstddef>
 #include <map>
-#include <math.h>
-#include <omnetpp.h>
-#include <src/node/dtn/Contact.h>
-#include <src/node/dtn/ContactPlan.h>
 #include <tuple>
 #include <vector>
+#include "./ContactPlan.h"
 
 using namespace std;
 

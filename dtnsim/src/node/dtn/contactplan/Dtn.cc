@@ -1,5 +1,23 @@
-#include "src/node/dtn/Dtn.h"
+#include "Dtn.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
+#include "src/node/dtn/contactplan/ContactHistory.h"
+#include "src/node/dtn/contactplan/Contact.h"
 #include "src/node/app/App.h"
+#include "src/node/dtn/routing/RoutingAntop.h"
+#include "src/node/dtn/routing/RoutingBRUF1T.h"
+#include "src/node/dtn/routing/RoutingCgrModel350.h"
+#include "src/node/dtn/routing/RoutingCgrModel350_2Copies.h"
+#include "src/node/dtn/routing/RoutingCgrModel350_Hops.h"
+#include "src/node/dtn/routing/RoutingCgrModel350_Probabilistic.h"
+#include "src/node/dtn/routing/RoutingCgrModelRev17.h"
+#include "src/node/dtn/routing/RoutingCgrModelYen.h"
+#include "src/node/dtn/routing/RoutingDirect.h"
+#include "src/node/dtn/routing/RoutingEpidemic.h"
+#include "src/node/dtn/routing/RoutingPRoPHET.h"
+#include "src/node/dtn/routing/RoutingSprayAndWait.h"
+#include "src/node/dtn/routing/RoutingUncertainUniboCgr.h"
+#include "src/node/dtn/routing/brufncopies/RoutingBRUFNCopies.h"
+#include "src/node/dtn/routing/cgrbrufpowered/CGRBRUFPowered.h"
 
 Define_Module(Dtn);
 
@@ -191,7 +209,7 @@ void Dtn::initializeRouting(string routeString) {
     if (routeString.compare("direct") == 0)
         routing = new RoutingDirect(eid_, &sdr_, &contactPlan_);
     else if (routeString.compare("antop") == 0)
-        routing = new RoutingAntop(eid_, &sdr_, &contactPlan_);
+        routing = new RoutingAntop(eid_, &sdr_);
     else if (routeString.compare("cgrModel350") == 0)
         routing = new RoutingCgrModel350(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
     else if (routeString.compare("cgrModel350_Hops") == 0)

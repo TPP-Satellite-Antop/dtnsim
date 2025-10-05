@@ -23,7 +23,9 @@
 #ifndef SRC_NODE_DTN_ROUTINGEPIDEMIC_H_
 #define SRC_NODE_DTN_ROUTINGEPIDEMIC_H_
 
-#include <src/node/dtn/routing/RoutingStochastic.h>
+#include "RoutingStochastic.h"
+#include "src/node/dtn/SdrModel.h"
+#include "src/node/dtn/contactplan/Contact.h"
 
 class RoutingEpidemic : public RoutingStochastic {
   public:

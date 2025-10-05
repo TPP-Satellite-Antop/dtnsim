@@ -11,7 +11,7 @@
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/contactPlan.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/nodes/nodes.h"
 #include "src/node/dtn/routing/unibocgr/core/library/list/list.h"
-#include <src/node/dtn/Dtn.h>
+#include "src/node/dtn/contactplan/Dtn.h"
 
 namespace fs = std::filesystem;
 

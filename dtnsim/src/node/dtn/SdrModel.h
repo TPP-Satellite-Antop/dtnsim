@@ -9,12 +9,10 @@
 #define SRC_NODE_DTN_SDRMODEL_H_
 
 #include "src/utils/Subject.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
 #include <map>
 #include <omnetpp.h>
-#include <src/node/dtn/ContactPlan.h>
 #include <src/node/dtn/SdrStatus.h>
-
-#include "assert.h"
 #include "src/dtnsim_m.h"
 
 using namespace omnetpp;

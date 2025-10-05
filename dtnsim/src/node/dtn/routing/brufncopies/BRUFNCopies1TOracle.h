@@ -8,12 +8,9 @@
 #ifndef SRC_NODE_DTN_ROUTING_BRUFNCOPIES_BRUFNCOPIES1TORACLE_H_
 #define SRC_NODE_DTN_ROUTING_BRUFNCOPIES_BRUFNCOPIES1TORACLE_H_
 
+#include <tuple>
 #include "src/dtnsim_m.h"
 #include "src/utils/json.hpp"
-#include <fstream>
-#include <iostream>
-#include <numeric>
-#include <tuple>
 
 using namespace std;
 using json = nlohmann::json;

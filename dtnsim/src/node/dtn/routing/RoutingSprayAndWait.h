@@ -30,6 +30,7 @@
 #ifndef SRC_NODE_DTN_ROUTINGSPRAYANDWAIT_H_
 #define SRC_NODE_DTN_ROUTINGSPRAYANDWAIT_H_
 
+#include "src/utils/MetricCollector.h"
 #include <src/node/dtn/routing/RoutingStochastic.h>
 
 class RoutingSprayAndWait : public RoutingStochastic {

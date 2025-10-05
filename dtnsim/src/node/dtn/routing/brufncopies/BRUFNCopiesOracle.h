@@ -21,10 +21,10 @@
 #ifndef SRC_NODE_DTN_ROUTING_BRUFNCOPIES_BRUFNCOPIESORACLE_H_
 #define SRC_NODE_DTN_ROUTING_BRUFNCOPIES_BRUFNCOPIESORACLE_H_
 
+#include <src/node/dtn/routing/brufncopies/BRUFNCopies1TOracle.h>
 #include "src/dtnsim_m.h"
 #include "src/utils/Subject.h"
 #include "src/utils/json.hpp"
-#include <src/node/dtn/routing/brufncopies/BRUFNCopies1TOracle.h>
 
 class BRUFNCopiesOracle : public Subject {
 

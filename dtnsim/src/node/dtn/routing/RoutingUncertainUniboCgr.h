@@ -15,7 +15,6 @@
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/contacts/contacts.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/nodes/nodes.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/ranges/ranges.h"
-#include <chrono>
 #include <src/node/dtn/routing/RoutingOpportunistic.h>
 
 #include "src/node/dtn/routing/unibocgr/core/cgr/cgr.h"

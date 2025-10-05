@@ -5,6 +5,8 @@
 #include <src/node/dtn/SdrModel.h>
 #include <src/node/dtn/routing/CgrRoute.h>
 #include <src/node/dtn/routing/RoutingDeterministic.h>
+#include "src/node/dtn/contactplan/ContactPlan.h"
+#include "src/node/dtn/contactplan/Contact.h"
 
 class RoutingCgrModel350_2Copies : public RoutingDeterministic {
   public:

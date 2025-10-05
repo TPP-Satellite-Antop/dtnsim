@@ -24,6 +24,8 @@
 #define SRC_NODE_DTN_ROUTING_ROUTINGDETERMINISTIC_H_
 
 #include <src/node/dtn/routing/Routing.h>
+#include "src/node/dtn/contactplan/Contact.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
 
 class RoutingDeterministic : public Routing {
   public:

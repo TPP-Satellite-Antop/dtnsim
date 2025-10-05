@@ -1,4 +1,5 @@
 #include "src/node/dtn/CustodyModel.h"
+#include "src/node/MsgTypes.h"
 
 CustodyModel::CustodyModel() {}
 

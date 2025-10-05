@@ -32,11 +32,11 @@ OBJS = \
     $O/src/central/Central.o \
     $O/src/node/app/App.o \
     $O/src/node/com/Com.o \
-    $O/src/node/dtn/Contact.o \
-    $O/src/node/dtn/ContactHistory.o \
-    $O/src/node/dtn/ContactPlan.o \
+    $O/src/node/dtn/contactplan/Contact.o \
+    $O/src/node/dtn/contactplan/ContactHistory.o \
+    $O/src/node/dtn/contactplan/ContactPlan.o \
     $O/src/node/dtn/CustodyModel.o \
-    $O/src/node/dtn/Dtn.o \
+    $O/src/node/dtn/contactplan/Dtn.o \
     $O/src/node/dtn/SdrModel.o \
     $O/src/node/dtn/SdrStatus.o \
     $O/src/node/dtn/routing/RoutingBRUF1T.o \
@@ -101,11 +101,16 @@ SMFILES =
 
 #Pull in OMNeT++ configuration(Makefile.inc)
 
+$(info OMNeT++ config file: $(OMNETPP_CONFIGFILE))
+
 ifneq ("$(OMNETPP_CONFIGFILE)","")
 CONFIGFILE = $(OMNETPP_CONFIGFILE)
 else
 CONFIGFILE = $(shell opp_configfilepath)
 endif
+
+CONFIGFILE = /home/gst-frenkel/Desktop/tpp/omnetpp-6.1/Makefile.inc
+$(info Config file: $(CONFIGFILE))
 
 ifeq ("$(wildcard $(CONFIGFILE))","")
 $(error Config file '$(CONFIGFILE)' does not exist -- add the OMNeT++ bin directory to the path so that opp_configfilepath can be found, or set the OMNETPP_CONFIGFILE variable to point to Makefile.inc)
