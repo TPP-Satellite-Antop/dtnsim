@@ -96,7 +96,7 @@ void RoutingUniboCgr::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         }
     } else {
         bundle->setNextHopEid(0);
-        this->sdr_->enqueueBundleToContact(bundle, 0);
+        this->sdr_->pushBundleToId(bundle, 0);
     }
 }
 
@@ -114,7 +114,7 @@ void RoutingUniboCgr::enqueueBundle(BundlePkt *bundle, double simTime, Route *ro
         bundle->setNextHopEid(this->contactPlan_->getContactById(id)->getDestinationEid());
     }
 
-    this->sdr_->enqueueBundleToContact(bundle, id);
+    this->sdr_->pushBundleToId(bundle, id);
 }
 
 int RoutingUniboCgr::convertBundlePktToCgrBundle(time_t time, BundlePkt *bundle,
@@ -371,9 +371,9 @@ bool RoutingUniboCgr::msgToMeArrive(BundlePkt *bundle) {
 void RoutingUniboCgr::contactStart(Contact *c) {
     // try out whether a new route exists for a newly discovered contact
     if (c->isDiscovered()) {
-        while (this->sdr_->isBundleForContact(0)) {
-            BundlePkt *bundle = this->sdr_->getNextBundleForContact(0);
-            this->sdr_->popNextBundleForContact(0);
+        while (this->sdr_->isBundleForId(0)) {
+            BundlePkt *bundle = this->sdr_->getBundle(0);
+            this->sdr_->popBundleFromId(0);
             this->routeAndQueueBundle(bundle, simTime().dbl());
         }
     }
@@ -387,9 +387,9 @@ void RoutingUniboCgr::contactStart(Contact *c) {
             ->getRouting());
 
     list<BundlePkt *> nonReceived;
-    while (sdr_->isBundleForContact(c->getId())) {
-        BundlePkt *bundle = sdr_->getNextBundleForContact(c->getId());
-        sdr_->popNextBundleForContact(c->getId());
+    while (sdr_->isBundleForId(c->getId())) {
+        BundlePkt *bundle = sdr_->getBundle(c->getId());
+        sdr_->popBundleFromId(c->getId());
         if (!other->isDeliveredBundle(bundle->getBundleId())) {
             nonReceived.push_back(bundle);
         } else {
@@ -398,13 +398,13 @@ void RoutingUniboCgr::contactStart(Contact *c) {
     }
 
     for (list<BundlePkt *>::iterator it = nonReceived.begin(); it != nonReceived.end(); ++it)
-        sdr_->enqueueBundleToContact(*it, c->getId());
+        sdr_->pushBundleToId(*it, c->getId());
 }
 
 void RoutingUniboCgr::contactEnd(Contact *c) {
-    while (sdr_->isBundleForContact(c->getId())) {
-        BundlePkt *bundle = sdr_->getNextBundleForContact(c->getId());
-        sdr_->popNextBundleForContact(c->getId());
+    while (sdr_->isBundleForId(c->getId())) {
+        BundlePkt *bundle = sdr_->getBundle(c->getId());
+        sdr_->popBundleFromId(c->getId());
         routeAndQueueBundle(bundle, simTime().dbl());
     }
 }

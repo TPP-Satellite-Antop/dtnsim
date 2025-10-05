@@ -68,7 +68,7 @@ void RoutingBRUFNCopies::msgToOtherArrive(BundlePkt *bundle, double simTime) {
                                    "Error next hop's sender it not the current bundle carrier");
 
             bundle->setNextHopEid(next_contact->getDestinationEid());
-            sdr_->enqueueBundleToContact(bundle, next_contact->getId());
+            sdr_->pushBundleToId(bundle, next_contact->getId());
             oracle_->succesfulBundleForwarded(source, target, sender, eid_, copies,
                                               false); // Notify oracle of this event
         }
@@ -96,13 +96,13 @@ bool RoutingBRUFNCopies::msgToMeArrive(BundlePkt *bundle) {
 }
 
 void RoutingBRUFNCopies::contactEnd(Contact *c) {
-    while (sdr_->isBundleForContact(c->getId())) {
-        BundlePkt *bundle = sdr_->getNextBundleForContact(c->getId());
+    while (sdr_->isBundleForId(c->getId())) {
+        BundlePkt *bundle = sdr_->getBundle(c->getId());
         int source = bundle->getSourceEid();
         int target = bundle->getDestinationEid();
         int copies = bundle->getBundlesCopies();
 
-        sdr_->popNextBundleForContact(c->getId());
+        sdr_->popBundleFromId(c->getId());
         enqueueToCarryingBundles(bundle);
         cout << "RoutingBRUFNCopies::contactEnd - Node " << eid_ << ": Enqueue to carrying "
              << source << " " << target << endl;
@@ -128,7 +128,7 @@ void RoutingBRUFNCopies::enqueueToCarryingBundles(BundlePkt *bundle) {
         delete bundle;
     } else {
         generateCopies(bundle);
-        sdr_->enqueueBundle(bundle);
+        sdr_->pushBundle(bundle);
     }
 }
 
@@ -154,7 +154,7 @@ void RoutingBRUFNCopies::update() {
             routeBundle(bundle, get<0>(action), get<1>(action));
         }
         if (bundle->getBundlesCopies() == 0)
-            sdr_->removeBundle(bundle->getBundleId());
+            sdr_->popBundle(bundle->getBundleId());
     }
 }
 
@@ -185,7 +185,7 @@ void RoutingBRUFNCopies::routeBundle(BundlePkt *bundle, int copies, vector<int> 
                    << " . First hop contact sender is not who is performing this routing decision.";
             reportErrorAndExit("RoutingBRUFNCopies::routeBundle", stream.str());
         }
-        sdr_->enqueueBundleToContact(bundleCopy, first_hop_contact->getId());
+        sdr_->pushBundleToId(bundleCopy, first_hop_contact->getId());
 
     } else
         reportErrorAndExit("RoutingBRUFNCopies::routeBundle",

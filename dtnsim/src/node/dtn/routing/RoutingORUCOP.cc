@@ -320,9 +320,9 @@ void RoutingORUCOP::routeNextBundle(long bundleId, int destination, int ts) {
  * @authors The original authors of DTNSim, then ported to this class by Simon Rink
  */
 void RoutingORUCOP::contactEnd(Contact *c) {
-    while (sdr_->isBundleForContact(c->getId())) {
-        BundlePkt *bundle = sdr_->getNextBundleForContact(c->getId());
-        sdr_->popNextBundleForContact(c->getId());
+    while (sdr_->isBundleForId(c->getId())) {
+        BundlePkt *bundle = sdr_->getBundle(c->getId());
+        sdr_->popBundleFromId(c->getId());
         routeAndQueueBundle(bundle, simTime().dbl());
     }
 }
@@ -438,7 +438,7 @@ void RoutingORUCOP::queueBundle(BundlePkt *bundle, int contactId, int destinatio
         bundle->setNextHopEid(destinationEid);
     }
 
-    this->sdr_->enqueueBundleToContact(bundle, contactId); // enqueue bundle
+    this->sdr_->pushBundleToId(bundle, contactId); // enqueue bundle
 }
 
 /*

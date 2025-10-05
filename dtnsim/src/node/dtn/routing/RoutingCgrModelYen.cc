@@ -891,7 +891,7 @@ void RoutingCgrModelYen::enqueueToLimbo(BundlePkt *bundle) {
 
 void RoutingCgrModelYen::bpEnqueue(BundlePkt *bundle, ProximateNode *selectedNeighbor) {
     bundle->setNextHopEid(selectedNeighbor->neighborNodeNbr);
-    sdr_->enqueueBundleToContact(bundle, selectedNeighbor->contactId);
+    sdr_->pushBundleToId(bundle, selectedNeighbor->contactId);
 
     if (selectedNeighbor->contactId != 0) {
         // Decrease first contact capacity:

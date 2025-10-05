@@ -155,7 +155,7 @@ void RoutingUncertainUniboCgr::routeAndQueueBundle(BundlePkt *bundle, double sim
 
                 if (route->neighbor == bundle->getSenderEid()) {
                     bundle->setNextHopEid(0);
-                    this->sdr_->enqueueBundleToContact(bundle, 0);
+                    this->sdr_->pushBundleToId(bundle, 0);
                     break;
                 }
 
@@ -203,7 +203,7 @@ void RoutingUncertainUniboCgr::routeAndQueueBundle(BundlePkt *bundle, double sim
         }
     } else { // queue to limbo
         bundle->setNextHopEid(0);
-        this->sdr_->enqueueBundleToContact(bundle, 0);
+        this->sdr_->pushBundleToId(bundle, 0);
     }
 }
 
@@ -215,9 +215,9 @@ void RoutingUncertainUniboCgr::routeAndQueueBundle(BundlePkt *bundle, double sim
  * @author Simon Rink
  */
 void RoutingUncertainUniboCgr::contactFailure(int contactId) {
-    while (sdr_->isBundleForContact(contactId)) {
-        BundlePkt *bundle = sdr_->getNextBundleForContact(contactId);
-        sdr_->popNextBundleForContact(contactId);
+    while (sdr_->isBundleForId(contactId)) {
+        BundlePkt *bundle = sdr_->getBundle(contactId);
+        sdr_->popBundleFromId(contactId);
         this->routeAndQueueBundle(bundle, simTime().dbl());
     }
 }
@@ -301,7 +301,7 @@ void RoutingUncertainUniboCgr::enqueueBundle(BundlePkt *bundle, double simTime, 
 
         if (contactDtnSim == NULL) {
             bundle->setNextHopEid(0);
-            this->sdr_->enqueueBundleToContact(bundle, 0);
+            this->sdr_->pushBundleToId(bundle, 0);
             return;
         }
         int id;
@@ -316,7 +316,7 @@ void RoutingUncertainUniboCgr::enqueueBundle(BundlePkt *bundle, double simTime, 
         if (id == 0) // illegal contact
         {
             bundle->setNextHopEid(0);
-            this->sdr_->enqueueBundleToContact(bundle, 0);
+            this->sdr_->pushBundleToId(bundle, 0);
             this->bundleReroutable[bundle->getBundleId()].push(simTime);
             this->multiHops.erase(bundle->getBundleId());
             return;
@@ -336,7 +336,7 @@ void RoutingUncertainUniboCgr::enqueueBundle(BundlePkt *bundle, double simTime, 
                                                   bundle->getBundleId());
         other->notifyAboutRouting(this->nodeBrufFunction_[currDest], currDest);
         bundle->setNextHopEid(destination);
-        this->sdr_->enqueueBundleToContact(bundle, id);
+        this->sdr_->pushBundleToId(bundle, id);
         return;
     }
     int sourceEid = this->eid_;
@@ -366,7 +366,7 @@ void RoutingUncertainUniboCgr::enqueueBundle(BundlePkt *bundle, double simTime, 
 
         if (contactDtnSim == NULL) {
             bundle->setNextHopEid(0);
-            this->sdr_->enqueueBundleToContact(bundle, 0);
+            this->sdr_->pushBundleToId(bundle, 0);
             return;
         }
         int id;
@@ -381,7 +381,7 @@ void RoutingUncertainUniboCgr::enqueueBundle(BundlePkt *bundle, double simTime, 
         if (id == 0) // illegal contact
         {
             bundle->setNextHopEid(0);
-            this->sdr_->enqueueBundleToContact(bundle, 0);
+            this->sdr_->pushBundleToId(bundle, 0);
             this->bundleReroutable[bundle->getBundleId()].push(start);
             return;
         }
@@ -395,7 +395,7 @@ void RoutingUncertainUniboCgr::enqueueBundle(BundlePkt *bundle, double simTime, 
         other->notifyAboutRouting(this->nodeBrufFunction_[currDest], currDest);
         this->metricCollector_->updateSentBundles(eid_, destination, start, bundle->getBundleId());
         bundle->setNextHopEid(destination);
-        this->sdr_->enqueueBundleToContact(bundle, id);
+        this->sdr_->pushBundleToId(bundle, id);
         return;
     }
 
@@ -411,7 +411,7 @@ void RoutingUncertainUniboCgr::enqueueBundle(BundlePkt *bundle, double simTime, 
 
     if (contactDtnSim == NULL) {
         bundle->setNextHopEid(0);
-        this->sdr_->enqueueBundleToContact(bundle, 0);
+        this->sdr_->pushBundleToId(bundle, 0);
         return;
     }
 
@@ -426,7 +426,7 @@ void RoutingUncertainUniboCgr::enqueueBundle(BundlePkt *bundle, double simTime, 
 
         if (contactId == 0) {
             bundle->setNextHopEid(0);
-            this->sdr_->enqueueBundleToContact(bundle, 0);
+            this->sdr_->pushBundleToId(bundle, 0);
             this->bundleReroutable[bundle->getBundleId()].push(start);
             return;
         }
@@ -437,7 +437,7 @@ void RoutingUncertainUniboCgr::enqueueBundle(BundlePkt *bundle, double simTime, 
             other->notifyAboutRouting(this->nodeBrufFunction_[bundle->getDestinationEid()],
                                       bundle->getDestinationEid());
         }
-        this->sdr_->enqueueBundleToContact(bundle, contactId);
+        this->sdr_->pushBundleToId(bundle, contactId);
         return;
     }
 
@@ -451,7 +451,7 @@ void RoutingUncertainUniboCgr::enqueueBundle(BundlePkt *bundle, double simTime, 
                                   bundle->getDestinationEid());
     }
 
-    this->sdr_->enqueueBundleToContact(bundle, id);
+    this->sdr_->pushBundleToId(bundle, id);
 }
 
 /*
@@ -826,10 +826,10 @@ bool RoutingUncertainUniboCgr::msgToMeArrive(BundlePkt *bundle) {
 void RoutingUncertainUniboCgr::contactStart(Contact *c) {
     vector<BundlePkt *> toBeRerouted;
 
-    while (this->sdr_->isBundleForContact(0)) {
-        BundlePkt *bundle = this->sdr_->getNextBundleForContact(0);
+    while (this->sdr_->isBundleForId(0)) {
+        BundlePkt *bundle = this->sdr_->getBundle(0);
         toBeRerouted.push_back(bundle);
-        this->sdr_->popNextBundleForContact(0);
+        this->sdr_->popBundleFromId(0);
     }
     vector<BundlePkt *> routeLater;
 
@@ -858,7 +858,7 @@ void RoutingUncertainUniboCgr::contactStart(Contact *c) {
     }
 
     for (auto it = routeLater.begin(); it != routeLater.end(); it++) {
-        this->sdr_->enqueueBundleToContact((*it), 0);
+        this->sdr_->pushBundleToId((*it), 0);
     }
 
     // check whether some bundles were already received at their respective destinations!
@@ -870,9 +870,9 @@ void RoutingUncertainUniboCgr::contactStart(Contact *c) {
             ->getRouting());
 
     list<BundlePkt *> nonReceived;
-    while (sdr_->isBundleForContact(c->getId())) {
-        BundlePkt *bundle = sdr_->getNextBundleForContact(c->getId());
-        sdr_->popNextBundleForContact(c->getId());
+    while (sdr_->isBundleForId(c->getId())) {
+        BundlePkt *bundle = sdr_->getBundle(c->getId());
+        sdr_->popBundleFromId(c->getId());
         if (!other->isDeliveredBundle(bundle->getBundleId())) {
             nonReceived.push_back(bundle);
         } else {
@@ -882,7 +882,7 @@ void RoutingUncertainUniboCgr::contactStart(Contact *c) {
 
     // send non-received bundles
     for (list<BundlePkt *>::iterator it = nonReceived.begin(); it != nonReceived.end(); ++it) {
-        sdr_->enqueueBundleToContact(*it, c->getId());
+        sdr_->pushBundleToId(*it, c->getId());
         other->notifyAboutRouting(this->nodeBrufFunction_[(*it)->getDestinationEid()],
                                   (*it)->getDestinationEid());
     }
@@ -896,9 +896,9 @@ void RoutingUncertainUniboCgr::contactStart(Contact *c) {
  * @authors The original authors of DTNSim, then ported to this class by Simon Rink
  */
 void RoutingUncertainUniboCgr::contactEnd(Contact *c) {
-    while (sdr_->isBundleForContact(c->getId())) {
-        BundlePkt *bundle = sdr_->getNextBundleForContact(c->getId());
-        sdr_->popNextBundleForContact(c->getId());
+    while (sdr_->isBundleForId(c->getId())) {
+        BundlePkt *bundle = sdr_->getBundle(c->getId());
+        sdr_->popBundleFromId(c->getId());
         routeAndQueueBundle(bundle, simTime().dbl());
     }
 }

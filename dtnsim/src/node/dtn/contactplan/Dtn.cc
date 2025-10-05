@@ -482,7 +482,7 @@ void Dtn::handleMessage(cMessage *msg) {
         forwardingMsgs_[forwardingMsgStart->getContactId()] = forwardingMsgStart;
 
         // if there are messages in the queue for this contact
-        if (sdr_.isBundleForContact(contactId)) {
+        if (sdr_.isBundleForId(contactId)) {
             // If local/remote node are responsive, then transmit bundle
             Dtn *neighborDtn = check_and_cast<Dtn *>(this->getParentModule()
                                                          ->getParentModule()
@@ -490,7 +490,7 @@ void Dtn::handleMessage(cMessage *msg) {
                                                          ->getSubmodule("dtn"));
             if ((!neighborDtn->onFault) && (!this->onFault)) {
                 // Get bundle pointer from sdr
-                BundlePkt *bundle = sdr_.getNextBundleForContact(contactId);
+                BundlePkt *bundle = sdr_.getBundle(contactId);
 
                 // Calculate data rate and Tx duration
                 double dataRate = contactTopology_.getContactById(contactId)->getDataRate();
@@ -516,7 +516,7 @@ void Dtn::handleMessage(cMessage *msg) {
                                    << bundle->getSourceEid() << "," << bundle->getDestinationEid()
                                    << "," << bundle->getBitLength() << "," << txDuration << endl;
 
-                    sdr_.popNextBundleForContact(contactId);
+                    sdr_.popBundleFromId(contactId);
 
                     // If custody requested, store a copy of the bundle until report received
                     if (bundle->getCustodyTransferRequested()) {
@@ -670,7 +670,7 @@ void Dtn::refreshForwarding() {
     for (it = forwardingMsgs_.begin(); it != forwardingMsgs_.end(); ++it) {
         ForwardingMsgStart *forwardingMsg = it->second;
         int cid = forwardingMsg->getContactId();
-        if (!sdr_.isBundleForContact(cid))
+        if (!sdr_.isBundleForId(cid))
             // notify routing protocol that it has messages to send and contacts for routing
             routing->refreshForwarding(contactTopology_.getContactById(cid));
         if (!forwardingMsg->isScheduled()) {

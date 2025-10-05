@@ -9,7 +9,7 @@ RoutingEpidemic::~RoutingEpidemic() {}
 
 void RoutingEpidemic::routeAndQueueBundle(Contact *c) {
     // Enqueue only one bundle per contact
-    if (sdr_->isBundleForContact(c->getId()))
+    if (sdr_->isBundleForId(c->getId()))
         return;
 
     RoutingEpidemic *other = check_and_cast<RoutingEpidemic *>(
@@ -31,12 +31,12 @@ void RoutingEpidemic::routeAndQueueBundle(Contact *c) {
             if (!other->isDeliveredBundle((*it)->getBundleId())) {
                 BundlePkt *bundleCopy = (*it)->dup();
                 bundleCopy->setNextHopEid(c->getDestinationEid());
-                sdr_->enqueueBundleToContact(bundleCopy, c->getId());
+                sdr_->pushBundleToId(bundleCopy, c->getId());
             } else {
                 // since bundle has already reached its final destination, delete it and add its id
                 // to deliveredBundles_.
                 deliveredBundles_.push_back((*it)->getBundleId());
-                sdr_->removeBundle((*it)->getBundleId());
+                sdr_->popBundle((*it)->getBundleId());
             }
         } else
             bundlesToOthers.push_back(*it);
@@ -50,7 +50,7 @@ void RoutingEpidemic::routeAndQueueBundle(Contact *c) {
         if (!other->isCarryingBundle((*it)->getBundleId())) {
             BundlePkt *bundleCopy = (*it)->dup();
             bundleCopy->setNextHopEid(c->getDestinationEid());
-            sdr_->enqueueBundleToContact(bundleCopy, c->getId());
+            sdr_->pushBundleToId(bundleCopy, c->getId());
         }
     }
 }

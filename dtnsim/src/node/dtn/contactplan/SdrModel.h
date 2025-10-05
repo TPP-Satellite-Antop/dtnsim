@@ -8,11 +8,11 @@
 #ifndef SRC_NODE_DTN_SDRMODEL_H_
 #define SRC_NODE_DTN_SDRMODEL_H_
 
+#include "src/utils/Subject.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
 #include <map>
 #include <omnetpp.h>
 #include <src/node/dtn/SdrStatus.h>
-#include "src/utils/Subject.h"
-#include "src/node/dtn/contactplan/ContactPlan.h"
 #include "src/dtnsim_m.h"
 
 using namespace omnetpp;
@@ -22,6 +22,13 @@ class SdrModel : public Subject {
   public:
     SdrModel();
     virtual ~SdrModel();
+
+    // Initialization and configuration
+    virtual void setEid(int eid);
+    virtual void setNodesNumber(int nodesNumber);
+    virtual void setContactPlan(ContactPlan *contactPlan);
+    virtual void setSize(int size);
+    virtual void freeSdr(int eid);
 
     // Get information
     virtual int getBundlesCountInSdr();
@@ -37,13 +44,13 @@ class SdrModel : public Subject {
     bool isSdrFreeSpace(int sizeNewPacket);
 
     // Enqueue and dequeue from perContactBundleQueue_
-    virtual bool pushBundleToId(BundlePkt *bundle, int id);
-    virtual bool isBundleForId(int id);
-    virtual BundlePkt *getBundle(int id);
-    virtual void popBundleFromId(int contactId);
+    virtual bool enqueueBundleToContact(BundlePkt *bundle, int contactId);
+    virtual bool isBundleForId(int contactId);
+    virtual BundlePkt *getNextBundleForContact(int contactId);
+    virtual void popNextBundleForContact(int contactId);
 
     // Enqueue and dequeue from genericBundleQueue_
-    virtual bool pushBundle(BundlePkt *bundle);
+    virtual bool enqueueBundle(BundlePkt *bundle);
     virtual void popBundle(long bundleId);
     virtual list<BundlePkt *> getCarryingBundles();
 
@@ -60,10 +67,13 @@ class SdrModel : public Subject {
     int bytesStored_;   // Total Bytes stored in Sdr
     int bundlesNumber_; // Total bundles enqueued in all sdr queues (index, generic, in custody)
 
+    ContactPlan *contactPlan_;
+
     // Indexed queues where index can be used by routing algorithms
     // to enqueue bundles to specific contacts or nodes. When there
     // is no need for an indexed queue, a generic one can be used instead
-    map<int, list<BundlePkt *>> indexedBundleQueue_;
+    map<int, list<BundlePkt *>> perContactBundleQueue_;
+    map<int, list<BundlePkt *>> perNodeBundleQueue_;
     list<BundlePkt *> genericBundleQueue_;
 
     // A separate area of memory to store transmitted bundles for which

@@ -807,7 +807,7 @@ void RoutingCgrModel350_2Copies::enqueueToLimbo(BundlePkt *bundle) {
 
 void RoutingCgrModel350_2Copies::bpEnqueue(BundlePkt *bundle, ProximateNode *selectedNeighbor) {
     bundle->setNextHopEid(selectedNeighbor->neighborNodeNbr);
-    bool enqueued = sdr_->enqueueBundleToContact(bundle, selectedNeighbor->contactId);
+    bool enqueued = sdr_->pushBundleToId(bundle, selectedNeighbor->contactId);
 
     if (enqueued) {
         if (selectedNeighbor->contactId != 0) {
@@ -995,9 +995,9 @@ void RoutingCgrModel350_2Copies::contactStart(Contact *c) {
             ->getRouting());
 
     list<BundlePkt *> nonReceived;
-    while (sdr_->isBundleForContact(c->getId())) {
-        BundlePkt *bundle = sdr_->getNextBundleForContact(c->getId());
-        sdr_->popNextBundleForContact(c->getId());
+    while (sdr_->isBundleForId(c->getId())) {
+        BundlePkt *bundle = sdr_->getBundle(c->getId());
+        sdr_->popBundleFromId(c->getId());
         if (!other->isDeliveredBundle(bundle->getBundleId()))
             nonReceived.push_back(bundle);
         else
@@ -1005,7 +1005,7 @@ void RoutingCgrModel350_2Copies::contactStart(Contact *c) {
     }
 
     for (list<BundlePkt *>::iterator it = nonReceived.begin(); it != nonReceived.end(); ++it)
-        sdr_->enqueueBundleToContact(*it, c->getId());
+        sdr_->pushBundleToId(*it, c->getId());
 }
 
 /***

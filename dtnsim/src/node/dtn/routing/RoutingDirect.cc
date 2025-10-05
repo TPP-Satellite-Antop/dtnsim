@@ -24,5 +24,5 @@ void RoutingDirect::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     if (contactId != 0) {
         bundle->setNextHopEid(contactPlan_->getContactById(contactId)->getDestinationEid());
     }
-    sdr_->enqueueBundleToContact(bundle, contactId);
+    sdr_->pushBundleToId(bundle, contactId);
 }

@@ -69,5 +69,5 @@ void RoutingBRUF1T::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         bundle->setNextHopEid(contactPlan_->getContactById(contactId)->getDestinationEid());
     }
 
-    sdr_->enqueueBundleToContact(bundle, contactId);
+    sdr_->pushBundleToId(bundle, contactId);
 }

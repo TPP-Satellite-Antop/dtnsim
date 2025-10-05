@@ -730,7 +730,7 @@ void CGRBRUFPowered::enqueueToLimbo(BundlePkt *bundle) {
 
 void CGRBRUFPowered::bpEnqueue(BundlePkt *bundle, ProximateNode *selectedNeighbor) {
     bundle->setNextHopEid(selectedNeighbor->neighborNodeNbr);
-    bool enqueued = sdr_->enqueueBundleToContact(bundle, selectedNeighbor->contactId);
+    bool enqueued = sdr_->pushBundleToId(bundle, selectedNeighbor->contactId);
 
     if (enqueued) {
         if (selectedNeighbor->contactId != 0) {

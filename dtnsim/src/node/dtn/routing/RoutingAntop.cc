@@ -31,7 +31,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     }
 
     //todo: esto deberia estar en el if?
-    sdr_->enqueueBundleToContact(bundle, nextHopEid);
+    sdr_->pushBundleToId(bundle, nextHopEid);
 }
 
 template<typename Func>

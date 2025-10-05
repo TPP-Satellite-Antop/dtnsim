@@ -699,7 +699,7 @@ void RoutingCgrModel350_Hops::bpEnqueue(BundlePkt *bundle, ProximateNode *select
         }
     }
 
-    sdr_->enqueueBundleToContact(bundle, selectedNeighbor->contactId);
+    sdr_->pushBundleToId(bundle, selectedNeighbor->contactId);
 
     if (selectedNeighbor->contactId != 0) {
         // Decrease first contact capacity:

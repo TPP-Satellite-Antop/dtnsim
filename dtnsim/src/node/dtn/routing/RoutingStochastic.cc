@@ -9,7 +9,7 @@ RoutingStochastic::~RoutingStochastic() {}
 void RoutingStochastic::msgToOtherArrive(BundlePkt *bundle, double simTime) {
     // Check if message is already in bundles list, if it isn't, insert it.
     if (!isCarryingBundle(bundle->getBundleId()) and !isDeliveredBundle(bundle->getBundleId()))
-        sdr_->enqueueBundle(bundle);
+        sdr_->pushBundle(bundle);
     else
         delete bundle;
 }
@@ -37,9 +37,9 @@ void RoutingStochastic::contactEnd(Contact *c) {
      * When a contact finishes, it takes bundles which
      * weren't sent and removes these since we assume they are copies.
      */
-    while (sdr_->isBundleForContact(c->getId())) {
-        BundlePkt *bundle = sdr_->getNextBundleForContact(c->getId());
-        sdr_->popNextBundleForContact(c->getId());
+    while (sdr_->isBundleForId(c->getId())) {
+        BundlePkt *bundle = sdr_->getBundle(c->getId());
+        sdr_->popBundleFromId(c->getId());
         delete bundle;
     }
 }
@@ -56,7 +56,7 @@ void RoutingStochastic::successfulBundleForwarded(long bundleId, Contact *contac
     // to its final destination and deleted from queue while it was sending to another relay node.
     BundlePkt *bundle = sdr_->getEnqueuedBundle(bundleId);
     if (bundle != NULL && bundle->getDestinationEid() == contact->getDestinationEid()) {
-        sdr_->removeBundle(bundleId);
+        sdr_->popBundle(bundleId);
         deliveredBundles_.push_back(bundleId);
     }
 }
