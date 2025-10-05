@@ -15,7 +15,7 @@
 
 namespace fs = std::filesystem;
 
-static SdrModel *sdrUnibo;
+static ContactSdrModel *sdrUnibo;
 static json brufFunction;
 static int currDest;
 static int numOfTs;
@@ -44,12 +44,12 @@ vector<int> getTsForContact(Contact *contact);
  *
  * @author Simon Rink
  */
-RoutingUncertainUniboCgr::RoutingUncertainUniboCgr(int eid, SdrModel *sdr, ContactPlan *contactPlan,
+RoutingUncertainUniboCgr::RoutingUncertainUniboCgr(int eid, ContactSdrModel *sdr, ContactPlan *contactPlan,
                                                    cModule *dtn, MetricCollector *metricCollector,
                                                    int tsIntervalDuration, bool useUncertainty,
                                                    int repetition, int numOfNodes)
     : RoutingOpportunistic(eid, sdr, contactPlan, dtn, metricCollector) {
-    sdrUnibo = this->sdr_;
+    sdrUnibo = dynamic_cast<ContactSdrModel*>(this->sdr_);
     tsDuration = tsIntervalDuration;
     useUncertainMode = useUncertainty;
     if (useUncertainty) {
@@ -671,7 +671,7 @@ int RoutingUncertainUniboCgr::initializeUniboCGR(time_t time) {
 int RoutingUncertainUniboCgr::callUniboCGR(time_t time, BundlePkt *bundle, List *cgrRoutes) {
     int result;
     this->restoreSAPvalues();
-    sdrUnibo = this->sdr_;
+    sdrUnibo = dynamic_cast<ContactSdrModel*>(this->sdr_);
     this->metricCollector_->updateCGRCalls(this->eid_);
 
     if (this->initialised_ && bundle != NULL) {

@@ -2,8 +2,11 @@
 #include "src/node/app/App.h"
 #include "src/node/com/Com.h"
 #include "src/node/dtn/contactplan/Dtn.h"
+#include "src/node/dtn/contactplan/ContactSdrModel.h"
+
 
 #include <src/central/Central.h>
+
 
 Define_Module(dtnsim::Central);
 
@@ -453,11 +456,9 @@ vector<int> Central::getCentralityContactIds(int nContacts, int nodesNumber) {
         }
 
         for (int i = 1; i <= nodesNumber; i++) {
-            SdrModel sdr;
+            // por ahora inicializamos el contact pero dps esto deberia cambiar en base a una config
             int eid = i;
-            sdr.setEid(eid);
-            sdr.setNodesNumber(nodesNumber);
-            sdr.setContactPlan(&workCP);
+            SdrModel sdr = ContactSdrModel(eid, nodesNumber, &workCP);
             bool printDebug = false;
 
             Routing *routing = new RoutingCgrModel350(eid, &sdr, &workCP, printDebug);
@@ -577,11 +578,8 @@ int Central::computeTotalRoutesNumber(ContactPlan &contactPlan, int nodesNumber,
     }
 
     for (int i = 1; i <= nodesNumber; i++) {
-        SdrModel sdr;
         int eid = i;
-        sdr.setEid(eid);
-        sdr.setNodesNumber(nodesNumber);
-        sdr.setContactPlan(&workCP);
+        SdrModel sdr = ContactSdrModel(eid, nodesNumber, &workCP); //TODO change conditional model
         bool printDebug = false;
 
         Routing *routing = new RoutingCgrModel350(eid, &sdr, &workCP, printDebug);

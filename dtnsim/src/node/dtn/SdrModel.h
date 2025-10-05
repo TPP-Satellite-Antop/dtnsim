@@ -23,28 +23,27 @@ class SdrModel : public Subject {
     SdrModel();
     virtual ~SdrModel();
 
-    // Get information
     virtual int getBundlesCountInSdr();
     virtual int getBundlesCountInContact(int cid);
     virtual int getBundlesCountInLimbo();
     virtual list<BundlePkt *> *getBundlesInLimbo();
     virtual int getBytesStoredInSdr();
     virtual int getBytesStoredToNeighbor(int eid);
-    virtual vector<int> getBundleSizesStoredToNeighbor(int eid);
-    virtual vector<int> getBundleSizesStoredToNeighborWithHigherPriority(int eid, bool critical);
     virtual SdrStatus getSdrStatus();
     virtual BundlePkt *getEnqueuedBundle(long bundleId);
-    bool isSdrFreeSpace(int sizeNewPacket);
+    virtual bool isSdrFreeSpace(int sizeNewPacket);
+    virtual void freeSdr(int eid);
 
-    // Enqueue and dequeue from perContactBundleQueue_
+    // Enqueue and dequeue from indexedBundleQueue_
     virtual bool pushBundleToId(BundlePkt *bundle, int id);
     virtual bool isBundleForId(int id);
     virtual BundlePkt *getBundle(int id);
     virtual void popBundleFromId(int contactId);
 
-    // Enqueue and dequeue from genericBundleQueue_
+    // Enqueue and dequeue generic
     virtual bool pushBundle(BundlePkt *bundle);
     virtual void popBundle(long bundleId);
+    virtual BundlePkt *getBundle(long bundleId);
     virtual list<BundlePkt *> getCarryingBundles();
 
     // Enqueue and dequeue from transmittedBundlesInCustody_
@@ -53,7 +52,7 @@ class SdrModel : public Subject {
     virtual BundlePkt *getTransmittedBundleInCustody(long bundleId);
     virtual list<BundlePkt *> getTransmittedBundlesInCustody();
 
-  private:
+  protected:
     int size_;          // Capacity of sdr in bytes
     int eid_;           // Local eid of the node
     int nodesNumber_;   // Number of nodes in the network

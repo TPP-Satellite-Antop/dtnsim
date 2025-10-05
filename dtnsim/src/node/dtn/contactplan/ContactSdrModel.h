@@ -12,7 +12,7 @@
 #include <omnetpp.h>
 #include "src/dtnsim_m.h"
 #include "src/node/dtn/contactplan/ContactPlan.h"
-#include "src/dtn/node/dtn/SdrModel.h"
+#include "src/node/dtn/SdrModel.h"
 #include <src/node/dtn/SdrStatus.h>
 #include "src/utils/Subject.h"
 
@@ -22,16 +22,41 @@ using namespace std;
 class ContactSdrModel : public SdrModel {
   public:
     ContactSdrModel();
+    ContactSdrModel(int eid, int nodesNumber, ContactPlan* contactPlan);
     virtual ~ContactSdrModel();
 
+    int getBundlesCountInSdr();
+    int getBundlesCountInLimbo();
+    list<BundlePkt *> getCarryingBundles();
+    virtual BundlePkt *getBundle(long bundleId) override;
+    vector<int> getBundleSizesStoredToNeighbor(int eid);
+    vector<int> getBundleSizesStoredToNeighborWithHigherPriority(int eid, bool critical);
+    list<BundlePkt *> getTransmittedBundlesInCustody();
+    BundlePkt* getTransmittedBundleInCustody(long bundleId);
+    list<BundlePkt *> *getBundlesInLimbo();
+    int getBundlesCountInContact(int cid);
+    int getBytesStoredInSdr();
+    void removeTransmittedBundleInCustody(long bundleId);
+    
     // Initialization and configuration
-    virtual void setEid(int eid);
-    virtual void setNodesNumber(int nodesNumber);
-    virtual void setContactPlan(ContactPlan *contactPlan);
-    virtual void setSize(int size);
-    virtual void freeSdr(int eid);
+    void setEid(int eid);
+    void setNodesNumber(int nodesNumber);
+    void setContactPlan(ContactPlan *contactPlan);
+    void setSize(int size);
+
+    bool enqueueTransmittedBundleInCustody(BundlePkt *bundle);
+
+    // overrides
+    virtual bool isBundleForId(int id) override;
+    virtual bool pushBundleToId(BundlePkt *bundle, int id) override;
+    virtual bool pushBundle(BundlePkt *bundle) override;
+    virtual void popBundle(long bundleId) override;
+    virtual void popBundleFromId(int contactId) override;
+    virtual BundlePkt *getBundle(int id) override;
+    virtual int getBytesStoredToNeighbor(int eid) override;
 
   private:
+    list<BundlePkt *> transmittedBundlesInCustody_;     // Add if not present
     ContactPlan *contactPlan_;
 };
 

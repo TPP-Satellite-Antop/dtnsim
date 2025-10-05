@@ -35,6 +35,7 @@ OBJS = \
     $O/src/node/dtn/contactplan/Contact.o \
     $O/src/node/dtn/contactplan/ContactHistory.o \
     $O/src/node/dtn/contactplan/ContactPlan.o \
+    $O/src/node/dtn/contactplan/ContactSdrModel.o \
     $O/src/node/dtn/CustodyModel.o \
     $O/src/node/dtn/contactplan/Dtn.o \
     $O/src/node/dtn/SdrModel.o \
@@ -109,7 +110,6 @@ else
 CONFIGFILE = $(shell opp_configfilepath)
 endif
 
-CONFIGFILE = /home/gst-frenkel/Desktop/tpp/omnetpp-6.1/Makefile.inc
 $(info Config file: $(CONFIGFILE))
 
 ifeq ("$(wildcard $(CONFIGFILE))","")

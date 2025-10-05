@@ -7,6 +7,7 @@
 #include "src/node/dtn/contactplan/Contact.h"
 #include "src/node/dtn/contactplan/ContactHistory.h"
 #include "src/node/dtn/contactplan/ContactPlan.h"
+#include "src/node/dtn/contactplan/ContactSdrModel.h"
 #include "src/node/dtn/routing/Routing.h"
 #include "src/node/dtn/routing/RoutingORUCOP.h"
 #include "src/node/graphics/Graphics.h"
@@ -96,7 +97,7 @@ class Dtn : public cSimpleModule, public Observer {
     CustodyModel custodyModel_;
     double custodyTimeout_;
 
-    SdrModel sdr_;
+    ContactSdrModel sdr_;
 
     // BundlesMap
     bool saveBundleMap_;
