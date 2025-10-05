@@ -615,6 +615,7 @@ void Dtn::dispatchBundle(BundlePkt *bundle) {
         routing->msgToOtherArrive(bundle, simTime().dbl());
 
         // Emit routing specific statistics
+        // TODO
         string routeString = par("routing");
         if (routeString.compare("cgrModel350") == 0) {
             emit(routeCgrDijkstraCalls, ((RoutingCgrModel350 *)routing)->getDijkstraCalls());

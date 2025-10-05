@@ -3,10 +3,12 @@
 
 #include <algorithm>
 #include <fstream>
+#include <unordered_map>
 #include <omnetpp.h>
 #include <queue>
 #include <src/node/dtn/Contact.h>
 #include <vector>
+#include "PositionEntry.h"
 
 using namespace std;
 using namespace omnetpp;
@@ -44,10 +46,16 @@ class ContactPlan {
     vector<Contact> getDiscoveredContacts();
     vector<int> getCurrentNeighbors();
     Contact *getContactBySrcDstStart(int sourceEid, int destinationEid, double start);
+    int getNodesNumber();
+    unordered_map<TimeInterval, vector<PositionEntry>> getNodePositions();
     double getRangeBySrcDst(int Src, int Dst);
     void parseContactPlanFile(string fileName, int nodesNumber, int mode, double failureProb);
+    void parseAction(std::string &command, double start, double end, int sourceEid,
+                     int destinationEid, double dataRateOrRange, double failureProbability,
+                     int mode, std::string &fileLine, int &retFlag);
     void parseOpportunisticContactPlanFile(string fileName, int nodesNumber, int mode,
                                            double failureProb);
+    void setFailureProb(double failureProb, double &failureProbability);
     void setContactsFile(string contactsFile);
     const string &getContactsFile() const;
     simtime_t getLastEditTime();
@@ -69,6 +77,8 @@ class ContactPlan {
     bool hasDiscoveredContact(int sourceEid, int destinationEid);
 
   private:
+    void processContactPlanLine(const std::string &fileLine, int mode, double failureProb,
+                              bool opportunistic);
     void updateContactRanges();
     void sortContactIdsBySrcByStartTime();
 
@@ -83,6 +93,8 @@ class ContactPlan {
     vector<int> contactIdShift_ = {0}; // create dummy element for limbo contact
     simtime_t lastEditTime;
     string contactsFile_;
+    int nodesNumber_;
+    unordered_map<TimeInterval, vector<PositionEntry>> nodePositions_;
 };
 
 #endif /* CONTACTPLAN_H_ */

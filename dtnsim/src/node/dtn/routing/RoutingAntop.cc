@@ -1,17 +1,95 @@
+#include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 #include "antop.h"
 
-RoutingAntop::RoutingAntop(int eid, SdrModel *sdr, ContactPlan *contactPlan)
-    : RoutingDeterministic(eid, sdr, contactPlan) {}
+RoutingAntop::RoutingAntop(int eid, SdrModel *sdr, ContactPlan *contactPlan): RoutingDeterministic(eid, sdr, contactPlan) {
+    this->antopAlgorithm = new Antop();
+    this->nodePositions = contactPlan->getNodePositions();
+    this->antopAlgorithm->init(contactPlan->getNodesNumber());
+    this->prevSrc = 0;
+
+    printf("RoutingAntop initialized with %d nodes\n", contactPlan->getNodesNumber());
+}
 
 RoutingAntop::~RoutingAntop() {}
 
 void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
-    int nextHopId = 0; //Antop::getNextHopId(bundle->getSourceEid(), bundle->getDestinationEid()); //TODO importar la lib Antop
+    printf("RoutingAntop::routeAndQueueBundle called for bundle %ld from %d to %d\n", bundle->getBundleId(), bundle->getSourceEid(), bundle->getDestinationEid());
 
-    if (nextHopId != 0) {
-        bundle->setNextHopEid(contactPlan_->getContactById(nextHopId)->getDestinationEid());
+    H3Index srcIndex = getH3IndexFromEid(bundle->getSourceEid());
+    H3Index nextHopIndex = this->antopAlgorithm->getNextHopId(
+        srcIndex,
+        getH3IndexFromEid(bundle->getDestinationEid()),
+        this->prevSrc,
+        [this](H3Index idx){ return this->isNextHopValid(idx); }
+    );
+
+    int nextHopEid = getEidFromH3Index(nextHopIndex);
+    cout << "Next eid: " << nextHopEid << endl;
+    if (nextHopEid != -1) {
+        this->prevSrc = srcIndex;
+       // bundle->setNextHopEid(nextHopEid);
     }
 
-    sdr_->enqueueBundleToContact(bundle, nextHopId);
+    //todo: esto deberia estar en el if?
+    sdr_->enqueueBundleToContact(bundle, nextHopEid);
+}
+
+template<typename Func>
+bool forEachCurrentPosition(const unordered_map<TimeInterval, vector<PositionEntry>>& nodePositions, double currTime, Func func) {
+    for (const auto& [interval, positions] : nodePositions) {
+        if (currTime < interval.tStart || currTime >= interval.tEnd)
+            continue;
+        for (const auto& pos : positions) {
+            if (func(pos))
+                return true;
+        }
+    }
+    return false;
+}
+
+bool RoutingAntop::isNextHopValid(H3Index nextHop) const {
+    double currTime = simTime().dbl();
+    printf("Node positions are:\n");
+
+    return forEachCurrentPosition(this->nodePositions, currTime, [&](const PositionEntry& pos) {
+        H3Index cell;
+        latLngToCell(&pos.latLng, this->antopAlgorithm->getResolution(), &cell);
+        cout << "cell: " << cell << " nextHop: " << nextHop << std::endl;
+        if (cell == nextHop) {
+            cout << "Next hop is valid: " << nextHop << std::endl;
+            return true;
+        }
+        return false;
+    });
+}
+
+H3Index RoutingAntop::getH3IndexFromEid(int eid) {
+    double currTime = simTime().dbl();
+    H3Index result = 0;
+    forEachCurrentPosition(this->nodePositions, currTime, [&](const PositionEntry& pos) {
+        if (pos.eId == eid) {
+            latLngToCell(&pos.latLng, this->antopAlgorithm->getResolution(), &result);
+            return true;
+        }
+        return false;
+    });
+
+    return result;
+}
+
+int RoutingAntop::getEidFromH3Index(H3Index idx) {
+    double currTime = simTime().dbl();
+    int result = -1;
+    forEachCurrentPosition(this->nodePositions, currTime, [&](const PositionEntry& pos) {
+        H3Index cell;
+        latLngToCell(&pos.latLng, this->antopAlgorithm->getResolution(), &cell);
+        if (cell == idx) {
+            result = pos.eId;
+            return true;
+        }
+        return false;
+    });
+
+    return result;
 }
