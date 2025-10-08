@@ -32,7 +32,6 @@ OBJS = \
     $O/src/central/Central.o \
     $O/src/node/app/App.o \
     $O/src/node/com/Com.o \
-    $O/src/node/dtn/contactless/ContactlessSdrModel.o \
     $O/src/node/dtn/contactplan/Contact.o \
     $O/src/node/dtn/contactplan/ContactHistory.o \
     $O/src/node/dtn/contactplan/ContactPlan.o \

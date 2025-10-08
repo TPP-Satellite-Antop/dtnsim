@@ -22,6 +22,7 @@ class ContactSdrModel : public SdrModel {
     ContactSdrModel(int eid, int nodesNumber, ContactPlan* contactPlan);
     ~ContactSdrModel() override;
 
+    int getBytesStoredToNeighbor(int eid) override;
     vector<int> getBundleSizesStoredToNeighbor(int eid);
     vector<int> getBundleSizesStoredToNeighborWithHigherPriority(int eid, bool critical);
 
