@@ -1,10 +1,10 @@
-package src.central;
+package src.contactplan.central;
 
-simple Central
+simple ContactPlanCentral
 {
     parameters:
         
-        @class(dtnsim::Central);
+        @class(dtnsim::ContactPlanCentral);
         
         bool saveTopology = default(false);
         bool saveFlows = default(false);
@@ -17,7 +17,7 @@ simple Central
 //      	Contact Failure feature:
 //      	DTNSim supports 4 differents ways in order to model contact failures:
 //      		1) Delete a given number of contacts, which are randomly selected. (Set parameter deleteNContacts)
-//			2) Delete contact with a given probability of failure, which is specific for each contact and is contained within the contact plan.
+//			    2) Delete contact with a given probability of failure, which is specific for each contact and is contained within the contact plan.
 //      		3) Delete contacts with a given probability of failure. 
 //      		That is, any contact fails with a given probility. (Set parameter failureProbability)
 //      		4) Delete contacts by id. A list of contact ids is given, and the repectives contacts are deleted. (Set contactIdsToDelete)

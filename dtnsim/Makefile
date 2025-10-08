@@ -30,6 +30,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 #Object files for local.cc, .msg and.sm files
 OBJS = \
     $O/src/central/Central.o \
+    $O/src/central/contactplan/ContactCentral.o \
     $O/src/node/app/App.o \
     $O/src/node/com/Com.o \
     $O/src/node/dtn/contactplan/Contact.o \
