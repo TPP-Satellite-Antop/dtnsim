@@ -43,6 +43,7 @@ class SdrModel : public Subject {
     virtual bool pushBundle(BundlePkt *bundle) final;
     virtual void popBundle(long bundleId) final;
     virtual list<BundlePkt *> getCarryingBundles() final;
+    virtual void removeBundle(long bundleId) final;
 
     // Enqueue and dequeue from transmittedBundlesInCustody_
     virtual bool enqueueTransmittedBundleInCustody(BundlePkt *bundle) final;
