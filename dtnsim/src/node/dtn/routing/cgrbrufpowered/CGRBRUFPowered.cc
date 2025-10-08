@@ -6,6 +6,8 @@
  */
 
 #include <src/node/dtn/routing/cgrbrufpowered/CGRBRUFPowered.h>
+#include "src/node/dtn/contactplan/ContactPlan.h"
+#include "src/node/dtn/contactplan/Contact.h"
 
 CGRBRUFPowered::CGRBRUFPowered(int eid, SdrModel *sdr, ContactPlan *contactPlan, bool printDebug,
                                double probability_of_failure, int ts_duration,
@@ -728,7 +730,7 @@ void CGRBRUFPowered::enqueueToLimbo(BundlePkt *bundle) {
 
 void CGRBRUFPowered::bpEnqueue(BundlePkt *bundle, ProximateNode *selectedNeighbor) {
     bundle->setNextHopEid(selectedNeighbor->neighborNodeNbr);
-    bool enqueued = sdr_->enqueueBundleToContact(bundle, selectedNeighbor->contactId);
+    bool enqueued = sdr_->pushBundleToId(bundle, selectedNeighbor->contactId);
 
     if (enqueued) {
         if (selectedNeighbor->contactId != 0) {

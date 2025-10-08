@@ -10,6 +10,7 @@
 
 #include "src/utils/MetricCollector.h"
 #include <src/node/dtn/routing/Routing.h>
+#include "src/node/dtn/contactplan/ContactPlan.h"
 
 class RoutingOpportunistic : public Routing {
   public:

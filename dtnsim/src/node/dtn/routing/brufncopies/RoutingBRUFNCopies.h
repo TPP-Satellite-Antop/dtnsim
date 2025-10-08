@@ -7,7 +7,7 @@
 #ifndef SRC_NODE_DTN_ROUTINGBRUFNCopies_H_
 #define SRC_NODE_DTN_ROUTINGBRUFNCopies_H_
 
-#include "src/node/dtn/routing/CgrRoute.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
 #include "src/utils/Observer.h"
 #include <src/node/dtn/SdrModel.h>
 #include <src/node/dtn/routing/RoutingDeterministic.h>

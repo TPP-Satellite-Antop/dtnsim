@@ -1,14 +1,13 @@
 #ifndef CONTACTPLAN_H_
 #define CONTACTPLAN_H_
 
-#include <algorithm>
 #include <fstream>
-#include <unordered_map>
 #include <omnetpp.h>
 #include <queue>
-#include <src/node/dtn/Contact.h>
+#include <unordered_map>
 #include <vector>
-#include "PositionEntry.h"
+#include "../PositionEntry.h"
+#include "src/node/dtn/contactplan/Contact.h"
 
 using namespace std;
 using namespace omnetpp;

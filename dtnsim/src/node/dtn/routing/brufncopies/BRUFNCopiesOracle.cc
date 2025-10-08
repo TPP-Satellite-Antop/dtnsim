@@ -5,6 +5,7 @@
  *      Author: fraverta
  */
 
+#include <fstream>
 #include <src/node/dtn/routing/brufncopies/BRUFNCopiesOracle.h>
 
 BRUFNCopiesOracle *BRUFNCopiesOracle::instance_ = NULL;

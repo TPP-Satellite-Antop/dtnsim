@@ -1,8 +1,9 @@
 #ifndef SRC_NODE_DTN_ROUTING_ROUTINGCGRMODELREV17_H_
 #define SRC_NODE_DTN_ROUTING_ROUTINGCGRMODELREV17_H_
 
-#include <src/node/dtn/routing/CgrRoute.h>
-#include <src/node/dtn/routing/RoutingDeterministic.h>
+#include "src/node/dtn/contactplan/Contact.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
+#include "RoutingDeterministic.h"
 
 #define MAX_SPEED_MPH (150000)
 

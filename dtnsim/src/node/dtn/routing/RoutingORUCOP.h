@@ -8,19 +8,8 @@
 #ifndef SRC_NODE_DTN_ROUTING_ROUTINGORUCOP_H_
 #define SRC_NODE_DTN_ROUTING_ROUTINGORUCOP_H_
 
-#include "list"
-#include "src/node/dtn/Dtn.h"
-#include "src/node/dtn/routing/unibocgr/core/cgr/cgr_phases.h"
-#include "src/node/dtn/routing/unibocgr/core/contact_plan/contactPlan.h"
-#include "src/node/dtn/routing/unibocgr/core/contact_plan/contacts/contacts.h"
-#include "src/node/dtn/routing/unibocgr/core/contact_plan/nodes/nodes.h"
-#include "src/node/dtn/routing/unibocgr/core/contact_plan/ranges/ranges.h"
-#include <chrono>
 #include <queue>
 #include <src/node/dtn/routing/RoutingOpportunistic.h>
-#include <src/node/dtn/routing/brufncopies/BRUFNCopies1TOracle.h>
-
-#include "src/node/dtn/routing/unibocgr/core/cgr/cgr.h"
 #include "src/utils/json.hpp"
 
 using json = nlohmann::json;

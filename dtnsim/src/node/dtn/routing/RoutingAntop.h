@@ -2,16 +2,17 @@
 #ifndef SRC_NODE_DTN_ROUTINGANTOP_H_
 #define SRC_NODE_DTN_ROUTINGANTOP_H_
 
+#include "antop.h"
+#include "h3api.h"
+#include <src/node/dtn/PositionEntry.h>
+#include <src/node/dtn/SdrModel.h>
+#include <src/node/dtn/routing/RoutingDeterministic.h>
 #include <unordered_map>
 #include <vector>
-#include <src/node/dtn/SdrModel.h>
-#include "h3api.h"
-#include "antop.h"
-#include <src/node/dtn/routing/RoutingDeterministic.h>
 
 class RoutingAntop : public RoutingDeterministic {
   public:
-    RoutingAntop(int eid, SdrModel *sdr, ContactPlan *contactPlan);
+    RoutingAntop(int eid, SdrModel *sdr);
     virtual ~RoutingAntop();
     virtual void routeAndQueueBundle(BundlePkt *bundle, double simTime);
 

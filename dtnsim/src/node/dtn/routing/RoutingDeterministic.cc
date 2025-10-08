@@ -26,9 +26,9 @@ void RoutingDeterministic::updateContactPlan(Contact *c) {}
 void RoutingDeterministic::refreshForwarding(Contact *c) {}
 
 void RoutingDeterministic::contactEnd(Contact *c) {
-    while (sdr_->isBundleForContact(c->getId())) {
-        BundlePkt *bundle = sdr_->getNextBundleForContact(c->getId());
-        sdr_->popNextBundleForContact(c->getId());
+    while (sdr_->isBundleForId(c->getId())) {
+        BundlePkt *bundle = sdr_->getBundle(c->getId());
+        sdr_->popBundleFromId(c->getId());
 
         // emit(dtnBundleReRouted, true);
         routeAndQueueBundle(bundle, simTime().dbl());

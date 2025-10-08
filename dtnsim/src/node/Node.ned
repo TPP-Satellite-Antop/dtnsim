@@ -3,7 +3,7 @@ package src.node;
 import src.node.fault.Fault;
 import src.node.graphics.Graphics;
 import src.node.app.App;
-import src.node.dtn.Dtn;
+import src.node.dtn.contactplan.Dtn;
 import src.node.com.Com;
 
 module Node

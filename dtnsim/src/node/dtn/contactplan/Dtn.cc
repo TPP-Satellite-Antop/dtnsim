@@ -1,5 +1,23 @@
-#include "src/node/dtn/Dtn.h"
+#include "Dtn.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
+#include "src/node/dtn/contactplan/ContactHistory.h"
+#include "src/node/dtn/contactplan/Contact.h"
 #include "src/node/app/App.h"
+#include "src/node/dtn/routing/RoutingAntop.h"
+#include "src/node/dtn/routing/RoutingBRUF1T.h"
+#include "src/node/dtn/routing/RoutingCgrModel350.h"
+#include "src/node/dtn/routing/RoutingCgrModel350_2Copies.h"
+#include "src/node/dtn/routing/RoutingCgrModel350_Hops.h"
+#include "src/node/dtn/routing/RoutingCgrModel350_Probabilistic.h"
+#include "src/node/dtn/routing/RoutingCgrModelRev17.h"
+#include "src/node/dtn/routing/RoutingCgrModelYen.h"
+#include "src/node/dtn/routing/RoutingDirect.h"
+#include "src/node/dtn/routing/RoutingEpidemic.h"
+#include "src/node/dtn/routing/RoutingPRoPHET.h"
+#include "src/node/dtn/routing/RoutingSprayAndWait.h"
+#include "src/node/dtn/routing/RoutingUncertainUniboCgr.h"
+#include "src/node/dtn/routing/brufncopies/RoutingBRUFNCopies.h"
+#include "src/node/dtn/routing/cgrbrufpowered/CGRBRUFPowered.h"
 
 Define_Module(Dtn);
 
@@ -191,7 +209,7 @@ void Dtn::initializeRouting(string routeString) {
     if (routeString.compare("direct") == 0)
         routing = new RoutingDirect(eid_, &sdr_, &contactPlan_);
     else if (routeString.compare("antop") == 0)
-        routing = new RoutingAntop(eid_, &sdr_, &contactPlan_);
+        routing = new RoutingAntop(eid_, &sdr_);
     else if (routeString.compare("cgrModel350") == 0)
         routing = new RoutingCgrModel350(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
     else if (routeString.compare("cgrModel350_Hops") == 0)
@@ -438,7 +456,7 @@ void Dtn::handleMessage(cMessage *msg) {
         // for opportunistic extensions
         controller->coordinateContactEnd(contact);
 
-        for (int i = 0; i < sdr_.getBundlesCountInContact(contactMsg->getId()); i++)
+        for (int i = 0; i < sdr_.getBundlesCountInIndex(contactMsg->getId()); i++)
             emit(dtnBundleReRouted, true);
 
         routing->contactEnd(contactTopology_.getContactById(contactMsg->getId()));
@@ -464,7 +482,7 @@ void Dtn::handleMessage(cMessage *msg) {
         forwardingMsgs_[forwardingMsgStart->getContactId()] = forwardingMsgStart;
 
         // if there are messages in the queue for this contact
-        if (sdr_.isBundleForContact(contactId)) {
+        if (sdr_.isBundleForId(contactId)) {
             // If local/remote node are responsive, then transmit bundle
             Dtn *neighborDtn = check_and_cast<Dtn *>(this->getParentModule()
                                                          ->getParentModule()
@@ -472,7 +490,7 @@ void Dtn::handleMessage(cMessage *msg) {
                                                          ->getSubmodule("dtn"));
             if ((!neighborDtn->onFault) && (!this->onFault)) {
                 // Get bundle pointer from sdr
-                BundlePkt *bundle = sdr_.getNextBundleForContact(contactId);
+                BundlePkt *bundle = sdr_.getBundle(contactId);
 
                 // Calculate data rate and Tx duration
                 double dataRate = contactTopology_.getContactById(contactId)->getDataRate();
@@ -498,7 +516,7 @@ void Dtn::handleMessage(cMessage *msg) {
                                    << bundle->getSourceEid() << "," << bundle->getDestinationEid()
                                    << "," << bundle->getBitLength() << "," << txDuration << endl;
 
-                    sdr_.popNextBundleForContact(contactId);
+                    sdr_.popBundleFromId(contactId);
 
                     // If custody requested, store a copy of the bundle until report received
                     if (bundle->getCustodyTransferRequested()) {
@@ -652,7 +670,7 @@ void Dtn::refreshForwarding() {
     for (it = forwardingMsgs_.begin(); it != forwardingMsgs_.end(); ++it) {
         ForwardingMsgStart *forwardingMsg = it->second;
         int cid = forwardingMsg->getContactId();
-        if (!sdr_.isBundleForContact(cid))
+        if (!sdr_.isBundleForId(cid))
             // notify routing protocol that it has messages to send and contacts for routing
             routing->refreshForwarding(contactTopology_.getContactById(cid));
         if (!forwardingMsg->isScheduled()) {

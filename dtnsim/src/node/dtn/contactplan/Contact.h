@@ -2,7 +2,6 @@
 #define CONTACT_H_
 
 #include <iostream>
-#include <vector>
 
 using namespace std;
 

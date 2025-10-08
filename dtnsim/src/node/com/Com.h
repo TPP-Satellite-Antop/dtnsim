@@ -1,16 +1,10 @@
 #ifndef COM_H_
 #define COM_H_
 
-#include <src/node/dtn/ContactPlan.h>
 
-#include <fstream>
 #include <iomanip>
 #include <omnetpp.h>
-#include <stdio.h>
-#include <string.h>
-
-#include "src/dtnsim_m.h"
-#include "src/node/MsgTypes.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
 
 using namespace std;
 using namespace omnetpp;

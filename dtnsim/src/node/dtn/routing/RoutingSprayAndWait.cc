@@ -1,9 +1,10 @@
 #include "src/node/dtn/routing/RoutingSprayAndWait.h"
-#include "src/node/dtn/Dtn.h"
+#include "src/node/dtn/contactplan/Dtn.h"
+#include "RoutingStochastic.h"
 
 RoutingSprayAndWait::RoutingSprayAndWait(int eid, SdrModel *sdr, cModule *dtn, int amountOfCopies,
                                          bool binary, MetricCollector *metricCollector)
-    : RoutingStochastic(eid, sdr, dtn) {
+    : ::RoutingStochastic(eid, sdr, dtn) {
     this->binary = binary;
     this->amountOfCopies = amountOfCopies;
     this->metricCollector = metricCollector;
@@ -41,9 +42,9 @@ void RoutingSprayAndWait::contactEnd(Contact *c) {
      * When a contact finishes, it takes bundles which
      * weren't sent and removes these since we assume they are copies.
      */
-    if (sdr_->isBundleForContact(c->getId())) {
-        BundlePkt *bundle = sdr_->getNextBundleForContact(c->getId());
-        sdr_->popNextBundleForContact(c->getId());
+    if (sdr_->isBundleForId(c->getId())) {
+        BundlePkt *bundle = sdr_->getBundle(c->getId());
+        sdr_->popBundleFromId(c->getId());
         this->metricCollector->updateSentBundles(eid_, c->getDestinationEid(), c->getStart(),
                                                  bundle->getBundleId(),
                                                  -bundle->getBundlesCopies());
@@ -59,7 +60,7 @@ void RoutingSprayAndWait::contactEnd(Contact *c) {
         delete bundle;
 
         // If there are more than one bundle report error and exit simulation. (For test propose)
-        if (sdr_->isBundleForContact(c->getId())) {
+        if (sdr_->isBundleForId(c->getId())) {
             cout << "SprayAndWait::ContactEnd(Contact * c) - More than one bundles is enqueue in a "
                     "finished contact";
             exit(0);
@@ -80,7 +81,7 @@ void RoutingSprayAndWait::successfulBundleForwarded(long bundleId, Contact *cont
 
 void RoutingSprayAndWait::routeAndQueueBundle(Contact *c) {
     // Enqueue only one bundle per contact
-    if (sdr_->isBundleForContact(c->getId()))
+    if (sdr_->isBundleForId(c->getId()))
         return;
 
     RoutingSprayAndWait *other = check_and_cast<RoutingSprayAndWait *>(
@@ -104,7 +105,7 @@ void RoutingSprayAndWait::routeAndQueueBundle(Contact *c) {
                 BundlePkt *bundleCopy = (*it)->dup();
                 bundleCopy->setNextHopEid(c->getDestinationEid());
                 bundleCopy->setBundlesCopies(1);
-                sdr_->enqueueBundleToContact(bundleCopy, c->getId());
+                sdr_->pushBundleToId(bundleCopy, c->getId());
                 this->metricCollector->updateSentBundles(eid_, c->getDestinationEid(),
                                                          c->getStart(), bundleCopy->getBundleId());
                 return;
@@ -112,7 +113,7 @@ void RoutingSprayAndWait::routeAndQueueBundle(Contact *c) {
                 // since bundle has already reached its final destination, delete it and add its id
                 // to deliveredBundles_.
                 deliveredBundles_.push_back((*it)->getBundleId());
-                sdr_->removeBundle((*it)->getBundleId());
+                sdr_->popBundle((*it)->getBundleId());
             }
         } else if ((*it)->getBundlesCopies() > 1)
             bundlesToOthers.push_back(*it);
@@ -129,7 +130,7 @@ void RoutingSprayAndWait::routeAndQueueBundle(Contact *c) {
             BundlePkt *bundleCopy = (*it)->dup();
             bundleCopy->setNextHopEid(c->getDestinationEid());
             bundleCopy->setBundlesCopies((binary) ? copies / 2 : 1);
-            sdr_->enqueueBundleToContact(bundleCopy, c->getId());
+            sdr_->pushBundleToId(bundleCopy, c->getId());
             this->metricCollector->updateSentBundles(eid_, c->getDestinationEid(), c->getStart(),
                                                      bundleCopy->getBundleId(),
                                                      bundleCopy->getBundlesCopies());

@@ -1,3 +1,4 @@
+#include "CgrRoute.h"
 #include <src/node/dtn/routing/RoutingCgrModelRev17.h>
 
 // This function initializes the routing class:
@@ -665,7 +666,7 @@ void RoutingCgrModelRev17::cgrForward(BundlePkt *bundle) {
     } else {
         // Enqueue to limbo
         bundle->setNextHopEid(NO_ROUTE_FOUND);
-        sdr_->enqueueBundleToContact(bundle, 0);
+        sdr_->pushBundleToId(bundle, 0);
 
         cout << "*BestRoute not found (enqueing to limbo)" << endl;
     }
@@ -779,11 +780,11 @@ void RoutingCgrModelRev17::cgrEnqueue(BundlePkt *bundle, CgrRoute *bestRoute) {
         cout << "queuing bundle in contact " << bestRoute->hops.at(0)->getId() << endl;
 
         bundle->setNextHopEid(bestRoute->nextHop);
-        sdr_->enqueueBundleToContact(bundle, bestRoute->hops.at(0)->getId());
+        sdr_->pushBundleToId(bundle, bestRoute->hops.at(0)->getId());
     } else {
         // Enqueue to limbo
         bundle->setNextHopEid(bestRoute->nextHop);
-        sdr_->enqueueBundleToContact(bundle, 0);
+        sdr_->pushBundleToId(bundle, 0);
 
         cout << "!*BestRoute not found (enqueing to limbo)" << endl;
     }

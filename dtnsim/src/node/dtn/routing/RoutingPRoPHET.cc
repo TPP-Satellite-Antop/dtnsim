@@ -44,9 +44,9 @@ void RoutingPRoPHET::contactStart(Contact *c) {
 
 void RoutingPRoPHET::contactEnd(Contact *c) {
     // unsent bundles are supposed to be not needed anymore
-    while (sdr_->isBundleForContact(c->getId())) {
-        BundlePkt *bundle = sdr_->getNextBundleForContact(c->getId());
-        sdr_->popNextBundleForContact(c->getId());
+    while (sdr_->isBundleForId(c->getId())) {
+        BundlePkt *bundle = sdr_->getBundle(c->getId());
+        sdr_->popBundleFromId(c->getId());
         this->metricCollector_->updateSentBundles(eid_, c->getDestinationEid(), c->getStart(),
                                                   bundle->getBundleId(), -1);
 
@@ -138,7 +138,7 @@ void RoutingPRoPHET::routeAndQueueBundle(Contact *c) {
     for (auto it = carryingBundles.begin(); it != carryingBundles.end(); it++) {
         if (other->isDeliveredBundle((*it)->getBundleId())) {
             deliveredBundles_.push_back((*it)->getBundleId());
-            sdr_->removeBundle((*it)->getBundleId());
+            sdr_->popBundle((*it)->getBundleId());
             continue;
         }
         if (other->isCarryingBundle((*it)->getBundleId())) {
@@ -149,7 +149,7 @@ void RoutingPRoPHET::routeAndQueueBundle(Contact *c) {
             BundlePkt *bundleCopy = (*it)->dup();
             bundleCopy->setNextHopEid(c->getDestinationEid());
             bundleCopy->setBundlesCopies(1);
-            sdr_->enqueueBundleToContact(bundleCopy, c->getId());
+            sdr_->pushBundleToId(bundleCopy, c->getId());
             this->metricCollector_->updateSentBundles(eid_, c->getDestinationEid(), c->getStart(),
                                                       bundleCopy->getBundleId());
 
@@ -162,7 +162,7 @@ void RoutingPRoPHET::routeAndQueueBundle(Contact *c) {
                 BundlePkt *bundleCopy = (*it)->dup();
                 bundleCopy->setNextHopEid(c->getDestinationEid());
                 bundleCopy->setBundlesCopies(1);
-                sdr_->enqueueBundleToContact(bundleCopy, c->getId());
+                sdr_->pushBundleToId(bundleCopy, c->getId());
                 this->metricCollector_->updateSentBundles(eid_, c->getDestinationEid(),
                                                           c->getStart(), bundleCopy->getBundleId());
             }
@@ -184,7 +184,7 @@ void RoutingPRoPHET::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         vector<double> *other_table = other->getPredTable();
         if (other->isDeliveredBundle(bundle->getBundleId())) {
             deliveredBundles_.push_back(bundle->getBundleId());
-            sdr_->removeBundle(bundle->getBundleId());
+            sdr_->popBundle(bundle->getBundleId());
             break;
         }
         if (other->isCarryingBundle(bundle->getBundleId())) {
@@ -195,7 +195,7 @@ void RoutingPRoPHET::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
             BundlePkt *bundleCopy = bundle->dup();
             bundleCopy->setNextHopEid(it->first);
             bundleCopy->setBundlesCopies(1);
-            sdr_->enqueueBundleToContact(bundleCopy, it->second);
+            sdr_->pushBundleToId(bundleCopy, it->second);
             this->metricCollector_->updateSentBundles(eid_, it->first, simTime,
                                                       bundleCopy->getBundleId());
 
@@ -208,7 +208,7 @@ void RoutingPRoPHET::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
                 BundlePkt *bundleCopy = bundle->dup();
                 bundleCopy->setNextHopEid(it->first);
                 bundleCopy->setBundlesCopies(1);
-                sdr_->enqueueBundleToContact(bundleCopy, it->second);
+                sdr_->pushBundleToId(bundleCopy, it->second);
                 this->metricCollector_->updateSentBundles(eid_, it->first, simTime,
                                                           bundleCopy->getBundleId());
             }
@@ -228,7 +228,7 @@ void RoutingPRoPHET::successfulBundleForwarded(long bundleId, Contact *contact,
     // to its final destination and deleted from queue while it was sending to another relay node.
     BundlePkt *bundle = sdr_->getEnqueuedBundle(bundleId);
     if (bundle != NULL && bundle->getDestinationEid() == contact->getDestinationEid()) {
-        sdr_->removeBundle(bundleId);
+        sdr_->popBundle(bundleId);
         deliveredBundles_.push_back(bundleId);
     }
 }
@@ -271,7 +271,7 @@ void RoutingPRoPHET::msgToOtherArrive(BundlePkt *bundle, double simTime) {
                                                      bundle->getDestinationEid(), simTime);
     }
     if (!isCarryingBundle(bundle->getBundleId()) and !isDeliveredBundle(bundle->getBundleId())) {
-        sdr_->enqueueBundle(bundle);
+        sdr_->pushBundle(bundle);
         this->routeAndQueueBundle(bundle, simTime);
     } else
         delete bundle;

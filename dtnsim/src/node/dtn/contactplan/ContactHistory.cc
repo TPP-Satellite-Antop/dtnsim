@@ -5,7 +5,9 @@
  *      Author: Simon Rink
  */
 
-#include "ContactHistory.h"
+#include "./Contact.h"
+#include "./ContactPlan.h"
+#include "./ContactHistory.h"
 
 ContactHistory::ContactHistory() {}
 

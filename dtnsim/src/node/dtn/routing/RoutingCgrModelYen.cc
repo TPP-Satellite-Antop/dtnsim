@@ -1,8 +1,10 @@
 #include "src/node/dtn/routing/RoutingCgrModelYen.h"
+#include "RoutingDeterministic.h"
+#include "src/node/dtn/SdrModel.h"
 
 RoutingCgrModelYen::RoutingCgrModelYen(int eid, SdrModel *sdr, ContactPlan *contactPlan,
                                        bool printDebug)
-    : RoutingDeterministic(eid, sdr, contactPlan) {
+    : ::RoutingDeterministic(eid, sdr, contactPlan) {
     printDebug_ = printDebug;
 }
 
@@ -889,7 +891,7 @@ void RoutingCgrModelYen::enqueueToLimbo(BundlePkt *bundle) {
 
 void RoutingCgrModelYen::bpEnqueue(BundlePkt *bundle, ProximateNode *selectedNeighbor) {
     bundle->setNextHopEid(selectedNeighbor->neighborNodeNbr);
-    sdr_->enqueueBundleToContact(bundle, selectedNeighbor->contactId);
+    sdr_->pushBundleToId(bundle, selectedNeighbor->contactId);
 
     if (selectedNeighbor->contactId != 0) {
         // Decrease first contact capacity:

@@ -15,8 +15,8 @@
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/contacts/contacts.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/nodes/nodes.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/ranges/ranges.h"
-#include <chrono>
 #include <src/node/dtn/routing/RoutingOpportunistic.h>
+#include "src/node/dtn/contactplan/ContactSdrModel.h"
 
 #include "src/node/dtn/routing/unibocgr/core/cgr/cgr.h"
 #include "src/utils/json.hpp"
@@ -25,7 +25,7 @@ using json = nlohmann::json;
 using namespace std::chrono;
 class RoutingUncertainUniboCgr : public RoutingOpportunistic {
   public:
-    RoutingUncertainUniboCgr(int eid, SdrModel *sdr, ContactPlan *contactPlan, cModule *dtn,
+    RoutingUncertainUniboCgr(int eid, ContactSdrModel *sdr, ContactPlan *contactPlan, cModule *dtn,
                              MetricCollector *metricCollector, int tsIntervalDuration,
                              bool useUncertainty, int repetition, int numOfNodes);
     virtual ~RoutingUncertainUniboCgr();
