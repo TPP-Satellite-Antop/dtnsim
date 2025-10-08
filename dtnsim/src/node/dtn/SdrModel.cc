@@ -264,27 +264,9 @@ BundlePkt *SdrModel::getTransmittedBundleInCustody(long bundleId) {
          it != transmittedBundlesInCustody_.end(); it++)
         if ((*it)->getBundleId() == bundleId)
             return (*it);
+    return nullptr;
 }
 
 list<BundlePkt *> SdrModel::getTransmittedBundlesInCustody() {
     return transmittedBundlesInCustody_;
-}
-
-void SdrModel::removeBundle(long bundleId) {
-    for (list<BundlePkt *>::iterator it = genericBundleQueue_.begin();
-         it != genericBundleQueue_.end(); it++)
-        if ((*it)->getBundleId() == bundleId) {
-            int size = (*it)->getByteLength();
-            delete (*it);
-            genericBundleQueue_.erase(it);
-            bundlesNumber_--;
-            bytesStored_ -= size;
-            notify();
-            break;
-        }
-}
-
-int SdrModel::getBytesStoredToNeighbor(int eid) {
-    // TODO: Implement logic or return a default value
-    return 0;
 }

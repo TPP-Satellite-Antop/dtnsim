@@ -20,15 +20,11 @@ class ContactSdrModel : public SdrModel {
   public:
     ContactSdrModel();
     ContactSdrModel(int eid, int nodesNumber, ContactPlan* contactPlan);
-    virtual ~ContactSdrModel();
+    ~ContactSdrModel() override;
 
-    BundlePkt *getBundle(long bundleId) override;
     vector<int> getBundleSizesStoredToNeighbor(int eid);
     vector<int> getBundleSizesStoredToNeighborWithHigherPriority(int eid, bool critical);
-    list<BundlePkt *> getTransmittedBundlesInCustody();
-    BundlePkt* getTransmittedBundleInCustody(long bundleId);
-    void removeTransmittedBundleInCustody(long bundleId);
-    
+
     // Initialization and configuration
     void setEid(int eid);
     void setNodesNumber(int nodesNumber);

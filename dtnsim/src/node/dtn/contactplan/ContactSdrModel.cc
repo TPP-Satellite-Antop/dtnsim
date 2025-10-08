@@ -164,37 +164,3 @@ vector<int> ContactSdrModel::getBundleSizesStoredToNeighborWithHigherPriority(in
 
     return sizes;
 }
-
-/////////////////////////////////////
-// Enqueue and dequeue from genericBundleQueue_
-//////////////////////////////////////
-
-BundlePkt *ContactSdrModel::getBundle(long bundleId) {
-    for (list<BundlePkt *>::iterator it = genericBundleQueue_.begin();
-         it != genericBundleQueue_.end(); it++)
-        if ((*it)->getBundleId())
-            return *it;
-
-    return NULL;
-}
-
-/////////////////////////////////////
-// Enqueue and dequeue from transmittedBundlesInCustody_
-//////////////////////////////////////
-
-
-void ContactSdrModel::removeTransmittedBundleInCustody(long bundleId) {
-    cout << "Node " << eid_ << " removeTransmittedBundleInCustody bundleId: " << bundleId << endl;
-
-    for (list<BundlePkt *>::iterator it = transmittedBundlesInCustody_.begin();
-         it != transmittedBundlesInCustody_.end(); it++)
-        if ((*it)->getBundleId() == bundleId) {
-            int size = (*it)->getByteLength();
-            delete (*it);
-            it = transmittedBundlesInCustody_.erase(it);
-            bundlesNumber_--;
-            bytesStored_ -= size;
-            notify();
-            // break; // remove all possible instances of the same id
-        }
-}

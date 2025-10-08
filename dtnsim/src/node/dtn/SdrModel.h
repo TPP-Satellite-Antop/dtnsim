@@ -22,12 +22,12 @@ class SdrModel : public Subject {
     SdrModel();
     ~SdrModel() override;
 
+    virtual int getBytesStoredToNeighbor(int eid) = 0;
     virtual int getBundlesCountInSdr() final;
     virtual int getBundlesCountInIndex(int id) final;
     virtual int getBundlesCountInLimbo() final;
     virtual list<BundlePkt *> *getBundlesInLimbo() final;
     virtual int getBytesStoredInSdr() final;
-    virtual int getBytesStoredToNeighbor(int eid) final;
     virtual SdrStatus getSdrStatus() final;
     virtual BundlePkt *getEnqueuedBundle(long bundleId) final;
     virtual bool isSdrFreeSpace(int sizeNewPacket) final;
@@ -43,7 +43,6 @@ class SdrModel : public Subject {
     virtual bool pushBundle(BundlePkt *bundle) final;
     virtual void popBundle(long bundleId) final;
     virtual list<BundlePkt *> getCarryingBundles() final;
-    virtual void removeBundle(long bundleId) final;
 
     // Enqueue and dequeue from transmittedBundlesInCustody_
     virtual bool enqueueTransmittedBundleInCustody(BundlePkt *bundle) final;
@@ -66,7 +65,7 @@ class SdrModel : public Subject {
 
     // A separate area of memory to store transmitted bundles for which
     // the current node is custodian. Bundles are removed as custody reports
-    // arrives with either custody acceptance or rejection of a remote node
+    // arrive with either custody acceptance or rejection of a remote node
     list<BundlePkt *> transmittedBundlesInCustody_;
 };
 
