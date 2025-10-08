@@ -456,7 +456,7 @@ void Dtn::handleMessage(cMessage *msg) {
         // for opportunistic extensions
         controller->coordinateContactEnd(contact);
 
-        for (int i = 0; i < sdr_.getBundlesCountInContact(contactMsg->getId()); i++)
+        for (int i = 0; i < sdr_.getBundlesCountInIndex(contactMsg->getId()); i++)
             emit(dtnBundleReRouted, true);
 
         routing->contactEnd(contactTopology_.getContactById(contactMsg->getId()));

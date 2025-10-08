@@ -5,7 +5,7 @@ SdrModel::SdrModel() {
     bytesStored_ = 0;
 }
 
-SdrModel::~SdrModel() {}
+SdrModel::~SdrModel() = default;
 
 /////////////////////////////////////
 // Initialization and configuration
@@ -58,8 +58,8 @@ list<BundlePkt *> *SdrModel::getBundlesInLimbo() {
     return &indexedBundleQueue_[0];
 }
 
-int SdrModel::getBundlesCountInContact(int cid) {
-    return indexedBundleQueue_[cid].size();
+int SdrModel::getBundlesCountInIndex(const int id) {
+    return indexedBundleQueue_[id].size();
 }
 
 int SdrModel::getBytesStoredInSdr() {
@@ -67,7 +67,7 @@ int SdrModel::getBytesStoredInSdr() {
 }
 
 SdrStatus SdrModel::getSdrStatus() {
-    SdrStatus sdrStatus;
+    SdrStatus sdrStatus{};
 
     for (int i = 1; i <= nodesNumber_; i++) {
         sdrStatus.size[i] = this->getBytesStoredToNeighbor(i);
@@ -79,8 +79,8 @@ SdrStatus SdrModel::getSdrStatus() {
 bool SdrModel::isSdrFreeSpace(int sizeNewPacket) {
     if (this->size_ == 0)
         return true;
-    else
-        return (bytesStored_ + sizeNewPacket <= this->size_) ? true : false;
+
+    return bytesStored_ + sizeNewPacket <= this->size_;
 }
 
 /////////////////////////////////////
@@ -91,7 +91,7 @@ bool SdrModel::pushBundleToId(BundlePkt *bundle, int id) {
     // if there is not enough space in sdr, the bundle is deleted
     // if another behavior is required, the simpleCustodyModel should be used
     // to avoid bundle deletions
-    if (!(this->isSdrFreeSpace(bundle->getByteLength()))) {
+    if (!this->isSdrFreeSpace(bundle->getByteLength())) {
         delete bundle;
         return false;
     }
@@ -117,21 +117,13 @@ bool SdrModel::pushBundleToId(BundlePkt *bundle, int id) {
     return true;
 }
 
-bool SdrModel::isBundleForId(int id) {
+bool SdrModel::isBundleForId(const int id) {
     // This functions returns true if there is a queue
     // with bundles for the contactId. If it is empty
     // or non-existent, the function returns false
+    const auto it = indexedBundleQueue_.find(id);
 
-    map<int, list<BundlePkt *>>::iterator it = indexedBundleQueue_.find(id);
-
-    if (it != indexedBundleQueue_.end()) {
-        if (!indexedBundleQueue_[id].empty())
-            return true;
-        else
-            return false;
-    } else {
-        return false;
-    }
+    return it != indexedBundleQueue_.end() && !indexedBundleQueue_[id].empty();
 }
 
 BundlePkt *SdrModel::getBundle(int id) {
@@ -150,9 +142,9 @@ BundlePkt *SdrModel::getBundle(int id) {
     return bundlesToTx.front();
 }
 
-void SdrModel::popBundleFromId(int contactId) {
+void SdrModel::popBundleFromId(int id) {
     // Pop the next bundle for this contact
-    map<int, list<BundlePkt *>>::iterator it = indexedBundleQueue_.find(contactId);
+    map<int, list<BundlePkt *>>::iterator it = indexedBundleQueue_.find(id);
     list<BundlePkt *> bundlesToTx = it->second;
 
     int size = bundlesToTx.front()->getByteLength();
@@ -160,9 +152,9 @@ void SdrModel::popBundleFromId(int contactId) {
 
     // Update queue after popping the bundle
     if (!bundlesToTx.empty())
-        indexedBundleQueue_[contactId] = bundlesToTx;
+        indexedBundleQueue_[id] = bundlesToTx;
     else
-        indexedBundleQueue_.erase(contactId);
+        indexedBundleQueue_.erase(id);
 
     bundlesNumber_--;
     bytesStored_ -= size;
@@ -272,7 +264,6 @@ BundlePkt *SdrModel::getTransmittedBundleInCustody(long bundleId) {
          it != transmittedBundlesInCustody_.end(); it++)
         if ((*it)->getBundleId() == bundleId)
             return (*it);
-    return NULL;
 }
 
 list<BundlePkt *> SdrModel::getTransmittedBundlesInCustody() {

@@ -3,6 +3,8 @@
 #include "ContactSdrModel.h"
 #include "ContactPlan.h"
 
+#include <iostream>
+
 ContactSdrModel::ContactSdrModel() {
     bundlesNumber_ = 0;
     bytesStored_ = 0;
@@ -41,26 +43,6 @@ void ContactSdrModel::setContactPlan(ContactPlan *contactPlan) {
 /////////////////////////////////////
 // Get information
 //////////////////////////////////////
-
-int ContactSdrModel::getBundlesCountInSdr() {
-    return bundlesNumber_;
-}
-
-int ContactSdrModel::getBundlesCountInLimbo() {
-    return indexedBundleQueue_[0].size();
-}
-
-list<BundlePkt *> *ContactSdrModel::getBundlesInLimbo() {
-    return &indexedBundleQueue_[0];
-}
-
-int ContactSdrModel::getBundlesCountInContact(int cid) {
-    return indexedBundleQueue_[cid].size();
-}
-
-int ContactSdrModel::getBytesStoredInSdr() {
-    return bytesStored_;
-}
 
 // Returns the total number of bytes stored in the SDR that are intended to be sent to `eid` when a contact becomes available.
 int ContactSdrModel::getBytesStoredToNeighbor(int eid) {
@@ -184,132 +166,8 @@ vector<int> ContactSdrModel::getBundleSizesStoredToNeighborWithHigherPriority(in
 }
 
 /////////////////////////////////////
-// Enqueue and dequeue from indexedBundleQueue_
-//////////////////////////////////////
-
-bool ContactSdrModel::pushBundleToId(BundlePkt *bundle, int contactId) {
-    // if there is not enough space in sdr, the bundle is deleted
-    // if another behavior is required, the simpleCustodyModel should be used
-    // to avoid bundle deletions
-    if (!(this->isSdrFreeSpace(bundle->getByteLength()))) {
-        delete bundle;
-        return false;
-    }
-
-    // Check is queue exits, if not, create it. Add bundle to queue.
-    map<int, list<BundlePkt *>>::iterator it = indexedBundleQueue_.find(contactId);
-    if (it != indexedBundleQueue_.end()) {
-        // if custody report, enqueue it at the front so it is prioritized
-        // over data bundles already in the queue
-        if (bundle->getBundleIsCustodyReport())
-            it->second.push_front(bundle);
-        else
-            it->second.push_back(bundle);
-    } else {
-        list<BundlePkt *> q;
-        q.push_back(bundle);
-        indexedBundleQueue_[contactId] = q;
-    }
-
-    bundlesNumber_++;
-    bytesStored_ += bundle->getByteLength();
-    notify();
-    return true;
-}
-
-bool ContactSdrModel::isBundleForId(int contactId) {
-    // This functions returns true if there is a queue
-    // with bundles for the contactId. If it is empty
-    // or non-existent, the function returns false
-
-    map<int, list<BundlePkt *>>::iterator it = indexedBundleQueue_.find(contactId);
-
-    if (it != indexedBundleQueue_.end()) {
-        if (!indexedBundleQueue_[contactId].empty())
-            return true;
-        else
-            return false;
-    } else {
-        return false;
-    }
-}
-
-BundlePkt *ContactSdrModel::getBundle(int contactId) {
-    map<int, list<BundlePkt *>>::iterator it = indexedBundleQueue_.find(contactId);
-
-    // Just check if the function was called incorrectly
-    if (it == indexedBundleQueue_.end())
-        if (indexedBundleQueue_[contactId].empty()) {
-            cout << "***getBundle called from ContactSdrModel but queue empty***" << endl;
-            exit(1);
-        }
-
-    // Find and return pointer to bundle
-    list<BundlePkt *> bundlesToTx = it->second;
-
-    return bundlesToTx.front();
-}
-
-void ContactSdrModel::popBundleFromId(int contactId) {
-    // Pop the next bundle for this contact
-    map<int, list<BundlePkt *>>::iterator it = indexedBundleQueue_.find(contactId);
-    list<BundlePkt *> bundlesToTx = it->second;
-
-    int size = bundlesToTx.front()->getByteLength();
-    bundlesToTx.pop_front();
-
-    // Update queue after popping the bundle
-    if (!bundlesToTx.empty())
-        indexedBundleQueue_[contactId] = bundlesToTx;
-    else
-        indexedBundleQueue_.erase(contactId);
-
-    bundlesNumber_--;
-    bytesStored_ -= size;
-    notify();
-}
-
-/////////////////////////////////////
 // Enqueue and dequeue from genericBundleQueue_
 //////////////////////////////////////
-
-bool ContactSdrModel::pushBundle(BundlePkt *bundle) {
-    // if there is not enough space in sdr, the bundle is deleted
-    // if another behaviour is required, the simpleCustodyModel should be used
-    // to avoid bundle deletions
-    if (!(this->isSdrFreeSpace(bundle->getByteLength()))) {
-        cout << "ContactSdrModel::enqueuBundle(BundlePkt * bundle): Bundle exceed sdr capacity so it was "
-                "not enqueue."
-             << endl;
-        delete bundle;
-        return false;
-    }
-
-    genericBundleQueue_.push_back(bundle);
-    bundlesNumber_++;
-    bytesStored_ += bundle->getByteLength();
-    notify();
-    return true;
-}
-
-// Delete bundle with bundleId from genericBundleQueue_ if it exists.
-void ContactSdrModel::popBundle(long bundleId) {
-    for (list<BundlePkt *>::iterator it = genericBundleQueue_.begin();
-         it != genericBundleQueue_.end(); it++)
-        if ((*it)->getBundleId() == bundleId) {
-            int size = (*it)->getByteLength();
-            delete (*it);
-            genericBundleQueue_.erase(it);
-            bundlesNumber_--;
-            bytesStored_ -= size;
-            notify();
-            break;
-        }
-}
-
-list<BundlePkt *> ContactSdrModel::getCarryingBundles() {
-    return genericBundleQueue_;
-}
 
 BundlePkt *ContactSdrModel::getBundle(long bundleId) {
     for (list<BundlePkt *>::iterator it = genericBundleQueue_.begin();
@@ -324,32 +182,6 @@ BundlePkt *ContactSdrModel::getBundle(long bundleId) {
 // Enqueue and dequeue from transmittedBundlesInCustody_
 //////////////////////////////////////
 
-bool ContactSdrModel::enqueueTransmittedBundleInCustody(BundlePkt *bundle) {
-    cout << "Node " << eid_
-         << " enqueueTransmittedBundleInCustody bundleId: " << bundle->getBundleId() << endl;
-
-    // If the bundle is already in memory, there is nothing to do
-    BundlePkt *bundleInCustody = this->getTransmittedBundleInCustody(bundle->getBundleId());
-    if (bundleInCustody != NULL)
-        return true;
-
-    // if there is not enough space in sdr, the bundle is deleted
-    // if another behaviour is required, the simpleCustodyModel should be used
-    // to avoid bundle deletions
-    if (!(this->isSdrFreeSpace(bundle->getByteLength()))) {
-        cout << "ContactSdrModel::enqueueTransmittedBundleInCustody(BundlePkt * bundle): Bundle exceed "
-                "sdr capacity so it was not enqueue."
-             << endl;
-        delete bundle;
-        return false;
-    }
-
-    transmittedBundlesInCustody_.push_back(bundle);
-    bundlesNumber_++;
-    bytesStored_ += bundle->getByteLength();
-    notify();
-    return true;
-}
 
 void ContactSdrModel::removeTransmittedBundleInCustody(long bundleId) {
     cout << "Node " << eid_ << " removeTransmittedBundleInCustody bundleId: " << bundleId << endl;
@@ -365,16 +197,4 @@ void ContactSdrModel::removeTransmittedBundleInCustody(long bundleId) {
             notify();
             // break; // remove all possible instances of the same id
         }
-}
-
-BundlePkt *ContactSdrModel::getTransmittedBundleInCustody(long bundleId) {
-    for (list<BundlePkt *>::iterator it = transmittedBundlesInCustody_.begin();
-         it != transmittedBundlesInCustody_.end(); it++)
-        if ((*it)->getBundleId() == bundleId)
-            return (*it);
-    return NULL;
-}
-
-list<BundlePkt *> ContactSdrModel::getTransmittedBundlesInCustody() {
-    return transmittedBundlesInCustody_;
 }

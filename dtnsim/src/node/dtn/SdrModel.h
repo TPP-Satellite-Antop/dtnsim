@@ -12,7 +12,6 @@
 #include <omnetpp.h>
 #include <src/node/dtn/SdrStatus.h>
 #include "src/utils/Subject.h"
-#include "src/node/dtn/contactplan/ContactPlan.h"
 #include "src/dtnsim_m.h"
 
 using namespace omnetpp;
@@ -21,36 +20,36 @@ using namespace std;
 class SdrModel : public Subject {
   public:
     SdrModel();
-    virtual ~SdrModel();
+    ~SdrModel() override;
 
-    virtual int getBundlesCountInSdr();
-    virtual int getBundlesCountInContact(int cid);
-    virtual int getBundlesCountInLimbo();
-    virtual list<BundlePkt *> *getBundlesInLimbo();
-    virtual int getBytesStoredInSdr();
-    virtual int getBytesStoredToNeighbor(int eid);
-    virtual SdrStatus getSdrStatus();
-    virtual BundlePkt *getEnqueuedBundle(long bundleId);
-    virtual bool isSdrFreeSpace(int sizeNewPacket);
-    virtual void freeSdr(int eid);
+    virtual int getBundlesCountInSdr() final;
+    virtual int getBundlesCountInIndex(int id) final;
+    virtual int getBundlesCountInLimbo() final;
+    virtual list<BundlePkt *> *getBundlesInLimbo() final;
+    virtual int getBytesStoredInSdr() final;
+    virtual int getBytesStoredToNeighbor(int eid) final;
+    virtual SdrStatus getSdrStatus() final;
+    virtual BundlePkt *getEnqueuedBundle(long bundleId) final;
+    virtual bool isSdrFreeSpace(int sizeNewPacket) final;
+    virtual void freeSdr(int eid) final;
 
-    // Enqueue and dequeue from indexedBundleQueue_
-    virtual bool pushBundleToId(BundlePkt *bundle, int id);
-    virtual bool isBundleForId(int id);
-    virtual BundlePkt *getBundle(int id);
-    virtual void popBundleFromId(int contactId);
+    // Interface for indexed bundle queue.
+    virtual bool pushBundleToId(BundlePkt *bundle, int id) final;
+    virtual bool isBundleForId(int id) final;
+    virtual BundlePkt *getBundle(int id) final;
+    virtual void popBundleFromId(int id) final;
 
-    // Enqueue and dequeue generic
-    virtual bool pushBundle(BundlePkt *bundle);
-    virtual void popBundle(long bundleId);
-    virtual BundlePkt *getBundle(long bundleId);
-    virtual list<BundlePkt *> getCarryingBundles();
+    // Interface for generic bundle queue.
+    virtual bool pushBundle(BundlePkt *bundle) final;
+    virtual void popBundle(long bundleId) final;
+    virtual BundlePkt *getBundle(long bundleId) final;
+    virtual list<BundlePkt *> getCarryingBundles() final;
 
     // Enqueue and dequeue from transmittedBundlesInCustody_
-    virtual bool enqueueTransmittedBundleInCustody(BundlePkt *bundle);
-    virtual void removeTransmittedBundleInCustody(long bundleId);
-    virtual BundlePkt *getTransmittedBundleInCustody(long bundleId);
-    virtual list<BundlePkt *> getTransmittedBundlesInCustody();
+    virtual bool enqueueTransmittedBundleInCustody(BundlePkt *bundle) final;
+    virtual void removeTransmittedBundleInCustody(long bundleId) final;
+    virtual BundlePkt *getTransmittedBundleInCustody(long bundleId) final;
+    virtual list<BundlePkt *> getTransmittedBundlesInCustody() final;
 
   protected:
     int size_;          // Capacity of sdr in bytes
