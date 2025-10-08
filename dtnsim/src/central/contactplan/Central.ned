@@ -1,6 +1,6 @@
-package src.contactplan.central;
+package src.central.contactplan;
 
-simple ContactPlanCentral
+simple Central
 {
     parameters:
         

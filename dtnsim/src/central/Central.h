@@ -8,7 +8,6 @@
 #include "src/utils/MetricCollector.h"
 #include "src/utils/RouterUtils.h"
 #include "src/utils/TopologyUtils.h"
-#include "src/node/dtn/routing/RoutingCgrModel350.h"
 #include "src/dtnsim_m.h"
 
 using namespace omnetpp;

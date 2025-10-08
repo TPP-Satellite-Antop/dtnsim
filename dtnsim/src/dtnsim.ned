@@ -1,7 +1,7 @@
 package src;
 
 import src.node.Node;
-import src.central.Central;
+import src.central.contactplan.Central;
 
 network dtnsim {
 parameters:

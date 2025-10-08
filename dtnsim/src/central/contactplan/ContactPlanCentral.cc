@@ -1,10 +1,11 @@
+#include "ContactPlanCentral.h"
 #include "src/node/MsgTypes.h"
 #include "src/node/app/App.h"
 #include "src/node/com/Com.h"
-#include "src/node/dtn/contactplan/Dtn.h"
 #include "src/node/dtn/contactplan/ContactSdrModel.h"
-#include "ContactCentral.h"
+#include "src/node/dtn/contactplan/Dtn.h"
 
+#include <iostream>
 #include <src/central/Central.h>
 
 
@@ -329,7 +330,7 @@ vector<int> ContactPlanCentral::getCentralityNodeIds(int nContacts, int nodesNum
         for (int i = 1; i <= nodesNumber; i++) {
             // por ahora inicializamos el contact pero dps esto deberia cambiar en base a una config
             int eid = i;
-            SdrModel sdr = ContactSdrModel(eid, nodesNumber, &workCP);
+            auto sdr = ContactSdrModel(eid, nodesNumber, &workCP);
             bool printDebug = false;
 
             Routing *routing = new RoutingCgrModel350(eid, &sdr, &workCP, printDebug);
@@ -450,7 +451,7 @@ int ContactPlanCentral::computeTotalRoutesNumber(ContactPlan &contactPlan, int n
 
     for (int i = 1; i <= nodesNumber; i++) {
         int eid = i;
-        SdrModel sdr = ContactSdrModel(eid, nodesNumber, &workCP); //TODO change conditional model
+        auto sdr = ContactSdrModel(eid, nodesNumber, &workCP); //TODO change conditional model
         bool printDebug = false;
 
         Routing *routing = new RoutingCgrModel350(eid, &sdr, &workCP, printDebug);

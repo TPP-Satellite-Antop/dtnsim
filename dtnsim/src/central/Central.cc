@@ -1,9 +1,7 @@
-#include "src/node/MsgTypes.h"
 #include "src/node/app/App.h"
 #include "src/node/com/Com.h"
 #include "src/node/dtn/contactplan/Dtn.h"
-#include "src/node/dtn/contactplan/ContactSdrModel.h"
-#include "src/central/Central.h">"
+#include "src/central/Central.h"
 
 Define_Module(dtnsim::Central);
 
