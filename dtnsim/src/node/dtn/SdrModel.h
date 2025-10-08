@@ -42,7 +42,6 @@ class SdrModel : public Subject {
     // Interface for generic bundle queue.
     virtual bool pushBundle(BundlePkt *bundle) final;
     virtual void popBundle(long bundleId) final;
-    virtual BundlePkt *getBundle(long bundleId) final;
     virtual list<BundlePkt *> getCarryingBundles() final;
 
     // Enqueue and dequeue from transmittedBundlesInCustody_

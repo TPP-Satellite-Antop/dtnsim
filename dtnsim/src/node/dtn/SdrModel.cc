@@ -274,8 +274,3 @@ int SdrModel::getBytesStoredToNeighbor(int eid) {
     // TODO: Implement logic or return a default value
     return 0;
 }
-
-BundlePkt* SdrModel::getBundle(long bundleId) {
-    // TODO: Implement logic or return nullptr
-    return nullptr;
-}
