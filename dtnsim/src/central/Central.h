@@ -20,7 +20,7 @@ class Central : public cSimpleModule {
   public:
     Central();
     virtual ~Central();
-    void finish();
+    virtual void finish();
     virtual void initialize();
     void handleMessage(cMessage *msg);
 

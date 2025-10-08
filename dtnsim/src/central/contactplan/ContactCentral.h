@@ -49,7 +49,7 @@ class ContactPlanCentral : public Central {
     // overrides
     double getState(double trafficStart) override;
     void deleteNodes(vector<int> toDelete, bool faultsAware) override;
-    vector<int> getRandomNodeIds(int n);
+    vector<int> getRandomNodeIds(int n) override;
     vector<int> getRandomNodeIdsWithFProb(double failureProbability) override;
     vector<int> getNodeIdsWithSpecificFProb() override;
     vector<int> getCentralityNodeIds(int n, int nodesNumber) override;
