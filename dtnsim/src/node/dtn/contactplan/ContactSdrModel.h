@@ -18,6 +18,7 @@ using namespace std;
 
 class ContactSdrModel final : public SdrModel {
   public:
+    ContactSdrModel();
     ContactSdrModel(int eid, int nodesNumber, ContactPlan* contactPlan);
     ~ContactSdrModel() override;
 
