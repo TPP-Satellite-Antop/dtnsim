@@ -1222,9 +1222,9 @@ int computeApplicableBacklog(unsigned long long neighbor, int priority, unsigned
 
     // Pointers must not be allowed to be NULL
     if (CgrApplicableBacklog != NULL && CgrTotalBacklog != NULL) {
-        totalSizes = sdrUnibo->getBundleSizesStoredToNeighbor(neighbor);
+        totalSizes = sdrUnibo->getBundleSizes(neighbor);
         appSizes =
-            sdrUnibo->getBundleSizesStoredToNeighborWithHigherPriority(neighbor, priority == 2);
+            sdrUnibo->getPriorityBundleSizes(neighbor, priority == 2);
         totalByte = getTotalEVC(totalSizes);
         appByte = getTotalEVC(appSizes);
         loadCgrScalar(CgrTotalBacklog, totalByte);

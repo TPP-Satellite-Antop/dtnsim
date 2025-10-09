@@ -66,7 +66,7 @@ vector<int> ContactSdrModel::getBundleSizes(const int eid) {
  * @param eid: The EID of the neighbor
  * 		  critical: Whether the bundle to be queued is critical or not
  *
- * @authors: Original Implementation in getBundleSizesStoredToNeighbor() by the authors of DTNSim,
+ * @authors: Original Implementation in getBundleSizes() by the authors of DTNSim,
  * general procedure then ported to this function and modified by Simon Rink
  */
 
