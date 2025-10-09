@@ -16,9 +16,8 @@
 using namespace omnetpp;
 using namespace std;
 
-class ContactSdrModel : public SdrModel {
+class ContactSdrModel final : public SdrModel {
   public:
-    ContactSdrModel();
     ContactSdrModel(int eid, int nodesNumber, ContactPlan* contactPlan);
     ~ContactSdrModel() override;
 

@@ -31,7 +31,7 @@ class SdrModel : public Subject {
     virtual SdrStatus getSdrStatus() final;
     virtual BundlePkt *getEnqueuedBundle(long bundleId) final;
     virtual bool isSdrFreeSpace(int sizeNewPacket) final;
-    virtual void freeSdr(int eid) final;
+    virtual void freeSdr() final;
 
     // Interface for indexed bundle queue.
     virtual bool pushBundleToId(BundlePkt *bundle, int id) final;
