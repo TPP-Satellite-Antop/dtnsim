@@ -1,16 +1,9 @@
-/*
- * SdrModel.h
- *
- *  Created on: Nov 25, 2016
- *      Author: juanfraire
- */
-
 #ifndef SRC_NODE_DTN_SDRMODEL_H_
 #define SRC_NODE_DTN_SDRMODEL_H_
 
 #include <map>
 #include <omnetpp.h>
-#include <src/node/dtn/SdrStatus.h>
+#include "src/node/dtn/SdrStatus.h"
 #include "src/utils/Subject.h"
 #include "src/dtnsim_m.h"
 
@@ -23,6 +16,9 @@ class SdrModel : public Subject {
     ~SdrModel() override;
 
     virtual int getBytesStoredToNeighbor(int eid) = 0;
+    virtual vector<int> getBundleSizes(int eid) = 0;
+    virtual vector<int> getPriorityBundleSizes(int eid, bool critical) = 0;
+
     virtual int getBundlesCountInSdr() final;
     virtual int getBundlesCountInIndex(int id) final;
     virtual int getBundlesCountInLimbo() final;
@@ -31,7 +27,7 @@ class SdrModel : public Subject {
     virtual SdrStatus getSdrStatus() final;
     virtual BundlePkt *getEnqueuedBundle(long bundleId) final;
     virtual bool isSdrFreeSpace(int sizeNewPacket) final;
-    virtual void freeSdr(int eid) final;
+    virtual void freeSdr() final;
 
     // Interface for indexed bundle queue.
     virtual bool pushBundleToId(BundlePkt *bundle, int id) final;

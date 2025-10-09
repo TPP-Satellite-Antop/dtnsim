@@ -340,7 +340,7 @@ void Dtn::finish() {
     }
 
     // Delete all stored bundles
-    sdr_.freeSdr(eid_);
+    sdr_.freeSdr();
 
     // BundleMap End
     if (saveBundleMap_)

@@ -1,8 +1,11 @@
 #include <list>
 
 #include "ContactSdrModel.h"
+
+#include "Contact.h"
 #include "ContactPlan.h"
 
+#include <cassert>
 #include <iostream>
 
 ContactSdrModel::ContactSdrModel() {
@@ -45,71 +48,15 @@ void ContactSdrModel::setContactPlan(ContactPlan *contactPlan) {
 //////////////////////////////////////
 
 // Returns the total number of bytes stored in the SDR that are intended to be sent to `eid` when a contact becomes available.
-int ContactSdrModel::getBytesStoredToNeighbor(int eid) {
-    int size = 0;
-
-    map<int, list<BundlePkt *>>::iterator it1 = indexedBundleQueue_.begin();
-    map<int, list<BundlePkt *>>::iterator it2 = indexedBundleQueue_.end();
-
-    for (; it1 != it2; ++it1) {
-        int contactId = it1->first;
-
-        // if it's not the limbo contact
-        if (contactId != 0) {
-            list<BundlePkt *> bundlesQueue = it1->second;
-
-            Contact *contact = contactPlan_->getContactById(contactId);
-            int source = contact->getSourceEid();
-            assert(source == this->eid_);
-
-            int destination = contact->getDestinationEid();
-
-            if (eid == destination) {
-                list<BundlePkt *>::iterator ii1 = bundlesQueue.begin();
-                list<BundlePkt *>::iterator ii2 = bundlesQueue.end();
-                for (; ii1 != ii2; ++ii1) {
-                    size += (*ii1)->getByteLength();
-                }
-            }
-        }
-    }
-
-    return size;
+int ContactSdrModel::getBytesStoredToNeighbor(const int eid) {
+    int totalSize = 0;
+    for (const int s : getBundleSizes(eid))
+        totalSize += s;
+    return totalSize;
 }
 
-vector<int> ContactSdrModel::getBundleSizesStoredToNeighbor(int eid) {
-    vector<int> sizes;
-
-    map<int, list<BundlePkt *>>::iterator it1 = indexedBundleQueue_.begin();
-    map<int, list<BundlePkt *>>::iterator it2 = indexedBundleQueue_.end();
-
-    for (; it1 != it2; ++it1) {
-        int contactId = it1->first;
-
-        // if it's not the limbo contact
-        if (contactId != 0) {
-            list<BundlePkt *> bundlesQueue = it1->second;
-
-            Contact *contact = contactPlan_->getContactById(contactId);
-            if (contact == NULL) {
-                continue;
-            }
-            int source = contact->getSourceEid();
-            assert(source == this->eid_);
-
-            int destination = contact->getDestinationEid();
-
-            if (eid == destination) {
-                list<BundlePkt *>::iterator ii1 = bundlesQueue.begin();
-                list<BundlePkt *>::iterator ii2 = bundlesQueue.end();
-                for (; ii1 != ii2; ++ii1) {
-                    sizes.push_back((*ii1)->getByteLength());
-                }
-            }
-        }
-    }
-
-    return sizes;
+vector<int> ContactSdrModel::getBundleSizes(const int eid) {
+    return getPriorityBundleSizes(eid, false);
 }
 
 /*
@@ -119,45 +66,29 @@ vector<int> ContactSdrModel::getBundleSizesStoredToNeighbor(int eid) {
  * @param eid: The EID of the neighbor
  * 		  critical: Whether the bundle to be queued is critical or not
  *
- * @authors: Original Implementation in getBundleSizesStoredToNeighbor() by the authors of DTNSim,
+ * @authors: Original Implementation in getBundleSizes() by the authors of DTNSim,
  * general procedure then ported to this function and modified by Simon Rink
  */
 
-vector<int> ContactSdrModel::getBundleSizesStoredToNeighborWithHigherPriority(int eid, bool critical) {
+vector<int> ContactSdrModel::getPriorityBundleSizes(const int eid, const bool critical) {
     vector<int> sizes;
 
-    map<int, list<BundlePkt *>>::iterator it1 = indexedBundleQueue_.begin();
-    map<int, list<BundlePkt *>>::iterator it2 = indexedBundleQueue_.end();
+    for (auto &[contactId, bundlesQueue] : indexedBundleQueue_) {
+        if (contactId == 0) // Skip limbo contact
+            continue;
 
-    for (; it1 != it2; ++it1) {
-        int contactId = it1->first;
+        Contact *contact = contactPlan_->getContactById(contactId);
+        if (contact == nullptr) {
+            continue;
+        }
 
-        // if it's not the limbo contact
-        if (contactId != 0) {
-            list<BundlePkt *> bundlesQueue = it1->second;
+        assert(contact->getSourceEid() == this->eid_);
 
-            Contact *contact = contactPlan_->getContactById(contactId);
-            if (contact == NULL) {
-                continue;
-            }
-
-            int source = contact->getSourceEid();
-            assert(source == this->eid_);
-
-            int destination = contact->getDestinationEid();
-
-            if (eid == destination) {
-                list<BundlePkt *>::iterator ii1 = bundlesQueue.begin();
-                list<BundlePkt *>::iterator ii2 = bundlesQueue.end();
-                for (; ii1 != ii2; ++ii1) {
-                    if (critical) {
-                        if ((*ii1)->getCritical()) {
-                            sizes.push_back((*ii1)->getByteLength());
-                        }
-                    } else {
-                        sizes.push_back((*ii1)->getByteLength());
-                    }
-                }
+        if (eid == contact->getDestinationEid()) {
+            for (const auto *bundle : bundlesQueue) {
+                if (critical && !bundle->getCritical())
+                    continue;
+                sizes.push_back(bundle->getByteLength());
             }
         }
     }
