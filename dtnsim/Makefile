@@ -37,6 +37,7 @@ OBJS = \
     $O/src/node/dtn/contactplan/ContactHistory.o \
     $O/src/node/dtn/contactplan/ContactPlan.o \
     $O/src/node/dtn/contactplan/ContactSdrModel.o \
+    $O/src/node/dtn/contactless/ContactlessSdrModel.o \
     $O/src/node/dtn/CustodyModel.o \
     $O/src/node/dtn/contactplan/Dtn.o \
     $O/src/node/dtn/SdrModel.o \
