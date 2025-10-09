@@ -124,9 +124,9 @@ rowspanx(8)[#align(center)[bool]], [saveTopology], [false], [Store the topology 
 [useUncertainty], [false], [To use Opportunistic CGR or not.],
 [enableAvailableRoutesCalculation], [false], [Calculate and emit statistics about routes in a network.],
 rowspanx(3)[#align(center)[string]], [contactsFile], ["contacts.txt"], [Where the algorithm can find the contact plan.],
-[contactIdsToDelete], [""], [A list of contact to delete.], 
+[nodeIdsToDelete], [""], [A list of contact to delete.], 
 [collectorPath], [""], [Define the path for the #link(<metric>)[*metricCollector*] to store it data.],
-rowspanx(3)[#align(center)[int]], [deleteNContacts], [0], [A number of contact to delete.],
+rowspanx(3)[#align(center)[int]], [deleteNNodes], [0], [A number of contact to delete.],
 [mode], [1], [Define in which opportunistic contacts are included in the simulation, 0 for no opportunistic contacts, 1 for regular contact discovery, 2 for complete knowledge in advance.], 
 [repetition], [0], [Number of run in the simulations], 
 [double], [failureProbability], [0], [Probability of failure of any contact in the contact plan.],  
@@ -382,9 +382,9 @@ At the end of the simulation, the scalar file contains only one number for each 
   columns:3,
   align : horizon,
   [Output],[Recorded],[Description],
-  [contactsNumber],[sum],[The total number of contacts in the contact plan.],
+  [nodesNumber],[sum],[The total number of contacts in the contact plan.],
   [totalRoutes],[sum],[It's the total number of routes from all nodes to all nodes.],
-  [availableRoutes],[sum],[Same as totalRoutes, but without the contacts that have been deleted using the _deleteNContacts_ or _contactIdsToDelete_ parameter and those that have failed (_failureProbability_ parameter).],
+  [availableRoutes],[sum],[Same as totalRoutes, but without the contacts that have been deleted using the _deleteNNodes_ or _nodeIdsToDelete_ parameter and those that have failed (_failureProbability_ parameter).],
   [pairsOfNodesWithAtLeastOneRoute],[sum],[The number of pairs of nodes that have at least one route between them.],
 )]
 
