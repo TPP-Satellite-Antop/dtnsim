@@ -38,8 +38,7 @@ void Dtn::setMetricCollector(MetricCollector *metricCollector) {
 }
 
 int Dtn::numInitStages() const {
-    int stages = 2;
-    return stages;
+    return 2;
 }
 
 /**
