@@ -21,7 +21,7 @@ module Node
             parameters:
                 @display("p=75,120");
         }
-        com: <default("Com")> like ICom {
+        com: <default("ContactPlanCom")> like ICom {
             parameters:
                 @display("p=75,190");
         }
