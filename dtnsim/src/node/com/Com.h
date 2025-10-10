@@ -13,17 +13,15 @@ class Com : public cSimpleModule {
   public:
     Com();
     virtual ~Com();
-    virtual void setContactTopology(ContactPlan &contactTopology);
 
   protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *);
-    virtual void finish();
+    void initialize();
+    void handleMessage(cMessage *);
+    void finish();
+    virtual double getLinkDelay(int sourceEid, int nextHopEid);
 
-  private:
+  protected:
     int eid_;
-    ContactPlan contactTopology_;
-
     double packetLoss_;
 };
 
