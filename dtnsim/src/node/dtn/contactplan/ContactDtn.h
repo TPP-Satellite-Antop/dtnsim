@@ -23,10 +23,10 @@
 using namespace omnetpp;
 using namespace std;
 
-class Dtn : public cSimpleModule, public Observer {
+class ContactDtn : public cSimpleModule, public Observer {
   public:
-    Dtn();
-    virtual ~Dtn();
+    ContactDtn();
+    virtual ~ContactDtn();
 
     virtual void setOnFault(bool onFault);
     virtual void refreshForwarding();

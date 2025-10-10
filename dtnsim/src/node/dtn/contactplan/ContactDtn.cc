@@ -1,29 +1,55 @@
-#include "Dtn.h"
+#include "ContactDtn.h"
+#include "src/node/dtn/contactplan/ContactPlan.h"
+#include "src/node/dtn/contactplan/ContactHistory.h"
+#include "src/node/dtn/contactplan/Contact.h"
 #include "src/node/app/App.h"
+#include "src/node/dtn/routing/RoutingAntop.h"
+#include "src/node/dtn/routing/RoutingBRUF1T.h"
+#include "src/node/dtn/routing/RoutingCgrModel350.h"
+#include "src/node/dtn/routing/RoutingCgrModel350_2Copies.h"
+#include "src/node/dtn/routing/RoutingCgrModel350_Hops.h"
+#include "src/node/dtn/routing/RoutingCgrModel350_Probabilistic.h"
+#include "src/node/dtn/routing/RoutingCgrModelRev17.h"
+#include "src/node/dtn/routing/RoutingCgrModelYen.h"
+#include "src/node/dtn/routing/RoutingDirect.h"
+#include "src/node/dtn/routing/RoutingEpidemic.h"
+#include "src/node/dtn/routing/RoutingPRoPHET.h"
+#include "src/node/dtn/routing/RoutingSprayAndWait.h"
+#include "src/node/dtn/routing/RoutingUncertainUniboCgr.h"
+#include "src/node/dtn/routing/brufncopies/RoutingBRUFNCopies.h"
+#include "src/node/dtn/routing/cgrbrufpowered/CGRBRUFPowered.h"
 
-Define_Module(Dtn);
+Define_Module(ContactDtn);
 
-Dtn::Dtn() {}
+ContactDtn::ContactDtn() {}
 
-Dtn::~Dtn() = default;
+ContactDtn::~ContactDtn() = default;
 
-void Dtn::setMetricCollector(MetricCollector *metricCollector) {
+void ContactDtn::setContactPlan(ContactPlan &contactPlan) {
+    this->contactPlan_ = contactPlan;
+}
+
+void ContactDtn::setContactTopology(ContactPlan &contactTopology) {
+    this->contactTopology_ = contactTopology;
+}
+
+void ContactDtn::setMetricCollector(MetricCollector *metricCollector) {
     this->metricCollector_ = metricCollector;
 }
 
-int Dtn::numInitStages() const {
+int ContactDtn::numInitStages() const {
     return 2;
 }
 
 /**
- * Initializes the Dtn object
+ * Initializes the ContactDtn object
  *
  * @param stage: the stage for the dtn object
  *
  * @authors The original implementation was done by the authors of DTNSim and then modified by Simon
  * Rink
  */
-void Dtn::initialize(const int stage) {
+void ContactDtn::initialize(const int stage) {
     if (stage == 1) {
         // Store this node eid
         this->eid_ = this->getParentModule()->getIndex();
@@ -166,7 +192,7 @@ void Dtn::initialize(const int stage) {
     }
 }
 
-void Dtn::initializeRouting(const string& routingString) {
+void ContactDtn::initializeRouting(const string& routingString) {
     this->sdr_.setEid(eid_);
     this->sdr_.setSize(par("sdrSize"));
     this->sdr_.setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
@@ -183,7 +209,7 @@ void Dtn::initializeRouting(const string& routingString) {
     else if (routingString == "cgrModelYen")
         routing = new RoutingCgrModelYen(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
     else if (routingString == "cgrModelRev17") {
-        ContactPlan *globalContactPlan = dynamic_cast<Dtn*>(
+        ContactPlan *globalContactPlan = dynamic_cast<ContactDtn*>(
             this->getParentModule()->getParentModule()->getSubmodule("node", 0)->getSubmodule("dtn")
         )->getContactPlanPointer();
 
@@ -291,7 +317,7 @@ void Dtn::initializeRouting(const string& routingString) {
     }
 }
 
-void Dtn::finish() {
+void ContactDtn::finish() {
     // Last call to sample-hold type metrics
     if (eid_ != 0) {
         emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
@@ -321,7 +347,7 @@ void Dtn::finish() {
  * Rink
  */
 
-void Dtn::handleMessage(cMessage *msg) {
+void ContactDtn::handleMessage(cMessage *msg) {
     ///////////////////////////////////////////
     // New Bundle (from App or Com):
     ///////////////////////////////////////////
@@ -350,7 +376,7 @@ void Dtn::handleMessage(cMessage *msg) {
     else if (msg->getKind() == DISC_CONTACT_START_TIMER) { // Discovered contact was found
         const auto *contactMsg = check_and_cast<ContactMsg *>(msg);
 
-        const auto controller = check_and_cast<Dtn *>(
+        const auto controller = check_and_cast<ContactDtn *>(
             this->getParentModule()->getParentModule()->getSubmodule("node", 0)->getSubmodule(
                 "dtn"));
 
@@ -361,7 +387,7 @@ void Dtn::handleMessage(cMessage *msg) {
 
     } else if (msg->getKind() == DISC_CONTACT_END_TIMER) { // Discovered contact ended
         const auto *contactMsg = check_and_cast<ContactMsg *>(msg);
-        const auto controller = check_and_cast<Dtn *>(this->getParentModule()->getParentModule()->getSubmodule("node", 0)->getSubmodule("dtn"));
+        const auto controller = check_and_cast<ContactDtn *>(this->getParentModule()->getParentModule()->getSubmodule("node", 0)->getSubmodule("dtn"));
 
         controller->syncDiscoveredContact(contactTopology_.getContactById(contactMsg->getId()), false);
 
@@ -371,7 +397,7 @@ void Dtn::handleMessage(cMessage *msg) {
 
         Contact *contact = contactTopology_.getContactById(contactMsg->getId());
 
-        const auto controller = check_and_cast<Dtn *>(this->getParentModule()->getParentModule()->getSubmodule("node", 0)->getSubmodule("dtn"));
+        const auto controller = check_and_cast<ContactDtn *>(this->getParentModule()->getParentModule()->getSubmodule("node", 0)->getSubmodule("dtn"));
 
         // For opportunistic extensions
         controller->coordinateContactStart(contact);
@@ -397,7 +423,7 @@ void Dtn::handleMessage(cMessage *msg) {
 
         Contact *contact = contactTopology_.getContactById(contactMsg->getId());
 
-        const Dtn *controller = check_and_cast<Dtn *>(
+        const ContactDtn *controller = check_and_cast<ContactDtn *>(
             this->getParentModule()->getParentModule()->getSubmodule("node", 0)->getSubmodule(
                 "dtn"));
 
@@ -432,11 +458,11 @@ void Dtn::handleMessage(cMessage *msg) {
         // if there are messages in the queue for this contact
         if (sdr_.isBundleForId(contactId)) {
             // If local/remote node are responsive, then transmit bundle
-            const auto neighborDtn = check_and_cast<Dtn *>(this->getParentModule()
+            const auto neighborContactDtn = check_and_cast<ContactDtn *>(this->getParentModule()
                                                          ->getParentModule()
                                                          ->getSubmodule("node", neighborEid)
                                                          ->getSubmodule("dtn"));
-            if ((!neighborDtn->onFault) && (!this->onFault)) {
+            if ((!neighborContactDtn->onFault) && (!this->onFault)) {
                 // Get bundle pointer from sdr
                 BundlePkt *bundle = sdr_.getBundle(contactId);
 
@@ -527,7 +553,7 @@ void Dtn::handleMessage(cMessage *msg) {
     }
 }
 
-void Dtn::dispatchBundle(BundlePkt *bundle) {
+void ContactDtn::dispatchBundle(BundlePkt *bundle) {
     // char bundleName[10];
     // sprintf(bundleName, "Src:%d,Dst:%d(id:%d)", bundle->getSourceEid() ,
     // bundle->getDestinationEid(), (int) bundle->getId()); cout << "Dispatching " << bundleName <<
@@ -601,7 +627,7 @@ void Dtn::dispatchBundle(BundlePkt *bundle) {
     }
 }
 
-void Dtn::refreshForwarding() {
+void ContactDtn::refreshForwarding() {
     // Check all ongoing forwardingMsgs threads (contacts) and wake up those not scheduled.
     for (auto &[_, forwardingMsg] : forwardingMsgs_) {
         if (const int cid = forwardingMsg->getContactId(); !sdr_.isBundleForId(cid))
@@ -612,7 +638,7 @@ void Dtn::refreshForwarding() {
     }
 }
 
-void Dtn::setOnFault(bool onFault) {
+void ContactDtn::setOnFault(bool onFault) {
     this->onFault = onFault;
 
     // Local and remote forwarding recovery
@@ -622,20 +648,20 @@ void Dtn::setOnFault(bool onFault) {
 
         // Wake-up remote un-scheduled forwarding threads
         for (auto &[_, forwardingMsg] : forwardingMsgs_) {
-            const auto remoteDtn = dynamic_cast<Dtn *>(this->getParentModule()
+            const auto remoteContactDtn = dynamic_cast<ContactDtn *>(this->getParentModule()
                                        ->getParentModule()
                                        ->getSubmodule("node", forwardingMsg->getNeighborEid())
                                        ->getSubmodule("dtn"));
-            remoteDtn->refreshForwarding();
+            remoteContactDtn->refreshForwarding();
         }
     }
 }
 
-ContactPlan *Dtn::getContactPlanPointer() {
+ContactPlan *ContactDtn::getContactPlanPointer() {
     return &this->contactPlan_;
 }
 
-Routing *Dtn::getRouting() {
+Routing *ContactDtn::getRouting() {
     return this->routing;
 }
 
@@ -643,7 +669,7 @@ Routing *Dtn::getRouting() {
  * Implementation of method inherited from observer to update gui according to the number of
  * bundles stored in sdr.
  */
-void Dtn::update() {
+void ContactDtn::update() {
     // Update srd size text
     graphicsModule->setBundlesInSdr(sdr_.getBundlesCountInSdr());
 }
@@ -658,7 +684,7 @@ void Dtn::update() {
  *
  * @author Simon Rink
  */
-void Dtn::syncDiscoveredContact(Contact *c, bool start) const {
+void ContactDtn::syncDiscoveredContact(Contact *c, bool start) const {
     // only controller node is allowed to decide on final topology
     if (this->eid_ != 0) {
         throw invalid_argument("Illegal controller call");
@@ -667,7 +693,7 @@ void Dtn::syncDiscoveredContact(Contact *c, bool start) const {
     if (start) {
         // Schedule start of contact for sender
         const int sourceEid = c->getSourceEid();
-        const auto source = check_and_cast<Dtn *>(
+        const auto source = check_and_cast<ContactDtn *>(
             this->getParentModule()
                   ->getParentModule()
                   ->getSubmodule("node", sourceEid)
@@ -678,7 +704,7 @@ void Dtn::syncDiscoveredContact(Contact *c, bool start) const {
     } else {
         // Schedule end of contact for sender
         const int sourceEid = (*c).getSourceEid();
-        const auto source = check_and_cast<Dtn *>(
+        const auto source = check_and_cast<ContactDtn *>(
             this->getParentModule()
                   ->getParentModule()
                   ->getSubmodule("node", sourceEid)
@@ -696,11 +722,11 @@ void Dtn::syncDiscoveredContact(Contact *c, bool start) const {
  *
  * @author Simon Rink
  */
-void Dtn::syncDiscoveredContactFromNeighbor(const Contact *c, const bool start, int ownEid, int neighborEid) const {
+void ContactDtn::syncDiscoveredContactFromNeighbor(const Contact *c, const bool start, int ownEid, int neighborEid) const {
     if (this->eid_ != 0)
         throw invalid_argument("Illegal controller call");
 
-    const auto neighbor = check_and_cast<Dtn *>(
+    const auto neighbor = check_and_cast<ContactDtn *>(
         this->getParentModule()
               ->getParentModule()
               ->getSubmodule("node", neighborEid)
@@ -721,7 +747,7 @@ void Dtn::syncDiscoveredContactFromNeighbor(const Contact *c, const bool start, 
  *
  * @author Simon Rink
  */
-void Dtn::scheduleDiscoveredContactStart(Contact *c) {
+void ContactDtn::scheduleDiscoveredContactStart(Contact *c) {
     // schedule a new message for the actual contact start
     auto *contactMsgStart = new ContactMsg("ContactStart", CONTACT_START_TIMER);
     contactMsgStart->setSchedulingPriority(CONTACT_START_TIMER);
@@ -744,7 +770,7 @@ void Dtn::scheduleDiscoveredContactStart(Contact *c) {
  *
  * @author Simon Rink
  */
-void Dtn::scheduleDiscoveredContactEnd(Contact *c) {
+void ContactDtn::scheduleDiscoveredContactEnd(Contact *c) {
     // schedule a new message for the actual contact end
     auto *contactMsgEnd = new ContactMsg("ContactEnd", CONTACT_END_TIMER);
     contactMsgEnd->setSchedulingPriority(CONTACT_END_TIMER);
@@ -761,7 +787,7 @@ void Dtn::scheduleDiscoveredContactEnd(Contact *c) {
     scheduleAt(simTime(), contactMsgEnd);
 }
 
-ContactHistory *Dtn::getContactHistory() {
+ContactHistory *ContactDtn::getContactHistory() {
     return &this->contactHistory_;
 }
 
@@ -773,7 +799,7 @@ ContactHistory *Dtn::getContactHistory() {
  *
  * @author Simon Rink
  */
-void Dtn::addDiscoveredContact(Contact c) {
+void ContactDtn::addDiscoveredContact(Contact c) {
     // remove predicted contacts for the source/destination pair
     Contact contact = this->contactPlan_.removePredictedContactForSourceDestination(
         c.getSourceEid(), c.getDestinationEid());
@@ -802,7 +828,7 @@ void Dtn::addDiscoveredContact(Contact c) {
  *
  * @author Simon Rink
  */
-void Dtn::removeDiscoveredContact(const Contact& c) {
+void ContactDtn::removeDiscoveredContact(const Contact& c) {
     Contact contact = this->contactPlan_.removeDiscoveredContact(c.getSourceEid(), c.getDestinationEid());
     if (contact.getId() != -1)
         this->routing->updateContactPlan(&contact);
@@ -815,7 +841,7 @@ void Dtn::removeDiscoveredContact(const Contact& c) {
  *
  * @author Simon Rink
  */
-void Dtn::predictAllContacts(double currentTime) {
+void ContactDtn::predictAllContacts(double currentTime) {
     this->contactHistory_.predictAndAddAllContacts(currentTime, &this->contactPlan_);
 }
 
@@ -827,7 +853,7 @@ void Dtn::predictAllContacts(double currentTime) {
  *
  * @author Simon Rink
  */
-void Dtn::coordinateContactStart(Contact *c) const {
+void ContactDtn::coordinateContactStart(Contact *c) const {
     if (this->eid_ != 0)
         throw invalid_argument("Illegal controller call");
 
@@ -836,11 +862,11 @@ void Dtn::coordinateContactStart(Contact *c) const {
     const int sourceEid = c->getSourceEid();
     const int destinationEid = c->getDestinationEid();
 
-    const auto source = check_and_cast<Dtn *>(this->getParentModule()
+    const auto source = check_and_cast<ContactDtn *>(this->getParentModule()
                                             ->getParentModule()
                                             ->getSubmodule("node", sourceEid)
                                             ->getSubmodule("dtn"));
-    const auto destination = check_and_cast<Dtn *>(this->getParentModule()
+    const auto destination = check_and_cast<ContactDtn *>(this->getParentModule()
                                                  ->getParentModule()
                                                  ->getSubmodule("node", destinationEid)
                                                  ->getSubmodule("dtn"));
@@ -902,7 +928,7 @@ void Dtn::coordinateContactStart(Contact *c) const {
  *
  * @author Simon Rink
  */
-void Dtn::coordinateContactEnd(Contact *c) const {
+void ContactDtn::coordinateContactEnd(Contact *c) const {
     if (this->eid_ != 0)
         throw invalid_argument("Illegal controller call");
 
@@ -912,13 +938,13 @@ void Dtn::coordinateContactEnd(Contact *c) const {
     const int sourceEid = c->getSourceEid();
     const int destinationEid = c->getDestinationEid();
 
-    const auto source = check_and_cast<Dtn *>(
+    const auto source = check_and_cast<ContactDtn *>(
         this->getParentModule()
               ->getParentModule()
               ->getSubmodule("node", sourceEid)
               ->getSubmodule("dtn")
     );
-    const auto destination = check_and_cast<Dtn *>(
+    const auto destination = check_and_cast<ContactDtn *>(
         this->getParentModule()
                ->getParentModule()
                ->getSubmodule("node", destinationEid)
@@ -974,9 +1000,9 @@ void Dtn::coordinateContactEnd(Contact *c) const {
  * @author Simon Rink
  *
  */
-void Dtn::notifyNeighborsAboutDiscoveredContact(Contact *c, const bool start, map<int, int> *alreadyInformed) {
+void ContactDtn::notifyNeighborsAboutDiscoveredContact(Contact *c, const bool start, map<int, int> *alreadyInformed) {
     const vector<int> currentNeighbors = this->contactPlan_.getCurrentNeighbors();
-    const auto controller = check_and_cast<Dtn *>(
+    const auto controller = check_and_cast<ContactDtn *>(
         this->getParentModule()->getParentModule()->getSubmodule("node", 0)->getSubmodule("dtn")
     );
 
@@ -984,7 +1010,7 @@ void Dtn::notifyNeighborsAboutDiscoveredContact(Contact *c, const bool start, ma
         if (alreadyInformed->find(currentNeighbor) == alreadyInformed->end()) {
             controller->syncDiscoveredContactFromNeighbor(c, start, this->eid_, currentNeighbor);
             (*alreadyInformed)[currentNeighbor] = 1;
-            const auto neighbor = check_and_cast<Dtn *>(this->getParentModule()
+            const auto neighbor = check_and_cast<ContactDtn *>(this->getParentModule()
                                                       ->getParentModule()
                                                       ->getSubmodule("node", currentNeighbor)
                                                       ->getSubmodule("dtn"));
@@ -1000,7 +1026,7 @@ void Dtn::notifyNeighborsAboutDiscoveredContact(Contact *c, const bool start, ma
  *
  * @author Simon Rink
  */
-void Dtn::updateDiscoveredContacts(Contact *c) {
+void ContactDtn::updateDiscoveredContacts(Contact *c) {
     const vector<Contact> discoveredContacts = this->contactPlan_.getDiscoveredContacts();
     vector<Contact> lostContacts;
     map<int, int> reachableNodes = this->getReachableNodes(); // Obtain the nodes that are still reachable
@@ -1029,7 +1055,7 @@ void Dtn::updateDiscoveredContacts(Contact *c) {
  *
  * @author Simon Rink
  */
-map<int, int> Dtn::getReachableNodes() const {
+map<int, int> ContactDtn::getReachableNodes() const {
     map<int, int> alreadyFound;
     map<int, int> stillAvailable;
     stillAvailable[this->eid_] = 1;
@@ -1040,7 +1066,7 @@ map<int, int> Dtn::getReachableNodes() const {
         stillAvailable.erase(stillAvailable.begin()); // Remove the first element at it is traversed just right now
         alreadyFound[newNeighbor] = 1;
 
-        const auto neighbor = check_and_cast<Dtn *>(
+        const auto neighbor = check_and_cast<ContactDtn *>(
             this->getParentModule()
                   ->getParentModule()
                   ->getSubmodule("node", newNeighbor)
@@ -1068,7 +1094,7 @@ map<int, int> Dtn::getReachableNodes() const {
  *
  * @author Simon Rink
  */
-void Dtn::addCurrentNeighbor(const int neighborEid) {
+void ContactDtn::addCurrentNeighbor(const int neighborEid) {
     this->contactPlan_.addCurrentNeighbor(neighborEid);
 }
 
@@ -1079,7 +1105,7 @@ void Dtn::addCurrentNeighbor(const int neighborEid) {
  *
  * @author Simon Rink
  */
-void Dtn::removeCurrentNeighbor(const int neighborEid) {
+void ContactDtn::removeCurrentNeighbor(const int neighborEid) {
     this->contactPlan_.removeCurrentNeighbor(neighborEid);
 }
 
@@ -1094,7 +1120,7 @@ void Dtn::removeCurrentNeighbor(const int neighborEid) {
  *
  * @author Simon Rink
  */
-int Dtn::checkExistenceOfContact(const int sourceEid, const int destinationEid, const int start) {
+int ContactDtn::checkExistenceOfContact(const int sourceEid, const int destinationEid, const int start) {
     const Contact *contact = this->contactTopology_.getContactBySrcDstStart(sourceEid, destinationEid, start);
 
     if (contact == nullptr || contact->getEnd() <= simTime().dbl()) {

@@ -1,14 +1,14 @@
-package src.node.dtn.contactplan;
+package src.node.dtn.contactless;
 
 import src.node.dtn.IDtn;
 
-simple ContactPlanDtn like IDtn
+simple DtnContactLess like IDtn
 {
     parameters:
 
         @display("i=block/routing");
 
-        string routing = default("direct");
+        string routing = default("antop");
         string routingType = default("none");
         int bundlesCopies = default(1);
         double sContactProb = default(1.0);
@@ -41,10 +41,6 @@ simple ContactPlanDtn like IDtn
         @signal[dtnBundleReRouted]; // how many times was a bundle rerouted in a same node (contact end with bundles in queue)
         @signal[sdrBundleStored];
         @signal[sdrBytesStored];
-        @signal[routeCgrDijkstraCalls];
-        @signal[routeCgrDijkstraLoops];
-        @signal[routeCgrRouteTableEntriesCreated];
-        @signal[routeCgrRouteTableEntriesExplored];
 
         @statistic[dtnBundleSentToCom](title="dtnBundleSentToCom"; source="dtnBundleSentToCom"; record=count; interpolationmode=none);
         @statistic[dtnBundleSentToApp](title="dtnBundleSentToApp"; source="dtnBundleSentToApp"; record=count; interpolationmode=none);
@@ -55,10 +51,6 @@ simple ContactPlanDtn like IDtn
         @statistic[dtnBundleReRouted](title="dtnBundleReRouted"; source="dtnBundleReRouted"; record=count; interpolationmode=none);
         @statistic[sdrBundleStored](title="sdrBundleStored"; source="sdrBundleStored"; record=timeavg,max,vector; interpolationmode=none);
         @statistic[sdrBytesStored](title="sdrBytesStored"; source="sdrBytesStored"; record=timeavg,max,vector; interpolationmode=none);
-        @statistic[routeCgrDijkstraCalls](title="routeCgrDijkstraCalls"; source="routeCgrDijkstraCalls"; record=sum,vector; interpolationmode=none);
-        @statistic[routeCgrDijkstraLoops](title="routeCgrDijkstraLoops"; source="routeCgrDijkstraLoops"; record=sum,vector; interpolationmode=none);
-        @statistic[routeCgrRouteTableEntriesCreated](title="routeCgrRouteTableEntriesCreated"; source="routeCgrRouteTableEntriesCreated"; record=max,sum,vector; interpolationmode=none);
-        @statistic[routeCgrRouteTableEntriesExplored](title="routeCgrRouteTableEntriesExplored"; source="routeCgrRouteTableEntriesExplored"; record=max,sum,vector; interpolationmode=none);
 
     gates:
         inout gateToApp;

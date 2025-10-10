@@ -20,10 +20,10 @@
 using namespace omnetpp;
 using namespace std;
 
-class Dtn : public cSimpleModule, public Observer {
+class ContactlessDtn : public cSimpleModule, public Observer {
   public:
-    Dtn();
-    virtual ~Dtn();
+    ContactlessDtn();
+    virtual ~ContactlessDtn();
 
     virtual void setOnFault(bool onFault);
     virtual void refreshForwarding();
