@@ -34,6 +34,7 @@ OBJS = \
     $O/src/central/contactless/ContactlessCentral.o \
     $O/src/node/app/App.o \
     $O/src/node/com/Com.o \
+    $O/src/node/com/contactplan/ContactPlanCom.o \
     $O/src/node/dtn/contactplan/Contact.o \
     $O/src/node/dtn/contactplan/ContactHistory.o \
     $O/src/node/dtn/contactplan/ContactPlan.o \

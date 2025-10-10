@@ -1,7 +1,7 @@
 #include "ContactPlanCentral.h"
 #include "src/node/MsgTypes.h"
 #include "src/node/app/App.h"
-#include "src/node/com/Com.h"
+#include "src/node/com/contactplan/ContactPlanCom.h"
 #include "src/node/dtn/contactplan/ContactSdrModel.h"
 #include "src/node/dtn/contactplan/Dtn.h"
 
@@ -110,7 +110,7 @@ void ContactPlanCentral::initialize() {
         dtn->setContactPlan(contactPlan_);
         dtn->setContactTopology(contactTopology_);
 
-        Com *com = check_and_cast<Com *>(
+        ContactPlanCom *com = check_and_cast<ContactPlanCom *>(
             this->getParentModule()->getSubmodule("node", i)->getSubmodule("com"));
         com->setContactTopology(contactTopology_);
     }

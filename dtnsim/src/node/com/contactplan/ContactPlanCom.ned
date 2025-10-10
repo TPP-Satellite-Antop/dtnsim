@@ -1,7 +1,7 @@
-package src.node.com;
+package src.node.com.contactplan;
 import src.node.com.ICom;
 
-simple Com like ICom
+simple ContactPlanCom like ICom
 {
     parameters:
         @display("i=block/wtx");
