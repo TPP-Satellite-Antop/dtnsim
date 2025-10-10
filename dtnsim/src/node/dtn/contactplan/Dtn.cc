@@ -689,7 +689,7 @@ void Dtn::update() {
  */
 void Dtn::syncDiscoveredContact(Contact *c, bool start) const {
     // only controller node is allowed to decide on final topology
-    if (!this->eid_ == 0) {
+    if (this->eid_ != 0) {
         throw invalid_argument("Illegal controller call");
     }
 
@@ -726,10 +726,10 @@ void Dtn::syncDiscoveredContact(Contact *c, bool start) const {
  * @author Simon Rink
  */
 void Dtn::syncDiscoveredContactFromNeighbor(const Contact *c, const bool start, int ownEid, int neighborEid) const {
-    if (!this->eid_ == 0)
+    if (this->eid_ != 0)
         throw invalid_argument("Illegal controller call");
 
-    Dtn *neighbor = check_and_cast<Dtn *>(
+    const auto neighbor = check_and_cast<Dtn *>(
         this->getParentModule()
               ->getParentModule()
               ->getSubmodule("node", neighborEid)
@@ -817,7 +817,7 @@ void Dtn::addDiscoveredContact(Contact c) {
     if (id == -1) {
         return;
     }
-    double range = this->contactTopology_.getRangeBySrcDst(c.getSourceEid(), c.getDestinationEid());
+    const double range = this->contactTopology_.getRangeBySrcDst(c.getSourceEid(), c.getDestinationEid());
     this->contactPlan_.addRange(c.getStart(), 1000000, c.getSourceEid(), c.getDestinationEid(),
                                 range, c.getConfidence());
     this->contactPlan_.getContactById(id)->setRange(range);
@@ -857,7 +857,7 @@ void Dtn::predictAllContacts(double currentTime) {
  * @author Simon Rink
  */
 void Dtn::coordinateContactStart(Contact *c) const {
-    if (!this->eid_ == 0)
+    if (this->eid_ != 0)
         throw invalid_argument("Illegal controller call");
 
     map<int, int> alreadyInformed;
@@ -932,7 +932,7 @@ void Dtn::coordinateContactStart(Contact *c) const {
  * @author Simon Rink
  */
 void Dtn::coordinateContactEnd(Contact *c) const {
-    if (!(this->eid_ == 0))
+    if (this->eid_ != 0)
         throw invalid_argument("Illegal controller call");
 
     vector<Contact> removedContacts;
