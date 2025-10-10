@@ -68,7 +68,7 @@ class Dtn : public cSimpleModule, public Observer {
   private:
     int eid_;
     bool onFault = false;
-    void initializeRouting(string routingString);
+    void initializeRouting(const string& routingString);
 
     // Pointer to grahics module
     Graphics *graphicsModule;

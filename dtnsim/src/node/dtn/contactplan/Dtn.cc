@@ -50,7 +50,7 @@ int Dtn::numInitStages() const {
  * @authors The original implementation was done by the authors of DTNSim and then modified by Simon
  * Rink
  */
-void Dtn::initialize(int stage) {
+void Dtn::initialize(const int stage) {
     if (stage == 1) {
         // Store this node eid
         this->eid_ = this->getParentModule()->getIndex();
@@ -61,8 +61,8 @@ void Dtn::initialize(int stage) {
         this->custodyModel_.setCustodyReportByteSize(par("custodyReportByteSize"));
 
         // Get a pointer to graphics module
-        graphicsModule = (Graphics *)this->getParentModule()->getSubmodule("graphics");
-        // Register this object as sdr obsever, in order to display bundles stored in sdr properly.
+        graphicsModule = dynamic_cast<Graphics *>(this->getParentModule()->getSubmodule("graphics"));
+        // Register this object as sdr observer, in order to display bundles stored in sdr properly.
         sdr_.addObserver(this);
         update();
 
@@ -193,23 +193,23 @@ void Dtn::initialize(int stage) {
     }
 }
 
-void Dtn::initializeRouting(string routeString) {
+void Dtn::initializeRouting(const string& routingString) {
     this->sdr_.setEid(eid_);
     this->sdr_.setSize(par("sdrSize"));
     this->sdr_.setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
     this->sdr_.setContactPlan(&contactTopology_);
 
-    if (routeString == "direct")
+    if (routingString == "direct")
         routing = new RoutingDirect(eid_, &sdr_, &contactPlan_);
-    else if (routeString == "antop")
+    else if (routingString == "antop")
         routing = new RoutingAntop(eid_, &sdr_);
-    else if (routeString == "cgrModel350")
+    else if (routingString == "cgrModel350")
         routing = new RoutingCgrModel350(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
-    else if (routeString == "cgrModel350_Hops")
+    else if (routingString == "cgrModel350_Hops")
         routing = new RoutingCgrModel350_Hops(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
-    else if (routeString == "cgrModelYen")
+    else if (routingString == "cgrModelYen")
         routing = new RoutingCgrModelYen(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
-    else if (routeString == "cgrModelRev17") {
+    else if (routingString == "cgrModelRev17") {
         ContactPlan *globalContactPlan = dynamic_cast<Dtn*>(
             this->getParentModule()->getParentModule()->getSubmodule("node", 0)->getSubmodule("dtn")
         )->getContactPlanPointer();
@@ -217,17 +217,17 @@ void Dtn::initializeRouting(string routeString) {
         routing = new RoutingCgrModelRev17(eid_, this->getParentModule()->getVectorSize(), &sdr_,
                                            &contactPlan_, globalContactPlan, par("routingType"),
                                            par("printRoutingDebug"));
-    } else if (routeString == "epidemic") {
+    } else if (routingString == "epidemic") {
         routing = new RoutingEpidemic(eid_, &sdr_, this);
-    } else if (routeString == "sprayAndWait") {
+    } else if (routingString == "sprayAndWait") {
         int bundlesCopies = par("bundlesCopies");
         routing = new RoutingSprayAndWait(eid_, &sdr_, this, bundlesCopies, false,
                                           this->metricCollector_);
-    } else if (routeString == "binarySprayAndWait") {
+    } else if (routingString == "binarySprayAndWait") {
         int bundlesCopies = par("bundlesCopies");
         routing =
             new RoutingSprayAndWait(eid_, &sdr_, this, bundlesCopies, true, this->metricCollector_);
-    } else if (routeString == "PRoPHET") {
+    } else if (routingString == "PRoPHET") {
         int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
         double p_enc_max = par("pEncouterMax");
         double p_enc_first = par("pEncouterFirst");
@@ -240,14 +240,14 @@ void Dtn::initializeRouting(string routeString) {
         routing = new RoutingPRoPHET(eid_, &sdr_, this, p_enc_max, p_enc_first, p_first_thresh,
                                      forw_tresh, alpha, beta, gamma, delta, numOfNodes,
                                      this->metricCollector_);
-    } else if (routeString == "cgrModel350_2Copies")
+    } else if (routingString == "cgrModel350_2Copies")
         routing = new RoutingCgrModel350_2Copies(eid_, &sdr_, &contactPlan_,
                                                  par("printRoutingDebug"), this);
-    else if (routeString == "cgrModel350_Probabilistic") {
+    else if (routingString == "cgrModel350_Probabilistic") {
         double sContactProb = par("sContactProb");
         routing = new RoutingCgrModel350_Probabilistic(
             eid_, &sdr_, &contactPlan_, par("printRoutingDebug"), this, sContactProb);
-    } else if (routeString == "uncertainUniboCgr") {
+    } else if (routingString == "uncertainUniboCgr") {
         bool useUncertainty =
             this->getParentModule()->getParentModule()->getSubmodule("central")->par(
                 "useUncertainty");
@@ -257,24 +257,24 @@ void Dtn::initializeRouting(string routeString) {
         routing =
             new RoutingUncertainUniboCgr(eid_, &sdr_, &contactPlan_, this, this->metricCollector_,
                                          -1, useUncertainty, repetition, numOfNodes);
-    } else if (routeString == "uniboCgr") {
+    } else if (routingString == "uniboCgr") {
         int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
         int repetition =
             this->getParentModule()->getParentModule()->getSubmodule("central")->par("repetition");
         routing =
             new RoutingUncertainUniboCgr(eid_, &sdr_, &contactPlan_, this, this->metricCollector_,
                                          -1, false, repetition, numOfNodes);
-    } else if (routeString == "ORUCOP") {
+    } else if (routingString == "ORUCOP") {
         int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
         int repetition =
             this->getParentModule()->getParentModule()->getSubmodule("central")->par("repetition");
         routing = new RoutingORUCOP(eid_, &sdr_, &contactPlan_, this, this->metricCollector_, 2,
                                     repetition, numOfNodes);
     } // 2 bundles for now.
-    else if (routeString == "BRUF1T") {
+    else if (routingString == "BRUF1T") {
         string frouting = par("frouting");
         routing = new RoutingBRUF1T(eid_, &sdr_, &contactPlan_, frouting);
-    } else if (routeString == "BRUFNCopies") {
+    } else if (routingString == "BRUFNCopies") {
         string frouting = par("frouting");
         int bundlesCopies = par("bundlesCopies");
         int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
@@ -289,7 +289,7 @@ void Dtn::initializeRouting(string routeString) {
 
         routing = new RoutingBRUFNCopies(eid_, &sdr_, &contactPlan_, bundlesCopies, numOfNodes,
                                          prefix.str(), posfix.str());
-    } else if (routeString == "CGR_BRUFPowered") {
+    } else if (routingString == "CGR_BRUFPowered") {
         string frouting = par("frouting");
         int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
         double pf = this->getParentModule()->getParentModule()->getSubmodule("central")->par(
@@ -313,7 +313,7 @@ void Dtn::initializeRouting(string routeString) {
             ts_duration, ts_start_times, numOfNodes, prefix.str(), posfix.str()
         );
     } else {
-        cout << "dtnsim error: unknown routing type: " << routeString << endl;
+        cout << "dtnsim error: unknown routing type: " << routingString << endl;
         exit(1);
     }
 }
@@ -648,13 +648,11 @@ void Dtn::setOnFault(bool onFault) {
         this->refreshForwarding();
 
         // Wake-up remote un-scheduled forwarding threads
-        std::map<int, ForwardingMsgStart *>::iterator it;
-        for (it = forwardingMsgs_.begin(); it != forwardingMsgs_.end(); ++it) {
-            ForwardingMsgStart *forwardingMsg = it->second;
-            Dtn *remoteDtn = (Dtn *)this->getParentModule()
-                                 ->getParentModule()
-                                 ->getSubmodule("node", forwardingMsg->getNeighborEid())
-                                 ->getSubmodule("dtn");
+        for (auto &[_, forwardingMsg] : forwardingMsgs_) {
+            const auto remoteDtn = dynamic_cast<Dtn *>(this->getParentModule()
+                                       ->getParentModule()
+                                       ->getSubmodule("node", forwardingMsg->getNeighborEid())
+                                       ->getSubmodule("dtn"));
             remoteDtn->refreshForwarding();
         }
     }
@@ -967,7 +965,7 @@ void Dtn::coordinateContactEnd(Contact *c) const {
     // Update the contact plans/histories and notify neighbors about lost contact.
     if (c->isDiscovered()) {
         // Add the contact to the histories
-        if (int sourceAvailable = rand() % 100; sourceAvailable < 1) {
+        if (const int sourceAvailable = rand() % 100; sourceAvailable < 1) {
             sourceHistory->addContact(nullptr, c);
             destinationHistory->addContact(nullptr, c);
         } else {
