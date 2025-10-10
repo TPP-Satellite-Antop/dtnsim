@@ -39,20 +39,20 @@ class Dtn : public cSimpleModule, public Observer {
     virtual void update();
 
     // Opportunistic procedures
-    void syncDiscoveredContact(Contact *c, bool start);
-    void syncDiscoveredContactFromNeighbor(Contact *c, bool start, int ownEid, int neighborEid);
+    void syncDiscoveredContact(Contact *c, bool start) const;
+    void syncDiscoveredContactFromNeighbor(const Contact *c, bool start, int ownEid, int neighborEid) const;
     void scheduleDiscoveredContactStart(Contact *c);
     void scheduleDiscoveredContactEnd(Contact *c);
     ContactHistory *getContactHistory();
     void addDiscoveredContact(Contact c);
-    void removeDiscoveredContact(Contact c);
+    void removeDiscoveredContact(const Contact& c);
     void predictAllContacts(double currentTime);
-    void coordinateContactStart(Contact *c);
-    void coordinateContactEnd(Contact *c);
+    void coordinateContactStart(Contact *c) const;
+    void coordinateContactEnd(Contact *c) const;
     void notifyNeighborsAboutDiscoveredContact(Contact *c, bool start,
                                                map<int, int> *alreadyInformed);
     void updateDiscoveredContacts(Contact *c);
-    map<int, int> getReachableNodes();
+    map<int, int> getReachableNodes() const;
     void addCurrentNeighbor(int neighborEid);
     void removeCurrentNeighbor(int neighborEid);
     int checkExistenceOfContact(int sourceEid, int destinationEid, int start);
