@@ -6,6 +6,7 @@
  */
 
 #include "RoutingPRoPHET.h"
+#include "src/node/dtn/contactplan/ContactDtn.h"
 
 RoutingPRoPHET::RoutingPRoPHET(int eid, SdrModel *sdr, cModule *dtn, float p_enc_max,
                                float p_enc_first, float p_first_thresh, float forw_thresh,
@@ -89,7 +90,7 @@ void RoutingPRoPHET::updatePredToNode(int destinationEid, double simTime) {
 }
 
 void RoutingPRoPHET::updateTransitivity(int destinationEid, double simTime) {
-    Dtn *dtn_b = check_and_cast<Dtn *>(dtn_->getParentModule()
+    ContactDtn *dtn_b = check_and_cast<ContactDtn *>(dtn_->getParentModule()
                                            ->getParentModule()
                                            ->getSubmodule("node", destinationEid)
                                            ->getSubmodule("dtn"));
@@ -127,7 +128,7 @@ bool RoutingPRoPHET::msgToMeArrive(BundlePkt *bundle) {
 void RoutingPRoPHET::routeAndQueueBundle(Contact *c) {
 
     RoutingPRoPHET *other = check_and_cast<RoutingPRoPHET *>(
-        check_and_cast<Dtn *>(dtn_->getParentModule()
+        check_and_cast<ContactDtn *>(dtn_->getParentModule()
                                   ->getParentModule()
                                   ->getSubmodule("node", c->getDestinationEid())
                                   ->getSubmodule("dtn"))
@@ -175,7 +176,7 @@ void RoutingPRoPHET::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     this->updateAging(bundle->getDestinationEid(), simTime);
     for (auto it = this->currently_active_.begin(); it != this->currently_active_.end(); it++) {
         RoutingPRoPHET *other = check_and_cast<RoutingPRoPHET *>(
-            check_and_cast<Dtn *>(dtn_->getParentModule()
+            check_and_cast<ContactDtn *>(dtn_->getParentModule()
                                       ->getParentModule()
                                       ->getSubmodule("node", it->first)
                                       ->getSubmodule("dtn"))

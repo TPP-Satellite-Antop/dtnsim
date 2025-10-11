@@ -200,8 +200,6 @@ void ContactDtn::initializeRouting(const string& routingString) {
 
     if (routingString == "direct")
         routing = new RoutingDirect(eid_, &sdr_, &contactPlan_);
-    else if (routingString == "antop")
-        routing = new RoutingAntop(eid_, &sdr_);
     else if (routingString == "cgrModel350")
         routing = new RoutingCgrModel350(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
     else if (routingString == "cgrModel350_Hops")

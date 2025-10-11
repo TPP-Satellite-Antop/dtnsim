@@ -1,13 +1,11 @@
+#include <iostream>
 #include "ContactlessCentral.h"
 #include "src/node/MsgTypes.h"
 #include "src/node/app/App.h"
 #include "src/node/com/Com.h"
-#include "src/node/dtn/contactplan/Dtn.h"
+#include "src/node/dtn/contactless/ContactlessDtn.h"
 #include "src/node/dtn/routing/RoutingAntop.h"
-
-#include <iostream>
-#include <src/central/Central.h>
-
+#include "src/central/Central.h"
 
 Define_Module(dtnsim::ContactlessCentral);
 
@@ -19,6 +17,13 @@ ContactlessCentral::~ContactlessCentral() {}
 
 void ContactlessCentral::initialize() {
     Central::initialize();
+
+    for (int i = 0; i <= nodesNumber_; i++) {
+        ContactlessDtn *dtn = check_and_cast<ContactlessDtn *>(
+            this->getParentModule()->getSubmodule("node", i)->getSubmodule("dtn"));
+
+        dtn->setMetricCollector(&metricCollector_);
+    }
 
     bool faultsAware = this->par("faultsAware");
     int deleteNIds = this->par("deleteNNodes");
@@ -70,7 +75,7 @@ void ContactlessCentral::initialize() {
     
 
     for (int i = 0; i <= nodesNumber_; i++) {
-        Dtn *dtn = check_and_cast<Dtn *>(
+        ContactlessDtn *dtn = check_and_cast<ContactlessDtn *>(
             this->getParentModule()->getSubmodule("node", i)->getSubmodule("dtn"));
         dtn->setRoutingAlgorithm(new Antop());
 

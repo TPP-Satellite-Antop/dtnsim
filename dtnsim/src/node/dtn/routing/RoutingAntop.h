@@ -12,7 +12,7 @@
 
 class RoutingAntop : public RoutingDeterministic {
   public:
-    RoutingAntop(int eid, SdrModel *sdr);
+    RoutingAntop(Antop* antop, int eid, SdrModel *sdr);
     virtual ~RoutingAntop();
     virtual void routeAndQueueBundle(BundlePkt *bundle, double simTime);
 

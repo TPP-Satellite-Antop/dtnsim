@@ -16,7 +16,7 @@
 #ifndef __DTNSIM_FAULT_H_
 #define __DTNSIM_FAULT_H_
 
-#include "../dtn/contactplan/Dtn.h"
+#include "src/node/dtn/contactplan/ContactDtn.h"
 #include <omnetpp.h>
 
 #include "src/dtnsim_m.h"
@@ -39,7 +39,7 @@ class Fault : public cSimpleModule {
     Graphics *graphicsModule;
 
     // Pointer to net module
-    Dtn *dtnModule;
+    ContactDtn *dtnModule;
 };
 
 #endif

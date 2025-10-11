@@ -11,7 +11,7 @@
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/contactPlan.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/nodes/nodes.h"
 #include "src/node/dtn/routing/unibocgr/core/library/list/list.h"
-#include "src/node/dtn/contactplan/Dtn.h"
+#include "src/node/dtn/contactplan/ContactDtn.h"
 
 static SdrModel *sdrUnibo;
 
@@ -380,7 +380,7 @@ void RoutingUniboCgr::contactStart(Contact *c) {
 
     // check whether some bundles were already received at their respective destinations!
     RoutingUniboCgr *other = check_and_cast<RoutingUniboCgr *>(
-        check_and_cast<Dtn *>(dtn_->getParentModule()
+        check_and_cast<ContactDtn *>(dtn_->getParentModule()
                                   ->getParentModule()
                                   ->getSubmodule("node", c->getDestinationEid())
                                   ->getSubmodule("dtn"))

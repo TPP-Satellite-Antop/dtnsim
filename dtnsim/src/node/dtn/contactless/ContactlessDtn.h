@@ -4,7 +4,7 @@
 #include "src/dtnsim_m.h"
 #include "src/node/dtn/CustodyModel.h"
 #include "src/node/dtn/SdrModel.h"
-#include "src/node/dtn/contactplan/ContactlessSdrModel.h"
+#include "src/node/dtn/contactless/ContactlessSdrModel.h"
 #include "src/node/dtn/routing/Routing.h"
 #include "src/node/dtn/routing/RoutingORUCOP.h"
 #include "src/node/dtn/routing/RoutingAntop.h"

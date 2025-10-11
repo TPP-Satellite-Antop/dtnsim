@@ -1,5 +1,5 @@
 #include "src/node/dtn/routing/RoutingSprayAndWait.h"
-#include "src/node/dtn/contactplan/Dtn.h"
+#include "src/node/dtn/contactplan/ContactDtn.h"
 #include "RoutingStochastic.h"
 
 RoutingSprayAndWait::RoutingSprayAndWait(int eid, SdrModel *sdr, cModule *dtn, int amountOfCopies,
@@ -85,7 +85,7 @@ void RoutingSprayAndWait::routeAndQueueBundle(Contact *c) {
         return;
 
     RoutingSprayAndWait *other = check_and_cast<RoutingSprayAndWait *>(
-        check_and_cast<Dtn *>(dtn_->getParentModule()
+        check_and_cast<ContactDtn *>(dtn_->getParentModule()
                                   ->getParentModule()
                                   ->getSubmodule("node", c->getDestinationEid())
                                   ->getSubmodule("dtn"))

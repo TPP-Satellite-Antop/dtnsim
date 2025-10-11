@@ -89,7 +89,7 @@ void ContactlessDtn::initialize(const int stage) {
     }
 }
 
-void ContactlessDtn::initializeRouting(const string& routingString) {
+void ContactlessDtn::initializeRouting(string routingString) {
     this->sdr_.setEid(eid_);
     this->sdr_.setSize(par("sdrSize"));
     this->sdr_.setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
@@ -137,26 +137,30 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
     // New Bundle (from App or Com):
     ///////////////////////////////////////////
     switch (msg->getKind()) {
-    case BUNDLE:
-    case BUNDLE_CUSTODY_REPORT:
-        if (msg->arrivedOn("gateToCom$i"))
-            emit(dtnBundleReceivedFromCom, true);
-        if (msg->arrivedOn("gateToApp$i"))
-            emit(dtnBundleReceivedFromApp, true);
+        case BUNDLE: {}
+        case BUNDLE_CUSTODY_REPORT: {
+            if (msg->arrivedOn("gateToCom$i"))
+                emit(dtnBundleReceivedFromCom, true);
+            if (msg->arrivedOn("gateToApp$i"))
+                emit(dtnBundleReceivedFromApp, true);
 
-        dispatchBundle(check_and_cast<BundlePkt *>(msg));
-        break;
-    case CUSTODY_TIMEOUT:
-        // Custody timer expired, check if bundle still in custody memory space and retransmit it if positive.
-        auto *custodyTimeout = check_and_cast<CustodyTimout *>(msg);
+            dispatchBundle(check_and_cast<BundlePkt *>(msg));
+            break;
+        }
+        case CUSTODY_TIMEOUT: {
+            // Custody timer expired, check if bundle still in custody memory space and retransmit it if positive.
+            auto *custodyTimeout = check_and_cast<CustodyTimout *>(msg);
 
-        if (BundlePkt *reSendBundle = this->custodyModel_.custodyTimerExpired(custodyTimeout); reSendBundle != nullptr)
-            this->dispatchBundle(reSendBundle);
-        delete custodyTimeout;
-        break;
-    default:
-        std::cout << "Unable to handle message of type: " << msg->getKind() << std::endl;
-        EV << "Unable to handle message of type: " << msg->getKind() << std::endl;
+            if (BundlePkt *reSendBundle = this->custodyModel_.custodyTimerExpired(custodyTimeout); reSendBundle != nullptr)
+                this->dispatchBundle(reSendBundle);
+            delete custodyTimeout;
+            break;
+        }
+        default: {
+            std::cout << "Unable to handle message of type: " << msg->getKind() << std::endl;
+            EV << "Unable to handle message of type: " << msg->getKind() << std::endl;
+            break;
+        }
     }
 }
 
@@ -209,19 +213,19 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
         emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
 
         // Wake-up sleeping forwarding threads
-        this->refreshForwarding();
+        //this->refreshForwarding();
     }
 }
 
 void ContactlessDtn::refreshForwarding() {
     // Check all ongoing forwardingMsgs threads (contacts) and wake up those not scheduled.
-    for (auto &[_, forwardingMsg] : forwardingMsgs_) {
+    /*for (auto &[_, forwardingMsg] : forwardingMsgs_) {
         if (const int cid = forwardingMsg->getContactId(); !sdr_.isBundleForId(cid))
             // Notify routing protocol that it has messages to send and contacts for routing
             routing->refreshForwarding(contactTopology_.getContactById(cid));
         if (!forwardingMsg->isScheduled())
             scheduleAt(simTime(), forwardingMsg);
-    }
+    }*/
 }
 
 void ContactlessDtn::setOnFault(bool onFault) {

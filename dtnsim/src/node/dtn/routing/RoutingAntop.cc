@@ -1,7 +1,7 @@
 #include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 
-RoutingAntop::RoutingAntop(Antop* antop, eid, SdrModel *sdr): RoutingDeterministic(eid, sdr, nullptr) { //TODO check this null
+RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr): RoutingDeterministic(eid, sdr, nullptr) { //TODO check this null
     this->prevSrc = 0;
     this->antopAlgorithm = antop;
 
