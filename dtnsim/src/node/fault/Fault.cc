@@ -10,7 +10,7 @@ void Fault::initialize() {
     graphicsModule = (Graphics *)this->getParentModule()->getSubmodule("graphics");
 
     // Get a pointer to dtn module
-    dtnModule = (Dtn *)this->getParentModule()->getSubmodule("dtn");
+    dtnModule = (ContactDtn *)this->getParentModule()->getSubmodule("dtn");
 
     // Initialize faults
     if ((this->par("enable").boolValue() == true) && eid_ != 0) {

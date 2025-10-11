@@ -11,7 +11,7 @@
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/contactPlan.h"
 #include "src/node/dtn/routing/unibocgr/core/contact_plan/nodes/nodes.h"
 #include "src/node/dtn/routing/unibocgr/core/library/list/list.h"
-#include "src/node/dtn/contactplan/Dtn.h"
+#include "src/node/dtn/contactplan/ContactDtn.h"
 
 namespace fs = std::filesystem;
 
@@ -289,7 +289,7 @@ void RoutingUncertainUniboCgr::enqueueBundle(BundlePkt *bundle, double simTime, 
     if (route == NULL) {
         int destination = this->multiHops[bundle->getBundleId()].front();
 
-        Dtn *dtn = check_and_cast<Dtn *>(dtn_->getParentModule()
+        ContactDtn *dtn = check_and_cast<ContactDtn *>(dtn_->getParentModule()
                                              ->getParentModule()
                                              ->getSubmodule("node", destination)
                                              ->getSubmodule("dtn"));
@@ -354,7 +354,7 @@ void RoutingUncertainUniboCgr::enqueueBundle(BundlePkt *bundle, double simTime, 
 
         int destination = hops[0];
 
-        Dtn *dtn = check_and_cast<Dtn *>(dtn_->getParentModule()
+        ContactDtn *dtn = check_and_cast<ContactDtn *>(dtn_->getParentModule()
                                              ->getParentModule()
                                              ->getSubmodule("node", destination)
                                              ->getSubmodule("dtn"));
@@ -402,7 +402,7 @@ void RoutingUncertainUniboCgr::enqueueBundle(BundlePkt *bundle, double simTime, 
     Contact *contactDtnSim =
         this->contactPlan_->getContactBySrcDstStart(sourceEid, destinationEid, start);
 
-    Dtn *dtn = check_and_cast<Dtn *>(dtn_->getParentModule()
+    ContactDtn *dtn = check_and_cast<ContactDtn *>(dtn_->getParentModule()
                                          ->getParentModule()
                                          ->getSubmodule("node", destinationEid)
                                          ->getSubmodule("dtn"));
@@ -863,7 +863,7 @@ void RoutingUncertainUniboCgr::contactStart(Contact *c) {
 
     // check whether some bundles were already received at their respective destinations!
     RoutingUncertainUniboCgr *other = check_and_cast<RoutingUncertainUniboCgr *>(
-        check_and_cast<Dtn *>(dtn_->getParentModule()
+        check_and_cast<ContactDtn *>(dtn_->getParentModule()
                                   ->getParentModule()
                                   ->getSubmodule("node", c->getDestinationEid())
                                   ->getSubmodule("dtn"))

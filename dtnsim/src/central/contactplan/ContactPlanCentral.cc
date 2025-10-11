@@ -1,13 +1,11 @@
+#include <iostream>
 #include "ContactPlanCentral.h"
 #include "src/node/MsgTypes.h"
 #include "src/node/app/App.h"
 #include "src/node/com/contactplan/ContactPlanCom.h"
 #include "src/node/dtn/contactplan/ContactSdrModel.h"
-#include "src/node/dtn/contactplan/Dtn.h"
-
-#include <iostream>
+#include "src/node/dtn/contactplan/ContactDtn.h"
 #include <src/central/Central.h>
-
 
 Define_Module(dtnsim::ContactPlanCentral);
 
@@ -19,6 +17,13 @@ ContactPlanCentral::~ContactPlanCentral() {}
 
 void ContactPlanCentral::initialize() {
     Central::initialize();
+
+    for (int i = 0; i <= nodesNumber_; i++) {
+        ContactDtn *dtn = check_and_cast<ContactDtn *>(
+            this->getParentModule()->getSubmodule("node", i)->getSubmodule("dtn"));
+
+        dtn->setMetricCollector(&metricCollector_);
+    }
 
     // Initialize contact plan
     contactPlan_.parseContactPlanFile(par("contactsFile"), nodesNumber_, this->par("mode"),
@@ -105,7 +110,7 @@ void ContactPlanCentral::initialize() {
     // setting modified contact plan and contact topology
     // to each node
     for (int i = 0; i <= nodesNumber_; i++) {
-        Dtn *dtn = check_and_cast<Dtn *>(
+        ContactDtn *dtn = check_and_cast<ContactDtn *>(
             this->getParentModule()->getSubmodule("node", i)->getSubmodule("dtn"));
         dtn->setContactPlan(contactPlan_);
         dtn->setContactTopology(contactTopology_);

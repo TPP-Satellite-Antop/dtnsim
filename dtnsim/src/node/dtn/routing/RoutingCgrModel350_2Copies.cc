@@ -2,7 +2,7 @@
 #include "src/node/dtn/SdrModel.h"
 #include "src/node/dtn/contactplan/Contact.h"
 #include "src/node/dtn/contactplan/ContactPlan.h"
-#include "src/node/dtn/contactplan/Dtn.h"
+#include "src/node/dtn/contactplan/ContactDtn.h"
 #include <vector>
 
 RoutingCgrModel350_2Copies::RoutingCgrModel350_2Copies(int eid, SdrModel *sdr,
@@ -988,7 +988,7 @@ bool RoutingCgrModel350_2Copies::msgToMeArrive(BundlePkt *bundle) {
 
 void RoutingCgrModel350_2Copies::contactStart(Contact *c) {
     RoutingCgrModel350_2Copies *other = check_and_cast<RoutingCgrModel350_2Copies *>(
-        check_and_cast<Dtn *>(dtn_->getParentModule()
+        check_and_cast<ContactDtn *>(dtn_->getParentModule()
                                   ->getParentModule()
                                   ->getSubmodule("node", c->getDestinationEid())
                                   ->getSubmodule("dtn"))

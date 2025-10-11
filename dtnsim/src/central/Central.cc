@@ -1,6 +1,5 @@
 #include "src/node/app/App.h"
 #include "src/node/com/Com.h"
-#include "src/node/dtn/contactplan/Dtn.h"
 #include "src/central/Central.h"
 
 Define_Module(dtnsim::Central);
@@ -18,13 +17,6 @@ void Central::initialize() {
     this->metricCollector_.setMode(this->par("mode"));
     this->metricCollector_.setFailureProb(this->par("failureProbability"));
     this->metricCollector_.setPath(this->par("collectorPath"));
-
-    for (int i = 0; i <= nodesNumber_; i++) {
-        Dtn *dtn = check_and_cast<Dtn *>(
-            this->getParentModule()->getSubmodule("node", i)->getSubmodule("dtn"));
-
-        dtn->setMetricCollector(&metricCollector_);
-    }
 }
 
 void Central::finish() {

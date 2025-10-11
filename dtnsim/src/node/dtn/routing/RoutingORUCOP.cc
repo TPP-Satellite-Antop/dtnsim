@@ -6,7 +6,7 @@
  */
 
 #include "RoutingORUCOP.h"
-#include "src/node/dtn/contactplan/Dtn.h"
+#include "src/node/dtn/contactplan/ContactDtn.h"
 
 namespace fs = std::filesystem;
 
@@ -198,11 +198,11 @@ int RoutingORUCOP::checkAndQueueBundles(long bundleId) {
         if (contact.getId() == -1) {
             continue;
         }
-        Dtn *dtn;
+        ContactDtn *dtn;
         int destination = contact.getDestinationEid();
         int endDestination = this->storedBundles_[bundleId].front()->getDestinationEid();
         try {
-            dtn = check_and_cast<Dtn *>(dtn_->getParentModule()
+            dtn = check_and_cast<ContactDtn *>(dtn_->getParentModule()
                                             ->getParentModule()
                                             ->getSubmodule("node", destination)
                                             ->getSubmodule("dtn"));

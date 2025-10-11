@@ -1,6 +1,6 @@
 #include "src/node/dtn/contactplan/Contact.h"
 #include "src/node/dtn/contactplan/ContactPlan.h"
-#include "src/node/dtn/contactplan/Dtn.h"
+#include "src/node/dtn/contactplan/ContactDtn.h"
 #include <src/node/dtn/routing/RoutingCgrModel350_Probabilistic.h>
 
 RoutingCgrModel350_Probabilistic::RoutingCgrModel350_Probabilistic(int eid, SdrModel *sdr,
@@ -1018,7 +1018,7 @@ bool RoutingCgrModel350_Probabilistic::msgToMeArrive(BundlePkt *bundle) {
 
 void RoutingCgrModel350_Probabilistic::contactStart(Contact *c) {
     RoutingCgrModel350_Probabilistic *other = check_and_cast<RoutingCgrModel350_Probabilistic *>(
-        check_and_cast<Dtn *>(dtn_->getParentModule()
+        check_and_cast<ContactDtn *>(dtn_->getParentModule()
                                   ->getParentModule()
                                   ->getSubmodule("node", c->getDestinationEid())
                                   ->getSubmodule("dtn"))

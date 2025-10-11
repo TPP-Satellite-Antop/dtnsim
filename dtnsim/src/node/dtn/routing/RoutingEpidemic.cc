@@ -1,6 +1,6 @@
 #include "src/node/dtn/routing/RoutingEpidemic.h"
 #include "src/node/dtn/contactplan/Contact.h"
-#include "src/node/dtn/contactplan/Dtn.h"
+#include "src/node/dtn/contactplan/ContactDtn.h"
 
 RoutingEpidemic::RoutingEpidemic(int eid, SdrModel *sdr, cModule *dtn)
     : RoutingStochastic(eid, sdr, dtn) {}
@@ -13,7 +13,7 @@ void RoutingEpidemic::routeAndQueueBundle(Contact *c) {
         return;
 
     RoutingEpidemic *other = check_and_cast<RoutingEpidemic *>(
-        check_and_cast<Dtn *>(dtn_->getParentModule()
+        check_and_cast<ContactDtn *>(dtn_->getParentModule()
                                   ->getParentModule()
                                   ->getSubmodule("node", c->getDestinationEid())
                                   ->getSubmodule("dtn"))

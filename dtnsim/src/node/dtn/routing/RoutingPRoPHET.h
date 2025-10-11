@@ -8,9 +8,10 @@
 #ifndef SRC_NODE_DTN_ROUTING_ROUTINGPROPHET_H_
 #define SRC_NODE_DTN_ROUTING_ROUTINGPROPHET_H_
 
-#include "../contactplan/Dtn.h"
+#include <vector>
+#include "../contactplan/Contact.h"
 #include "src/utils/MetricCollector.h"
-#include <src/node/dtn/routing/Routing.h>
+#include "src/node/dtn/routing/Routing.h"
 
 class RoutingPRoPHET : public Routing {
   public:
