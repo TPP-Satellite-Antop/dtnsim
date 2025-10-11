@@ -1,4 +1,8 @@
 #include "ContactlessDtn.h"
+
+#include "../../../../../../omnetpp-6.1/include/omnetpp/clog.h"
+#include "../../MsgTypes.h"
+#include "../routing/RoutingAntop.h"
 #include "src/node/app/App.h"
 
 Define_Module(ContactlessDtn);
@@ -132,121 +136,27 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
     ///////////////////////////////////////////
     // New Bundle (from App or Com):
     ///////////////////////////////////////////
-    if (msg->getKind() == BUNDLE || msg->getKind() == BUNDLE_CUSTODY_REPORT) {
+    switch (msg->getKind()) {
+    case BUNDLE:
+    case BUNDLE_CUSTODY_REPORT:
         if (msg->arrivedOn("gateToCom$i"))
             emit(dtnBundleReceivedFromCom, true);
         if (msg->arrivedOn("gateToApp$i"))
             emit(dtnBundleReceivedFromApp, true);
 
         dispatchBundle(check_and_cast<BundlePkt *>(msg));
-    }
-
-    ///////////////////////////////////////////
-    // Forwarding Stage
-    ///////////////////////////////////////////
-    else if (msg->getKind() == FORWARDING_MSG_START) {
-        auto *forwardingMsgStart = check_and_cast<ForwardingMsgStart *>(msg);
-        const int neighborEid = forwardingMsgStart->getNeighborEid();
-        const int contactId = forwardingMsgStart->getContactId();
-
-        // save freeChannelMsg to cancel event if necessary
-        forwardingMsgs_[forwardingMsgStart->getContactId()] = forwardingMsgStart;
-
-        // if there are messages in the queue for this contact
-        if (sdr_.isBundleForId(contactId)) {
-            // If local/remote node are responsive, then transmit bundle
-            const auto neighborContactlessDtn = check_and_cast<ContactlessDtn *>(this->getParentModule()
-                                                         ->getParentModule()
-                                                         ->getSubmodule("node", neighborEid)
-                                                         ->getSubmodule("dtn"));
-            if ((!neighborContactlessDtn->onFault) && (!this->onFault)) {
-                // Get bundle pointer from sdr
-                BundlePkt *bundle = sdr_.getBundle(contactId);
-
-                // Calculate data rate and Tx duration
-                double dataRate = contactTopology_.getContactById(contactId)->getDataRate();
-                double txDuration = static_cast<double>(bundle->getByteLength()) / dataRate;
-                double linkDelay = contactTopology_.getRangeBySrcDst(eid_, neighborEid);
-
-                Contact *contact = contactTopology_.getContactById(contactId);
-
-                // if the message can be fully transmitted before the end of the contact, transmit
-                // it
-                if ((simTime() + txDuration + linkDelay) <= contact->getEnd()) {
-                    // Set bundle metadata (set by intermediate nodes)
-                    bundle->setSenderEid(eid_);
-                    bundle->setHopCount(bundle->getHopCount() + 1);
-                    bundle->getVisitedNodesForUpdate().push_back(eid_);
-                    bundle->setXmitCopiesCount(0);
-
-                    // cout<<"-----> sending bundle to node "<bundle->getNextHopEid()<<endl;
-                    send(bundle, "gateToCom$o");
-
-                    if (saveBundleMap_)
-                        bundleMap_ << simTime() << "," << eid_ << "," << neighborEid << ","
-                                   << bundle->getSourceEid() << "," << bundle->getDestinationEid()
-                                   << "," << bundle->getBitLength() << "," << txDuration << endl;
-
-                    sdr_.popBundleFromId(contactId);
-
-                    // If custody requested, store a copy of the bundle until report received
-                    if (bundle->getCustodyTransferRequested()) {
-                        sdr_.enqueueTransmittedBundleInCustody(bundle->dup());
-                        this->custodyModel_.printBundlesInCustody();
-
-                        // Enqueue a retransmission event in case custody acceptance not received
-                        auto *custodyTimeout = new CustodyTimout("custodyTimeout", CUSTODY_TIMEOUT);
-                        custodyTimeout->setBundleId(bundle->getBundleId());
-                        scheduleAt(simTime() + this->custodyTimeout_, custodyTimeout);
-                    }
-
-                    emit(dtnBundleSentToCom, true);
-                    emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
-                    emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
-
-                    // Schedule next transmission
-                    scheduleAt(simTime() + txDuration, forwardingMsgStart);
-
-                    // Schedule forwarding message end
-                    auto *forwardingMsgEnd = new ForwardingMsgEnd("forwardingMsgEnd", FORWARDING_MSG_END);
-                    forwardingMsgEnd->setSchedulingPriority(FORWARDING_MSG_END);
-                    forwardingMsgEnd->setNeighborEid(neighborEid);
-                    forwardingMsgEnd->setContactId(contactId);
-                    forwardingMsgEnd->setBundleId(bundle->getBundleId());
-                    forwardingMsgEnd->setSentToDestination(neighborEid == bundle->getDestinationEid());
-                    scheduleAt(simTime() + txDuration, forwardingMsgEnd);
-                }
-            } else {
-                // If local/remote node unresponsive, then do nothing.
-                // fault recovery will trigger a local and remote refreshForwarding
-            }
-        } else {
-            // There are no messages in the queue for this contact
-            // Do nothing, if new data arrives, a refreshForwarding
-            // will wake up this forwarding thread
-        }
-    } else if (msg->getKind() == FORWARDING_MSG_END) {
-        // A bundle was successfully forwarded. Notify routing schema in order to it makes proper
-        // decisions.
-        const auto *forwardingMsgEnd = check_and_cast<ForwardingMsgEnd *>(msg);
-        const int bundleId = forwardingMsgEnd->getBundleId();
-        const int contactId = forwardingMsgEnd->getContactId();
-
-        Contact *contact = contactTopology_.getContactById(contactId);
-        routing->successfulBundleForwarded(bundleId, contact, forwardingMsgEnd->getSentToDestination());
-
-        delete forwardingMsgEnd;
-    }
-    ///////////////////////////////////////////
-    // Custody retransmission timer
-    ///////////////////////////////////////////
-    else if (msg->getKind() == CUSTODY_TIMEOUT) {
+        break;
+    case CUSTODY_TIMEOUT:
         // Custody timer expired, check if bundle still in custody memory space and retransmit it if positive.
         auto *custodyTimeout = check_and_cast<CustodyTimout *>(msg);
 
         if (BundlePkt *reSendBundle = this->custodyModel_.custodyTimerExpired(custodyTimeout); reSendBundle != nullptr)
             this->dispatchBundle(reSendBundle);
         delete custodyTimeout;
+        break;
+    default:
+        std::cout << "Unable to handle message of type: " << msg->getKind() << std::endl;
+        EV << "Unable to handle message of type: " << msg->getKind() << std::endl;
     }
 }
 
@@ -344,4 +254,8 @@ Routing *ContactlessDtn::getRouting() {
 void ContactlessDtn::update() {
     // Update srd size text
     graphicsModule->setBundlesInSdr(sdr_.getBundlesCountInSdr());
+}
+
+void ContactlessDtn::setRoutingAlgorithm(Antop* antop) {
+    this->antop_ = antop;
 }

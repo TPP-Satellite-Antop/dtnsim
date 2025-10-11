@@ -7,6 +7,7 @@
 #include "src/node/dtn/contactplan/ContactlessSdrModel.h"
 #include "src/node/dtn/routing/Routing.h"
 #include "src/node/dtn/routing/RoutingORUCOP.h"
+#include "src/node/dtn/routing/RoutingAntop.h"
 #include "src/node/graphics/Graphics.h"
 #include "src/utils/MetricCollector.h"
 #include "src/utils/Observer.h"
@@ -33,10 +34,11 @@ class ContactlessDtn : public cSimpleModule, public Observer {
     virtual void update();
 
     // Opportunistic procedures
-    void predictAllContacts(double currentTime); map<int, int> *alreadyInformed);
+    void predictAllContacts(double currentTime); map<int, int> *alreadyInformed;
     map<int, int> getReachableNodes() const;
     void addCurrentNeighbor(int neighborEid);
     void removeCurrentNeighbor(int neighborEid);
+    void setRoutingAlgorithm(Antop* antop);
 
   protected:
     virtual void initialize(int stage);
@@ -49,6 +51,7 @@ class ContactlessDtn : public cSimpleModule, public Observer {
   private:
     int eid_;
     bool onFault = false;
+    Antop* antop_;
     void initializeRouting(string routingString);
 
     // Pointer to grahics module
