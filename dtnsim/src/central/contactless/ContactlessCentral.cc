@@ -3,6 +3,7 @@
 #include "src/node/app/App.h"
 #include "src/node/com/Com.h"
 #include "src/node/dtn/contactplan/Dtn.h"
+#include "src/node/dtn/routing/RoutingAntop.h"
 
 #include <iostream>
 #include <src/central/Central.h>
@@ -71,7 +72,7 @@ void ContactlessCentral::initialize() {
     for (int i = 0; i <= nodesNumber_; i++) {
         Dtn *dtn = check_and_cast<Dtn *>(
             this->getParentModule()->getSubmodule("node", i)->getSubmodule("dtn"));
-        //TODO set something to dtn?
+        dtn->setRoutingAlgorithm(new Antop());
 
         Com *com = check_and_cast<Com *>(
             this->getParentModule()->getSubmodule("node", i)->getSubmodule("com"));
