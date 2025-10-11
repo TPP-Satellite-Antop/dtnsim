@@ -9,7 +9,6 @@ simple DtnContactLess like IDtn
         @display("i=block/routing");
 
         string routing = default("antop");
-        string routingType = default("none");
         int bundlesCopies = default(1);
         double sContactProb = default(1.0);
         bool printRoutingDebug = default(false);
