@@ -2,7 +2,7 @@ package src.node.dtn.contactplan;
 
 import src.node.dtn.IDtn;
 
-simple ContactPlanDtn like IDtn
+simple ContactDtn like IDtn
 {
     parameters:
 

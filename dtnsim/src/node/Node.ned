@@ -3,7 +3,7 @@ package src.node;
 import src.node.fault.Fault;
 import src.node.graphics.Graphics;
 import src.node.app.App;
-import src.node.dtn.contactplan.Dtn;
+import src.node.dtn.contactplan.ContactDtn;
 import src.node.dtn.IDtn;
 import src.node.com.ICom;
 
@@ -18,7 +18,7 @@ module Node
             parameters:
                 @display("p=75,50");
         }
-        dtn: <default("ContactPlanDtn")> like IDtn {
+        dtn: <default("ContactDtn")> like IDtn {
             parameters:
                 @display("p=75,120");
         }
