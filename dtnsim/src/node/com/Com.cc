@@ -33,6 +33,7 @@ void Com::handleMessage(cMessage *msg) {
                                              ->getSubmodule("node", bundle->getNextHopEid())
                                              ->getSubmodule("com");
             
+                                             //TODO check getLinkDelay is properly called
             sendDirect(msg, getLinkDelay(eid_, bundle->getNextHopEid()), 0, destinationModule, "gateToAir");
         }
     }
