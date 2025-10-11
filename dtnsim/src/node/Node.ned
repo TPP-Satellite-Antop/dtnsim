@@ -5,7 +5,7 @@ import src.node.graphics.Graphics;
 import src.node.app.App;
 import src.node.dtn.contactplan.Dtn;
 import src.node.dtn.IDtn;
-import src.node.com.Com;
+import src.node.com.ICom;
 
 module Node
 {
@@ -22,7 +22,7 @@ module Node
             parameters:
                 @display("p=75,120");
         }
-        com: Com {
+        com: <default("ContactPlanCom")> like ICom {
             parameters:
                 @display("p=75,190");
         }

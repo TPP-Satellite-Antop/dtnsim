@@ -1,7 +1,7 @@
 #include "ContactPlanCentral.h"
 #include "src/node/MsgTypes.h"
 #include "src/node/app/App.h"
-#include "src/node/com/Com.h"
+#include "src/node/com/contactplan/ContactPlanCom.h"
 #include "src/node/dtn/contactplan/ContactSdrModel.h"
 #include "src/node/dtn/contactplan/Dtn.h"
 
@@ -35,7 +35,7 @@ void ContactPlanCentral::initialize() {
     }
 
     bool faultsAware = this->par("faultsAware");
-    int deleteNIds = this->par("deleteNContacts"); // TODO rename to deleteNNodes
+    int deleteNIds = this->par("deleteNNodes");
     if (deleteNIds > 0) {
         // delete N contacts
         vector<int> idsToDelete;
@@ -58,7 +58,7 @@ void ContactPlanCentral::initialize() {
             idsToDelete = getRandomNodeIdsWithFProb(failureProbability);
             deleteNodes(idsToDelete, faultsAware);
         } else {
-            string toDeleteIds = this->par("contactIdsToDelete"); // TODO rename to nodeIdsToDelete
+            string toDeleteIds = this->par("nodeIdsToDelete");
             stringstream stream(toDeleteIds);
             vector<int> idsToDelete;
             if (toDeleteIds != "") {
@@ -110,7 +110,7 @@ void ContactPlanCentral::initialize() {
         dtn->setContactPlan(contactPlan_);
         dtn->setContactTopology(contactTopology_);
 
-        Com *com = check_and_cast<Com *>(
+        ContactPlanCom *com = check_and_cast<ContactPlanCom *>(
             this->getParentModule()->getSubmodule("node", i)->getSubmodule("com"));
         com->setContactTopology(contactTopology_);
     }
@@ -451,7 +451,7 @@ int ContactPlanCentral::computeTotalRoutesNumber(ContactPlan &contactPlan, int n
 
     for (int i = 1; i <= nodesNumber; i++) {
         int eid = i;
-        auto sdr = ContactSdrModel(eid, nodesNumber, &workCP); //TODO change conditional model
+        auto sdr = ContactSdrModel(eid, nodesNumber, &workCP);
         bool printDebug = false;
 
         Routing *routing = new RoutingCgrModel350(eid, &sdr, &workCP, printDebug);

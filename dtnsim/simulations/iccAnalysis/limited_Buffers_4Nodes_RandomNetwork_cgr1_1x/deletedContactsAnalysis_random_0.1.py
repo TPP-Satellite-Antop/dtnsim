@@ -17,7 +17,7 @@ Arguments
 
 Also, there is the following convention for input files (stored in INPUT_PATH/):
 
-    dtnsim-faultsAware=%IS FAULT AWARE%,deleteNContacts=%NUMBER OF DELETED CONTACTS%-#%RUN NUMBER%.sca
+    dtnsim-faultsAware=%IS FAULT AWARE%,deleteNNodes=%NUMBER OF DELETED CONTACTS%-#%RUN NUMBER%.sca
 
 The varriable parts in string are marked with %%. They are:
     -> %IS FAULT AWARE%
@@ -113,8 +113,8 @@ def receivedPacketAv(input_path, max_deleted_contacts, amount_of_repetitions,met
         received_packet = 0
         for i in range(amount_of_repetitions):
             # Connect to database
-            print("%s,deleteNContacts=%d-#%d.sca" % (input_path, d, i))
-            conn = sqlite3.connect("%s,deleteNContacts=%d-#%d.sca" % (input_path, d, i))
+            print("%s,deleteNNodes=%d-#%d.sca" % (input_path, d, i))
+            conn = sqlite3.connect("%s,deleteNNodes=%d-#%d.sca" % (input_path, d, i))
             conn.row_factory = sqlite3.Row
             cur = conn.cursor()
 
@@ -123,7 +123,7 @@ def receivedPacketAv(input_path, max_deleted_contacts, amount_of_repetitions,met
             rows0 = cur.fetchall()
             received_packet += 0 if (rows0[0]["result"] == None) else rows0[0]["result"]
 
-        cur.execute("SELECT MAX(scalarValue) AS result FROM scalar WHERE scalarName='contactsNumber:sum'")
+        cur.execute("SELECT MAX(scalarValue) AS result FROM scalar WHERE scalarName='nodesNumber:sum'")
         rows0 = cur.fetchall()
         contact_number = rows0[0]["result"]
 
@@ -139,8 +139,8 @@ def receivedPacketAv2(input_path, max_deleted_contacts, amount_of_repetitions):
         received_packet = 0
         for i in range(amount_of_repetitions):
             # Connect to database
-            print("%s,deleteNContacts=%d-#%d.sca" % (input_path, d, i))
-            conn = sqlite3.connect("%s,deleteNContacts=%d-#%d.sca" % (input_path, d, i))
+            print("%s,deleteNNodes=%d-#%d.sca" % (input_path, d, i))
+            conn = sqlite3.connect("%s,deleteNNodes=%d-#%d.sca" % (input_path, d, i))
             conn.row_factory = sqlite3.Row
             cur = conn.cursor()
 
@@ -154,7 +154,7 @@ def receivedPacketAv2(input_path, max_deleted_contacts, amount_of_repetitions):
             tx_packet = 0 if (rows1[0]["result"] == None) else rows1[0]["result"]
             received_packet += float(rx_packet) / float(tx_packet)
 
-        cur.execute("SELECT MAX(scalarValue) AS result FROM scalar WHERE scalarName='contactsNumber:sum'")
+        cur.execute("SELECT MAX(scalarValue) AS result FROM scalar WHERE scalarName='nodesNumber:sum'")
         rows0 = cur.fetchall()
         contact_number = rows0[0]["result"]
 
@@ -169,8 +169,8 @@ def receivedPacketAv3(input_path, max_deleted_contacts, amount_of_repetitions,me
         received_packet = 0
         for i in range(amount_of_repetitions):
             # Connect to database
-            print("%s,deleteNContacts=%d-#%d.sca" % (input_path, d, i))
-            conn = sqlite3.connect("%s,deleteNContacts=%d-#%d.sca" % (input_path, d, i))
+            print("%s,deleteNNodes=%d-#%d.sca" % (input_path, d, i))
+            conn = sqlite3.connect("%s,deleteNNodes=%d-#%d.sca" % (input_path, d, i))
             conn.row_factory = sqlite3.Row
             cur = conn.cursor()
 
@@ -179,7 +179,7 @@ def receivedPacketAv3(input_path, max_deleted_contacts, amount_of_repetitions,me
             rows0 = cur.fetchall()
             received_packet += 0 if (rows0[0]["result"] == None) else rows0[0]["result"]
 
-        cur.execute("SELECT MAX(scalarValue) AS result FROM scalar WHERE scalarName='contactsNumber:sum'")
+        cur.execute("SELECT MAX(scalarValue) AS result FROM scalar WHERE scalarName='nodesNumber:sum'")
         rows0 = cur.fetchall()
         contact_number = rows0[0]["result"]
 

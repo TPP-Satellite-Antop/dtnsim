@@ -349,7 +349,7 @@ void ContactDtn::finish() {
 
 void ContactDtn::handleMessage(cMessage *msg) {
     ///////////////////////////////////////////
-    // New Bundle (from App or Com):
+    // New Bundle (from App or ContactPlanCom):
     ///////////////////////////////////////////
     if (msg->getKind() == BUNDLE || msg->getKind() == BUNDLE_CUSTODY_REPORT) {
         if (msg->arrivedOn("gateToCom$i"))

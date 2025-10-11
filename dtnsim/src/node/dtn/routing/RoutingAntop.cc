@@ -1,11 +1,9 @@
 #include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 
-RoutingAntop::RoutingAntop(int eid, SdrModel *sdr): RoutingDeterministic(eid, sdr, nullptr) { //TODO check this null
-    this->antopAlgorithm = new Antop();
-    //this->nodePositions = contactPlan->getNodePositions();
-    //this->antopAlgorithm->init(contactPlan->getNodesNumber());
+RoutingAntop::RoutingAntop(Antop* antop, eid, SdrModel *sdr): RoutingDeterministic(eid, sdr, nullptr) { //TODO check this null
     this->prevSrc = 0;
+    this->antopAlgorithm = antop;
 
    // printf("RoutingAntop initialized with %d nodes\n", contactPlan->getNodesNumber());
 }

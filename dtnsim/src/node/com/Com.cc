@@ -11,10 +11,6 @@ void Com::initialize() {
     this->packetLoss_ = par("packetLoss").doubleValue();
 }
 
-void Com::setContactTopology(ContactPlan &contactTopology) {
-    this->contactTopology_ = contactTopology;
-}
-
 void Com::handleMessage(cMessage *msg) {
     if (msg->getKind() == BUNDLE || msg->getKind() == BUNDLE_CUSTODY_REPORT) {
         BundlePkt *bundle = check_and_cast<BundlePkt *>(msg);
@@ -36,14 +32,8 @@ void Com::handleMessage(cMessage *msg) {
                                              ->getParentModule()
                                              ->getSubmodule("node", bundle->getNextHopEid())
                                              ->getSubmodule("com");
-            double linkDelay = contactTopology_.getRangeBySrcDst(eid_, bundle->getNextHopEid());
-            if (linkDelay == -1) {
-                cout << "warning, range not available for nodes " << eid_ << "-"
-                     << bundle->getNextHopEid() << ", assuming range is 0" << endl;
-                linkDelay = 0;
-            }
-
-            sendDirect(msg, linkDelay, 0, destinationModule, "gateToAir");
+            
+            sendDirect(msg, getLinkDelay(eid_, bundle->getNextHopEid()), 0, destinationModule, "gateToAir");
         }
     }
 }
@@ -53,3 +43,8 @@ void Com::finish() {}
 Com::Com() {}
 
 Com::~Com() {}
+
+double Com::getLinkDelay(int sourceEid, int nextHopEid) {
+    // Default implementation, override in subclasses
+    return 0;
+}
