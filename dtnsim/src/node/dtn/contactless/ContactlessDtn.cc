@@ -95,7 +95,7 @@ void ContactlessDtn::initializeRouting(string routingString) {
     this->sdr_.setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
 
     if (routingString == "antop") {
-
+        this->routing = new RoutingAntop(this->antop_, this->eid_, &sdr_);
     } else {
         cout << "dtnsim error: unknown routing type: " << routingString << endl;
         exit(1);
