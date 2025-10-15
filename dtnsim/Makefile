@@ -14,13 +14,13 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
 PYTHON_VERSION := $(shell python3 -c "import sys; print(f'{sys.version_info[0]}.{sys.version_info[1]}')")
 
 #C++ include paths(with - I)
-INCLUDE_PATH = -I. -I/usr/include/python$(PYTHON_VERSION) -I$(HOME)/.local/include -I$(HOME)/.local/include/h3 -I$(INET_PROJ)/src
+INCLUDE_PATH = -I. -I/usr/include/python$(PYTHON_VERSION) -I$(HOME)/.local/include -I$(HOME)/.local/include/h3 -I$(INET_ROOT)/src
 
 #Additional object and library files to link with
 EXTRA_OBJS = 
 
 #Additional libraries(-L, -l options)
-LIBS = $(LDFLAG_LIBPATH)$(INET_PROJ)/src  -lINET$(D) -lcurl -lpython$(PYTHON_VERSION) -L$(HOME)/.local/lib -lSatelliteAntopLib -lh3
+LIBS = $(LDFLAG_LIBPATH)$(INET_ROOT)/src  -lINET$(D) -lcurl -lpython$(PYTHON_VERSION) -L$(HOME)/.local/lib -lSatelliteAntopLib -lh3
 
 #Output directory
 PROJECT_OUTPUT_DIR = out
