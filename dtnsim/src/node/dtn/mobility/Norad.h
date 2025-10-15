@@ -16,7 +16,8 @@
 #ifndef __OS3_Norad_H__
 #define __OS3_Norad_H__
 
-#include <omnetpp.h>
+#include "omnetpp.h"
+using namespace omnetpp;
 
 #include <string>
 #include <ctime>
@@ -35,8 +36,7 @@ class cOrbit;
 // this class provides the functionality needed to get the positions for satellites according
 // to current tables from web information by providing known data
 //-----------------------------------------------------
-class Norad : public cSimpleModule
-{
+class Norad : public cSimpleModule {
 public:
     Norad();
 

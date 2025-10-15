@@ -14,13 +14,13 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
 PYTHON_VERSION := $(shell python3 -c "import sys; print(f'{sys.version_info[0]}.{sys.version_info[1]}')")
 
 #C++ include paths(with - I)
-INCLUDE_PATH = -I. -I/usr/include/python$(PYTHON_VERSION) -I$(HOME)/.local/include -I$(HOME)/.local/include/h3
+INCLUDE_PATH = -I. -I/usr/include/python$(PYTHON_VERSION) -I$(HOME)/.local/include -I$(HOME)/.local/include/h3 -I$(INET_PROJ)/src
 
 #Additional object and library files to link with
 EXTRA_OBJS = 
 
 #Additional libraries(-L, -l options)
-LIBS =  -lpython$(PYTHON_VERSION) -L$(HOME)/.local/lib -lSatelliteAntopLib -lh3
+LIBS = $(LDFLAG_LIBPATH)$(INET_PROJ)/src  -lINET$(D) -lcurl -lpython$(PYTHON_VERSION) -L$(HOME)/.local/lib -lSatelliteAntopLib -lh3
 
 #Output directory
 PROJECT_OUTPUT_DIR = out
@@ -45,6 +45,19 @@ OBJS = \
     $O/src/node/dtn/contactless/ContactlessDtn.o \
     $O/src/node/dtn/SdrModel.o \
     $O/src/node/dtn/SdrStatus.o \
+    $O/src/node/dtn/mobility/libnorad/ccoord.o \
+    $O/src/node/dtn/mobility/libnorad/cEci.o \
+    $O/src/node/dtn/mobility/libnorad/cJulian.o \
+    $O/src/node/dtn/mobility/libnorad/cNoradBase.o \
+    $O/src/node/dtn/mobility/libnorad/cNoradSDP4.o \
+    $O/src/node/dtn/mobility/libnorad/cNoradSGP4.o \
+    $O/src/node/dtn/mobility/libnorad/cOrbit.o \
+    $O/src/node/dtn/mobility/libnorad/cSite.o \
+    $O/src/node/dtn/mobility/libnorad/cTLE.o \
+    $O/src/node/dtn/mobility/libnorad/cVector.o \
+    $O/src/node/dtn/mobility/libnorad/globals.o \
+    $O/src/node/dtn/mobility/Norad.o \
+    $O/src/node/dtn/mobility/SatSGP4Mobility.o \
     $O/src/node/dtn/routing/RoutingBRUF1T.o \
     $O/src/node/dtn/routing/RoutingCgrModel350.o \
     $O/src/node/dtn/routing/RoutingAntop.o \
