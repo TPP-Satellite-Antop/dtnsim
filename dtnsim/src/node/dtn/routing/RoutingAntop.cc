@@ -32,6 +32,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
 
 template<typename Func>
 bool forEachCurrentPosition(const unordered_map<TimeInterval, vector<PositionEntry>>& nodePositions, double currTime, Func func) {
+    /*
     for (const auto& [interval, positions] : nodePositions) {
         if (currTime < interval.tStart || currTime >= interval.tEnd)
             continue;
@@ -40,10 +41,12 @@ bool forEachCurrentPosition(const unordered_map<TimeInterval, vector<PositionEnt
                 return true;
         }
     }
+        */
     return false;
 }
 
 bool RoutingAntop::isNextHopValid(H3Index nextHop) const {
+    /*
     double currTime = simTime().dbl();
     printf("Node positions are:\n");
 
@@ -57,10 +60,12 @@ bool RoutingAntop::isNextHopValid(H3Index nextHop) const {
         }
         return false;
     });
+    */
+    return false;
 }
 
 H3Index RoutingAntop::getH3IndexFromEid(int eid) {
-    double currTime = simTime().dbl();
+   /* double currTime = simTime().dbl();
     H3Index result = 0;
     forEachCurrentPosition(this->nodePositions, currTime, [&](const PositionEntry& pos) {
         if (pos.eId == eid) {
@@ -71,9 +76,12 @@ H3Index RoutingAntop::getH3IndexFromEid(int eid) {
     });
 
     return result;
+    */
+   return 0;
 }
 
 int RoutingAntop::getEidFromH3Index(H3Index idx) {
+    /*
     double currTime = simTime().dbl();
     int result = -1;
     forEachCurrentPosition(this->nodePositions, currTime, [&](const PositionEntry& pos) {
@@ -87,4 +95,7 @@ int RoutingAntop::getEidFromH3Index(H3Index idx) {
     });
 
     return result;
+    */
+
+    return 0;
 }
