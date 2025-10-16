@@ -22,6 +22,7 @@
 #include "libnorad/cOrbit.h"
 #include "libnorad/cSite.h"
 
+using namespace omnetpp;
 Define_Module(Norad);
 
 Norad::Norad()
@@ -82,23 +83,25 @@ void Norad::initializeMobility(const simtime_t& targetTime)
     cTle tle(line0, line1, line2);
     orbit = new cOrbit(tle);
 
+    raan = orbit->RAAN();
+    inclination = orbit->Inclination();
+
     // Gap is needed to eliminate different start times
     gap = orbit->TPlusEpoch(currentJulian);
 
     updateTime(targetTime);
-
     // Set name from TLE file for icon name
     line3 = orbit->SatName(false);
     /*if (line3.find(" (") != std::string::npos) {
         line3.at(line3.find(" (")) = '\n';
     }*/
 
-    std::size_t found = line3.find("(PRN ");
-    std::string satName = "PRN-";
-    satName.push_back(line3.at(found+5));
-    satName.push_back(line3.at(found+6));
-    satName += "\nsatellite";
-    getParentModule()->setName(satName.c_str());
+//    std::size_t found = line3.find("(PRN ");
+//    std::string satName = "PRN-";
+//    satName.push_back(line3.at(found+5));
+//    satName.push_back(line3.at(found+6));
+//    satName += "\nsatellite";
+      //getParentModule()->setName(satName.c_str());
 }
 
 void Norad::updateTime(const simtime_t& targetTime)
@@ -115,6 +118,16 @@ double Norad::getLongitude()
 double Norad::getLatitude()
 {
     return rad2deg(geoCoord.m_Lat);
+}
+
+double Norad::getRaan()
+{
+    return raan;
+}
+
+double Norad::getInclination()
+{
+    return inclination;
 }
 
 double Norad::getElevation(const double& refLatitude, const double& refLongitude, const double& refAltitude)

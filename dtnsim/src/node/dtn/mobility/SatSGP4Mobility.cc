@@ -14,6 +14,7 @@
 //
 
 #include "SatSGP4Mobility.h"
+#include "libnorad/cJulian.h"
 
 #include <ctime>
 #include <cmath>
@@ -43,10 +44,9 @@ void SatSGP4Mobility::initialize(int stage)
         error("Error in SatSGP4Mobility::initializeMobility(): Cannot find module Norad.");
     }
 
-    std::time_t timestamp = std::time(nullptr);       // get current time as an integral value holding the num of secs
-                                                      // since 00:00, Jan 1 1970 UTC
+    //std::time_t timestamp = std::time(nullptr);       // get current time as an integral value holding the num of secs
+    std::time_t timestamp =  1619119189;  //8:20PM 22/04/2021                                             // since 00:00, Jan 1 1970 UTC
     std::tm* currentTime = std::gmtime(&timestamp);   // convert timestamp into structure holding a calendar date and time
-
     noradModule->setJulian(currentTime);
 
     mapX = std::atoi(getParentModule()->getParentModule()->getDisplayString().getTagArg("bgb", 0));
@@ -57,7 +57,14 @@ void SatSGP4Mobility::initialize(int stage)
     EV << "initializing SatSGP4Mobility stage " << stage << endl;
     WATCH(lastPosition);
 
-    updateVisualRepresentation();
+    move(); //updateVisualRepresentation();
+}
+
+bool SatSGP4Mobility::isOnSameOrbitalPlane(double raan2, double inclination2)
+{
+    double raan = getRaan();
+    double inclination = getInclination();
+    return ((inclination >= inclination2-1 && inclination <= inclination2+1));
 }
 
 double SatSGP4Mobility::getAltitude() const
@@ -93,15 +100,25 @@ double SatSGP4Mobility::getLatitude() const
     return noradModule->getLatitude();
 }
 
+double SatSGP4Mobility::getRaan() const
+{
+    return noradModule->getRaan();
+}
+
+double SatSGP4Mobility::getInclination() const
+{
+    return noradModule->getInclination();
+}
+
 void SatSGP4Mobility::setTargetPosition()
 {
     nextChange += updateInterval.dbl();
     noradModule->updateTime(nextChange);
-
+    //noradModule->getParentModule()->getSubmodule("coordinateSystem")->
+    //EV << "SATELLITE MAPX" << mapX << "MAPY " << mapY << "LONG " << noradModule->getLongitude() << "LAT " << noradModule->getLatitude();
     lastPosition.x = mapX * noradModule->getLongitude() / 360 + (mapX / 2);
     lastPosition.x = static_cast<int>(lastPosition.x) % static_cast<int>(mapX);
     lastPosition.y = ((-mapY * noradModule->getLatitude()) / 180) + (mapY / 2);
-
     targetPosition.x = lastPosition.x;
     targetPosition.y = lastPosition.y;
 }

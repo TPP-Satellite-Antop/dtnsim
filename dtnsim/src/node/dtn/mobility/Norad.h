@@ -16,8 +16,7 @@
 #ifndef __OS3_Norad_H__
 #define __OS3_Norad_H__
 
-#include "omnetpp.h"
-using namespace omnetpp;
+#include <omnetpp.h>
 
 #include <string>
 #include <ctime>
@@ -25,6 +24,8 @@ using namespace omnetpp;
 #include "libnorad/cEci.h"
 #include "libnorad/cJulian.h"
 #include "libnorad/ccoord.h"
+
+using namespace omnetpp;
 
 class cTle;
 class cOrbit;
@@ -36,7 +37,8 @@ class cOrbit;
 // this class provides the functionality needed to get the positions for satellites according
 // to current tables from web information by providing known data
 //-----------------------------------------------------
-class Norad : public cSimpleModule {
+class Norad : public cSimpleModule
+{
 public:
     Norad();
 
@@ -60,6 +62,9 @@ public:
     // returns the latitude
     double getLatitude();
 
+    double getRaan();
+    double getInclination();
+
     // returns the elevation to a reference point
     double getElevation(const double& refLatitude, const double& refLongitude, const double& refAltitude = -9999);
 
@@ -80,6 +85,10 @@ protected:
 private:
     cEci eci;
     cJulian currentJulian;
+
+    double inclination; //inclination and raan used to determine orbital plane
+    double raan;
+
     double gap;
 
     cTle* tle;
