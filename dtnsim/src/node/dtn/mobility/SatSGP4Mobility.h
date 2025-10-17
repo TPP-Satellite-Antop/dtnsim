@@ -64,7 +64,7 @@ protected:
     double transmitPower;
 
     // initialize module
-    // - creates a reference to the Norad moudule
+    // - creates a reference to the Norad module
     // - timestamps and initial position on playground are managed here.
     virtual void initialize(int stage);
 

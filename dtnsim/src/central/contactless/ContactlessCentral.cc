@@ -1,11 +1,13 @@
-#include <iostream>
 #include "ContactlessCentral.h"
+
+#include "../../node/dtn/routing/RoutingAntop.h"
+#include "src/central/Central.h"
 #include "src/node/MsgTypes.h"
 #include "src/node/app/App.h"
 #include "src/node/com/Com.h"
 #include "src/node/dtn/contactless/ContactlessDtn.h"
 #include "src/node/dtn/routing/RoutingAntop.h"
-#include "src/central/Central.h"
+#include <iostream>
 
 Define_Module(dtnsim::ContactlessCentral);
 
@@ -19,14 +21,14 @@ void ContactlessCentral::initialize() {
     Central::initialize();
 
     for (int i = 0; i <= nodesNumber_; i++) {
-        ContactlessDtn *dtn = check_and_cast<ContactlessDtn *>(
+        auto dtn = check_and_cast<ContactlessDtn *>(
             this->getParentModule()->getSubmodule("node", i)->getSubmodule("dtn"));
 
         dtn->setMetricCollector(&metricCollector_);
     }
 
-    bool faultsAware = this->par("faultsAware");
-    int deleteNIds = this->par("deleteNNodes");
+    const bool faultsAware = this->par("faultsAware");
+    const int deleteNIds = this->par("deleteNNodes");
     if (deleteNIds > 0) {
         // delete N contacts
         vector<int> idsToDelete;
@@ -38,15 +40,13 @@ void ContactlessCentral::initialize() {
 
         deleteNodes(idsToDelete, faultsAware);
     } else if (this->par("useSpecificFailureProbabilities")) {
-        vector<int> idsToDelete;
 
-        idsToDelete = this->getNodeIdsWithSpecificFProb();
+        const vector<int> idsToDelete = this->getNodeIdsWithSpecificFProb();
         deleteNodes(idsToDelete, false);
     } else {
-        double failureProbability = this->par("failureProbability");
-        vector<int> idsToDelete;
-        if (failureProbability > 0) {
-            idsToDelete = getRandomNodeIdsWithFProb(failureProbability);
+        if (const double failureProbability = this->par("failureProbability");
+            failureProbability > 0) {
+            const vector<int> idsToDelete = getRandomNodeIdsWithFProb(failureProbability);
             deleteNodes(idsToDelete, faultsAware);
         } else {
             string toDeleteIds = this->par("nodeIdsToDelete"); 
@@ -55,7 +55,7 @@ void ContactlessCentral::initialize() {
             if (toDeleteIds != "") {
                 while (1) {
                     int n;
-                    stream >> n;
+                    stream >> n; //todo bug
                     idsToDelete.push_back(n);
                     if (!stream)
                         break;
@@ -72,16 +72,15 @@ void ContactlessCentral::initialize() {
     // This is mandatory in order for nodes
     // finish() method to be called and collect some statistics when
     // none contact is scheduled.
-    
 
-    for (int i = 0; i <= nodesNumber_; i++) {
-        ContactlessDtn *dtn = check_and_cast<ContactlessDtn *>(
-            this->getParentModule()->getSubmodule("node", i)->getSubmodule("dtn"));
-        dtn->setRoutingAlgorithm(new Antop());
-
-        Com *com = check_and_cast<Com *>(
-            this->getParentModule()->getSubmodule("node", i)->getSubmodule("com"));
-        //TODO set something to com?
+    auto antop = new Antop();
+    for (int i = 0; i <= nodesNumber_; i++) { //todo check
+        auto dtn = check_and_cast<ContactlessDtn *>(
+            this->getParentModule()
+                ->getSubmodule("node", i)
+                ->getSubmodule("dtn")
+        );
+        dtn->setRoutingAlgorithm(antop);
     }
 }
 

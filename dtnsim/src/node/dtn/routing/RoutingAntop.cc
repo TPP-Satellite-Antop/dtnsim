@@ -16,10 +16,10 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         srcIndex,
         getH3IndexFromEid(bundle->getDestinationEid()),
         this->prevSrc,
-        [this](H3Index idx){ return this->isNextHopValid(idx); }
+        [this](const H3Index idx){ return this->isNextHopValid(idx); }
     );
 
-    int nextHopEid = getEidFromH3Index(nextHopIndex);
+    const int nextHopEid = getEidFromH3Index(nextHopIndex);
     cout << "Next eid: " << nextHopEid << endl;
     if (nextHopEid != -1) {
         this->prevSrc = srcIndex;
@@ -61,7 +61,7 @@ bool RoutingAntop::isNextHopValid(H3Index nextHop) const {
         return false;
     });
     */
-    return false;
+    return true;
 }
 
 H3Index RoutingAntop::getH3IndexFromEid(int eid) {

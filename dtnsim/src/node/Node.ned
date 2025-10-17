@@ -34,6 +34,14 @@ module Node
             parameters:
                 @display("p=150,120");
         }
+        mobility : SatSGP4Mobility {
+            parameters:
+                @display("p=194,103");
+        }
+        noradModule: Norad {
+            parameters:
+                @display("p=98,35");
+        }
 
     connections:
         app.gateToDtn <--> dtn.gateToApp;
