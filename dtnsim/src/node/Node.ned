@@ -5,6 +5,8 @@ import src.node.graphics.Graphics;
 import src.node.app.App;
 import src.node.dtn.contactplan.ContactDtn;
 import src.node.dtn.IDtn;
+import src.node.dtn.mobility.SatSGP4Mobility;
+import src.node.dtn.mobility.Norad;
 import src.node.com.ICom;
 
 module Node

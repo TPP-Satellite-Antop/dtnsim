@@ -2,7 +2,7 @@ package src.node.dtn.contactless;
 
 import src.node.dtn.IDtn;
 
-simple DtnContactLess like IDtn
+simple ContactlessDtn like IDtn
 {
     parameters:
 

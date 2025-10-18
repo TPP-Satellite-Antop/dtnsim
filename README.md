@@ -25,9 +25,30 @@ Note: Nodes will remain static in the simulation visualization. Indeed, the dyna
 git pull
 ```
 * Add to you PATH envar the path to omnetpp/bin. For example: `export PATH=/home/user/omnetpp-6.1/bin:$PATH`
+* Install inet:
+    * cd omnetpp-6.1/samples
+    * git clone https://github.com/inet-framework/inet.git
+    * cd inet
+    * make makefiles
+    * make 
+* Add the envar INET_ROOT: For example `export INET_ROOT=/home/user/ometpp-6.1/samples/inet`
+* Add the envar LD_LIBRARY_PATH. For example: `export LD_LIBRARY_PATH=$INET_ROOT/out/gcc-release/src:$LD_LIBRARY_PATH`
 * `cd` to /dtnsim
 * Run `./compile.sh` to build the project (antop lib is built too).
 
+## Running a simulation ##
+Go to omnetpp IDE, add dtnsim project, open any of the use cases ini files from /simulations.
+Set envar NEDPATH to include inet ned files. For example:
+```
+/home/user/dtnsim/dtnsim/src:/home/user/omnetpp-6.1/samples/inet/src
+```
+This can be done like this:
+1. Go to run configurations
+![runconfig](images/image.png)
+2. Go to Environment tab and add it there:
+![env](images/image-1.png)
+
+Finally right click on the .ini: Run->Run As->Omnet++ Simulation.
 
 ## ION Support ##
 

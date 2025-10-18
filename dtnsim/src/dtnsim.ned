@@ -1,7 +1,7 @@
 package src;
 
 import src.node.Node;
-import src.central.contactplan.Central;
+import src.central.ICentral;
 
 network dtnsim {
 parameters:
@@ -15,7 +15,7 @@ submodules:
     }
 
 central:
-    Central {
+    <default("ContactPlanCentral")> like ICentral {
     parameters:
         @display("p=40,150");
     }

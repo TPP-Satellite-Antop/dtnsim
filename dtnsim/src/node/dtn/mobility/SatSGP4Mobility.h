@@ -61,7 +61,7 @@ public:
 protected:
     Norad* noradModule;
     int mapX, mapY;
-    double transmitPower;
+    //double transmitPower;
 
     // initialize module
     // - creates a reference to the Norad module

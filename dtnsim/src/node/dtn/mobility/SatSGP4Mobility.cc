@@ -28,7 +28,7 @@ SatSGP4Mobility::SatSGP4Mobility()
    noradModule = nullptr;
    mapX = 0;
    mapY = 0;
-   transmitPower = 0.0;
+   //transmitPower = 0.0;
 }
 
 void SatSGP4Mobility::initialize(int stage)
@@ -52,7 +52,7 @@ void SatSGP4Mobility::initialize(int stage)
     mapX = std::atoi(getParentModule()->getParentModule()->getDisplayString().getTagArg("bgb", 0));
     mapY = std::atoi(getParentModule()->getParentModule()->getDisplayString().getTagArg("bgb", 1));
 
-    transmitPower = getParentModule()->par("transmitPower");
+   // transmitPower = getParentModule()->par("transmitPower");
 
     EV << "initializing SatSGP4Mobility stage " << stage << endl;
     WATCH(lastPosition);

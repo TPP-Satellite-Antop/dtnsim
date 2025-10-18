@@ -51,27 +51,19 @@ void Norad::initializeMobility(const simtime_t& targetTime)
     char line1tmp[100] = "";
     char line2tmp[100] = "";
 
-    std::string satelliteName = getParentModule()->par("satelliteName").stringValue();
+    std::string satelliteName = "";
     std::string line_str;
-    if (satelliteName == "") {
-        int index = getParentModule()->getIndex();
-        int i = 0;
-        do {
-            tleFile.getline(line, 100);
-            if (!tleFile.good()) {
-                EV << "Error in Norad::initializeMobility(): Cannot read further satellites from TLE file!" << std::endl;
-                endSimulation();
-            }
-        } while (i++ < index * 3 && tleFile.good());
-        line_str.append(line);
-    } else {
-        do {
-            line_str = "";
-            tleFile.getline(line, 100);
-            line_str.append(line);
-        } while (tleFile.good()
-                && line_str.find(satelliteName.c_str()) == std::string::npos);
-    }
+    int index = getParentModule()->getIndex();
+    int i = 0;
+    do {
+        tleFile.getline(line, 100);
+        if (!tleFile.good()) {
+            EV << "Error in Norad::initializeMobility(): Cannot read further satellites from TLE file!" << std::endl;
+            endSimulation();
+        }
+    } while (i++ < index * 3 && tleFile.good());
+    line_str.append(line);
+   
     tleFile.getline(line1tmp, 100);
     tleFile.getline(line2tmp, 100);
 
