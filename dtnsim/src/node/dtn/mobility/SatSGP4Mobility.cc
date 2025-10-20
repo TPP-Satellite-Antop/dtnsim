@@ -13,13 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-#include "SatSGP4Mobility.h"
-#include "libnorad/cJulian.h"
-
 #include <ctime>
-#include <cmath>
-
+#include "SatSGP4Mobility.h"
 #include "Norad.h"
+
+#include <iostream>
 
 Define_Module(SatSGP4Mobility);
 
@@ -33,11 +31,17 @@ SatSGP4Mobility::SatSGP4Mobility()
 
 void SatSGP4Mobility::initialize(int stage)
 {
+    std::cout << "Initializing SatSGP4Mobility" << std::endl;
     // noradModule must be initialized before LineSegmentsMobilityBase calling setTargetPosition() in its initialization at stage 1
     if (stage == 1) {
         noradModule->initializeMobility(nextChange);
     }
+    std::cout << "Initializing LineSegmentsMobilityBase" << std::endl;
+
     LineSegmentsMobilityBase::initialize(stage);
+
+    std::cout << "Fetching Norad" << std::endl;
+
 
     noradModule = check_and_cast< Norad* >(getParentModule()->getSubmodule("noradModule"));
     if (noradModule == nullptr) {

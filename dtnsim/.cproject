@@ -86,6 +86,7 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="org.omnetpp.cdt.gnu.config.release.1611026188.689434595" name="antop.ini" rcbsApplicability="disable" resourcePath="simulations/antop/antop.ini" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry excluding="src/node/dtn/routing/unibocgr/dtnme|tests|dtnme" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>

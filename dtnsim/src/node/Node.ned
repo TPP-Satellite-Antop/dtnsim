@@ -14,7 +14,8 @@ module Node
     parameters:
         @display("i=device/satellite");
         string icon = default("satellite");
-       
+        bool hasMobility = default(false);
+
     submodules:
         app: App {
             parameters:
@@ -36,7 +37,7 @@ module Node
             parameters:
                 @display("p=150,120");
         }
-        mobility : SatSGP4Mobility {
+        mobility: SatSGP4Mobility if hasMobility {
             parameters:
                 @display("p=194,103");
         }
