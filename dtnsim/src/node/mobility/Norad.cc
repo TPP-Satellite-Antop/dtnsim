@@ -42,15 +42,13 @@ void Norad::finish()
 
 void Norad::initializeMobility(const simtime_t& targetTime)
 {
-    std::cout << "AJDAWUOIJDAJDWUHAUHDAID 1111111111111" << std::endl;
-
     std::string filename = par("TLEfile").stringValue();
+
+    std::cout << "Filename " << filename << std::endl;
 
     // read file with TLE data
     std::fstream tleFile;
     tleFile.open(filename.c_str());
-
-    std::cout << "AJDAWUOIJDAJDWUHAUHDAID 22222222222" << std::endl;
 
     // Length 100 should be enough since lines are usually 70+'\n' char long
     char line[100]     = "";
@@ -62,8 +60,7 @@ void Norad::initializeMobility(const simtime_t& targetTime)
     int index = getParentModule()->getIndex();
     int i = 0;
     do {
-        std::cout << "IN DO WHILE" << std::endl;
-
+        std::cout << "Index: " << index << " - ID: " << i << std::endl;
         tleFile.getline(line, 100);
         if (!tleFile.good()) {
             EV << "Error in Norad::initializeMobility(): Cannot read further satellites from TLE file!" << std::endl;

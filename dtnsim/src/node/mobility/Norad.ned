@@ -1,5 +1,5 @@
 
-package src.node.dtn.mobility;
+package src.node.mobility;
 
 simple Norad
 {

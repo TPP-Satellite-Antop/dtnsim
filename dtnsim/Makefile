@@ -45,19 +45,19 @@ OBJS = \
     $O/src/node/dtn/contactless/ContactlessDtn.o \
     $O/src/node/dtn/SdrModel.o \
     $O/src/node/dtn/SdrStatus.o \
-    $O/src/node/dtn/mobility/libnorad/ccoord.o \
-    $O/src/node/dtn/mobility/libnorad/cEci.o \
-    $O/src/node/dtn/mobility/libnorad/cJulian.o \
-    $O/src/node/dtn/mobility/libnorad/cNoradBase.o \
-    $O/src/node/dtn/mobility/libnorad/cNoradSDP4.o \
-    $O/src/node/dtn/mobility/libnorad/cNoradSGP4.o \
-    $O/src/node/dtn/mobility/libnorad/cOrbit.o \
-    $O/src/node/dtn/mobility/libnorad/cSite.o \
-    $O/src/node/dtn/mobility/libnorad/cTLE.o \
-    $O/src/node/dtn/mobility/libnorad/cVector.o \
-    $O/src/node/dtn/mobility/libnorad/globals.o \
-    $O/src/node/dtn/mobility/Norad.o \
-    $O/src/node/dtn/mobility/SatSGP4Mobility.o \
+    $O/src/node/mobility/libnorad/ccoord.o \
+    $O/src/node/mobility/libnorad/cEci.o \
+    $O/src/node/mobility/libnorad/cJulian.o \
+    $O/src/node/mobility/libnorad/cNoradBase.o \
+    $O/src/node/mobility/libnorad/cNoradSDP4.o \
+    $O/src/node/mobility/libnorad/cNoradSGP4.o \
+    $O/src/node/mobility/libnorad/cOrbit.o \
+    $O/src/node/mobility/libnorad/cSite.o \
+    $O/src/node/mobility/libnorad/cTLE.o \
+    $O/src/node/mobility/libnorad/cVector.o \
+    $O/src/node/mobility/libnorad/globals.o \
+    $O/src/node/mobility/Norad.o \
+    $O/src/node/mobility/SatSGP4Mobility.o \
     $O/src/node/dtn/routing/RoutingBRUF1T.o \
     $O/src/node/dtn/routing/RoutingCgrModel350.o \
     $O/src/node/dtn/routing/RoutingAntop.o \
