@@ -11,19 +11,22 @@
 
 class RoutingAntop : public RoutingDeterministic {
   public:
-    RoutingAntop(Antop* antop, int eid, SdrModel *sdr, SatSGP4Mobility *mobility);
+    RoutingAntop(Antop* antop, int eid, SdrModel *sdr, map<int, SatSGP4Mobility*> *mobilityMap);
     virtual ~RoutingAntop();
     virtual void routeAndQueueBundle(BundlePkt *bundle, double simTime);
 
 
   private:
     Antop* antopAlgorithm;
-    SatSGP4Mobility* mobility;
+    map<int, SatSGP4Mobility*> *mobilityMap;
     H3Index prevSrc; // for example: we want to send bundle from 1 to 4. First call to getNextHopId(1,4,0) returns 2. 
                      // In next call prevSrc is 1: getNextHopId(2,4,1).
 
     [[nodiscard]] bool isNextHopValid(H3Index nextHop) const;
-    [[nodiscard]] H3Index getCurH3Index() const;
+
+    // Returns the current H3 index of the node with given eid. Returns 0 if not found.
+    [[nodiscard]] H3Index getCurH3IndexForEid(int eid) const; 
+    
     static int getEidFromH3Index(H3Index idx);
 };
 

@@ -81,6 +81,7 @@ void ContactlessCentral::initialize() {
                 ->getSubmodule("dtn")
         );
         dtn->setRoutingAlgorithm(antop);
+        dtn->initMobilityMap();
     }
 }
 

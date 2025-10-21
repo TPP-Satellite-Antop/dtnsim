@@ -39,6 +39,7 @@ class ContactlessDtn : public cSimpleModule, public Observer {
     void addCurrentNeighbor(int neighborEid);
     void removeCurrentNeighbor(int neighborEid);
     void setRoutingAlgorithm(Antop* antop);
+    void initMobilityMap();
 
   protected:
     virtual void initialize(int stage);
@@ -52,6 +53,7 @@ class ContactlessDtn : public cSimpleModule, public Observer {
     int eid_;
     bool onFault = false;
     Antop* antop_;
+    map<int, SatSGP4Mobility*> mobilityMap_;
     void initializeRouting(string routingString);
 
     // Pointer to grahics module

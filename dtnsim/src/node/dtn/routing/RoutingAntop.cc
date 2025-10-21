@@ -3,10 +3,10 @@
 
 #include "src/node/mobility/SatSGP4Mobility.h"
 
-RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr, SatSGP4Mobility* mobility): RoutingDeterministic(eid, sdr, nullptr) { //TODO check this null
+RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr, map<int, SatSGP4Mobility*> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) { //TODO check this null
     this->prevSrc = 0;
     this->antopAlgorithm = antop;
-    this->mobility = mobility;
+    this->mobilityMap = mobilityMap;
 }
 
 RoutingAntop::~RoutingAntop() {}
@@ -14,10 +14,12 @@ RoutingAntop::~RoutingAntop() {}
 void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     std::cout << "RoutingAntop::routeAndQueueBundle called for bundle " << bundle->getBundleId() << " from " << bundle->getSourceEid() << " to " << bundle->getDestinationEid() << std::endl;
 
-    H3Index srcIndex = getCurH3Index();
+    //TODO is this eid always the same (the current one)?
+    H3Index srcIndex = getCurH3IndexForEid(bundle->getSourceEid()); 
+
     H3Index nextHopIndex = this->antopAlgorithm->getNextHopId(
         srcIndex,
-        getH3IndexFromEid(bundle->getDestinationEid()),
+        getCurH3IndexForEid(bundle->getDestinationEid()),
         this->prevSrc,
         [this](const H3Index idx){ return this->isNextHopValid(idx); }
     );
@@ -31,21 +33,6 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
 
     //todo: esto deberia estar en el if?
     sdr_->pushBundleToId(bundle, nextHopEid);
-}
-
-template<typename Func>
-bool forEachCurrentPosition(const unordered_map<TimeInterval, vector<PositionEntry>>& nodePositions, double currTime, Func func) {
-    /*
-    for (const auto& [interval, positions] : nodePositions) {
-        if (currTime < interval.tStart || currTime >= interval.tEnd)
-            continue;
-        for (const auto& pos : positions) {
-            if (func(pos))
-                return true;
-        }
-    }
-        */
-    return false;
 }
 
 bool RoutingAntop::isNextHopValid(H3Index nextHop) const {
@@ -67,16 +54,21 @@ bool RoutingAntop::isNextHopValid(H3Index nextHop) const {
     return true;
 }
 
-//TODO is this eid always the same (the current one)?
-H3Index RoutingAntop::getCurH3Index() const {
-    const auto latLng = LatLng {this->mobility->getLatitude(), this->mobility->getLongitude()};
-    H3Index cell = 0;
+H3Index RoutingAntop::getCurH3IndexForEid(int eid) const {
+    try{
+        SatSGP4Mobility* mobility = this->mobilityMap->at(eid);
+        const auto latLng = LatLng {mobility->getLatitude(), mobility->getLongitude()};
+        H3Index cell = 0;
 
-    if (latLngToCell(&latLng, this->antopAlgorithm->getResolution(), &cell) != E_SUCCESS){
-        cout << "Error converting lat long to cell" << endl;
+        if (latLngToCell(&latLng, this->antopAlgorithm->getResolution(), &cell) != E_SUCCESS){
+            cout << "Error converting lat long to cell" << endl;
+        }
+
+        return cell;
+    } catch (const std::out_of_range& e) {
+        cout << "Error in antop routing: no mobility module found for eid " << eid << endl;
+        return 0;   
     }
-
-    return cell;
 }
 
 int RoutingAntop::getEidFromH3Index(H3Index idx) {
