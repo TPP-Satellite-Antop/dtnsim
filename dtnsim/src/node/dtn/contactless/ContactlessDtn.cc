@@ -97,7 +97,8 @@ void ContactlessDtn::initializeRouting(string routingString) {
     this->sdr_.setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
 
     if (routingString == "antop") {
-        this->routing = new RoutingAntop(this->antop_, this->eid_, &sdr_);
+        auto mobility = check_and_cast<SatSGP4Mobility *>(this->getSubmodule("mobility"));
+        this->routing = new RoutingAntop(this->antop_, this->eid_, &sdr_, mobility);
     } else {
         cout << "dtnsim error: unknown routing type: " << routingString << endl;
         exit(1);
@@ -138,7 +139,6 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
     ///////////////////////////////////////////
     // New Bundle (from App or Com):
     ///////////////////////////////////////////
-    std::cout << "Type: " << msg->getKind() << std::endl;
     switch (msg->getKind()) {
         case BUNDLE: {}
         case BUNDLE_CUSTODY_REPORT: {

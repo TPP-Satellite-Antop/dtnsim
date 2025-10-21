@@ -1,9 +1,12 @@
 #include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 
-RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr): RoutingDeterministic(eid, sdr, nullptr) { //TODO check this null
+#include "src/node/mobility/SatSGP4Mobility.h"
+
+RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr, SatSGP4Mobility* mobility): RoutingDeterministic(eid, sdr, nullptr) { //TODO check this null
     this->prevSrc = 0;
     this->antopAlgorithm = antop;
+    this->mobility = mobility;
 }
 
 RoutingAntop::~RoutingAntop() {}
@@ -11,7 +14,7 @@ RoutingAntop::~RoutingAntop() {}
 void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     std::cout << "RoutingAntop::routeAndQueueBundle called for bundle " << bundle->getBundleId() << " from " << bundle->getSourceEid() << " to " << bundle->getDestinationEid() << std::endl;
 
-    H3Index srcIndex = getH3IndexFromEid(bundle->getSourceEid());
+    H3Index srcIndex = getCurH3Index();
     H3Index nextHopIndex = this->antopAlgorithm->getNextHopId(
         srcIndex,
         getH3IndexFromEid(bundle->getDestinationEid()),
@@ -64,25 +67,20 @@ bool RoutingAntop::isNextHopValid(H3Index nextHop) const {
     return true;
 }
 
-H3Index RoutingAntop::getH3IndexFromEid(int eid) {
-   /* double currTime = simTime().dbl();
-    H3Index result = 0;
-    forEachCurrentPosition(this->nodePositions, currTime, [&](const PositionEntry& pos) {
-        if (pos.eId == eid) {
-            latLngToCell(&pos.latLng, this->antopAlgorithm->getResolution(), &result);
-            return true;
-        }
-        return false;
-    });
+//TODO is this eid always the same (the current one)?
+H3Index RoutingAntop::getCurH3Index() const {
+    const auto latLng = LatLng {this->mobility->getLatitude(), this->mobility->getLongitude()};
+    H3Index cell = 0;
 
-    return result;
-    */
-   return 0;
+    if (latLngToCell(&latLng, this->antopAlgorithm->getResolution(), &cell) != E_SUCCESS){
+        cout << "Error converting lat long to cell" << endl;
+    }
+
+    return cell;
 }
 
 int RoutingAntop::getEidFromH3Index(H3Index idx) {
     /*
-    double currTime = simTime().dbl();
     int result = -1;
     forEachCurrentPosition(this->nodePositions, currTime, [&](const PositionEntry& pos) {
         H3Index cell;
