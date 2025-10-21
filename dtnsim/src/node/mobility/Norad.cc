@@ -44,8 +44,6 @@ void Norad::initializeMobility(const simtime_t& targetTime)
 {
     std::string filename = par("TLEfile").stringValue();
 
-    std::cout << "Filename " << filename << std::endl;
-
     // read file with TLE data
     std::fstream tleFile;
     tleFile.open(filename.c_str());

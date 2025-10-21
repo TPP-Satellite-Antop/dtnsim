@@ -5,6 +5,8 @@
 #include "../routing/RoutingAntop.h"
 #include "src/node/app/App.h"
 
+#include <iostream>
+
 Define_Module(ContactlessDtn);
 
 ContactlessDtn::ContactlessDtn() {}
@@ -136,6 +138,7 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
     ///////////////////////////////////////////
     // New Bundle (from App or Com):
     ///////////////////////////////////////////
+    std::cout << "Type: " << msg->getKind() << std::endl;
     switch (msg->getKind()) {
         case BUNDLE: {}
         case BUNDLE_CUSTODY_REPORT: {

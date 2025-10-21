@@ -54,7 +54,6 @@ void SatSGP4Mobility::initialize(int stage)
 
    // transmitPower = getParentModule()->par("transmitPower");
 
-    std::cout << "initializing SatSGP4Mobility stage " << stage << endl;
     WATCH(lastPosition);
 
     move(); //updateVisualRepresentation();

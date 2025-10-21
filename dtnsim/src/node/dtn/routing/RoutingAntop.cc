@@ -9,7 +9,7 @@ RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr): RoutingDetermi
 RoutingAntop::~RoutingAntop() {}
 
 void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
-    printf("RoutingAntop::routeAndQueueBundle called for bundle %ld from %d to %d\n", bundle->getBundleId(), bundle->getSourceEid(), bundle->getDestinationEid());
+    std::cout << "RoutingAntop::routeAndQueueBundle called for bundle " << bundle->getBundleId() << " from " << bundle->getSourceEid() << " to " << bundle->getDestinationEid() << std::endl;
 
     H3Index srcIndex = getH3IndexFromEid(bundle->getSourceEid());
     H3Index nextHopIndex = this->antopAlgorithm->getNextHopId(
