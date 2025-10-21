@@ -43,8 +43,9 @@ void SatSGP4Mobility::initialize(int stage)
         error("Error in SatSGP4Mobility::initializeMobility(): Cannot find module Norad.");
     }
 
-    //std::time_t timestamp = std::time(nullptr);       // get current time as an integral value holding the num of secs
-    std::time_t timestamp =  1619119189;  //8:20PM 22/04/2021                                             // since 00:00, Jan 1 1970 UTC
+    // std::time_t timestamp = std::time(nullptr);
+    // get current time as an integral value holding the num of secs
+    const std::time_t timestamp =  1619119189;  //8:20PM 22/04/2021                                             // since 00:00, Jan 1 1970 UTC
     std::tm* currentTime = std::gmtime(&timestamp);   // convert timestamp into structure holding a calendar date and time
     noradModule->setJulian(currentTime);
 
@@ -53,7 +54,7 @@ void SatSGP4Mobility::initialize(int stage)
 
    // transmitPower = getParentModule()->par("transmitPower");
 
-    EV << "initializing SatSGP4Mobility stage " << stage << endl;
+    std::cout << "initializing SatSGP4Mobility stage " << stage << endl;
     WATCH(lastPosition);
 
     move(); //updateVisualRepresentation();

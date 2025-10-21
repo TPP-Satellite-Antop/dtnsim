@@ -60,7 +60,6 @@ void Norad::initializeMobility(const simtime_t& targetTime)
     int index = getParentModule()->getIndex();
     int i = 0;
     do {
-        std::cout << "Index: " << index << " - ID: " << i << std::endl;
         tleFile.getline(line, 100);
         if (!tleFile.good()) {
             EV << "Error in Norad::initializeMobility(): Cannot read further satellites from TLE file!" << std::endl;
@@ -130,8 +129,8 @@ double Norad::getInclination()
 
 double Norad::getElevation(const double& refLatitude, const double& refLongitude, const double& refAltitude)
 {
-    cSite siteEquator(refLatitude, refLongitude, refAltitude);
-    cCoordTopo topoLook = siteEquator.getLookAngle(eci);
+    const cSite siteEquator(refLatitude, refLongitude, refAltitude);
+    const cCoordTopo topoLook = siteEquator.getLookAngle(eci);
     if (topoLook.m_El == 0.0) {
         error("Error in Norad::getElevation(): Corrupted database.");
     }
@@ -140,8 +139,8 @@ double Norad::getElevation(const double& refLatitude, const double& refLongitude
 
 double Norad::getAzimuth(const double& refLatitude, const double& refLongitude, const double& refAltitude)
 {
-    cSite siteEquator(refLatitude, refLongitude, refAltitude);
-    cCoordTopo topoLook = siteEquator.getLookAngle(eci);
+    const cSite siteEquator(refLatitude, refLongitude, refAltitude);
+    const cCoordTopo topoLook = siteEquator.getLookAngle(eci);
     if (topoLook.m_El == 0.0) {
         error("Error in Norad::getAzimuth(): Corrupted database.");
     }
@@ -154,11 +153,10 @@ double Norad::getAltitude()
     return geoCoord.m_Alt;
 }
 
-double Norad::getDistance(const double& refLatitude, const double& refLongitude, const double& refAltitude)
-{
-    cSite siteEquator(refLatitude, refLongitude, refAltitude);
-    cCoordTopo topoLook = siteEquator.getLookAngle(eci);
-    double distance = topoLook.m_Range;
+double Norad::getDistance(const double& refLatitude, const double& refLongitude, const double& refAltitude) const {
+    const cSite siteEquator(refLatitude, refLongitude, refAltitude);
+    const cCoordTopo topoLook = siteEquator.getLookAngle(eci);
+    const double distance = topoLook.m_Range;
     return distance;
 }
 
@@ -167,7 +165,7 @@ void Norad::handleMessage(cMessage* msg)
     error("Error in Norad::handleMessage(): This module is not able to handle messages.");
 }
 
-void Norad::setJulian(std::tm* currentTime)
+void Norad::setJulian(const std::tm* currentTime)
 {
     currentJulian = cJulian(currentTime->tm_year + 1900,
                             currentTime->tm_mon + 1,

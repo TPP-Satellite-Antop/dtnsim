@@ -44,7 +44,7 @@ public:
 
     // sets the internal calendar by translating the current gregorian time
     // currentTime: time at which the simulation takes place
-    void setJulian(std::tm* currentTime);
+    void setJulian(const std::tm *currentTime);
 
     // Updates the end time of current linear movement for calculation of current position
     // targetTime: End time of current linear movement
@@ -77,7 +77,7 @@ public:
     void finish();
 
     // returns the distance to the satellite from a reference point (distance in km)
-    double getDistance(const double& refLatitude, const double& refLongitude, const double& refAltitude = -9999);
+    double getDistance(const double& refLatitude, const double& refLongitude, const double& refAltitude = -9999) const;
 
 protected:
     virtual void handleMessage(cMessage* msg);
