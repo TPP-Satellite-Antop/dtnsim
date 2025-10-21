@@ -21,3 +21,4 @@ dtnsim/simulations/tutorial/**/results/
 .idea
 .vscode
 .nedexclusions
+.settings
