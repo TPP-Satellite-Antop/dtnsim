@@ -74,6 +74,7 @@ void ContactlessCentral::initialize() {
     // none contact is scheduled.
 
     auto antop = new Antop();
+    antop->init(nodesNumber_);
     auto* mobilityMap = new std::map<int, SatSGP4Mobility*>();
     for (int i = 0; i <= nodesNumber_; i++) { //todo check
         auto dtn = check_and_cast<ContactlessDtn *>(
