@@ -92,7 +92,7 @@ void ContactlessDtn::initialize(const int stage) {
 }
 
 void ContactlessDtn::initMobilityMap() {
-    this->mobilityMap_ = {};
+    this->mobilityMap_ = std::map<int, SatSGP4Mobility*>{};
 }
 
 void ContactlessDtn::initializeRouting(string routingString) {
@@ -101,11 +101,11 @@ void ContactlessDtn::initializeRouting(string routingString) {
     this->sdr_.setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
 
     if (routingString == "antop") {
-        mobilityMap_[eid_] = check_and_cast<SatSGP4Mobility *>(this->getSubmodule("mobility"));
+        SatSGP4Mobility* mobility = dynamic_cast<SatSGP4Mobility*>(this->getParentModule()->getSubmodule("mobility"));
+        this->mobilityMap_[eid_] = mobility;
         this->routing = new RoutingAntop(this->antop_, this->eid_, &sdr_, &mobilityMap_);
     } else {
         cout << "dtnsim error: unknown routing type: " << routingString << endl;
-        exit(1);
     }
 }
 
