@@ -27,7 +27,12 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
 
     for (auto candidate : candidates) {
         if (const auto nextHop = eidsByCandidate.at(candidate); nextHop != 0) {
-            sdr_->pushBundleToId(bundle, nextHop);
+            bundle->setNextHopEid(nextHop);
+            if(!sdr_->pushBundleToId(bundle, nextHop)){
+                std::cout << "Failed to enqueue bundle " << bundle->getBundleId() << " to SDR for next hop " << nextHop << std::endl;
+                return;
+            }
+            
             std::cout << "Routing bundle " << bundle->getBundleId() << " to " << nextHop << std::endl;
             return;
         }

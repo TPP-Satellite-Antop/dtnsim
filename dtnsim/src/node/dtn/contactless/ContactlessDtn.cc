@@ -218,40 +218,21 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
 
         emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
         emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
+        forwardingMsgs_[bundle->getNextHopEid()] = bundle;
 
-        // Wake-up sleeping forwarding threads
-        //this->refreshForwarding();
+        this->refreshForwarding();
     }
 }
 
 void ContactlessDtn::refreshForwarding() {
-    // Check all ongoing forwardingMsgs threads (contacts) and wake up those not scheduled.
-    /*for (auto &[_, forwardingMsg] : forwardingMsgs_) {
-        if (const int cid = forwardingMsg->getContactId(); !sdr_.isBundleForId(cid))
-            // Notify routing protocol that it has messages to send and contacts for routing
-            routing->refreshForwarding(contactTopology_.getContactById(cid));
-        if (!forwardingMsg->isScheduled())
+    for (auto &[_, forwardingMsg] : forwardingMsgs_) {
+        if (!forwardingMsg->isScheduled()){
             scheduleAt(simTime(), forwardingMsg);
-    }*/
+        }
+    }
 }
 
 void ContactlessDtn::setOnFault(bool onFault) {
-    /*this->onFault = onFault;
-
-    // Local and remote forwarding recovery
-    if (onFault == false) {
-        // Wake-up local un-scheduled forwarding threads
-        this->refreshForwarding();
-
-        // Wake-up remote un-scheduled forwarding threads
-        for (auto &[_, forwardingMsg] : forwardingMsgs_) {
-            const auto remoteContactlessDtn = dynamic_cast<ContactlessDtn *>(this->getParentModule()
-                                       ->getParentModule()
-                                       ->getSubmodule("node", forwardingMsg->getNeighborEid())
-                                       ->getSubmodule("dtn"));
-            remoteContactlessDtn->refreshForwarding();
-        }
-    }*/
 }
 
 Routing *ContactlessDtn::getRouting() {

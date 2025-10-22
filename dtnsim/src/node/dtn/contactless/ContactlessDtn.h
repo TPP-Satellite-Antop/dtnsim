@@ -60,7 +60,7 @@ class ContactlessDtn : public cSimpleModule, public Observer {
     Graphics *graphicsModule;
 
     // Forwarding threads
-    map<int, ForwardingMsgStart *> forwardingMsgs_;
+    map<int, cMessage*> forwardingMsgs_;
 
     // Routing and storage
     Routing *routing;
