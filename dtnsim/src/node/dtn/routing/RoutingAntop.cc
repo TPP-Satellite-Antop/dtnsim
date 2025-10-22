@@ -55,7 +55,7 @@ bool RoutingAntop::isNextHopValid(H3Index nextHop) const {
 }
 
 H3Index RoutingAntop::getCurH3IndexForEid(int eid) const {
-    try{
+    try {
         SatSGP4Mobility* mobility = this->mobilityMap->at(eid);
         const auto latLng = LatLng {mobility->getLatitude(), mobility->getLongitude()};
         H3Index cell = 0;
