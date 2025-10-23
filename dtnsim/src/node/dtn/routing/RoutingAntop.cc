@@ -12,7 +12,7 @@ RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr, map<int, SatSGP
 RoutingAntop::~RoutingAntop() {}
 
 void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
-    std::cout << "RoutingAntop::routeAndQueueBundle called for bundle " << bundle->getBundleId() << " from " << bundle->getSourceEid() << " to " << bundle->getDestinationEid() << std::endl;
+    std::cout << "Node " << eid_ << ": RoutingAntop::routeAndQueueBundle called for bundle " << bundle->getBundleId() << " from " << bundle->getSourceEid() << " to " << bundle->getDestinationEid() << std::endl;
 
     // TODO is this eid always the same (the current one)?
     const H3Index srcIndex = getCurH3IndexForEid(bundle->getSourceEid());
@@ -32,7 +32,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
                 std::cout << "Failed to enqueue bundle " << bundle->getBundleId() << " to SDR for next hop " << nextHop << std::endl;
                 return;
             }
-            
+
             std::cout << "Routing bundle " << bundle->getBundleId() << " to " << nextHop << std::endl;
             return;
         }

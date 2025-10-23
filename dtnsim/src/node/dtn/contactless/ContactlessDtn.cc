@@ -172,11 +172,6 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
 }
 
 void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
-    // char bundleName[10];
-    // sprintf(bundleName, "Src:%d,Dst:%d(id:%d)", bundle->getSourceEid() ,
-    // bundle->getDestinationEid(), (int) bundle->getId()); cout << "Dispatching " << bundleName <<
-    // endl;
-
     if (this->eid_ == bundle->getDestinationEid()) {
         // We are the final destination of this bundle
         emit(dtnBundleSentToApp, true);
@@ -218,6 +213,7 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
 
         emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
         emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
+
         forwardingMsgs_[bundle->getNextHopEid()] = bundle;
 
         this->refreshForwarding();
