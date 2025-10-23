@@ -12,18 +12,23 @@ RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr, map<int, SatSGP
 RoutingAntop::~RoutingAntop() {}
 
 void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
-    std::cout << "Node " << eid_ << ": RoutingAntop::routeAndQueueBundle called for bundle " << bundle->getBundleId() << " from " << bundle->getSourceEid() << " to " << bundle->getDestinationEid() << std::endl;
+    std::cout << "Node " << eid_ << " routing bundle " << bundle->getBundleId() << " from src " << bundle->getSourceEid() << ", sender " << bundle->getSenderEid() << " to " << bundle->getDestinationEid() << std::endl;
 
     // TODO is this eid always the same (the current one)?
-    const H3Index srcIndex = getCurH3IndexForEid(bundle->getSourceEid());
 
     const vector<H3Index> candidates = this->antopAlgorithm->getHopCandidates(
-        srcIndex,
+        getCurH3IndexForEid(eid_),
         getCurH3IndexForEid(bundle->getDestinationEid()),
-        0 // ToDo: send actual pervious last hop.
+        getCurH3IndexForEid(bundle->getSenderEid())
     );
 
     const auto eidsByCandidate = this->getEidsFromH3Indexes(candidates);
+
+    for (auto [candidate, eid] : eidsByCandidate) {
+        std::cout << "Candidate: " << std::hex << candidate << " - EID: " << std::dec << eid << std::endl;
+    }
+
+    std::cout << std::endl;
 
     for (auto candidate : candidates) {
         if (const auto nextHop = eidsByCandidate.at(candidate); nextHop != 0) {

@@ -27,7 +27,6 @@ class ContactlessDtn : public cSimpleModule, public Observer {
     virtual ~ContactlessDtn();
 
     virtual void setOnFault(bool onFault);
-    virtual void refreshForwarding();
     virtual void setMetricCollector(MetricCollector *metricCollector);
     virtual Routing *getRouting();
 
@@ -48,6 +47,7 @@ class ContactlessDtn : public cSimpleModule, public Observer {
     virtual void finish();
 
     virtual void dispatchBundle(BundlePkt *bundle);
+    virtual void sendMsg(BundlePkt *bundle);
 
   private:
     int eid_;
@@ -58,9 +58,6 @@ class ContactlessDtn : public cSimpleModule, public Observer {
 
     // Pointer to grahics module
     Graphics *graphicsModule;
-
-    // Forwarding threads
-    map<int, cMessage*> forwardingMsgs_;
 
     // Routing and storage
     Routing *routing;
@@ -87,10 +84,6 @@ class ContactlessDtn : public cSimpleModule, public Observer {
     simsignal_t dtnBundleReRouted;
     simsignal_t sdrBundleStored;
     simsignal_t sdrBytesStored;
-    simsignal_t routeCgrDijkstraCalls;
-    simsignal_t routeCgrDijkstraLoops;
-    simsignal_t routeCgrRouteTableEntriesCreated;
-    simsignal_t routeCgrRouteTableEntriesExplored;
 };
 
 #endif /* DTN_H_ */

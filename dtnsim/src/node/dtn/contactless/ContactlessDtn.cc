@@ -116,10 +116,6 @@ void ContactlessDtn::finish() {
         emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
     }
 
-    // Delete scheduled forwardingMsg
-    for (auto &[_, forwardingMsg] : forwardingMsgs_)
-        cancelAndDelete(forwardingMsg);
-
     // Delete all stored bundles
     sdr_.freeSdr();
 
@@ -214,18 +210,52 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
         emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
         emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
 
-        forwardingMsgs_[bundle->getNextHopEid()] = bundle;
-
-        this->refreshForwarding();
+        this->sendMsg(bundle);
     }
 }
 
-void ContactlessDtn::refreshForwarding() {
-    for (auto &[_, forwardingMsg] : forwardingMsgs_) {
-        if (!forwardingMsg->isScheduled()){
-            scheduleAt(simTime(), forwardingMsg);
-        }
+void ContactlessDtn::sendMsg(BundlePkt *bundle) {
+    const int neighborEid = bundle->getNextHopEid();
+    const auto neighborContactDtn = check_and_cast<ContactlessDtn *>(this
+        ->getParentModule()
+        ->getParentModule()
+        ->getSubmodule("node", neighborEid)
+        ->getSubmodule("dtn")
+    );
+
+    // ToDo: handle fault tolerance
+    // if ((!neighborContactDtn->onFault) && (!this->onFault)) {
+
+    // ToDo: calculate data rate and Tx duration
+    /*double dataRate = contactTopology_.getContactById(contactId)->getDataRate();
+    double txDuration = static_cast<double>(bundle->getByteLength()) / dataRate;
+    double linkDelay = contactTopology_.getRangeBySrcDst(eid_, neighborEid);*/
+
+    // ToDo: if the message can be fully transmitted before the end of the contact, transmit it
+    // if ((simTime() + txDuration + linkDelay) <= contact->getEnd()) {
+
+    // Set bundle metadata (set by intermediate nodes)
+    bundle->setSenderEid(eid_);
+    bundle->setHopCount(bundle->getHopCount() + 1);
+    bundle->setXmitCopiesCount(0);
+
+    std::cout << "Node " << eid_ << " --- Sending bundle to --> Node "<< bundle->getNextHopEid() << std::endl;
+    send(bundle, "gateToCom$o");
+
+    // If custody requested, store a copy of the bundle until report received
+    if (bundle->getCustodyTransferRequested()) {
+        sdr_.enqueueTransmittedBundleInCustody(bundle->dup());
+        this->custodyModel_.printBundlesInCustody();
+
+        // Enqueue a retransmission event in case custody acceptance not received
+        auto *custodyTimeout = new CustodyTimout("custodyTimeout", CUSTODY_TIMEOUT);
+        custodyTimeout->setBundleId(bundle->getBundleId());
+        scheduleAt(simTime() + this->custodyTimeout_, custodyTimeout);
     }
+
+    emit(dtnBundleSentToCom, true);
+    emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
+    emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
 }
 
 void ContactlessDtn::setOnFault(bool onFault) {
