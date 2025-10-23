@@ -14,8 +14,6 @@ RoutingAntop::~RoutingAntop() {}
 void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     std::cout << "Node " << eid_ << " routing bundle " << bundle->getBundleId() << " from src " << bundle->getSourceEid() << ", sender " << bundle->getSenderEid() << " to " << bundle->getDestinationEid() << std::endl;
 
-    // TODO is this eid always the same (the current one)?
-
     const vector<H3Index> candidates = this->antopAlgorithm->getHopCandidates(
         getCurH3IndexForEid(eid_),
         getCurH3IndexForEid(bundle->getDestinationEid()),
