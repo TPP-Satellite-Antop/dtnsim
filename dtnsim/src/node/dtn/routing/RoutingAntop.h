@@ -27,6 +27,7 @@ class RoutingAntop : public RoutingDeterministic {
     // Returns the current H3 index of the node with given eid. Returns 0 if not found.
     [[nodiscard]] H3Index getCurH3IndexForEid(int eid) const;
     unordered_map<H3Index, int> getEidsFromH3Indexes(const vector<H3Index> &candidates);
+    void storeBundle(BundlePkt *bundle, int nextHop);
 };
 
 #endif /* SRC_NODE_DTN_ROUTINGANTOP_H_ */

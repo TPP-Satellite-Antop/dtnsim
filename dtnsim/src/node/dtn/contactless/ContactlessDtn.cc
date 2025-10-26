@@ -168,8 +168,7 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
 }
 
 void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
-    if (this->eid_ == bundle->getDestinationEid()) {
-        // We are the final destination of this bundle
+    if (this->eid_ == bundle->getDestinationEid()) { // We are the final destination of this bundle
         emit(dtnBundleSentToApp, true);
         emit(dtnBundleSentToAppHopCount, bundle->getHopCount());
         bundle->getVisitedNodesForUpdate().sort();
@@ -197,9 +196,7 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
         } else
             // A copy of this bundle was previously received
             delete bundle;
-    } else {
-        // This is a bundle in transit
-
+    } else { // This is a bundle in transit
         // Manage custody transfer
         if (bundle->getCustodyTransferRequested())
             this->dispatchBundle(this->custodyModel_.bundleWithCustodyRequestedArrived(bundle));
