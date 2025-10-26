@@ -207,7 +207,17 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
         emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
         emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
 
-        this->sendMsg(bundle);
+        if (sdr_.enqueueBundleError())
+            delete bundle; //TODO o que?
+        else if (sdr_.enqueuedBundle()) {
+            std::cout << "Node " << eid_ 
+                    << " --- Bundle " << bundle->getBundleId() 
+                    << " enqueued in SDR ---" << std::endl;
+            //TODO send new msg
+        } else 
+            sendMsg(bundle);
+
+        sdr_.resetEnqueuedBundleFlags();
     }
 }
 
