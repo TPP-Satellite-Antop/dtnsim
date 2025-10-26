@@ -20,10 +20,9 @@ public:
     int getBytesStoredToNeighbor(int eid) override;
     vector<int> getBundleSizes(int eid) override;
     vector<int> getPriorityBundleSizes(int eid, bool critical) override;
-    bool pushBundleToId(BundlePkt *bundle, int id) override;
+    bool pushBundle(BundlePkt *bundle) override;
     bool enqueuedBundle();
-    bool enqueueBundleError();
-    void resetEnqueuedBundleFlags();
+    void resetEnqueuedBundleFlag();
 
     // Initialization and configuration
     void setEid(int eid);
@@ -32,7 +31,6 @@ public:
 
 private:
     bool enqueuedBundle_;
-    bool enqueueBundleError_;
 };
 
 #endif /* SRC_NODE_DTN_CONTACTLESS_SDR_MODEL_H_ */
