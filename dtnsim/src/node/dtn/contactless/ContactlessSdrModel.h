@@ -22,6 +22,7 @@ public:
     vector<int> getPriorityBundleSizes(int eid, bool critical) override;
     bool pushBundle(BundlePkt *bundle) override;
     bool enqueuedBundle();
+    BundlePkt* popBundle();
     void resetEnqueuedBundleFlag();
 
     // Initialization and configuration

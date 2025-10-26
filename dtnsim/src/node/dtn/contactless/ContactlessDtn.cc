@@ -160,6 +160,9 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
             delete custodyTimeout;
             break;
         }
+        case FORWARDING_RETRY:
+            retryForwarding();
+            break;
         default: {
             std::cout << "Unable to handle message of type: " << msg->getKind() << std::endl;
             EV << "Unable to handle message of type: " << msg->getKind() << std::endl;
@@ -209,16 +212,8 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
         emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
 
         if (sdr_.enqueuedBundle()) {
-            std::cout << "Node " << eid_ 
-                    << " --- Bundle " << bundle->getBundleId()
-                    << " enqueued in SDR for later ---" << std::endl;
-            auto retryBundle = new BundlePkt("pendingBundle", SCHEDULING_RETRY);
-            auto mobilityModule = (*mobilityMap_)[eid_];
-
-            std::cout << "Scheduling bundle retry... - Current time: " << simTime().dbl() <<  " - Scheduling time: " << mobilityModule->getNextUpdateTime() << std::endl;
-
-            scheduleAt(mobilityModule->getNextUpdateTime(), retryBundle);
-        } else 
+            scheduleRetry();
+        } else
             sendMsg(bundle);
 
         sdr_.resetEnqueuedBundleFlag();
@@ -270,6 +265,20 @@ void ContactlessDtn::sendMsg(BundlePkt *bundle) {
 }
 
 void ContactlessDtn::setOnFault(bool onFault) {
+}
+
+void ContactlessDtn::scheduleRetry() {
+    auto retryBundle = new BundlePkt("pendingBundle", FORWARDING_RETRY);
+    auto mobilityModule = (*mobilityMap_)[eid_];
+
+    std::cout << "Scheduling bundle retry... - Current time: " << simTime().dbl() <<  " - Scheduling time: " << mobilityModule->getNextUpdateTime() << std::endl;
+
+    scheduleAt(mobilityModule->getNextUpdateTime(), retryBundle);
+}
+
+void ContactlessDtn::retryForwarding() {
+    while (auto bundle = sdr_.popBundle())
+        sendMsg(bundle);
 }
 
 Routing *ContactlessDtn::getRouting() {

@@ -82,3 +82,11 @@ bool ContactlessSdrModel::pushBundle(BundlePkt *bundle){
 
     return result;
 }
+
+BundlePkt* ContactlessSdrModel::popBundle(){
+    if (genericBundleQueue_.empty())
+        return nullptr;
+    auto bundle = genericBundleQueue_.front();
+    genericBundleQueue_.pop_front();
+    return bundle;
+}

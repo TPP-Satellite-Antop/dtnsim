@@ -27,6 +27,7 @@ class ContactlessDtn : public cSimpleModule, public Observer {
     virtual ~ContactlessDtn();
 
     virtual void setOnFault(bool onFault);
+    void scheduleRetry();
     virtual void setMetricCollector(MetricCollector *metricCollector);
     virtual Routing *getRouting();
 
@@ -48,6 +49,7 @@ class ContactlessDtn : public cSimpleModule, public Observer {
 
     virtual void dispatchBundle(BundlePkt *bundle);
     virtual void sendMsg(BundlePkt *bundle);
+    virtual void retryForwarding();
 
   private:
     int eid_;
