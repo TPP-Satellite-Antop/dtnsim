@@ -132,3 +132,7 @@ void SatSGP4Mobility::fixIfHostGetsOutside()
 {
     raiseErrorIfOutside();
 }
+
+omnetpp::simtime_t SatSGP4Mobility::getNextUpdateTime() {
+    return LineSegmentsMobilityBase::nextChange;
+}

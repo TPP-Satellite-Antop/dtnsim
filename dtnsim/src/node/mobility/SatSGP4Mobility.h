@@ -17,6 +17,7 @@
 #define __OS3_SatSGP4Mobility_H__
 
 #include <inet/mobility/base/LineSegmentsMobilityBase.h>
+#include <omnetpp/simtime_t.h>
 class Norad;
 
 //-----------------------------------------------------
@@ -57,6 +58,8 @@ public:
 
     // returns satellite longitude
     virtual double getLongitude() const;
+
+    omnetpp::simtime_t getNextUpdateTime();
 
 protected:
     Norad* noradModule;

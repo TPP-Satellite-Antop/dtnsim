@@ -1,6 +1,7 @@
 #include "ContactlessDtn.h"
 
 #include "../../../../../../omnetpp-6.1/include/omnetpp/clog.h"
+#include "../../../dtnsim_m.h"
 #include "../../MsgTypes.h"
 #include "../routing/RoutingAntop.h"
 #include "src/node/app/App.h"
@@ -209,9 +210,14 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
 
         if (sdr_.enqueuedBundle()) {
             std::cout << "Node " << eid_ 
-                    << " --- Bundle " << bundle->getBundleId() 
-                    << " enqueued in SDR ---" << std::endl;
-            //TODO send new msg
+                    << " --- Bundle " << bundle->getBundleId()
+                    << " enqueued in SDR for later ---" << std::endl;
+            auto retryBundle = new BundlePkt("pendingBundle", SCHEDULING_RETRY);
+            auto mobilityModule = (*mobilityMap_)[eid_];
+
+            std::cout << "Scheduling bundle retry... - Current time: " << simTime().dbl() <<  " - Scheduling time: " << mobilityModule->getNextUpdateTime() << std::endl;
+
+            scheduleAt(mobilityModule->getNextUpdateTime(), retryBundle);
         } else 
             sendMsg(bundle);
 
