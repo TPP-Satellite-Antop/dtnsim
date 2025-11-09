@@ -26,7 +26,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     getNewNextHop(bundle, simTime);
 }
 
-void RoutingAntop::getNewNextHop(BundlePkt *bundle, double simTime){
+void RoutingAntop::getNewNextHop(BundlePkt *bundle, simtime_t simTime){
     const vector<H3Index> candidates = this->antopAlgorithm->getHopCandidates(
         getCurH3IndexForEid(eid_),
         getCurH3IndexForEid(bundle->getDestinationEid()),
@@ -39,9 +39,8 @@ void RoutingAntop::getNewNextHop(BundlePkt *bundle, double simTime){
         std::cout << "Candidate: " << std::hex << candidate << " - EID: " << std::dec << eid << std::endl;
     }
 
-    int nextHop = 0;
     for (auto candidate : candidates) {
-        if (nextHop = eidsByCandidate.at(candidate); nextHop != 0) {
+        if (const int nextHop = eidsByCandidate.at(candidate); nextHop != 0) {
             bundle->setNextHopEid(nextHop);
             saveToCache(bundle->getDestinationEid(), nextHop, simTime);
             std::cout << "Routing bundle " << bundle->getBundleId() << " to " << nextHop << std::endl;
@@ -49,7 +48,7 @@ void RoutingAntop::getNewNextHop(BundlePkt *bundle, double simTime){
         }
     }
 
-    storeBundle(bundle, nextHop);
+    storeBundle(bundle);
 }
 
 H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
@@ -87,26 +86,26 @@ unordered_map<H3Index, int> RoutingAntop::getEidsFromH3Indexes(const vector<H3In
 }
 
 // Equeue bundle for later if no candidate was found
-void RoutingAntop::storeBundle(BundlePkt *bundle, int nextHop) {
-    if(!sdr_->pushBundleToId(bundle, nextHop)){
+void RoutingAntop::storeBundle(BundlePkt *bundle) {
+    if(!sdr_->pushBundle(bundle)){
         // ToDo: handle failed push.
-        std::cout << "Failed to enqueue bundle " << bundle->getBundleId() << " to SDR for next hop " << nextHop << std::endl;
+        std::cout << "Failed to enqueue bundle " << bundle->getBundleId() << " to SDR" << std::endl;
     } else {
-        std::cout << "Enqueued bundle " << bundle->getBundleId() << " to SDR for next hop " << nextHop << std::endl;
+        std::cout << "Enqueued bundle " << bundle->getBundleId() << " to SDR" << std::endl;
     }
 }
 
-void RoutingAntop::saveToCache(int destinationEid, int nextHop, double simTime){
+void RoutingAntop::saveToCache(int destinationEid, int nextHop, simtime_t simTime){
     auto mobilityModule = (*this->mobilityMap)[this->eid_];
     CacheEntry entry = {
         .nextHop = nextHop,
-        .ttl = simTime + mobilityModule->getNextUpdateTime()
+        .ttl = mobilityModule->getNextUpdateTime()
     };
 
     nextHopCache[destinationEid] = entry;
 }
 
-int RoutingAntop::getFromCache(int destinationEid, double simTime){
+int RoutingAntop::getFromCache(int destinationEid, simtime_t simTime){
     auto it = nextHopCache.find(destinationEid);
     if(it != nextHopCache.end()){ // if found
         CacheEntry entry = it->second;

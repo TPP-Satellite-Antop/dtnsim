@@ -11,7 +11,7 @@
 
 struct CacheEntry {
   int nextHop;
-  double ttl; // simulation time until which this entry is valid
+  simtime_t ttl; // simulation time until which this entry is valid
 };
 
 class RoutingAntop : public RoutingDeterministic {
@@ -33,12 +33,12 @@ class RoutingAntop : public RoutingDeterministic {
     // Returns the current H3 index of the node with given eid. Returns 0 if not found.
     [[nodiscard]] H3Index getCurH3IndexForEid(int eid) const;
     unordered_map<H3Index, int> getEidsFromH3Indexes(const vector<H3Index> &candidates);
-    void storeBundle(BundlePkt *bundle, int nextHop); //to retry routing later
+    void storeBundle(BundlePkt *bundle); //to retry routing later
 
     // Cache functions (routing tables)
-    void saveToCache(int destinationEid, int nextHop, double simTime);
-    int getFromCache(int destinationEid, double simTime); // returns 0 if not found
-    void getNewNextHop(BundlePkt *bundle, double simTime); // non-cached version
+    void saveToCache(int destinationEid, int nextHop, simtime_t simTime);
+    int getFromCache(int destinationEid, simtime_t simTime); // returns 0 if not found
+    void getNewNextHop(BundlePkt *bundle, simtime_t simTime); // non-cached version
 };
 
 #endif /* SRC_NODE_DTN_ROUTINGANTOP_H_ */
