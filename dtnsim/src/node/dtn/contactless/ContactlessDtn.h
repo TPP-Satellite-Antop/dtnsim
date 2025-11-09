@@ -33,7 +33,6 @@ class ContactlessDtn : public cSimpleModule, public Observer {
     virtual void update();
 
     // Opportunistic procedures
-    void predictAllContacts(double currentTime); map<int, int> *alreadyInformed;
     map<int, int> getReachableNodes() const;
     void addCurrentNeighbor(int neighborEid);
     void removeCurrentNeighbor(int neighborEid);

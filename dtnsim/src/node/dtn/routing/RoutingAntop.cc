@@ -3,7 +3,6 @@
 
 #include "src/node/mobility/SatSGP4Mobility.h"
 
-const double TTL_SEC = 6;
 
 RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr, map<int, SatSGP4Mobility*> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) { //TODO check this null
     this->prevSrc = 0;
@@ -98,9 +97,10 @@ void RoutingAntop::storeBundle(BundlePkt *bundle, int nextHop) {
 }
 
 void RoutingAntop::saveToCache(int destinationEid, int nextHop, double simTime){
+    auto mobilityModule = (*this->mobilityMap)[this->eid_];
     CacheEntry entry = {
         .nextHop = nextHop,
-        .ttl = simTime + TTL_SEC
+        .ttl = simTime + mobilityModule->getNextUpdateTime()
     };
 
     nextHopCache[destinationEid] = entry;
@@ -110,7 +110,7 @@ int RoutingAntop::getFromCache(int destinationEid, double simTime){
     auto it = nextHopCache.find(destinationEid);
     if(it != nextHopCache.end()){ // if found
         CacheEntry entry = it->second;
-        if(simTime <= entry.ttl){
+        if(simTime < entry.ttl){
             return entry.nextHop;
         } else {
             // Entry expired
