@@ -26,7 +26,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     getNewNextHop(bundle, simTime);
 }
 
-void RoutingAntop::getNewNextHop(BundlePkt *bundle, simtime_t simTime){
+void RoutingAntop::getNewNextHop(BundlePkt *bundle, double simTime){
     const vector<H3Index> candidates = this->antopAlgorithm->getHopCandidates(
         getCurH3IndexForEid(eid_),
         getCurH3IndexForEid(bundle->getDestinationEid()),
@@ -95,17 +95,17 @@ void RoutingAntop::storeBundle(BundlePkt *bundle) {
     }
 }
 
-void RoutingAntop::saveToCache(int destinationEid, int nextHop, simtime_t simTime){
+void RoutingAntop::saveToCache(int destinationEid, int nextHop, double simTime){
     auto mobilityModule = (*this->mobilityMap)[this->eid_];
     CacheEntry entry = {
         .nextHop = nextHop,
-        .ttl = mobilityModule->getNextUpdateTime()
+        .ttl = mobilityModule->getNextUpdateTime().dbl()
     };
 
     nextHopCache[destinationEid] = entry;
 }
 
-int RoutingAntop::getFromCache(int destinationEid, simtime_t simTime){
+int RoutingAntop::getFromCache(int destinationEid, double simTime){
     auto it = nextHopCache.find(destinationEid);
     if(it != nextHopCache.end()){ // if found
         CacheEntry entry = it->second;
@@ -113,6 +113,7 @@ int RoutingAntop::getFromCache(int destinationEid, simtime_t simTime){
             return entry.nextHop;
         } else {
             // Entry expired
+            std::cout << "Cache entry for destination " << destinationEid << " expired" << std::endl;
             nextHopCache.erase(it);
             return 0;
         }

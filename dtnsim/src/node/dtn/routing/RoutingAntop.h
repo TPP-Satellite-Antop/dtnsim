@@ -11,7 +11,7 @@
 
 struct CacheEntry {
   int nextHop;
-  simtime_t ttl; // simulation time until which this entry is valid
+  double ttl; // simulation time until which this entry is valid
 };
 
 class RoutingAntop : public RoutingDeterministic {
@@ -36,9 +36,9 @@ class RoutingAntop : public RoutingDeterministic {
     void storeBundle(BundlePkt *bundle); //to retry routing later
 
     // Cache functions (routing tables)
-    void saveToCache(int destinationEid, int nextHop, simtime_t simTime);
-    int getFromCache(int destinationEid, simtime_t simTime); // returns 0 if not found
-    void getNewNextHop(BundlePkt *bundle, simtime_t simTime); // non-cached version
+    void saveToCache(int destinationEid, int nextHop, double simTime);
+    int getFromCache(int destinationEid, double simTime); // returns 0 if not found
+    void getNewNextHop(BundlePkt *bundle, double simTime); // non-cached version
 };
 
 #endif /* SRC_NODE_DTN_ROUTINGANTOP_H_ */
