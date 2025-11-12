@@ -19,7 +19,6 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     int cachedNextHop = getFromCache(bundle->getDestinationEid(), simTime);
     if(cachedNextHop != 0){
         bundle->setNextHopEid(cachedNextHop);
-        std::cout << "Using cached next hop " << cachedNextHop << " for bundle " << bundle->getBundleId() << std::endl;
         return;
     }
 
@@ -35,6 +34,7 @@ void RoutingAntop::getNewNextHop(BundlePkt *bundle, double simTime){
 
     const auto eidsByCandidate = this->getEidsFromH3Indexes(candidates);
 
+    //TODO remove debug prints
     for (auto [candidate, eid] : eidsByCandidate) {
         std::cout << "Candidate: " << std::hex << candidate << " - EID: " << std::dec << eid << std::endl;
     }
@@ -109,14 +109,12 @@ int RoutingAntop::getFromCache(int destinationEid, double simTime){
     auto it = nextHopCache.find(destinationEid);
     if(it != nextHopCache.end()){ // if found
         CacheEntry entry = it->second;
-        if(simTime < entry.ttl){
+        if(simTime < entry.ttl)
             return entry.nextHop;
-        } else {
-            // Entry expired
-            std::cout << "Cache entry for destination " << destinationEid << " expired" << std::endl;
-            nextHopCache.erase(it);
-            return 0;
-        }
+    
+        // Entry expired
+        nextHopCache.erase(it);
+        return 0;
     }
 
     return 0;
