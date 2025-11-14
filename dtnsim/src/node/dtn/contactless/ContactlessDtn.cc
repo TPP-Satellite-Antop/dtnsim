@@ -206,7 +206,6 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
             this->dispatchBundle(this->custodyModel_.bundleWithCustodyRequestedArrived(bundle));
 
         // Either accepted or rejected custody, route bundle
-        cout << "sim time " << simTime().dbl() <<  endl;
         routing->msgToOtherArrive(bundle, simTime().dbl());
 
         emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
