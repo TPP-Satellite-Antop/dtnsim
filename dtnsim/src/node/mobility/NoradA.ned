@@ -1,5 +1,5 @@
 
-package leosatellites.mobility;
+package src.node.mobility;
 
 
 // This NED file details the NoradA model which does not use a TLE file so that

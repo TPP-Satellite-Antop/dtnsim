@@ -5,8 +5,8 @@ import src.node.graphics.Graphics;
 import src.node.app.App;
 import src.node.dtn.contactplan.ContactDtn;
 import src.node.dtn.IDtn;
-import src.node.mobility.SatSGP4Mobility;
-import src.node.mobility.Norad;
+import src.node.mobility.SatelliteMobility;
+import src.node.mobility.NoradA;
 import src.node.com.ICom;
 
 module Node
@@ -15,6 +15,7 @@ module Node
         @display("i=device/satellite");
         string icon = default("satellite");
         bool hasMobility = default(false);
+        string satelliteName = default(""); // Parameter for satellite name
 
     submodules:
         app: App {
@@ -37,7 +38,7 @@ module Node
             parameters:
                 @display("p=150,120");
         }
-        mobility: SatSGP4Mobility if hasMobility {
+        mobility: SatelliteMobility if hasMobility {
             parameters:
                 @display("p=194,103");
         }

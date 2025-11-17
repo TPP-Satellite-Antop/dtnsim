@@ -1,4 +1,4 @@
-package leosatellites.mobility;
+package src.node.mobility;
 
 moduleinterface INorad
 {
