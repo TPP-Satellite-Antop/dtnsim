@@ -1,9 +1,7 @@
 #include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 
-#include "src/node/mobility/SatSGP4Mobility.h"
-
-RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr, map<int, SatSGP4Mobility*> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) { //TODO check this null
+RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) { //TODO check this null
     this->prevSrc = 0;
     this->antopAlgorithm = antop;
     this->mobilityMap = mobilityMap;
@@ -40,7 +38,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
 
 H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
     try {
-        const SatSGP4Mobility *mobility = this->mobilityMap->at(eid);
+        const inet::SatelliteMobility *mobility = this->mobilityMap->at(eid);
         const auto latLng = LatLng {mobility->getLatitude(), mobility->getLongitude()};
         H3Index cell = 0;
 

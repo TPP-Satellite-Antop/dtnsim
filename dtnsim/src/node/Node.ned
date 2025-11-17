@@ -41,7 +41,7 @@ module Node
             parameters:
                 @display("p=194,103");
         }
-        noradModule: Norad {
+        noradModule: NoradA {
             parameters:
                 @display("p=98,35");
         }

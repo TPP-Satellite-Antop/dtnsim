@@ -1,12 +1,11 @@
+#include <iostream>
 #include "ContactlessDtn.h"
-
 #include "../../../../../../omnetpp-6.1/include/omnetpp/clog.h"
 #include "../../../dtnsim_m.h"
 #include "../../MsgTypes.h"
 #include "../routing/RoutingAntop.h"
 #include "src/node/app/App.h"
-
-#include <iostream>
+#include "src/node/mobility/SatelliteMobility.h"
 
 Define_Module(ContactlessDtn);
 
@@ -92,7 +91,7 @@ void ContactlessDtn::initialize(const int stage) {
     }
 }
 
-void ContactlessDtn::setMobilityMap(map<int, SatSGP4Mobility*> *mobilityMap) {
+void ContactlessDtn::setMobilityMap(map<int, inet::SatelliteMobility*> *mobilityMap) {
     this->mobilityMap_ = mobilityMap;
 }
 
@@ -102,7 +101,7 @@ void ContactlessDtn::initializeRouting(string routingString) {
     this->sdr_.setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
 
     if (routingString == "antop") {
-        SatSGP4Mobility* mobility = dynamic_cast<SatSGP4Mobility*>(this->getParentModule()->getSubmodule("mobility"));
+        inet::SatelliteMobility* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
         (*this->mobilityMap_)[eid_] = mobility;
         this->routing = new RoutingAntop(this->antop_, this->eid_, &sdr_, mobilityMap_);
     } else {
