@@ -12,12 +12,8 @@
 #include <ctime>
 #include <cassert>
 
-#include "cVector.h"
 #include "cEci.h"
-#include "ccoord.h"
 #include "cJulian.h"
-#include "cNoradSGP4.h"
-#include "cNoradSDP4.h"
 #include "cNoradSGP4A.h"
 
 // This class accepts a single satellite's Keplerian elements and provides information

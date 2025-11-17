@@ -1,9 +1,7 @@
-#include "SatelliteMobility.h"
-#include "SatSGP4Mobility.h"
-
 #include <ctime>
 #include <cmath>
 
+#include "SatelliteMobility.h"
 #include "INorad.h"
 #include "NoradA.h"
 
