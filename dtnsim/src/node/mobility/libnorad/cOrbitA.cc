@@ -31,7 +31,7 @@ cOrbitA::cOrbitA(std::string satNameA, int epochY, double epochD, double altitud
    eccentricity = ecc;
    inclination = incl;
    meanAnomaly = meanAnom;
-    std::cout << "Mean Anomaly 1 for idx " << satIndex << ": " << meanAnom << std::endl;
+    std::cout << "Mean Anomaly 1 for idx " << satIndex << ": " << meanAnomaly << std::endl;
    argPerigee = 0; //*RADS_PER_DEG;
    bstar = bstarA;
    drag = dragA;
@@ -45,7 +45,7 @@ cOrbitA::cOrbitA(std::string satNameA, int epochY, double epochD, double altitud
    raan = ((360.0/planes)*currentPlane) * RADS_PER_DEG; //RAAN value, uniformly created so that there are equally spaced orbital planes for even coverage.
    double phaseOffsetVal = ((360.0/satPerPlane)*(phaseOffset/planes))*currentPlane;
    meanAnomaly = (((360.0/satPerPlane)*planeIndex))*RADS_PER_DEG; //Denotes the position of a satellite within its plane.
-    std::cout << "Mean Anomaly 2 for idx " << satIndex << ": " << meanAnom << std::endl;
+    std::cout << "Mean Anomaly 2 for idx " << satIndex << ": " << meanAnomaly << "\n\n" << std::endl;
 
    m_jdEpoch = cJulian(epochYear, epochDay);
 
