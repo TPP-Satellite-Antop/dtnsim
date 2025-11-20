@@ -8,13 +8,8 @@
 // mfh 12/07/2003
 //-----------------------------------------------------
 #include "cNoradSGP4A.h"
-
 #include  <cmath>
-
 #include "cOrbitA.h"
-#include "cJulian.h"
-#include "cVector.h"
-#include "ccoord.h"
 
 // This class implements the NORAD Simple General Perturbation 4 orbit
 // model. This model provides the ECI coordiantes/velocity of satellites

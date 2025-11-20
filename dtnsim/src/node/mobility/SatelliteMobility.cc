@@ -40,7 +40,6 @@ void SatelliteMobility::initialize(int stage)
     mapX = std::atoi(getParentModule()->getParentModule()->getDisplayString().getTagArg("bgb", 0));
     mapY = std::atoi(getParentModule()->getParentModule()->getDisplayString().getTagArg("bgb", 1));
 
-    EV << "initializing SatSGP4Mobility stage " << stage << endl;
     WATCH(lastPosition);
     refreshDisplay();
 }
