@@ -33,9 +33,6 @@ dtnsim.node[*].dtn.printRoutingDebug = true
 
 # --- Random Traffic Configuration ---
 """)
-
-        # Random bundle generation
-        # Tweakable params:
         MIN_BUNDLES = 1
         MAX_BUNDLES = 5
         MAX_START_TIME = 20   # seconds
