@@ -27,18 +27,18 @@ class ContactlessDtn : public cSimpleModule, public Observer {
     virtual ~ContactlessDtn();
 
     virtual void setOnFault(bool onFault);
+    void scheduleRetry();
     virtual void setMetricCollector(MetricCollector *metricCollector);
     virtual Routing *getRouting();
 
     virtual void update();
 
     // Opportunistic procedures
-    void predictAllContacts(double currentTime); map<int, int> *alreadyInformed;
     map<int, int> getReachableNodes() const;
     void addCurrentNeighbor(int neighborEid);
     void removeCurrentNeighbor(int neighborEid);
     void setRoutingAlgorithm(Antop* antop);
-    void setMobilityMap(map<int, SatSGP4Mobility*> *mobilityMap);
+    void setMobilityMap(map<int, inet::SatelliteMobility*> *mobilityMap);
 
   protected:
     virtual void initialize(int stage);
@@ -48,12 +48,13 @@ class ContactlessDtn : public cSimpleModule, public Observer {
 
     virtual void dispatchBundle(BundlePkt *bundle);
     virtual void sendMsg(BundlePkt *bundle);
+    virtual void retryForwarding();
 
   private:
     int eid_;
     bool onFault = false;
     Antop* antop_;
-    map<int, SatSGP4Mobility*> *mobilityMap_;
+    map<int, inet::SatelliteMobility*> *mobilityMap_;
     void initializeRouting(string routingString);
 
     // Pointer to grahics module

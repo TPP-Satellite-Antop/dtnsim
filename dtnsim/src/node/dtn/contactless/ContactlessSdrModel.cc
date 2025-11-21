@@ -3,6 +3,7 @@
 ContactlessSdrModel::ContactlessSdrModel() {
     bundlesNumber_ = 0;
     bytesStored_ = 0;
+    this->resetEnqueuedBundleFlag();
 }
 
 ContactlessSdrModel::ContactlessSdrModel(int eid, int nodesNumber) {
@@ -10,6 +11,7 @@ ContactlessSdrModel::ContactlessSdrModel(int eid, int nodesNumber) {
     this->nodesNumber_ = nodesNumber;
     this->bundlesNumber_ = 0;
     this->bytesStored_ = 0;
+    this->resetEnqueuedBundleFlag();
 }
 
 ContactlessSdrModel::~ContactlessSdrModel() {}
@@ -63,4 +65,28 @@ vector<int> ContactlessSdrModel::getPriorityBundleSizes(const int eid, const boo
     }
 
     return sizes;
+}
+
+bool ContactlessSdrModel::enqueuedBundle() {
+    return enqueuedBundle_;
+}
+
+void ContactlessSdrModel::resetEnqueuedBundleFlag() {
+    enqueuedBundle_ = false;
+}
+
+bool ContactlessSdrModel::pushBundle(BundlePkt *bundle){
+    const bool result = SdrModel::pushBundle(bundle);
+    if (result)
+        enqueuedBundle_ = true;
+
+    return result;
+}
+
+BundlePkt* ContactlessSdrModel::popBundle(){
+    if (genericBundleQueue_.empty())
+        return nullptr;
+    auto bundle = genericBundleQueue_.front();
+    genericBundleQueue_.pop_front();
+    return bundle;
 }
