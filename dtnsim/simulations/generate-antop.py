@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 import random
 
-def generate_ini(num_sats):
+def generate_ini(num_sats, sat_per_plane, num_planes):
     output_file = f"antop/antop-{num_sats}-sats.ini"
     with open(output_file, "w") as f:
-        sat_per_plane = random.randint(1, max(1, num_sats // 2))
 
         f.write(f"""[General]
 network = src.dtnsim										
@@ -27,7 +26,7 @@ dtnsim.node[*].noradModule.satName = "sat"
 **.satPerPlane = {sat_per_plane}
 **.inclination = 54
 **.altitude = 540
-**.planes = {max(1, num_sats // sat_per_plane)}
+**.planes = {num_planes}
 
 dtnsim.node[*].dtn.routing = "antop"
 dtnsim.node[*].dtn.printRoutingDebug = true
@@ -72,4 +71,10 @@ dtnsim.central.typename = "ContactlessCentral"
 
 if __name__ == "__main__":
     num_sats = int(input("Enter number of satellites: "))
-    generate_ini(num_sats)
+    num_planes = int(input("Enter number of planes: "))
+    num_sat_per_plane = int(input("Enter number of satellites per plane: "))
+
+    if num_planes * num_sat_per_plane < num_sats:
+        print("Error: The product of planes and satellites per plane must be at least equal to the number of satellites.")
+
+    generate_ini(num_sats, num_sat_per_plane, num_planes)
