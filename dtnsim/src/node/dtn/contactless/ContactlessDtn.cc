@@ -1,11 +1,11 @@
+#include <iostream>
 #include "ContactlessDtn.h"
-
 #include "../../../../../../omnetpp-6.1/include/omnetpp/clog.h"
+#include "../../../dtnsim_m.h"
 #include "../../MsgTypes.h"
 #include "../routing/RoutingAntop.h"
 #include "src/node/app/App.h"
-
-#include <iostream>
+#include "src/node/mobility/SatelliteMobility.h"
 
 Define_Module(ContactlessDtn);
 
@@ -91,7 +91,7 @@ void ContactlessDtn::initialize(const int stage) {
     }
 }
 
-void ContactlessDtn::setMobilityMap(map<int, SatSGP4Mobility*> *mobilityMap) {
+void ContactlessDtn::setMobilityMap(map<int, inet::SatelliteMobility*> *mobilityMap) {
     this->mobilityMap_ = mobilityMap;
 }
 
@@ -101,7 +101,7 @@ void ContactlessDtn::initializeRouting(string routingString) {
     this->sdr_.setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
 
     if (routingString == "antop") {
-        SatSGP4Mobility* mobility = dynamic_cast<SatSGP4Mobility*>(this->getParentModule()->getSubmodule("mobility"));
+        inet::SatelliteMobility* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
         (*this->mobilityMap_)[eid_] = mobility;
         this->routing = new RoutingAntop(this->antop_, this->eid_, &sdr_, mobilityMap_);
     } else {
@@ -159,6 +159,9 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
             delete custodyTimeout;
             break;
         }
+        case FORWARDING_RETRY:
+            retryForwarding();
+            break;
         default: {
             std::cout << "Unable to handle message of type: " << msg->getKind() << std::endl;
             EV << "Unable to handle message of type: " << msg->getKind() << std::endl;
@@ -168,8 +171,7 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
 }
 
 void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
-    if (this->eid_ == bundle->getDestinationEid()) {
-        // We are the final destination of this bundle
+    if (this->eid_ == bundle->getDestinationEid()) { // We are the final destination of this bundle
         emit(dtnBundleSentToApp, true);
         emit(dtnBundleSentToAppHopCount, bundle->getHopCount());
         bundle->getVisitedNodesForUpdate().sort();
@@ -197,9 +199,7 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
         } else
             // A copy of this bundle was previously received
             delete bundle;
-    } else {
-        // This is a bundle in transit
-
+    } else { // This is a bundle in transit
         // Manage custody transfer
         if (bundle->getCustodyTransferRequested())
             this->dispatchBundle(this->custodyModel_.bundleWithCustodyRequestedArrived(bundle));
@@ -210,7 +210,12 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
         emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
         emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
 
-        this->sendMsg(bundle);
+        if (sdr_.enqueuedBundle()) {
+            scheduleRetry();
+        } else
+            sendMsg(bundle);
+
+        sdr_.resetEnqueuedBundleFlag();
     }
 }
 
@@ -259,6 +264,20 @@ void ContactlessDtn::sendMsg(BundlePkt *bundle) {
 }
 
 void ContactlessDtn::setOnFault(bool onFault) {
+}
+
+void ContactlessDtn::scheduleRetry() {
+    auto retryBundle = new BundlePkt("pendingBundle", FORWARDING_RETRY);
+    auto mobilityModule = (*mobilityMap_)[eid_];
+
+    std::cout << "Scheduling bundle retry... - Current time: " << simTime().dbl() <<  " - Scheduling time: " << mobilityModule->getNextUpdateTime() << std::endl;
+
+    scheduleAt(mobilityModule->getNextUpdateTime(), retryBundle);
+}
+
+void ContactlessDtn::retryForwarding() {
+    while (auto bundle = sdr_.popBundle())
+        sendMsg(bundle);
 }
 
 Routing *ContactlessDtn::getRouting() {

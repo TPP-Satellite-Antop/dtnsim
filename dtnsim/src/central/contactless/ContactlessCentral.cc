@@ -1,13 +1,11 @@
+#include <iostream>
 #include "ContactlessCentral.h"
-
-#include "../../node/dtn/routing/RoutingAntop.h"
 #include "src/central/Central.h"
 #include "src/node/MsgTypes.h"
 #include "src/node/app/App.h"
 #include "src/node/com/Com.h"
 #include "src/node/dtn/contactless/ContactlessDtn.h"
 #include "src/node/dtn/routing/RoutingAntop.h"
-#include <iostream>
 
 Define_Module(dtnsim::ContactlessCentral);
 
@@ -75,7 +73,7 @@ void ContactlessCentral::initialize() {
 
     auto antop = new Antop();
     antop->init(nodesNumber_);
-    auto* mobilityMap = new std::map<int, SatSGP4Mobility*>();
+    auto* mobilityMap = new std::map<int, inet::SatelliteMobility*>();
     for (int i = 0; i <= nodesNumber_; i++) { //todo check
         auto dtn = check_and_cast<ContactlessDtn *>(
             this->getParentModule()

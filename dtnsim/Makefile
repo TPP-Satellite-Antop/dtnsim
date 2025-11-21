@@ -48,16 +48,16 @@ OBJS = \
     $O/src/node/mobility/libnorad/ccoord.o \
     $O/src/node/mobility/libnorad/cEci.o \
     $O/src/node/mobility/libnorad/cJulian.o \
-    $O/src/node/mobility/libnorad/cNoradBase.o \
-    $O/src/node/mobility/libnorad/cNoradSDP4.o \
-    $O/src/node/mobility/libnorad/cNoradSGP4.o \
-    $O/src/node/mobility/libnorad/cOrbit.o \
     $O/src/node/mobility/libnorad/cSite.o \
     $O/src/node/mobility/libnorad/cTLE.o \
     $O/src/node/mobility/libnorad/cVector.o \
     $O/src/node/mobility/libnorad/globals.o \
-    $O/src/node/mobility/Norad.o \
-    $O/src/node/mobility/SatSGP4Mobility.o \
+    $O/src/node/mobility/libnorad/cNoradBaseA.o \
+    $O/src/node/mobility/libnorad/cNoradSGP4A.o \
+    $O/src/node/mobility/libnorad/cOrbitA.o \
+    $O/src/node/mobility/INorad.o \
+    $O/src/node/mobility/NoradA.o \
+    $O/src/node/mobility/SatelliteMobility.o \
     $O/src/node/dtn/routing/RoutingBRUF1T.o \
     $O/src/node/dtn/routing/RoutingCgrModel350.o \
     $O/src/node/dtn/routing/RoutingAntop.o \
