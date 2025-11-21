@@ -1,7 +1,7 @@
 #include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 
-RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) { //TODO check this null
+RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) {
     this->prevSrc = 0;
     this->antopAlgorithm = antop;
     this->nextHopCache = unordered_map<int, CacheEntry>();
