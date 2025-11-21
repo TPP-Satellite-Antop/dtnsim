@@ -10,7 +10,7 @@ repeat = 1
 allow-object-stealing-on-deletion = true
 
 # Simulation end time
-sim-time-limit = 50s
+sim-time-limit = 48h
 
 # Nodes quantity (identifiers (EiDs) matches their index, EiD=0 is ignored)			
 dtnsim.nodesNumber = {num_sats}
@@ -22,14 +22,10 @@ dtnsim.node[*].noradModule.satIndex = parentIndex()
 dtnsim.node[*].noradModule.satName = "sat"
 **.updateInterval = 20s
 **.numOfSats = {num_sats}
-sim-time-limit = 48h
-**.satsPerPlane = 1
-**.numOfPlanes = {num_sats}
-**.incl = 53.2
-**.alt = 540
-**.loadFiles = false
-**.dataRate = 100Mbps
-**.queueSize = 300
+**.satPerPlane = 1
+**.inclination = 53.2
+**.altitude = 540
+**.planes = {num_sats}
 
 dtnsim.node[*].dtn.routing = "antop"
 dtnsim.node[*].dtn.printRoutingDebug = true
