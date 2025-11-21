@@ -5,6 +5,7 @@
 # Ignore binaries
 dtnsim/out/
 dtnsim/dtnsim
+dtnsim/dtnsim_dbg
 
 # Ignore results files in simulations folder
 dtnsim/simulations/**/results/
