@@ -70,12 +70,8 @@ dtnsim.central.typename = "ContactlessCentral"
 
 
 if __name__ == "__main__":
-    num_sats = int(input("Enter number of satellites: "))
     num_planes = int(input("Enter number of planes: "))
     num_sat_per_plane = int(input("Enter number of satellites per plane: "))
+    print(f"Generating configuration for {num_planes * num_sat_per_plane} satellites...")
 
-    if num_planes * num_sat_per_plane < num_sats:
-        print("Error: The product of planes and satellites per plane must be at least equal to the number of satellites.")
-        exit(1)
-
-    generate_ini(num_sats, num_sat_per_plane, num_planes)
+    generate_ini(num_planes*num_sat_per_plane, num_sat_per_plane, num_planes)
