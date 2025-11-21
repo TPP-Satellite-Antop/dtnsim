@@ -4,6 +4,10 @@ import random
 def generate_ini(num_sats):
     output_file = f"antop/antop-{num_sats}-sats.ini"
     with open(output_file, "w") as f:
+        sat_per_plane = random.randint(1, max(1, num_sats // 2))
+        inclination = round(random.uniform(30.0, 98.0), 2)
+        altitude = random.randint(350, 1200)
+
         f.write(f"""[General]
 network = src.dtnsim										
 repeat = 1
@@ -22,10 +26,10 @@ dtnsim.node[*].noradModule.satIndex = parentIndex()
 dtnsim.node[*].noradModule.satName = "sat"
 **.updateInterval = 20s
 **.numOfSats = {num_sats}
-**.satPerPlane = 1
-**.inclination = 53.2
-**.altitude = 540
-**.planes = {num_sats}
+**.satPerPlane = {sat_per_plane}
+**.inclination = {inclination}
+**.altitude = {altitude}
+**.planes = {max(1, num_sats // sat_per_plane)}
 
 dtnsim.node[*].dtn.routing = "antop"
 dtnsim.node[*].dtn.printRoutingDebug = true
