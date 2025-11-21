@@ -76,5 +76,6 @@ if __name__ == "__main__":
 
     if num_planes * num_sat_per_plane < num_sats:
         print("Error: The product of planes and satellites per plane must be at least equal to the number of satellites.")
+        exit(1)
 
     generate_ini(num_sats, num_sat_per_plane, num_planes)
