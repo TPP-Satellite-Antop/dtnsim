@@ -17,9 +17,9 @@ void MetricCollector::initialize(int numOfNodes) {
     for (int i = 0; i < numOfNodes; i++) {
         Metrics nodeMetric = Metrics();
         nodeMetric.eid_ = i + 1;
-        nodeMetric.startWalltime = std::chrono::steady_clock::now();
         this->nodeMetrics_.push_back(nodeMetric);
     }
+    this->startWalltime = std::chrono::steady_clock::now();
 }
 
 void MetricCollector::updateCGRCalls(int eid) {
@@ -226,16 +226,11 @@ void MetricCollector::evaluateAndPrintResults() {
     }
 
     outputFile << seperator << endl;
-    outputFile << "Elapsed time for each node: " << endl;
-    for (size_t i = 0; i < this->nodeMetrics_.size(); i++) {
-        auto endWalltime = std::chrono::steady_clock::now();
-        auto elapsed =
-            std::chrono::duration_cast<std::chrono::seconds>(endWalltime -
-                                                             this->nodeMetrics_.at(i).startWalltime)
-                .count();
-        outputFile << "Node " << i + 1 << ": " << elapsed << " seconds" << endl;
-    }
-
+    auto endWalltime = std::chrono::steady_clock::now();
+    auto simTime =
+        std::chrono::duration_cast<std::chrono::seconds>(endWalltime - this->startWalltime).count();
+    
+    outputFile << "Simulation time " << simTime << " seconds" << endl;
     outputFile.close();
 
     // json file
@@ -270,15 +265,7 @@ void MetricCollector::evaluateAndPrintResults() {
     j["RUCoPCalls"] = RUCoPCalls;
     j["cgrComputationTime"] = this->cgrComputationTime_;
     j["RUCoPComputationTime"] = this->RUCoPComputationTime_;
-
-    for (size_t i = 0; i < this->nodeMetrics_.size(); i++) {
-        auto endWalltime = std::chrono::steady_clock::now();
-        auto elapsed =
-            std::chrono::duration_cast<std::chrono::seconds>(endWalltime -
-                                                             this->nodeMetrics_.at(i).startWalltime)
-                .count();
-        j["elapsedTimes"]["node_" + to_string(i + 1)] = elapsed;
-    }
+    j["simulationWalltimeSeconds"] = simTime;
 
     ofstream jsonFile(prefix + "/metrics/jsonResults_" + to_string(number) + ".txt");
     jsonFile << setw(4) << j << endl;

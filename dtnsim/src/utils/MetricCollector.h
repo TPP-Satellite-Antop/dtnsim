@@ -28,7 +28,6 @@ class Metrics {
     map<long, int> sentBundles_;
     map<long, vector<tuple<int, double>>> routingDecisions_;
     map<long, double> bundleReceivingTimes_; // Decision to be made
-    std::chrono::steady_clock::time_point startWalltime;
 
     Metrics(){};
 
@@ -74,6 +73,7 @@ class MetricCollector {
     long RUCoPComputationTime_ = 0;
     long cgrComputationTime_ = 0;
     map<long, tuple<int, int>> bundleInformation_;
+    std::chrono::steady_clock::time_point startWalltime;
     string algorithm_;
     double failureProb_;
     int mode;
