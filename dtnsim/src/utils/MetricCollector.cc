@@ -17,6 +17,7 @@ void MetricCollector::initialize(int numOfNodes) {
     for (int i = 0; i < numOfNodes; i++) {
         Metrics nodeMetric = Metrics();
         nodeMetric.eid_ = i + 1;
+        nodeMetric.startWalltime = std::chrono::steady_clock::now();
         this->nodeMetrics_.push_back(nodeMetric);
     }
 }
@@ -116,7 +117,6 @@ int MetricCollector::getMode() {
 }
 string MetricCollector::getPrefix() {
     string result = this->path_ + "/" + this->algorithm_;
-
     if (this->failureProb_ == -1) {
         result += "/pf=-1";
     } else if (this->failureProb_ == 20) {
@@ -163,6 +163,8 @@ void MetricCollector::evaluateAndPrintResults() {
     // regular .txt file
     string prefix = this->getPrefix();
     int number = this->getFileNumber(prefix);
+    std::filesystem::create_directories(prefix + "/metrics");
+
     ofstream outputFile(prefix + "/metrics/output_" + to_string(number) + ".txt");
     outputFile << "The bundles with the following ids have been sent: " << endl;
     string sentIds = "";
@@ -222,7 +224,20 @@ void MetricCollector::evaluateAndPrintResults() {
             outputFile << "Bundle " << it->first << ": " << decisionsString << endl;
         }
     }
+
+    outputFile << seperator << endl;
+    outputFile << "Elapsed time for each node: " << endl;
+    for (size_t i = 0; i < this->nodeMetrics_.size(); i++) {
+        auto endWalltime = std::chrono::steady_clock::now();
+        auto elapsed =
+            std::chrono::duration_cast<std::chrono::seconds>(endWalltime -
+                                                             this->nodeMetrics_.at(i).startWalltime)
+                .count();
+        outputFile << "Node " << i + 1 << ": " << elapsed << " seconds" << endl;
+    }
+
     outputFile.close();
+
     // json file
     json j;
     vector<string> bundleIds;
@@ -256,10 +271,21 @@ void MetricCollector::evaluateAndPrintResults() {
     j["cgrComputationTime"] = this->cgrComputationTime_;
     j["RUCoPComputationTime"] = this->RUCoPComputationTime_;
 
+    for (size_t i = 0; i < this->nodeMetrics_.size(); i++) {
+        auto endWalltime = std::chrono::steady_clock::now();
+        auto elapsed =
+            std::chrono::duration_cast<std::chrono::seconds>(endWalltime -
+                                                             this->nodeMetrics_.at(i).startWalltime)
+                .count();
+        j["elapsedTimes"]["node_" + to_string(i + 1)] = elapsed;
+    }
+
     ofstream jsonFile(prefix + "/metrics/jsonResults_" + to_string(number) + ".txt");
     jsonFile << setw(4) << j << endl;
 
     jsonFile.close();
+
+    cout << "MetricCollector: Results written to " << prefix + "/metrics/" << endl;
 }
 
 /*

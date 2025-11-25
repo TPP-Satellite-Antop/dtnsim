@@ -15,6 +15,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <chrono>
 
 using json = nlohmann::json;
 using namespace std;
@@ -27,11 +28,13 @@ class Metrics {
     map<long, int> sentBundles_;
     map<long, vector<tuple<int, double>>> routingDecisions_;
     map<long, double> bundleReceivingTimes_; // Decision to be made
+    std::chrono::steady_clock::time_point startWalltime;
 
     Metrics(){};
 
     ~Metrics(){};
 };
+
 class MetricCollector {
   public:
     MetricCollector();

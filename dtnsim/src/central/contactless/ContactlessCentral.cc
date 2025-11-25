@@ -18,6 +18,7 @@ ContactlessCentral::~ContactlessCentral() {}
 void ContactlessCentral::initialize() {
     Central::initialize();
 
+    this->metricCollector_.setAlgorithm("ANTOP");
     for (int i = 0; i <= nodesNumber_; i++) {
         auto dtn = check_and_cast<ContactlessDtn *>(
             this->getParentModule()->getSubmodule("node", i)->getSubmodule("dtn"));

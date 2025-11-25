@@ -21,6 +21,7 @@ void Central::initialize() {
 
 void Central::finish() {
     if (nodesNumber_ >= 1) {
+        cout << "Central: Evaluating and printing results..." << endl;
         this->metricCollector_.evaluateAndPrintResults();
     }
 }
