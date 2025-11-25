@@ -1,0 +1,9 @@
+{
+    "RUCoPCalls": 0,
+    "RUCoPComputationTime": 0,
+    "bundleIds": [],
+    "cgrCalls": 0,
+    "cgrComputationTime": 0,
+    "receivedIds": [],
+    "simulationWalltimeSeconds": 3
+}
