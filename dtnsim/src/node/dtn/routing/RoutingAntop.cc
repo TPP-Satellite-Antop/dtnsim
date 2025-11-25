@@ -59,8 +59,8 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
         }
 
         return cell;
-    } catch (const std::out_of_range& e) {
-        cout << "Error in antop routing: no mobility module found for eid " << eid << endl;
+    } catch (exception& e) {
+        cout << "Error in antop routing: no mobility module found for eid " << eid << e.what() << endl;
         return 0;   
     }
 }
