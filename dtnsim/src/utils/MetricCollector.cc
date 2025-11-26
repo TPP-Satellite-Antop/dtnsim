@@ -144,8 +144,6 @@ string MetricCollector::getPrefix() {
 
     if (this->mode == 0) {
         result += "/no_opp";
-    } else if (this->mode == 1) {
-        result += "/opp_not_known";
     } else if (this->mode == 2) {
         result += "/opp_known";
     }
@@ -304,10 +302,8 @@ void MetricCollector::evaluateAndPrintContactlessResults() {
     json j;
     vector<string> bundleIds;
 
-    auto bundlesList = json::array();
-
     j["antopCalls"] = this->getAntopCalls();
-    j["bundles"] = bundlesList;
+    j["bundles"] = json::array(); //TODO;
     j["avgElapsedTime"] = 0; //TODO
     j["avgNumberOfHops"] = 0; //TODO
     j["simulationWalltimeSeconds"] = simTime;

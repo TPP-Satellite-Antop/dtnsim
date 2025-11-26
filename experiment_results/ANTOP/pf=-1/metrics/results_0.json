@@ -1,7 +1,7 @@
 {
-    "antopCalls": 116,
+    "antopCalls": 64,
     "avgElapsedTime": 0,
     "avgNumberOfHops": 0,
     "bundles": [],
-    "simulationWalltimeSeconds": 3
+    "simulationWalltimeSeconds": 15
 }
