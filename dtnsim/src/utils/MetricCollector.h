@@ -24,6 +24,7 @@ class Metrics {
     int eid_;
     int RUCoPCalls_ = 0;
     int cgrCalls_ = 0;
+    int antopCalls_ = 0;
     map<long, double> bundleStartTimes_;
     map<long, int> sentBundles_;
     map<long, vector<tuple<int, double>>> routingDecisions_;
@@ -40,6 +41,8 @@ class MetricCollector {
     virtual ~MetricCollector();
 
     void updateCGRCalls(int eid);
+    void updateAntopCalls(int eid);
+    int &calls(int eid);
     void setAlgorithm(string algoritm);
     void setFailureProb(double failureProb);
     void setMode(int mode);
@@ -53,7 +56,9 @@ class MetricCollector {
     void updateReceivedBundles(int eid, long bundleId, double receivingTime);
     void updateRUCoPComputationTime(long computationTime);
     void updateCGRComputationTime(long computationTime);
+    void updateAntopComputationTime(long computationTime);
     void evaluateAndPrintResults();
+    void evaluateAndPrintContactlessResults();
     int getFileNumber(string prefix);
     int getMode();
 
@@ -67,11 +72,13 @@ class MetricCollector {
     string getPrefix();
     int getCGRCalls();
     int getRUCoPCalls();
+    int getAntopCalls();
     void putToJson();
     string path_;
     vector<Metrics> nodeMetrics_;
     long RUCoPComputationTime_ = 0;
     long cgrComputationTime_ = 0;
+    long antopComputationTime_ = 0;
     map<long, tuple<int, int>> bundleInformation_;
     std::chrono::steady_clock::time_point startWalltime;
     string algorithm_;

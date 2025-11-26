@@ -19,12 +19,7 @@ void Central::initialize() {
     this->metricCollector_.setPath(this->par("collectorPath"));
 }
 
-void Central::finish() {
-    if (nodesNumber_ >= 1) {
-        cout << "Central: Evaluating and printing results..." << endl;
-        this->metricCollector_.evaluateAndPrintResults();
-    }
-}
+void Central::finish() {}
 
 void Central::handleMessage(cMessage *msg) {
     // delete dummy msg
