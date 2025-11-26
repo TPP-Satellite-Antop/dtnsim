@@ -78,7 +78,7 @@ class MetricCollector {
     vector<Metrics> nodeMetrics_;
     long RUCoPComputationTime_ = 0;
     long cgrComputationTime_ = 0;
-    long antopComputationTime_ = 0;
+    long antopComputationTime_ = 0; //TODO unused
     map<long, tuple<int, int>> bundleInformation_;
     std::chrono::steady_clock::time_point startWalltime;
     string algorithm_;

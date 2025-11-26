@@ -304,35 +304,15 @@ void MetricCollector::evaluateAndPrintContactlessResults() {
     json j;
     vector<string> bundleIds;
 
-    for (auto it = this->bundleInformation_.begin(); it != this->bundleInformation_.end(); it++) {
-        bundleIds.push_back(this->getInformationString(it->first, bundlesToBeSent[it->first]));
-    }
-
-    j["bundleIds"] = bundleIds;
-    vector<string> receivedBundleIds;
-
-    for (auto it = receivedBundles.begin(); it != receivedBundles.end(); it++) {
-        receivedBundleIds.push_back(
-            this->getInformationString(it->first, bundlesToBeSent[it->first]));
-    }
-
-    j["receivedIds"] = receivedBundleIds;
-
-    for (auto it = bundleDeliveryTimes.begin(); it != bundleDeliveryTimes.end(); it++) {
-        j["bundleDeliveryTimes"]
-         [this->getInformationString(it->first, bundlesToBeSent[it->first])] = it->second;
-    }
-
-    for (auto it = bundlesDeliveryCounts.begin(); it != bundlesDeliveryCounts.end(); it++) {
-        j["bundleDeliveryCounts"]
-         [this->getInformationString(it->first, bundlesToBeSent[it->first])] = it->second;
-    }
+    auto bundlesList = json::array();
 
     j["antopCalls"] = this->getAntopCalls();
-    j["antopComputationTime"] = this->antopComputationTime_;
+    j["bundles"] = bundlesList;
+    j["avgElapsedTime"] = 0; //TODO
+    j["avgNumberOfHops"] = 0; //TODO
     j["simulationWalltimeSeconds"] = simTime;
 
-    ofstream jsonFile(prefix + "/metrics/jsonResults_" + to_string(number) + ".txt");
+    ofstream jsonFile(prefix + "/metrics/results_" + to_string(number) + ".json");
     jsonFile << setw(4) << j << endl;
 
     jsonFile.close();
