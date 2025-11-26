@@ -15,21 +15,10 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     std::cout << "Node " << eid_ << " routing bundle " << bundle->getBundleId() << " from src " << bundle->getSourceEid() << ", sender " << bundle->getSenderEid() << " to " << bundle->getDestinationEid() << std::endl;
 
     this->metricCollector->updateAntopCalls(eid_);
-    this->metricCollector->updateReceivedBundles(
-        eid_,
-        bundle->getBundleId(),
-        simTime
-    );
-
     int cachedNextHop = getFromCache(bundle->getDestinationEid(), simTime);
     if(cachedNextHop != 0){
         bundle->setNextHopEid(cachedNextHop);
-        this->metricCollector->updateSentBundles(
-            eid_,
-            cachedNextHop,
-            bundle->getCreationTimestamp().dbl(), 
-            bundle->getBundleId()
-        );
+        this->metricCollector->increaseBundleHops(eid_, bundle->getBundleId());
         return;
     }
 
@@ -54,13 +43,8 @@ void RoutingAntop::getNewNextHop(BundlePkt *bundle, double simTime){
         if (const int nextHop = eidsByCandidate.at(candidate); nextHop != 0) {
             bundle->setNextHopEid(nextHop);
             saveToCache(bundle->getDestinationEid(), nextHop, simTime);
+            this->metricCollector->increaseBundleHops(eid_, bundle->getBundleId());
             std::cout << "Routing bundle " << bundle->getBundleId() << " to " << nextHop << std::endl;
-            this->metricCollector->updateSentBundles(
-                eid_,
-                nextHop,
-                bundle->getCreationTimestamp().dbl(), 
-                bundle->getBundleId()
-            );
             return;
         }
     }

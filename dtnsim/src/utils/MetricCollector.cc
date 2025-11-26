@@ -17,6 +17,8 @@ void MetricCollector::initialize(int numOfNodes) {
     for (int i = 0; i < numOfNodes; i++) {
         Metrics nodeMetric = Metrics();
         nodeMetric.eid_ = i + 1;
+        nodeMetric.bundleHops_ = map<long, int>();
+        nodeMetric.bundleElapsedTime_ = map<long, double>();
         this->nodeMetrics_.push_back(nodeMetric);
     }
     this->startWalltime = std::chrono::steady_clock::now();
@@ -25,7 +27,6 @@ void MetricCollector::initialize(int numOfNodes) {
 void MetricCollector::updateCGRCalls(int eid) {
     this->nodeMetrics_.at(eid - 1).cgrCalls_ = this->nodeMetrics_.at(eid - 1).cgrCalls_ + 1;
 }
-
 
 void MetricCollector::updateAntopCalls(int eid) {
     this->nodeMetrics_.at(eid - 1).antopCalls_ = this->nodeMetrics_.at(eid - 1).antopCalls_ + 1;
@@ -80,12 +81,20 @@ void MetricCollector::updateStartedBundles(int eid, long bundleId, int sourceEid
     }
 }
 
-void MetricCollector::updateCGRComputationTime(long computationTime) {
-    this->cgrComputationTime_ += computationTime;
+void MetricCollector::increaseBundleHops(int eid, long bundleId) {
+    auto bundleHops = &this->nodeMetrics_.at(eid - 1).bundleHops_;
+    if ((*bundleHops).find(bundleId) == (*bundleHops).end())
+        (*bundleHops)[bundleId] = 1;
+    else
+        (*bundleHops)[bundleId] = (*bundleHops)[bundleId] + 1;
 }
 
-void MetricCollector::updateAntopComputationTime(long computationTime) {
-    this->antopComputationTime_ += computationTime;
+void MetricCollector::updateBundleElapsedTime(int eid, long bundleId, double elapsedTime) {
+    this->nodeMetrics_.at(eid - 1).bundleElapsedTime_[bundleId] = elapsedTime;
+}
+
+void MetricCollector::updateCGRComputationTime(long computationTime) {
+    this->cgrComputationTime_ += computationTime;
 }
 
 void MetricCollector::updateRUCoPComputationTime(long computationTime) {
@@ -285,13 +294,6 @@ void MetricCollector::evaluateAndPrintContactlessResults() {
         return;
     }
 
-    map<long, double> bundlesToBeSent = this->getOverallSentBundles();
-    map<long, double> receivedBundles = this->getOverallReceivedBundles();
-
-    map<long, double> bundleDeliveryTimes =
-        this->computeDeliveryTimes(bundlesToBeSent, receivedBundles);
-    map<long, int> bundlesDeliveryCounts = this->getBundleDeliveryCounts();
-
     string prefix = this->getPrefix();
     int number = this->getFileNumber(prefix);
     std::filesystem::create_directories(prefix + "/metrics");
@@ -300,10 +302,50 @@ void MetricCollector::evaluateAndPrintContactlessResults() {
     auto simTime = std::chrono::duration_cast<std::chrono::seconds>(endWalltime - this->startWalltime).count();
 
     json j;
-    vector<string> bundleIds;
 
     j["antopCalls"] = this->getAntopCalls();
-    j["bundles"] = json::array(); //TODO;
+
+    auto bundleMetrics = json::array();
+    map<long, int> bundleHops = map<long, int>();
+    map<long, int> bundleElapseTime = map<long, int>();
+    for (size_t i = 0; i < this->nodeMetrics_.size(); i++) {
+        Metrics nodeMetric = this->nodeMetrics_.at(i);
+        for (auto it = nodeMetric.bundleHops_.begin(); it != nodeMetric.bundleHops_.end(); it++) {
+            long bundleId = it->first;
+            int hops = it->second;
+            if (bundleHops.find(bundleId) == bundleHops.end()) {
+                bundleHops[bundleId] = hops;
+            } else {
+                bundleHops[bundleId] += hops;
+            }
+        }
+
+        for (auto it = nodeMetric.bundleElapsedTime_.begin(); it != nodeMetric.bundleElapsedTime_.end(); it++) {
+            long bundleId = it->first;
+            double elapsedTime = it->second;
+            if (bundleElapseTime.find(bundleId) == bundleElapseTime.end()) {
+                bundleElapseTime[bundleId] = elapsedTime;
+            } else {
+                bundleElapseTime[bundleId] += elapsedTime;
+            }
+        }
+    }
+    
+    for (auto it = bundleHops.begin(); it != bundleHops.end(); it++) {
+        long bundleId = it->first;
+        int hops = it->second;
+        double elapsedTime = bundleElapseTime[bundleId];
+
+        json bundleMetric;
+        bundleMetric["id"] = bundleId;
+        bundleMetric["numberOfHops"] = hops;
+        bundleMetric["elapsedTime"] = elapsedTime;
+
+        bundleMetrics.push_back(bundleMetric);
+    }
+
+
+    j["bundles"] = bundleMetrics; //TODO;
     j["avgElapsedTime"] = 0; //TODO
     j["avgNumberOfHops"] = 0; //TODO
     j["simulationWalltimeSeconds"] = simTime;

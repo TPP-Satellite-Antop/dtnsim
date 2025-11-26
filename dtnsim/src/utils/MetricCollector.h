@@ -25,6 +25,9 @@ class Metrics {
     int RUCoPCalls_ = 0;
     int cgrCalls_ = 0;
     int antopCalls_ = 0;
+    map<long, int> bundleHops_;
+    map<long, double> bundleElapsedTime_;
+
     map<long, double> bundleStartTimes_;
     map<long, int> sentBundles_;
     map<long, vector<tuple<int, double>>> routingDecisions_;
@@ -56,7 +59,8 @@ class MetricCollector {
     void updateReceivedBundles(int eid, long bundleId, double receivingTime);
     void updateRUCoPComputationTime(long computationTime);
     void updateCGRComputationTime(long computationTime);
-    void updateAntopComputationTime(long computationTime);
+    void increaseBundleHops(int eid, long bundleId);
+    void updateBundleElapsedTime(int eid, long bundleId, double elapsedTime);
     void evaluateAndPrintResults();
     void evaluateAndPrintContactlessResults();
     int getFileNumber(string prefix);
@@ -78,7 +82,6 @@ class MetricCollector {
     vector<Metrics> nodeMetrics_;
     long RUCoPComputationTime_ = 0;
     long cgrComputationTime_ = 0;
-    long antopComputationTime_ = 0; //TODO unused
     map<long, tuple<int, int>> bundleInformation_;
     std::chrono::steady_clock::time_point startWalltime;
     string algorithm_;
