@@ -14,6 +14,7 @@ RoutingAntop::~RoutingAntop() {}
 void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     std::cout << "Node " << eid_ << " routing bundle " << bundle->getBundleId() << " from src " << bundle->getSourceEid() << ", sender " << bundle->getSenderEid() << " to " << bundle->getDestinationEid() << std::endl;
 
+    this->metricCollector->updateAntopCalls(eid_);
     this->metricCollector->updateReceivedBundles(
         eid_,
         bundle->getBundleId(),

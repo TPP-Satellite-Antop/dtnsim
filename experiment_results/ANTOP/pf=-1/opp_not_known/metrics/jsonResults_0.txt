@@ -1,0 +1,16 @@
+{
+    "antopCalls": 84,
+    "antopComputationTime": 0,
+    "bundleDeliveryCounts": {
+        "0:0:0.000000": 42
+    },
+    "bundleDeliveryTimes": {
+        "0:0:0.000000": 1.0
+    },
+    "bundleIds": [],
+    "receivedIds": [
+        "0:0:0.000000",
+        "0:0:0.000000"
+    ],
+    "simulationWalltimeSeconds": 2
+}
