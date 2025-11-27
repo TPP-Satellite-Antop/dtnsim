@@ -360,6 +360,7 @@ void MetricCollector::evaluateAndPrintContactlessResults() {
         auto nBundles = this->bundleHops_.size();
         avgNumberOfHops = avgNumberOfHops / nBundles;
         avgElapsedTime = avgElapsedTime / nBundles;
+        avgArrivalTime = avgArrivalTime / nBundles;
     }
 
     j["bundles"] = bundleMetrics;
