@@ -30,10 +30,6 @@ void MetricCollector::updateCGRCalls(int eid) {
     this->nodeMetrics_.at(eid - 1).cgrCalls_ = this->nodeMetrics_.at(eid - 1).cgrCalls_ + 1;
 }
 
-void MetricCollector::updateAntopCalls(int eid) {
-    this->nodeMetrics_.at(eid - 1).antopCalls_ = this->nodeMetrics_.at(eid - 1).antopCalls_ + 1;
-}
-
 void MetricCollector::updateRUCoPCalls(int eid) {
 
     this->nodeMetrics_.at(eid - 1).RUCoPCalls_ = this->nodeMetrics_.at(eid - 1).RUCoPCalls_ + 1;
@@ -99,15 +95,18 @@ void MetricCollector::updateBundleElapsedTime(long bundleId, double elapsedTime)
         (*bundleElapsedTime)[bundleId] = (*bundleElapsedTime)[bundleId] + elapsedTime;
 }
 
-void MetricCollector::intializeArrivalTime(long bundleId, double initialTime) {
+void MetricCollector::intializeArrivalTime(long bundleId, std::chrono::steady_clock::time_point initialTime) {
     auto bundleArrivalTime = &this->bundleArrivalTime_;
-    if ((*bundleArrivalTime).find(bundleId) == (*bundleArrivalTime).end())
-        (*bundleArrivalTime)[bundleId] = initialTime;
+    if ((*bundleArrivalTime).find(bundleId) == (*bundleArrivalTime).end()){
+        double initTime = std::chrono::duration_cast<std::chrono::duration<double>>(initialTime.time_since_epoch()).count();
+        (*bundleArrivalTime)[bundleId] = initTime;
+    }
     // if already initialized, do nothing because it is not the src node
 }
 
-void MetricCollector::setFinalArrivalTime(long bundleId, double finalTime) {
-    this->bundleArrivalTime_[bundleId] = this->bundleArrivalTime_[bundleId] + finalTime;
+void MetricCollector::setFinalArrivalTime(long bundleId, std::chrono::steady_clock::time_point finalTime) {
+    double fTime = std::chrono::duration_cast<std::chrono::duration<double>>(finalTime.time_since_epoch()).count();
+    this->bundleArrivalTime_[bundleId] = this->bundleArrivalTime_[bundleId] + fTime;
 }
 
 void MetricCollector::updateCGRComputationTime(long computationTime) {
@@ -302,6 +301,31 @@ void MetricCollector::evaluateAndPrintResults() {
     cout << "MetricCollector: Results written to " << prefix + "/metrics/" << endl;
 }
 
+
+void buildBundleMetrics(std::map<long, int> &bundleHops,
+                        std::map<long, double> &bundleElapseTime,
+                        std::map<long, double> &bundleArrivalTime,
+                        int &avgNumberOfHops, double &avgElapsedTime, double &avgArrivalTime,
+                        nlohmann::json &bundleMetrics) {
+    for (auto it = bundleHops.begin(); it != bundleHops.end(); it++) {
+        long bundleId = it->first;
+        int hops = it->second;
+        double elapsedTime = bundleElapseTime[bundleId];
+        double arrivalTime = bundleArrivalTime[bundleId]; //TODO handlear si el paq nunca llego.. o lo dejamos en 0
+
+        avgNumberOfHops += hops;
+        avgElapsedTime += elapsedTime;
+        avgArrivalTime += arrivalTime;
+
+        json bundleMetric;
+        bundleMetric["id"] = bundleId;
+        bundleMetric["numberOfHops"] = hops;
+        bundleMetric["elapsedTime"] = elapsedTime;
+        bundleMetric["arrivalTime"] = arrivalTime;
+        bundleMetrics.push_back(bundleMetric);
+    }
+}
+
 /*
  * All results from the node metrics are evaluated and printed into a .json file
  */
@@ -319,7 +343,6 @@ void MetricCollector::evaluateAndPrintContactlessResults() {
     auto simTime = std::chrono::duration_cast<std::chrono::seconds>(endWalltime - this->startWalltime).count();
 
     json j;
-    j["antopCalls"] = this->getAntopCalls();
 
     auto bundleMetrics = json::array();
     auto avgNumberOfHops = 0;
@@ -350,30 +373,6 @@ void MetricCollector::evaluateAndPrintContactlessResults() {
     jsonFile.close();
 
     cout << "MetricCollector: Results written to " << prefix + "/metrics/" << endl;
-}
-
-void buildBundleMetrics(std::map<long, int> &bundleHops,
-                        std::map<long, double> &bundleElapseTime,
-                        std::map<long, double> &bundleArrivalTime,
-                        int &avgNumberOfHops, double &avgElapsedTime, double &avgArrivalTime,
-                        nlohmann::json &bundleMetrics) {
-    for (auto it = bundleHops.begin(); it != bundleHops.end(); it++) {
-        long bundleId = it->first;
-        int hops = it->second;
-        double elapsedTime = bundleElapseTime[bundleId];
-        double arrivalTime = bundleArrivalTime[bundleId]; //TODO handlear si el paq nunca llego.. o lo dejamos en 0
-
-        avgNumberOfHops += hops;
-        avgElapsedTime += elapsedTime;
-        avgArrivalTime += arrivalTime;
-
-        json bundleMetric;
-        bundleMetric["id"] = bundleId;
-        bundleMetric["numberOfHops"] = hops;
-        bundleMetric["elapsedTime"] = elapsedTime;
-        bundleMetric["arrivalTime"] = arrivalTime;
-        bundleMetrics.push_back(bundleMetric);
-    }
 }
 
 /*
@@ -516,14 +515,4 @@ int MetricCollector::getCGRCalls() {
     }
 
     return djikstraCalls;
-}
-
-int MetricCollector::getAntopCalls() {
-    int antopCalls = 0;
-    for (size_t i = 0; i < this->nodeMetrics_.size(); i++) {
-        Metrics nodeMetric = this->nodeMetrics_.at(i);
-        antopCalls = antopCalls + nodeMetric.antopCalls_;
-    }
-
-    return antopCalls;
 }

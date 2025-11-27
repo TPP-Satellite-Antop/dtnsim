@@ -150,10 +150,8 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
 
             auto bundle = check_and_cast<BundlePkt *>(msg);
             dispatchBundle(check_and_cast<BundlePkt *>(msg));
-            this->metricCollector_->updateBundleElapsedTime(eid_,
-                 bundle->getBundleId(),
-                 std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count()
-            );
+            double elapsedTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
+            this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTime);
 
             break;
         }

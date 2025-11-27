@@ -24,8 +24,6 @@ class Metrics {
     int eid_;
     int RUCoPCalls_ = 0;
     int cgrCalls_ = 0;
-    int antopCalls_ = 0;
-
     map<long, double> bundleStartTimes_;
     map<long, int> sentBundles_;
     map<long, vector<tuple<int, double>>> routingDecisions_;
@@ -42,7 +40,6 @@ class MetricCollector {
     virtual ~MetricCollector();
 
     void updateCGRCalls(int eid);
-    void updateAntopCalls(int eid);
     int &calls(int eid);
     void setAlgorithm(string algoritm);
     void setFailureProb(double failureProb);
@@ -59,8 +56,8 @@ class MetricCollector {
     void updateCGRComputationTime(long computationTime);
     void increaseBundleHops(long bundleId);
     void updateBundleElapsedTime(long bundleId, double elapsedTime);
-    void intializeArrivalTime(long bundleId, double initialTime);
-    void setFinalArrivalTime(long bundleId, double finalTime);
+    void intializeArrivalTime(long bundleId, std::chrono::steady_clock::time_point initialTime);
+    void setFinalArrivalTime(long bundleId, std::chrono::steady_clock::time_point finalTime);
     void evaluateAndPrintResults();
     void evaluateAndPrintContactlessResults();
     int getFileNumber(string prefix);
