@@ -48,6 +48,7 @@ python3 generate-antop.py
 Then, you will be requested to provide the number of planes.
 An antop .ini file will be generated in simulations/antop/antop<num_nodes>-sats.ini
 
+Metrics of the simulations will be saved in /experiment_results folder (or in the specified path in the .ini file).
 ## ION Support ##
 
 Interplanetary Overlay Network (ION) flight code is supported in the support-ion branch. Currently, ION 3.5.0 Contact Graph Routing library is supported by DTNSIM.
