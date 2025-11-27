@@ -40,7 +40,6 @@ class MetricCollector {
     virtual ~MetricCollector();
 
     void updateCGRCalls(int eid);
-    int &calls(int eid);
     void setAlgorithm(string algoritm);
     void setFailureProb(double failureProb);
     void setMode(int mode);
