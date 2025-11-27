@@ -136,6 +136,7 @@ void ContactlessDtn::finish() {
  */
 
 void ContactlessDtn::handleMessage(cMessage *msg) {
+    auto elapsedTimeStart = std::chrono::steady_clock::now();
     ///////////////////////////////////////////
     // New Bundle (from App or Com):
     ///////////////////////////////////////////
@@ -147,7 +148,13 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
             if (msg->arrivedOn("gateToApp$i"))
                 emit(dtnBundleReceivedFromApp, true);
 
+            auto bundle = check_and_cast<BundlePkt *>(msg);
             dispatchBundle(check_and_cast<BundlePkt *>(msg));
+            this->metricCollector_->updateBundleElapsedTime(eid_,
+                 bundle->getBundleId(),
+                 std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count()
+            );
+
             break;
         }
         case CUSTODY_TIMEOUT: {

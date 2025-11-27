@@ -90,7 +90,11 @@ void MetricCollector::increaseBundleHops(int eid, long bundleId) {
 }
 
 void MetricCollector::updateBundleElapsedTime(int eid, long bundleId, double elapsedTime) {
-    this->nodeMetrics_.at(eid - 1).bundleElapsedTime_[bundleId] = elapsedTime;
+    auto bundleElapsedTime = &this->nodeMetrics_.at(eid - 1).bundleElapsedTime_;
+    if ((*bundleElapsedTime).find(bundleId) == (*bundleElapsedTime).end())
+        (*bundleElapsedTime)[bundleId] = elapsedTime;
+    else
+        (*bundleElapsedTime)[bundleId] = (*bundleElapsedTime)[bundleId] + elapsedTime;
 }
 
 void MetricCollector::updateCGRComputationTime(long computationTime) {
@@ -308,54 +312,86 @@ void MetricCollector::evaluateAndPrintContactlessResults() {
     auto bundleMetrics = json::array();
     map<long, int> bundleHops = map<long, int>();
     map<long, int> bundleElapseTime = map<long, int>();
-    for (size_t i = 0; i < this->nodeMetrics_.size(); i++) {
-        Metrics nodeMetric = this->nodeMetrics_.at(i);
-        for (auto it = nodeMetric.bundleHops_.begin(); it != nodeMetric.bundleHops_.end(); it++) {
-            long bundleId = it->first;
-            int hops = it->second;
-            if (bundleHops.find(bundleId) == bundleHops.end()) {
-                bundleHops[bundleId] = hops;
-            } else {
-                bundleHops[bundleId] += hops;
-            }
-        }
+    groupNodeMetricsByBundleIds(bundleHops, bundleElapseTime);
 
-        for (auto it = nodeMetric.bundleElapsedTime_.begin(); it != nodeMetric.bundleElapsedTime_.end(); it++) {
-            long bundleId = it->first;
-            double elapsedTime = it->second;
-            if (bundleElapseTime.find(bundleId) == bundleElapseTime.end()) {
-                bundleElapseTime[bundleId] = elapsedTime;
-            } else {
-                bundleElapseTime[bundleId] += elapsedTime;
-            }
-        }
+    auto avgNumberOfHops = 0;
+    auto avgElapsedTime = 0.0;
+    auto avgArrivalTime = 0.0;
+    buildBundleMetrics(bundleHops, bundleElapseTime, avgNumberOfHops, avgElapsedTime, avgArrivalTime, bundleMetrics);
+
+    if(!bundleHops.empty()){
+        auto nBundles = bundleHops.size();
+        avgNumberOfHops = avgNumberOfHops / nBundles;
+        avgElapsedTime = avgElapsedTime / nBundles;
     }
-    
+
+    j["bundles"] = bundleMetrics;
+    j["avgElapsedTime"] = avgElapsedTime; 
+    j["avgNumberOfHops"] = avgNumberOfHops;
+    j["avgArrivalTime"] = avgArrivalTime;
+    j["simulationWalltimeSeconds"] = simTime;
+
+    ofstream jsonFile(prefix + "/metrics/results_" + to_string(number) + ".json");
+    jsonFile << setw(4) << j << endl;
+    jsonFile.close();
+
+    cout << "MetricCollector: Results written to " << prefix + "/metrics/" << endl;
+}
+
+void MetricCollector::buildBundleMetrics(std::map<long, int> &bundleHops,
+                                         std::map<long, int> &bundleElapseTime,
+                                         int &avgNumberOfHops, double &avgElapsedTime, double &avgArrivalTime,
+                                         nlohmann::json &bundleMetrics) {
     for (auto it = bundleHops.begin(); it != bundleHops.end(); it++) {
         long bundleId = it->first;
         int hops = it->second;
         double elapsedTime = bundleElapseTime[bundleId];
+        double arrivalTime = 0.0;
+
+        avgNumberOfHops += hops;
+        avgElapsedTime += elapsedTime;
 
         json bundleMetric;
         bundleMetric["id"] = bundleId;
         bundleMetric["numberOfHops"] = hops;
         bundleMetric["elapsedTime"] = elapsedTime;
-
+        bundleMetric["arrivalTime"] = arrivalTime;
         bundleMetrics.push_back(bundleMetric);
     }
+}
 
+void MetricCollector::groupNodeMetricsByBundleIds(std::map<long, int> &bundleHops,
+                                           std::map<long, int> &bundleElapseTime) {
+    for (size_t i = 0; i < this->nodeMetrics_.size(); i++) {
+        Metrics nodeMetric = this->nodeMetrics_.at(i);
+        groupNumberOfHops(nodeMetric, bundleHops);
+        groupElapsedTime(nodeMetric, bundleElapseTime);
+    }
+}
 
-    j["bundles"] = bundleMetrics; //TODO;
-    j["avgElapsedTime"] = 0; //TODO
-    j["avgNumberOfHops"] = 0; //TODO
-    j["simulationWalltimeSeconds"] = simTime;
+void MetricCollector::groupElapsedTime(Metrics &nodeMetric,
+                                         std::map<long, int> &bundleElapseTime) {
+    for (auto it = nodeMetric.bundleElapsedTime_.begin(); it != nodeMetric.bundleElapsedTime_.end(); it++) {
+        long bundleId = it->first;
+        double elapsedTime = it->second;
+        if (bundleElapseTime.find(bundleId) == bundleElapseTime.end()) {
+            bundleElapseTime[bundleId] = elapsedTime;
+        } else {
+            bundleElapseTime[bundleId] += elapsedTime;
+        }
+    }
+}
 
-    ofstream jsonFile(prefix + "/metrics/results_" + to_string(number) + ".json");
-    jsonFile << setw(4) << j << endl;
-
-    jsonFile.close();
-
-    cout << "MetricCollector: Results written to " << prefix + "/metrics/" << endl;
+void MetricCollector::groupNumberOfHops(Metrics &nodeMetric, std::map<long, int> &bundleHops) {
+    for (auto it = nodeMetric.bundleHops_.begin(); it != nodeMetric.bundleHops_.end(); it++) {
+        long bundleId = it->first;
+        int hops = it->second;
+        if (bundleHops.find(bundleId) == bundleHops.end()) {
+            bundleHops[bundleId] = hops;
+        } else {
+            bundleHops[bundleId] += hops;
+        }
+    }
 }
 
 /*

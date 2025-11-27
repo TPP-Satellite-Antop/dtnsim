@@ -63,6 +63,13 @@ class MetricCollector {
     void updateBundleElapsedTime(int eid, long bundleId, double elapsedTime);
     void evaluateAndPrintResults();
     void evaluateAndPrintContactlessResults();
+    void buildBundleMetrics(std::map<long, int> &bundleHops, std::map<long, int> &bundleElapseTime,
+                            int &avgNumberOfHops, double &avgElapsedTime, double &avgArrivalTime,
+                            nlohmann::json &bundleMetrics);
+    void groupNodeMetricsByBundleIds(std::map<long, int> &bundleHops,
+                              std::map<long, int> &bundleElapseTime);
+    void groupElapsedTime(Metrics &nodeMetric, std::map<long, int> &bundleElapseTime);
+    void groupNumberOfHops(Metrics &nodeMetric, std::map<long, int> &bundleHops);
     int getFileNumber(string prefix);
     int getMode();
 
