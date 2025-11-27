@@ -1,20 +1,20 @@
 {
-    "avgArrivalTime": 31395.589722919998,
-    "avgElapsedTime": 0.002975225500000001,
-    "avgNumberOfHops": 46,
+    "avgArrivalTime": 32723.504914568,
+    "avgElapsedTime": 0.0018230739999999996,
+    "avgNumberOfHops": 28,
     "bundles": [
         {
-            "arrivalTime": 15697.794705128,
-            "elapsedTime": 0.003445541000000001,
+            "arrivalTime": 16361.752381358,
+            "elapsedTime": 0.0021770089999999997,
             "id": 15,
-            "numberOfHops": 46
+            "numberOfHops": 28
         },
         {
-            "arrivalTime": 15697.795017792,
-            "elapsedTime": 0.002504910000000001,
+            "arrivalTime": 16361.75253321,
+            "elapsedTime": 0.0014691389999999997,
             "id": 16,
-            "numberOfHops": 46
+            "numberOfHops": 28
         }
     ],
-    "simulationWalltimeSeconds": 3
+    "simulationWalltimeSeconds": 2
 }

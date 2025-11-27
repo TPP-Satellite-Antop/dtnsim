@@ -106,7 +106,7 @@ void MetricCollector::intializeArrivalTime(long bundleId, std::chrono::steady_cl
 
 void MetricCollector::setFinalArrivalTime(long bundleId, std::chrono::steady_clock::time_point finalTime) {
     double fTime = std::chrono::duration_cast<std::chrono::duration<double>>(finalTime.time_since_epoch()).count();
-    this->bundleArrivalTime_[bundleId] = this->bundleArrivalTime_[bundleId] + fTime;
+    this->bundleArrivalTime_[bundleId] = fTime - this->bundleArrivalTime_[bundleId];
 }
 
 void MetricCollector::updateCGRComputationTime(long computationTime) {
