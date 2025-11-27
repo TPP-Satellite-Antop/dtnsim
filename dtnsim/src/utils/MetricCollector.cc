@@ -17,10 +17,12 @@ void MetricCollector::initialize(int numOfNodes) {
     for (int i = 0; i < numOfNodes; i++) {
         Metrics nodeMetric = Metrics();
         nodeMetric.eid_ = i + 1;
-        nodeMetric.bundleHops_ = map<long, int>();
-        nodeMetric.bundleElapsedTime_ = map<long, double>();
         this->nodeMetrics_.push_back(nodeMetric);
     }
+
+    this->bundleHops_ = map<long, int>();
+    this->bundleElapsedTime_ = map<long, double>();
+    this->bundleArrivalTime_ = map<long, double>();
     this->startWalltime = std::chrono::steady_clock::now();
 }
 
@@ -95,6 +97,17 @@ void MetricCollector::updateBundleElapsedTime(long bundleId, double elapsedTime)
         (*bundleElapsedTime)[bundleId] = elapsedTime;
     else
         (*bundleElapsedTime)[bundleId] = (*bundleElapsedTime)[bundleId] + elapsedTime;
+}
+
+void MetricCollector::intializeArrivalTime(long bundleId, double initialTime) {
+    auto bundleArrivalTime = &this->bundleArrivalTime_;
+    if ((*bundleArrivalTime).find(bundleId) == (*bundleArrivalTime).end())
+        (*bundleArrivalTime)[bundleId] = initialTime;
+    // if already initialized, do nothing because it is not the src node
+}
+
+void MetricCollector::setFinalArrivalTime(long bundleId, double finalTime) {
+    this->bundleArrivalTime_[bundleId] = this->bundleArrivalTime_[bundleId] + finalTime;
 }
 
 void MetricCollector::updateCGRComputationTime(long computationTime) {
@@ -312,8 +325,10 @@ void MetricCollector::evaluateAndPrintContactlessResults() {
     auto avgNumberOfHops = 0;
     auto avgElapsedTime = 0.0;
     auto avgArrivalTime = 0.0;
-    buildBundleMetrics(this->bundleHops_,
+    buildBundleMetrics(
+        this->bundleHops_,
         this->bundleElapsedTime_,
+        this->bundleArrivalTime_,
         avgNumberOfHops, avgElapsedTime, avgArrivalTime,
         bundleMetrics
     );
@@ -339,16 +354,18 @@ void MetricCollector::evaluateAndPrintContactlessResults() {
 
 void buildBundleMetrics(std::map<long, int> &bundleHops,
                         std::map<long, double> &bundleElapseTime,
+                        std::map<long, double> &bundleArrivalTime,
                         int &avgNumberOfHops, double &avgElapsedTime, double &avgArrivalTime,
                         nlohmann::json &bundleMetrics) {
     for (auto it = bundleHops.begin(); it != bundleHops.end(); it++) {
         long bundleId = it->first;
         int hops = it->second;
         double elapsedTime = bundleElapseTime[bundleId];
-        double arrivalTime = 0.0;
+        double arrivalTime = bundleArrivalTime[bundleId]; //TODO handlear si el paq nunca llego.. o lo dejamos en 0
 
         avgNumberOfHops += hops;
         avgElapsedTime += elapsedTime;
+        avgArrivalTime += arrivalTime;
 
         json bundleMetric;
         bundleMetric["id"] = bundleId;

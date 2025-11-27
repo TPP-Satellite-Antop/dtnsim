@@ -59,6 +59,8 @@ class MetricCollector {
     void updateCGRComputationTime(long computationTime);
     void increaseBundleHops(long bundleId);
     void updateBundleElapsedTime(long bundleId, double elapsedTime);
+    void intializeArrivalTime(long bundleId, double initialTime);
+    void setFinalArrivalTime(long bundleId, double finalTime);
     void evaluateAndPrintResults();
     void evaluateAndPrintContactlessResults();
     int getFileNumber(string prefix);
@@ -88,6 +90,7 @@ class MetricCollector {
 
     map<long, int> bundleHops_;
     map<long, double> bundleElapsedTime_;
+    map<long, double> bundleArrivalTime_;
 };
 
 #endif /* SRC_UTILS_METRICCOLLECTOR_H_ */

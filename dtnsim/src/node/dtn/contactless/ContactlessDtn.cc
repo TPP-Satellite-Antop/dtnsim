@@ -179,6 +179,7 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
 
 void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
     if (this->eid_ == bundle->getDestinationEid()) { // We are the final destination of this bundle
+        this->metricCollector_->setFinalArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
         emit(dtnBundleSentToApp, true);
         emit(dtnBundleSentToAppHopCount, bundle->getHopCount());
         bundle->getVisitedNodesForUpdate().sort();
@@ -252,6 +253,7 @@ void ContactlessDtn::sendMsg(BundlePkt *bundle) {
     bundle->setXmitCopiesCount(0);
 
     std::cout << "Node " << eid_ << " --- Sending bundle to --> Node "<< bundle->getNextHopEid() << std::endl;
+    this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
     send(bundle, "gateToCom$o");
 
     // If custody requested, store a copy of the bundle until report received
