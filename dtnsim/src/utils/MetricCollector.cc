@@ -81,16 +81,16 @@ void MetricCollector::updateStartedBundles(int eid, long bundleId, int sourceEid
     }
 }
 
-void MetricCollector::increaseBundleHops(int eid, long bundleId) {
-    auto bundleHops = &this->nodeMetrics_.at(eid - 1).bundleHops_;
+void MetricCollector::increaseBundleHops(long bundleId) {
+    auto bundleHops = &this->bundleHops_;
     if ((*bundleHops).find(bundleId) == (*bundleHops).end())
         (*bundleHops)[bundleId] = 1;
     else
         (*bundleHops)[bundleId] = (*bundleHops)[bundleId] + 1;
 }
 
-void MetricCollector::updateBundleElapsedTime(int eid, long bundleId, double elapsedTime) {
-    auto bundleElapsedTime = &this->nodeMetrics_.at(eid - 1).bundleElapsedTime_;
+void MetricCollector::updateBundleElapsedTime(long bundleId, double elapsedTime) {
+    auto bundleElapsedTime = &this->bundleElapsedTime_;
     if ((*bundleElapsedTime).find(bundleId) == (*bundleElapsedTime).end())
         (*bundleElapsedTime)[bundleId] = elapsedTime;
     else
@@ -306,21 +306,20 @@ void MetricCollector::evaluateAndPrintContactlessResults() {
     auto simTime = std::chrono::duration_cast<std::chrono::seconds>(endWalltime - this->startWalltime).count();
 
     json j;
-
     j["antopCalls"] = this->getAntopCalls();
 
     auto bundleMetrics = json::array();
-    map<long, int> bundleHops = map<long, int>();
-    map<long, int> bundleElapseTime = map<long, int>();
-    groupNodeMetricsByBundleIds(bundleHops, bundleElapseTime);
-
     auto avgNumberOfHops = 0;
     auto avgElapsedTime = 0.0;
     auto avgArrivalTime = 0.0;
-    buildBundleMetrics(bundleHops, bundleElapseTime, avgNumberOfHops, avgElapsedTime, avgArrivalTime, bundleMetrics);
+    buildBundleMetrics(this->bundleHops_,
+        this->bundleElapsedTime_,
+        avgNumberOfHops, avgElapsedTime, avgArrivalTime,
+        bundleMetrics
+    );
 
-    if(!bundleHops.empty()){
-        auto nBundles = bundleHops.size();
+    if(!this->bundleHops_.empty()){
+        auto nBundles = this->bundleHops_.size();
         avgNumberOfHops = avgNumberOfHops / nBundles;
         avgElapsedTime = avgElapsedTime / nBundles;
     }
@@ -338,10 +337,10 @@ void MetricCollector::evaluateAndPrintContactlessResults() {
     cout << "MetricCollector: Results written to " << prefix + "/metrics/" << endl;
 }
 
-void MetricCollector::buildBundleMetrics(std::map<long, int> &bundleHops,
-                                         std::map<long, int> &bundleElapseTime,
-                                         int &avgNumberOfHops, double &avgElapsedTime, double &avgArrivalTime,
-                                         nlohmann::json &bundleMetrics) {
+void buildBundleMetrics(std::map<long, int> &bundleHops,
+                        std::map<long, double> &bundleElapseTime,
+                        int &avgNumberOfHops, double &avgElapsedTime, double &avgArrivalTime,
+                        nlohmann::json &bundleMetrics) {
     for (auto it = bundleHops.begin(); it != bundleHops.end(); it++) {
         long bundleId = it->first;
         int hops = it->second;
@@ -357,40 +356,6 @@ void MetricCollector::buildBundleMetrics(std::map<long, int> &bundleHops,
         bundleMetric["elapsedTime"] = elapsedTime;
         bundleMetric["arrivalTime"] = arrivalTime;
         bundleMetrics.push_back(bundleMetric);
-    }
-}
-
-void MetricCollector::groupNodeMetricsByBundleIds(std::map<long, int> &bundleHops,
-                                           std::map<long, int> &bundleElapseTime) {
-    for (size_t i = 0; i < this->nodeMetrics_.size(); i++) {
-        Metrics nodeMetric = this->nodeMetrics_.at(i);
-        groupNumberOfHops(nodeMetric, bundleHops);
-        groupElapsedTime(nodeMetric, bundleElapseTime);
-    }
-}
-
-void MetricCollector::groupElapsedTime(Metrics &nodeMetric,
-                                         std::map<long, int> &bundleElapseTime) {
-    for (auto it = nodeMetric.bundleElapsedTime_.begin(); it != nodeMetric.bundleElapsedTime_.end(); it++) {
-        long bundleId = it->first;
-        double elapsedTime = it->second;
-        if (bundleElapseTime.find(bundleId) == bundleElapseTime.end()) {
-            bundleElapseTime[bundleId] = elapsedTime;
-        } else {
-            bundleElapseTime[bundleId] += elapsedTime;
-        }
-    }
-}
-
-void MetricCollector::groupNumberOfHops(Metrics &nodeMetric, std::map<long, int> &bundleHops) {
-    for (auto it = nodeMetric.bundleHops_.begin(); it != nodeMetric.bundleHops_.end(); it++) {
-        long bundleId = it->first;
-        int hops = it->second;
-        if (bundleHops.find(bundleId) == bundleHops.end()) {
-            bundleHops[bundleId] = hops;
-        } else {
-            bundleHops[bundleId] += hops;
-        }
     }
 }
 

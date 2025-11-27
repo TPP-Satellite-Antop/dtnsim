@@ -1,23 +1,18 @@
 {
-    "antopCalls": 1650,
+    "antopCalls": 88,
     "avgElapsedTime": 0.0,
-    "avgNumberOfHops": 550,
+    "avgNumberOfHops": 44,
     "bundles": [
         {
             "elapsedTime": 0.0,
-            "id": 201,
-            "numberOfHops": 550
+            "id": 15,
+            "numberOfHops": 44
         },
         {
             "elapsedTime": 0.0,
-            "id": 202,
-            "numberOfHops": 550
-        },
-        {
-            "elapsedTime": 0.0,
-            "id": 203,
-            "numberOfHops": 550
+            "id": 16,
+            "numberOfHops": 44
         }
     ],
-    "simulationWalltimeSeconds": 57
+    "simulationWalltimeSeconds": 7
 }

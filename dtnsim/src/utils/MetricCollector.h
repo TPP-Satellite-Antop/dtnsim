@@ -25,8 +25,6 @@ class Metrics {
     int RUCoPCalls_ = 0;
     int cgrCalls_ = 0;
     int antopCalls_ = 0;
-    map<long, int> bundleHops_;
-    map<long, double> bundleElapsedTime_;
 
     map<long, double> bundleStartTimes_;
     map<long, int> sentBundles_;
@@ -59,17 +57,10 @@ class MetricCollector {
     void updateReceivedBundles(int eid, long bundleId, double receivingTime);
     void updateRUCoPComputationTime(long computationTime);
     void updateCGRComputationTime(long computationTime);
-    void increaseBundleHops(int eid, long bundleId);
-    void updateBundleElapsedTime(int eid, long bundleId, double elapsedTime);
+    void increaseBundleHops(long bundleId);
+    void updateBundleElapsedTime(long bundleId, double elapsedTime);
     void evaluateAndPrintResults();
     void evaluateAndPrintContactlessResults();
-    void buildBundleMetrics(std::map<long, int> &bundleHops, std::map<long, int> &bundleElapseTime,
-                            int &avgNumberOfHops, double &avgElapsedTime, double &avgArrivalTime,
-                            nlohmann::json &bundleMetrics);
-    void groupNodeMetricsByBundleIds(std::map<long, int> &bundleHops,
-                              std::map<long, int> &bundleElapseTime);
-    void groupElapsedTime(Metrics &nodeMetric, std::map<long, int> &bundleElapseTime);
-    void groupNumberOfHops(Metrics &nodeMetric, std::map<long, int> &bundleHops);
     int getFileNumber(string prefix);
     int getMode();
 
@@ -94,6 +85,9 @@ class MetricCollector {
     string algorithm_;
     double failureProb_;
     int mode;
+
+    map<long, int> bundleHops_;
+    map<long, double> bundleElapsedTime_;
 };
 
 #endif /* SRC_UTILS_METRICCOLLECTOR_H_ */
