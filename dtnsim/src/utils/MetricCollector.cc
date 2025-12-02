@@ -22,7 +22,7 @@ void MetricCollector::initialize(int numOfNodes) {
 
     this->bundleHops_ = map<long, int>();
     this->bundleElapsedTime_ = map<long, double>();
-    this->bundleArrivalTime_ = map<long, double>();
+    this->bundleArrivalTime_ = map<long, ArrivalInfo>();
     this->startWalltime = std::chrono::steady_clock::now();
 }
 
@@ -98,15 +98,13 @@ void MetricCollector::updateBundleElapsedTime(long bundleId, double elapsedTime)
 void MetricCollector::intializeArrivalTime(long bundleId, std::chrono::steady_clock::time_point initialTime) {
     auto bundleArrivalTime = &this->bundleArrivalTime_;
     if ((*bundleArrivalTime).find(bundleId) == (*bundleArrivalTime).end()){
-        double initTime = std::chrono::duration_cast<std::chrono::duration<double>>(initialTime.time_since_epoch()).count();
-        (*bundleArrivalTime)[bundleId] = initTime;
+        (*bundleArrivalTime)[bundleId].generationTime = initialTime;
     }
     // if already initialized, do nothing because it is not the src node
 }
 
 void MetricCollector::setFinalArrivalTime(long bundleId, std::chrono::steady_clock::time_point finalTime) {
-    double fTime = std::chrono::duration_cast<std::chrono::duration<double>>(finalTime.time_since_epoch()).count();
-    this->bundleArrivalTime_[bundleId] = fTime - this->bundleArrivalTime_[bundleId];
+    this->bundleArrivalTime_[bundleId].arrivalTime = finalTime;
 }
 
 void MetricCollector::updateCGRComputationTime(long computationTime) {
@@ -304,24 +302,30 @@ void MetricCollector::evaluateAndPrintResults() {
 
 void buildBundleMetrics(std::map<long, int> &bundleHops,
                         std::map<long, double> &bundleElapseTime,
-                        std::map<long, double> &bundleArrivalTime,
+                        std::map<long, ArrivalInfo> &bundleArrivalTime,
                         int &avgNumberOfHops, double &avgElapsedTime, double &avgArrivalTime,
                         nlohmann::json &bundleMetrics) {
     for (auto it = bundleHops.begin(); it != bundleHops.end(); it++) {
         long bundleId = it->first;
         int hops = it->second;
         double elapsedTime = bundleElapseTime[bundleId];
-        double arrivalTime = bundleArrivalTime[bundleId]; //TODO handlear si el paq nunca llego.. o lo dejamos en 0
-
         avgNumberOfHops += hops;
         avgElapsedTime += elapsedTime;
-        avgArrivalTime += arrivalTime;
 
         json bundleMetric;
         bundleMetric["id"] = bundleId;
         bundleMetric["numberOfHops"] = hops;
         bundleMetric["elapsedTime"] = elapsedTime;
-        bundleMetric["arrivalTime"] = arrivalTime;
+
+        if (bundleArrivalTime[bundleId].arrivalTime == std::chrono::steady_clock::time_point()) {
+            bundleMetrics.push_back(bundleMetric);
+            continue; // skip bundles that were not received
+        }
+        double arrivalTimeSecs = std::chrono::duration<double>(
+            (bundleArrivalTime[bundleId].arrivalTime) - (bundleArrivalTime[bundleId].generationTime)).count();
+        avgArrivalTime += arrivalTimeSecs;
+        bundleMetric["arrivalTime"] = arrivalTimeSecs;
+
         bundleMetrics.push_back(bundleMetric);
     }
 }
@@ -366,7 +370,8 @@ void MetricCollector::evaluateAndPrintContactlessResults() {
     j["bundles"] = bundleMetrics;
     j["avgElapsedTime"] = avgElapsedTime; 
     j["avgNumberOfHops"] = avgNumberOfHops;
-    j["avgArrivalTime"] = avgArrivalTime;
+    if (avgArrivalTime > 0) // skip if no arrivals
+        j["avgArrivalTime"] = avgArrivalTime;
     j["simulationWalltimeSeconds"] = simTime;
 
     ofstream jsonFile(prefix + "/metrics/results_" + to_string(number) + ".json");

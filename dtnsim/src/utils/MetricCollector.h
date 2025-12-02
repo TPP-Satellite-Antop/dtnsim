@@ -34,6 +34,13 @@ class Metrics {
     ~Metrics(){};
 };
 
+struct ArrivalInfo
+{
+  std::chrono::steady_clock::time_point generationTime;
+  std::chrono::steady_clock::time_point arrivalTime;
+};
+
+
 class MetricCollector {
   public:
     MetricCollector();
@@ -86,7 +93,7 @@ class MetricCollector {
 
     map<long, int> bundleHops_;
     map<long, double> bundleElapsedTime_;
-    map<long, double> bundleArrivalTime_;
+    map<long, ArrivalInfo> bundleArrivalTime_;
 };
 
 #endif /* SRC_UTILS_METRICCOLLECTOR_H_ */
