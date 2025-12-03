@@ -1,11 +1,10 @@
 #include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 
-RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) {
-    this->prevSrc = 0;
+RoutingAntop::RoutingAntop(Antop* antop, const int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr), routingTable(antop) {
     this->antopAlgorithm = antop;
-    this->nextHopCache = unordered_map<int, CacheEntry>();
     this->mobilityMap = mobilityMap;
+    this->routingTable = RoutingTable(antop);
 }
 
 RoutingAntop::~RoutingAntop() {}
@@ -13,14 +12,30 @@ RoutingAntop::~RoutingAntop() {}
 void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     std::cout << "Node " << eid_ << " routing bundle " << bundle->getBundleId() << " from src " << bundle->getSourceEid() << ", sender " << bundle->getSenderEid() << " to " << bundle->getDestinationEid() << std::endl;
 
-    int cachedNextHop = getFromCache(bundle->getDestinationEid(), simTime);
-    if(cachedNextHop != 0){
-        bundle->setNextHopEid(cachedNextHop);
-        return;
+    H3Index destination = getCurH3IndexForEid(bundle->getDestinationEid());
+    H3Index source = getCurH3IndexForEid(bundle->getSourceEid());
+    H3Index sender = getCurH3IndexForEid(bundle->getSenderEid());
+
+    if (bundle->getReturnToSender()) {
+        auto nextHop = routingTable.findNextNeighbor(0, destination, sender);
+        if (nextHop != sender)
+            bundle->setReturnToSender(false);
+        // ToDo: find satellite and route
     }
 
-    getNewNextHop(bundle, simTime);
+
+
+    // ToDo: replace 0 with actual distance.
+    //routingTable->insert(source, CacheEntry{sender, 0}); // Add reverse entry IF NOT FOUND ?????
+
+
+
+
+
+
 }
+
+
 
 void RoutingAntop::getNewNextHop(BundlePkt *bundle, double simTime){
     const vector<H3Index> candidates = this->antopAlgorithm->getHopCandidates(
@@ -39,7 +54,7 @@ void RoutingAntop::getNewNextHop(BundlePkt *bundle, double simTime){
     for (auto candidate : candidates) {
         if (const int nextHop = eidsByCandidate.at(candidate); nextHop != 0) {
             bundle->setNextHopEid(nextHop);
-            saveToCache(bundle->getDestinationEid(), nextHop, simTime);
+            // saveToCache(bundle->getDestinationEid(), nextHop, simTime);
             std::cout << "Routing bundle " << bundle->getBundleId() << " to " << nextHop << std::endl;
             return;
         }
@@ -90,29 +105,4 @@ void RoutingAntop::storeBundle(BundlePkt *bundle) {
     } else {
         std::cout << "Enqueued bundle " << bundle->getBundleId() << " to SDR" << std::endl;
     }
-}
-
-void RoutingAntop::saveToCache(int destinationEid, int nextHop, double simTime){
-    auto mobilityModule = (*this->mobilityMap)[this->eid_];
-    CacheEntry entry = {
-        .nextHop = nextHop,
-        .ttl = mobilityModule->getNextUpdateTime().dbl()
-    };
-
-    nextHopCache[destinationEid] = entry;
-}
-
-int RoutingAntop::getFromCache(int destinationEid, double simTime){
-    auto it = nextHopCache.find(destinationEid);
-    if(it != nextHopCache.end()){ // if found
-        CacheEntry entry = it->second;
-        if(simTime < entry.ttl)
-            return entry.nextHop;
-
-        // Entry expired
-        nextHopCache.erase(it);
-        return 0;
-    }
-
-    return 0;
 }

@@ -61,6 +61,7 @@ OBJS = \
     $O/src/node/dtn/routing/RoutingBRUF1T.o \
     $O/src/node/dtn/routing/RoutingCgrModel350.o \
     $O/src/node/dtn/routing/RoutingAntop.o \
+    $O/src/node/dtn/routing/antop/RoutingTable.o \
     $O/src/node/dtn/routing/RoutingCgrModel350_2Copies.o \
     $O/src/node/dtn/routing/RoutingCgrModel350_Hops.o \
     $O/src/node/dtn/routing/RoutingCgrModel350_Probabilistic.o \
