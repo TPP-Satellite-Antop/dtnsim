@@ -8,14 +8,13 @@ RoutingTable::RoutingTable(Antop* antop) {
 }
 
 H3Index RoutingTable::findNextHop(H3Index cur, H3Index src, H3Index dst, H3Index sender, int distance) {
-    int shortestDistanceToSrc = pairTable[{src, dst}];
-    if (shortestDistanceToSrc != 0 && shortestDistanceToSrc + 3 < distance) // ToDo: replace hardcoded threshold.
+    int distanceToSrc = pairTable[{src, dst}];
+    if (distanceToSrc != 0 && distanceToSrc + 3 < distance) // ToDo: replace hardcoded threshold.
         return sender;
 
-    if (shortestDistanceToSrc == 0 || shortestDistanceToSrc < distance)
-        pairTable[{src, dst}] = distance;
+    pairTable[{src, dst}] = distanceToSrc == 0 ? distance : std::min(distanceToSrc, distance);
 
-    if (RoutingInfo routingInfoToSrc = routingTable[src]; routingInfoToSrc.nextHop == 0 || routingInfoToSrc.distance < distance) {
+    if (RoutingInfo routingInfoToSrc = routingTable[src]; routingInfoToSrc.nextHop == 0 || routingInfoToSrc.distance > distance) {
         std::vector<H3Index> candidates = antop->getHopCandidates(cur, dst, 0);
         __uint8_t bitmap = 128;
 
