@@ -3,7 +3,6 @@
 
 #include <unordered_map>
 #include <bits/types.h>
-#include <tuple>
 
 #include "h3api.h"
 #include "antop.h"
