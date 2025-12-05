@@ -25,34 +25,12 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     }
 
     bundle->setReturnToSender(nextHop == sender);
+    bundle->setBundleId(getEidFromH3Index(nextHop));
 
-    // ToDo: forward bundle to satellite at nextHop.
-}
-
-void RoutingAntop::getNewNextHop(BundlePkt *bundle, double simTime){
-    const vector<H3Index> candidates = this->antopAlgorithm->getHopCandidates(
-        getCurH3IndexForEid(eid_),
-        getCurH3IndexForEid(bundle->getDestinationEid()),
-        getCurH3IndexForEid(bundle->getSenderEid())
-    );
-
-    const auto eidsByCandidate = this->getEidsFromH3Indexes(candidates);
-
-    //TODO remove debug prints
-    for (auto [candidate, eid] : eidsByCandidate) {
-        std::cout << "Candidate: " << std::hex << candidate << " - EID: " << std::dec << eid << std::endl;
-    }
-
-    for (auto candidate : candidates) {
-        if (const int nextHop = eidsByCandidate.at(candidate); nextHop != 0) {
-            bundle->setNextHopEid(nextHop);
-            // saveToCache(bundle->getDestinationEid(), nextHop, simTime);
-            std::cout << "Routing bundle " << bundle->getBundleId() << " to " << nextHop << std::endl;
-            return;
-        }
-    }
-
-    storeBundle(bundle);
+    // ToDo:
+    // - Make sure bundles are being forwarded.
+    // - Check when we should save a bundle to SDR.
+    // - Validate invalid next hops and invalid EIDs for next hop.
 }
 
 H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
@@ -72,29 +50,23 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
     }
 }
 
-unordered_map<H3Index, int> RoutingAntop::getEidsFromH3Indexes(const vector<H3Index> &candidates) {
-    unordered_map<H3Index, int> eidsByCandidates; // ToDo: should be vector<int> instead of int to gather ALL options for fault tolerance.
-    eidsByCandidates.reserve(candidates.size());
+int RoutingAntop::getEidFromH3Index(const H3Index idx) {
+    int eid = 0;
 
-    for (const auto& candidate : candidates)
-        eidsByCandidates[candidate] = 0;
-
-    for (const auto& [eid, _] : *this->mobilityMap) {
-        const auto idx = this->getCurH3IndexForEid(eid);
-
-        if (auto it = eidsByCandidates.find(idx); it != eidsByCandidates.end())
-            it->second = eid;
+    for (const auto& [id, _] : *this->mobilityMap) {
+        if (idx == this->getCurH3IndexForEid(id)) {
+            eid = id;
+            break;
+        }
     }
 
-    return eidsByCandidates;
+    return eid;
 }
 
 // Equeue bundle for later if no candidate was found
-void RoutingAntop::storeBundle(BundlePkt *bundle) {
-    if(!sdr_->pushBundle(bundle)){
-        // ToDo: handle failed push.
+void RoutingAntop::storeBundle(BundlePkt *bundle) const {
+    if(!sdr_->pushBundle(bundle)) // ToDo: handle failed push.
         std::cout << "Failed to enqueue bundle " << bundle->getBundleId() << " to SDR" << std::endl;
-    } else {
+    else
         std::cout << "Enqueued bundle " << bundle->getBundleId() << " to SDR" << std::endl;
-    }
 }

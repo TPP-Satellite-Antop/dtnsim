@@ -12,6 +12,10 @@
 struct PairTableKey {
     H3Index source;
     H3Index destination;
+
+    bool operator==(const PairTableKey& other) const {
+        return source == other.source && destination == other.destination;
+    }
 };
 
 template <> struct std::hash<PairTableKey> {

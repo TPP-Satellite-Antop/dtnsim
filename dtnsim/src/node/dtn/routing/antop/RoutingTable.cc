@@ -51,7 +51,7 @@ H3Index RoutingTable::findNewNeighbor(const H3Index cur, const H3Index dst, cons
     H3Index nextNeighbor = sender;
     curNeighbor = 128;
     for (auto candidate : candidates) {
-        if (bitmap & curNeighbor == 0) {
+        if ((bitmap & curNeighbor) == 0) {
             nextNeighbor = candidate;
             break;
         }
