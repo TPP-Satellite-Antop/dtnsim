@@ -18,7 +18,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
 
     std::cout << "Received bundle " << bundle->getBundleId() << " from " << bundle->getSenderEid() << " at " << eid_ << " to " << bundle->getDestinationEid() << std::endl;
     std::cout << "Received bundle " << bundle->getBundleId() << std::hex << " from " << sender << " at " << cur << std::endl;
-    std::cout << "Routing to " << dst << " with distance " << std::dec << bundle->getHopCount() << std::endl;
+    std::cout << "Routing towards " << dst << " with distance " << std::dec << bundle->getHopCount() << std::endl;
     std::cout << "Node " << eid_ << " routing bundle " << bundle->getBundleId() << " from src " << bundle->getSourceEid() << ", sender " << bundle->getSenderEid() << " to " << bundle->getDestinationEid() << std::endl;
 
     while (nextHopEid == 0) {
@@ -32,13 +32,13 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         nextHopEid = getEidFromH3Index(nextHop);
     }
 
-    if (nextHopEid == cur)
+    if (nextHop == cur)
         storeBundle(bundle);
     else {
         bundle->setReturnToSender(nextHop == sender);
-        bundle->setBundleId(getEidFromH3Index(nextHop));
+        bundle->setNextHopEid(getEidFromH3Index(nextHop));
 
-        std::cout << "Routing to " << std::hex << nextHop << std::dec << "|||" << getEidFromH3Index(nextHop) << std::endl << std::endl;
+        std::cout << "Routing through " << std::hex << nextHop << std::dec << "|||" << getEidFromH3Index(nextHop) << std::endl << std::endl;
     }
 
     // ToDo:
@@ -70,7 +70,7 @@ int RoutingAntop::getEidFromH3Index(const H3Index idx) {
     int eid = 0;
 
     for (const auto& [id, _] : *this->mobilityMap) {
-        if (idx == this->getCurH3IndexForEid(id)) {
+        if (id != 0 && idx == this->getCurH3IndexForEid(id)) {
             eid = id;
             break;
         }
