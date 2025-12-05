@@ -17,7 +17,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     H3Index sender = getCurH3IndexForEid(bundle->getSenderEid());
 
     if (bundle->getReturnToSender()) {
-        auto nextHop = routingTable.findNextNeighbor(0, destination, sender);
+        auto nextHop = routingTable.findNewNeighbor(0, destination, sender);
         if (nextHop != sender)
             bundle->setReturnToSender(false);
         // ToDo: find satellite and route
