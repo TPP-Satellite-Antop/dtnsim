@@ -176,7 +176,7 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
         emit(dtnBundleSentToAppHopCount, bundle->getHopCount());
         bundle->getVisitedNodesForUpdate().sort();
         bundle->getVisitedNodesForUpdate().unique();
-        emit(dtnBundleSentToAppRevisitedHops, bundle->getHopCount() - bundle->getVisitedNodes().size());
+        // emit(dtnBundleSentToAppRevisitedHops, bundle->getHopCount() - bundle->getVisitedNodes().size());
 
         // Check if this bundle has previously arrived here
         if (routing->msgToMeArrive(bundle)) {
@@ -244,7 +244,6 @@ void ContactlessDtn::sendMsg(BundlePkt *bundle) {
     bundle->setHopCount(bundle->getHopCount() + 1);
     bundle->setXmitCopiesCount(0);
 
-    std::cout << "Node " << eid_ << " --- Sending bundle to --> Node "<< bundle->getNextHopEid() << std::endl;
     send(bundle, "gateToCom$o");
 
     // If custody requested, store a copy of the bundle until report received

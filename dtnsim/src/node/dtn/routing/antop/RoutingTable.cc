@@ -34,8 +34,7 @@ H3Index RoutingTable::findNextHop(H3Index cur, H3Index src, H3Index dst, H3Index
 
 H3Index RoutingTable::findNewNeighbor(const H3Index cur, const H3Index dst, const H3Index sender) {
     __uint8_t bitmap = routingTable[dst].visitedBitmap;
-
-    std::vector<H3Index> candidates = antop->getHopCandidates(cur, dst, 0);
+    std::vector<H3Index> candidates = antop->getHopCandidates(cur, dst, sender);
 
     __uint8_t curNeighbor = 128;
     for (auto candidate : candidates) {
@@ -47,7 +46,7 @@ H3Index RoutingTable::findNewNeighbor(const H3Index cur, const H3Index dst, cons
     }
 
     // If no path is found, perhaps we want to return a 0 instead of the sender.
-    H3Index nextNeighbor = sender;
+    H3Index nextNeighbor = cur;
     curNeighbor = 128;
     for (auto candidate : candidates) {
         if ((bitmap & curNeighbor) == 0) {

@@ -10,22 +10,37 @@ RoutingAntop::RoutingAntop(Antop* antop, const int eid, SdrModel *sdr, map<int, 
 RoutingAntop::~RoutingAntop() {}
 
 void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
-    std::cout << "Node " << eid_ << " routing bundle " << bundle->getBundleId() << " from src " << bundle->getSourceEid() << ", sender " << bundle->getSenderEid() << " to " << bundle->getDestinationEid() << std::endl;
-
     const H3Index cur = getCurH3IndexForEid(eid_);
     const H3Index dst = getCurH3IndexForEid(bundle->getDestinationEid());
     const H3Index sender = getCurH3IndexForEid(bundle->getSenderEid());
     H3Index nextHop = 0;
+    int nextHopEid = 0;
 
-    if (bundle->getReturnToSender())
-        nextHop = routingTable.findNewNeighbor(cur, dst, sender);
-    else {
-        const H3Index src = getCurH3IndexForEid(bundle->getSourceEid());
-        nextHop = routingTable.findNextHop(cur, src, dst, sender, 0); // ToDo: send actual hop count from bundle.
+    std::cout << "Received bundle " << bundle->getBundleId() << " from " << bundle->getSenderEid() << " at " << eid_ << " to " << bundle->getDestinationEid() << std::endl;
+    std::cout << "Received bundle " << bundle->getBundleId() << std::hex << " from " << sender << " at " << cur << std::endl;
+    std::cout << "Routing to " << dst << " with distance " << std::dec << bundle->getHopCount() << std::endl;
+    std::cout << "Node " << eid_ << " routing bundle " << bundle->getBundleId() << " from src " << bundle->getSourceEid() << ", sender " << bundle->getSenderEid() << " to " << bundle->getDestinationEid() << std::endl;
+
+    while (nextHopEid == 0) {
+        if (bundle->getReturnToSender())
+            nextHop = routingTable.findNewNeighbor(cur, dst, sender);
+        else {
+            const H3Index src = getCurH3IndexForEid(bundle->getSourceEid());
+            nextHop = routingTable.findNextHop(cur, src, dst, sender, bundle->getHopCount());
+        }
+
+        nextHopEid = getEidFromH3Index(nextHop);
+        std::cout << "Next hop " << std::dec << nextHopEid << " ||| " << std::hex << nextHop << std::endl;
     }
 
-    bundle->setReturnToSender(nextHop == sender);
-    bundle->setBundleId(getEidFromH3Index(nextHop));
+    if (nextHopEid == cur)
+        storeBundle(bundle);
+    else {
+        bundle->setReturnToSender(nextHop == sender);
+        bundle->setBundleId(getEidFromH3Index(nextHop));
+
+        std::cout << "Routing to " << std::hex << nextHop << std::dec << "|||" << getEidFromH3Index(nextHop) << std::endl << std::endl;
+    }
 
     // ToDo:
     // - Make sure bundles are being forwarded.
@@ -34,6 +49,8 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
 }
 
 H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
+    if (eid == 0) return 0;
+
     try {
         const inet::SatelliteMobility *mobility = this->mobilityMap->at(eid);
         const auto latLng = LatLng {mobility->getLatitude(), mobility->getLongitude()};
