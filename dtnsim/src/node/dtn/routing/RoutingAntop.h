@@ -20,7 +20,6 @@ class RoutingAntop : public RoutingDeterministic {
     map<int, inet::SatelliteMobility *> *mobilityMap;
     RoutingTable routingTable;
 
-    unordered_map<int, CacheEntry> nextHopCache; // key: destination eid, value: next hop cache entry       
     [[nodiscard]] bool isNextHopValid(H3Index nextHop) const;
 
     // Returns the current H3 index of the node with given eid. Returns 0 if not found.

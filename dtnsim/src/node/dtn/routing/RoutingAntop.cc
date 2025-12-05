@@ -12,30 +12,22 @@ RoutingAntop::~RoutingAntop() {}
 void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     std::cout << "Node " << eid_ << " routing bundle " << bundle->getBundleId() << " from src " << bundle->getSourceEid() << ", sender " << bundle->getSenderEid() << " to " << bundle->getDestinationEid() << std::endl;
 
-    H3Index destination = getCurH3IndexForEid(bundle->getDestinationEid());
-    H3Index source = getCurH3IndexForEid(bundle->getSourceEid());
-    H3Index sender = getCurH3IndexForEid(bundle->getSenderEid());
+    const H3Index cur = getCurH3IndexForEid(eid_);
+    const H3Index dst = getCurH3IndexForEid(bundle->getDestinationEid());
+    const H3Index sender = getCurH3IndexForEid(bundle->getSenderEid());
+    H3Index nextHop = 0;
 
-    if (bundle->getReturnToSender()) {
-        auto nextHop = routingTable.findNewNeighbor(0, destination, sender);
-        if (nextHop != sender)
-            bundle->setReturnToSender(false);
-        // ToDo: find satellite and route
+    if (bundle->getReturnToSender())
+        nextHop = routingTable.findNewNeighbor(cur, dst, sender);
+    else {
+        const H3Index src = getCurH3IndexForEid(bundle->getSourceEid());
+        nextHop = routingTable.findNextHop(cur, src, dst, sender, 0); // ToDo: send actual hop count from bundle.
     }
 
+    bundle->setReturnToSender(nextHop == sender);
 
-
-    // ToDo: replace 0 with actual distance.
-    //routingTable->insert(source, CacheEntry{sender, 0}); // Add reverse entry IF NOT FOUND ?????
-
-
-
-
-
-
+    // ToDo: forward bundle to satellite at nextHop.
 }
-
-
 
 void RoutingAntop::getNewNextHop(BundlePkt *bundle, double simTime){
     const vector<H3Index> candidates = this->antopAlgorithm->getHopCandidates(
