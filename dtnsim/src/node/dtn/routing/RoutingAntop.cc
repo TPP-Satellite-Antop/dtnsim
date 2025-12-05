@@ -15,14 +15,15 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     const H3Index sender = getCurH3IndexForEid(bundle->getSenderEid());
     H3Index nextHop = 0;
     int nextHopEid = 0;
+    int tries = 10;
 
     std::cout << "Received bundle " << bundle->getBundleId() << " from " << bundle->getSenderEid() << " at " << eid_ << " to " << bundle->getDestinationEid() << std::endl;
     std::cout << "Received bundle " << bundle->getBundleId() << std::hex << " from " << sender << " at " << cur << std::endl;
     std::cout << "Routing to " << dst << " with distance " << std::dec << bundle->getHopCount() << std::endl;
     std::cout << "Node " << eid_ << " routing bundle " << bundle->getBundleId() << " from src " << bundle->getSourceEid() << ", sender " << bundle->getSenderEid() << " to " << bundle->getDestinationEid() << std::endl;
 
-    while (nextHopEid == 0) {
-        if (bundle->getReturnToSender())
+    while (nextHopEid == 0 && tries > 0) {
+        if (bundle->getReturnToSender() || bundle->getSenderEid())
             nextHop = routingTable.findNewNeighbor(cur, dst, sender);
         else {
             const H3Index src = getCurH3IndexForEid(bundle->getSourceEid());
@@ -31,6 +32,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
 
         nextHopEid = getEidFromH3Index(nextHop);
         std::cout << "Next hop " << std::dec << nextHopEid << " ||| " << std::hex << nextHop << std::endl;
+        tries--;
     }
 
     if (nextHopEid == cur)

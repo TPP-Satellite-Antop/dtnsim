@@ -2,7 +2,7 @@
 #define DTNSIM_ANTOPROUTINGTABLE_H
 
 #include <unordered_map>
-#include <bits/types.h>
+#include <bitset>
 
 #include "h3api.h"
 #include "antop.h"
@@ -29,7 +29,7 @@ struct RoutingInfo {
     H3Index nextHop = 0;
     double ttl = 0; // Simulation time until which this entry is valid
     int distance = 0;
-    __uint8_t visitedBitmap = 0; // Each bit represents a neighbour. Since a hexagon has up to 6 neighbours, last 2 bits are redundant and never used.
+    bitset<6> visitedBitmap = {0b000000}; // Each bit represents a neighbour. Since a pentagon has up to 5 neighbours, its last bit must never be used.
 };
 
 class RoutingTable {

@@ -1,7 +1,12 @@
 #include <vector>
+#include <bitset>
+
 #include "RoutingTable.h"
 #include "antop.h"
 #include "h3api.h"
+
+#include <iostream>
+#include <ostream>
 
 RoutingTable::RoutingTable(Antop* antop) {
     this->antop = antop;
@@ -33,10 +38,11 @@ H3Index RoutingTable::findNextHop(H3Index cur, H3Index src, H3Index dst, H3Index
 }
 
 H3Index RoutingTable::findNewNeighbor(const H3Index cur, const H3Index dst, const H3Index sender) {
-    __uint8_t bitmap = routingTable[dst].visitedBitmap;
+    auto bitmap = routingTable[dst].visitedBitmap;
     std::vector<H3Index> candidates = antop->getHopCandidates(cur, dst, sender);
 
-    __uint8_t curNeighbor = 128;
+    // Flag sender as visited. ToDo: is this even necessary?
+    std::bitset<6> curNeighbor{0b100000};
     for (auto candidate : candidates) {
         if (candidate == sender) {
             bitmap = bitmap | curNeighbor;
@@ -47,10 +53,11 @@ H3Index RoutingTable::findNewNeighbor(const H3Index cur, const H3Index dst, cons
 
     // If no path is found, perhaps we want to return a 0 instead of the sender.
     H3Index nextNeighbor = cur;
-    curNeighbor = 128;
+    curNeighbor = {0b100000};
     for (auto candidate : candidates) {
         if ((bitmap & curNeighbor) == 0) {
             nextNeighbor = candidate;
+            bitmap = bitmap | curNeighbor;
             break;
         }
         curNeighbor = curNeighbor >> 1;
