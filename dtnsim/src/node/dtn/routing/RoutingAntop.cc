@@ -43,11 +43,6 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
 
         std::cout << "Routing through " << std::hex << nextHop << std::dec << " ||| " << getEidFromH3Index(nextHop) << std::endl << std::endl;
     }
-
-    // ToDo:
-    // - Make sure bundles are being forwarded.
-    // - Check when we should save a bundle to SDR.
-    // - Validate invalid next hops and invalid EIDs for next hop.
 }
 
 H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {

@@ -53,7 +53,7 @@ H3Index RoutingTable::findNewNeighbor(const H3Index cur, const H3Index dst, cons
         curNeighbor = curNeighbor >> 1;
     }
 
-    // If no path is found, we should return to sender unless it has already been tried.
+    // ToDo: if no path is found, we should return to sender unless it has already been tried.
     H3Index nextNeighbor = cur;
     curNeighbor = {0b100000};
     for (auto candidate : candidates) {
