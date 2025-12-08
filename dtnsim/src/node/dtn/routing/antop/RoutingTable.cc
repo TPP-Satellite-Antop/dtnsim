@@ -14,8 +14,10 @@ RoutingTable::RoutingTable(Antop* antop) {
 
 H3Index RoutingTable::findNextHop(H3Index cur, H3Index src, H3Index dst, H3Index sender, int distance) {
     int distanceToSrc = pairTable[{src, dst}];
-    if (distanceToSrc != 0 && distanceToSrc + 3 < distance) // ToDo: replace hardcoded threshold.
+    if (distanceToSrc != 0 && distanceToSrc + 3 < distance) { // ToDo: replace hardcoded threshold.
+        // return findNewNeighbor(cur, dst, sender);
         return sender;
+    }
 
     pairTable[{src, dst}] = distanceToSrc == 0 ? distance : std::min(distanceToSrc, distance);
 
@@ -39,9 +41,9 @@ H3Index RoutingTable::findNextHop(H3Index cur, H3Index src, H3Index dst, H3Index
 
 H3Index RoutingTable::findNewNeighbor(const H3Index cur, const H3Index dst, const H3Index sender) {
     auto bitmap = routingTable[dst].visitedBitmap;
-    std::vector<H3Index> candidates = antop->getHopCandidates(cur, dst, sender);
+    std::vector<H3Index> candidates = antop->getHopCandidates(cur, dst, 0);
 
-    // Flag sender as visited. ToDo: is this even necessary?
+    // Flag sender as visited.
     std::bitset<6> curNeighbor{0b100000};
     for (auto candidate : candidates) {
         if (candidate == sender) {
@@ -51,7 +53,7 @@ H3Index RoutingTable::findNewNeighbor(const H3Index cur, const H3Index dst, cons
         curNeighbor = curNeighbor >> 1;
     }
 
-    // If no path is found, perhaps we want to return a 0 instead of the sender.
+    // If no path is found, we should return to sender unless it has already been tried.
     H3Index nextNeighbor = cur;
     curNeighbor = {0b100000};
     for (auto candidate : candidates) {

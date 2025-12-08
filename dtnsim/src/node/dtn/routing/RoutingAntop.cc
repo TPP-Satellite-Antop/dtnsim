@@ -16,12 +16,15 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     H3Index nextHop = 0;
     int nextHopEid = 0;
 
-    std::cout << "Received bundle " << bundle->getBundleId() << " from " << bundle->getSenderEid() << " at " << eid_ << " to " << bundle->getDestinationEid() << std::endl;
-    std::cout << "Received bundle " << bundle->getBundleId() << std::hex << " from " << sender << " at " << cur << std::endl;
-    std::cout << "Routing towards " << dst << " with distance " << std::dec << bundle->getHopCount() << std::endl;
-    std::cout << "Node " << eid_ << " routing bundle " << bundle->getBundleId() << " from src " << bundle->getSourceEid() << ", sender " << bundle->getSenderEid() << " to " << bundle->getDestinationEid() << std::endl;
+    std::cout << "Routing:" << std::endl;
+    std::cout << "  Bundle: " << std::dec << bundle->getBundleId() << std::endl;
+    std::cout << "  Current: " << std::dec << eid_ << " /// " << std::hex << cur << std::endl;
+    std::cout << "  Source: " << std::dec << bundle->getSourceEid() << " /// " << std::hex << getCurH3IndexForEid(bundle->getSourceEid()) << std::endl;
+    std::cout << "  Sender: " << std::dec << bundle->getSenderEid() << " /// " << std::hex << sender << std::endl;
+    std::cout << "  Destination: " << std::dec << bundle->getDestinationEid() << " /// " << std::hex << dst << std::endl;
 
     while (nextHopEid == 0) {
+        // ToDo: I'm no longer sure why I'm checking bundle->getSenderEid(), but it's extremely important to validate this!!!!
         if (bundle->getReturnToSender() || bundle->getSenderEid())
             nextHop = routingTable.findNewNeighbor(cur, dst, sender);
         else {
@@ -38,7 +41,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         bundle->setReturnToSender(nextHop == sender);
         bundle->setNextHopEid(getEidFromH3Index(nextHop));
 
-        std::cout << "Routing through " << std::hex << nextHop << std::dec << "|||" << getEidFromH3Index(nextHop) << std::endl << std::endl;
+        std::cout << "Routing through " << std::hex << nextHop << std::dec << " ||| " << getEidFromH3Index(nextHop) << std::endl << std::endl;
     }
 
     // ToDo:
@@ -67,16 +70,15 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
 }
 
 int RoutingAntop::getEidFromH3Index(const H3Index idx) {
-    int eid = 0;
+    /*for (const auto& [eid, _] : *this->mobilityMap) {
+        if (eid != 0) { std::cout << "Position: " << std::hex << this->getCurH3IndexForEid(eid) << std::endl; }
+    }*/
 
-    for (const auto& [id, _] : *this->mobilityMap) {
-        if (id != 0 && idx == this->getCurH3IndexForEid(id)) {
-            eid = id;
-            break;
-        }
+    for (const auto& [eid, _] : *this->mobilityMap) {
+        if (eid != 0 && idx == this->getCurH3IndexForEid(eid)) return eid;
     }
 
-    return eid;
+    return 0;
 }
 
 // Equeue bundle for later if no candidate was found
