@@ -37,7 +37,7 @@ class ContactlessDtn : public cSimpleModule, public Observer {
     map<int, int> getReachableNodes() const;
     void addCurrentNeighbor(int neighborEid);
     void removeCurrentNeighbor(int neighborEid);
-    void setRoutingAlgorithm(RoutingTable* routingTable);
+    void setRoutingAlgorithm(Antop* antop);
     void setMobilityMap(map<int, inet::SatelliteMobility*> *mobilityMap);
 
   protected:
@@ -53,7 +53,7 @@ class ContactlessDtn : public cSimpleModule, public Observer {
   private:
     int eid_;
     bool onFault = false;
-    RoutingTable* routingTable;
+    Antop* antop;
     map<int, inet::SatelliteMobility*> *mobilityMap_;
     void initializeRouting(string routingString);
 

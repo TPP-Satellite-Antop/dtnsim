@@ -9,7 +9,7 @@
 
 class RoutingAntop : public RoutingDeterministic {
   public:
-    RoutingAntop(RoutingTable* routingTable, int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap);
+    RoutingAntop(Antop* antop, int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap);
     virtual ~RoutingAntop();
     virtual void routeAndQueueBundle(BundlePkt *bundle, double simTime);
 

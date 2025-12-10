@@ -1,9 +1,9 @@
 #include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 
-RoutingAntop::RoutingAntop(RoutingTable* routingTable, const int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) {
+RoutingAntop::RoutingAntop(Antop* antop, const int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) {
     this->mobilityMap = mobilityMap;
-    this->routingTable = routingTable;
+    this->routingTable = new RoutingTable(antop);
 }
 
 RoutingAntop::~RoutingAntop() {}
