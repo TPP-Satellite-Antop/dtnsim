@@ -30,6 +30,7 @@ class ContactlessCentral : public Central {
     vector<int> getRandomNodeIdsWithFProb(double failureProbability) override;
     vector<int> getNodeIdsWithSpecificFProb() override;
     vector<int> getCentralityNodeIds(int n, int nodesNumber) override;
+    void finish() override;
 };
 
 } // namespace dtnsim

@@ -1,11 +1,12 @@
 #include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 
-RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) {
+RoutingAntop::RoutingAntop(Antop* antop, int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap, MetricCollector *metricCollector_): RoutingDeterministic(eid, sdr) {
     this->prevSrc = 0;
     this->antopAlgorithm = antop;
     this->nextHopCache = unordered_map<int, CacheEntry>();
     this->mobilityMap = mobilityMap;
+    this->metricCollector = metricCollector_;
 }
 
 RoutingAntop::~RoutingAntop() {}
@@ -16,6 +17,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     int cachedNextHop = getFromCache(bundle->getDestinationEid(), simTime);
     if(cachedNextHop != 0){
         bundle->setNextHopEid(cachedNextHop);
+        this->metricCollector->increaseBundleHops(bundle->getBundleId());
         return;
     }
 
@@ -40,6 +42,7 @@ void RoutingAntop::getNewNextHop(BundlePkt *bundle, double simTime){
         if (const int nextHop = eidsByCandidate.at(candidate); nextHop != 0) {
             bundle->setNextHopEid(nextHop);
             saveToCache(bundle->getDestinationEid(), nextHop, simTime);
+            this->metricCollector->increaseBundleHops(bundle->getBundleId());
             std::cout << "Routing bundle " << bundle->getBundleId() << " to " << nextHop << std::endl;
             return;
         }
@@ -59,8 +62,8 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
         }
 
         return cell;
-    } catch (const std::out_of_range& e) {
-        cout << "Error in antop routing: no mobility module found for eid " << eid << endl;
+    } catch (exception& e) {
+        cout << "Error in antop routing: no mobility module found for eid " << eid << e.what() << endl;
         return 0;   
     }
 }

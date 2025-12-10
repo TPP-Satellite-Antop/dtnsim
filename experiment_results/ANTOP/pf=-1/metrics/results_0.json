@@ -1,0 +1,17 @@
+{
+    "avgElapsedTime": 0.0021736309999999997,
+    "avgNumberOfHops": 33,
+    "bundles": [
+        {
+            "elapsedTime": 0.002499415,
+            "id": 15,
+            "numberOfHops": 33
+        },
+        {
+            "elapsedTime": 0.0018478469999999997,
+            "id": 16,
+            "numberOfHops": 33
+        }
+    ],
+    "simulationWalltimeSeconds": 14
+}

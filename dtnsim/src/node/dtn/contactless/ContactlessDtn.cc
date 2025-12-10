@@ -103,7 +103,7 @@ void ContactlessDtn::initializeRouting(string routingString) {
     if (routingString == "antop") {
         inet::SatelliteMobility* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
         (*this->mobilityMap_)[eid_] = mobility;
-        this->routing = new RoutingAntop(this->antop_, this->eid_, &sdr_, mobilityMap_);
+        this->routing = new RoutingAntop(this->antop_, this->eid_, &sdr_, mobilityMap_, this->metricCollector_);
     } else {
         cout << "dtnsim error: unknown routing type: " << routingString << endl;
     }
@@ -136,6 +136,7 @@ void ContactlessDtn::finish() {
  */
 
 void ContactlessDtn::handleMessage(cMessage *msg) {
+    auto elapsedTimeStart = std::chrono::steady_clock::now();
     ///////////////////////////////////////////
     // New Bundle (from App or Com):
     ///////////////////////////////////////////
@@ -147,7 +148,11 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
             if (msg->arrivedOn("gateToApp$i"))
                 emit(dtnBundleReceivedFromApp, true);
 
+            auto bundle = check_and_cast<BundlePkt *>(msg);
             dispatchBundle(check_and_cast<BundlePkt *>(msg));
+            double elapsedTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
+            this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTime);
+
             break;
         }
         case CUSTODY_TIMEOUT: {
@@ -172,6 +177,7 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
 
 void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
     if (this->eid_ == bundle->getDestinationEid()) { // We are the final destination of this bundle
+        this->metricCollector_->setFinalArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
         emit(dtnBundleSentToApp, true);
         emit(dtnBundleSentToAppHopCount, bundle->getHopCount());
         bundle->getVisitedNodesForUpdate().sort();
@@ -245,6 +251,7 @@ void ContactlessDtn::sendMsg(BundlePkt *bundle) {
     bundle->setXmitCopiesCount(0);
 
     std::cout << "Node " << eid_ << " --- Sending bundle to --> Node "<< bundle->getNextHopEid() << std::endl;
+    this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
     send(bundle, "gateToCom$o");
 
     // If custody requested, store a copy of the bundle until report received

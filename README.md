@@ -41,6 +41,14 @@ git pull
 Go to omnetpp IDE, add dtnsim project, open any of the use cases ini files from /simulations.
 Finally right click on the .ini: Run->Run As->Omnet++ Simulation.
 
+To generate antop .ini using a script, move to /simulations and run:
+```sh
+python3 generate-antop.py
+```
+Then, you will be requested to provide the number of planes.
+An antop .ini file will be generated in simulations/antop/antop<num_nodes>-sats.ini
+
+Metrics of the simulations will be saved in /experiment_results folder (or in the specified path in the .ini file).
 ## ION Support ##
 
 Interplanetary Overlay Network (ION) flight code is supported in the support-ion branch. Currently, ION 3.5.0 Contact Graph Routing library is supported by DTNSIM.

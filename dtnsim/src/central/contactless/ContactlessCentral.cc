@@ -18,6 +18,7 @@ ContactlessCentral::~ContactlessCentral() {}
 void ContactlessCentral::initialize() {
     Central::initialize();
 
+    this->metricCollector_.setAlgorithm("ANTOP");
     for (int i = 0; i <= nodesNumber_; i++) {
         auto dtn = check_and_cast<ContactlessDtn *>(
             this->getParentModule()->getSubmodule("node", i)->getSubmodule("dtn"));
@@ -106,6 +107,13 @@ vector<int> ContactlessCentral::getNodeIdsWithSpecificFProb() {
 
 vector<int> ContactlessCentral::getCentralityNodeIds(int n, int nodesNumber) {
     return vector<int>();
+}
+
+void ContactlessCentral::finish() {
+    if (this->nodesNumber_ >= 1) {
+        cout << "Central: Evaluating and printing results..." << endl;
+        this->metricCollector_.evaluateAndPrintContactlessResults();
+    }
 }
 
 } // namespace dtnsim
