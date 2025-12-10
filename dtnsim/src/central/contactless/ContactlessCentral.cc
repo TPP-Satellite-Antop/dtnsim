@@ -71,8 +71,7 @@ void ContactlessCentral::initialize() {
     // finish() method to be called and collect some statistics when
     // none contact is scheduled.
 
-    auto antop = new Antop();
-    antop->init(nodesNumber_);
+    auto routingTable = new RoutingTable(nodesNumber_);
     auto* mobilityMap = new std::map<int, inet::SatelliteMobility*>();
     for (int i = 0; i <= nodesNumber_; i++) { //todo check
         auto dtn = check_and_cast<ContactlessDtn *>(
@@ -80,7 +79,7 @@ void ContactlessCentral::initialize() {
                 ->getSubmodule("node", i)
                 ->getSubmodule("dtn")
         );
-        dtn->setRoutingAlgorithm(antop);
+        dtn->setRoutingAlgorithm(routingTable);
         dtn->setMobilityMap(mobilityMap);
     }
 }
