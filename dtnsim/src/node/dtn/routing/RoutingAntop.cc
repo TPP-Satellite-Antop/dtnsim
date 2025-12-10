@@ -52,7 +52,7 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
         const auto latLng = LatLng {mobility->getLatitude(), mobility->getLongitude()};
         H3Index cell = 0;
 
-        if (latLngToCell(&latLng, this->routingTable->getAntopAlgorithm().getResolution(), &cell) != E_SUCCESS){
+        if (latLngToCell(&latLng, this->routingTable->getAntopResolution(), &cell) != E_SUCCESS){
             cout << "Error converting lat long to cell" << endl;
         }
 
