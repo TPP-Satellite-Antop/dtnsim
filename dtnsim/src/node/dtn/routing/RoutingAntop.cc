@@ -1,10 +1,9 @@
 #include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 
-RoutingAntop::RoutingAntop(Antop* antop, const int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr), routingTable(antop) {
-    this->antopAlgorithm = antop;
+RoutingAntop::RoutingAntop(Antop* antop, const int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) {
     this->mobilityMap = mobilityMap;
-    this->routingTable = RoutingTable(antop);
+    this->routingTable = new RoutingTable(antop);
 }
 
 RoutingAntop::~RoutingAntop() {}
@@ -26,10 +25,10 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     while (nextHopEid == 0) {
         // ToDo: I'm no longer sure why I'm checking bundle->getSenderEid(), but it's extremely important to validate this!!!!
         if (bundle->getReturnToSender() || bundle->getSenderEid())
-            nextHop = routingTable.findNewNeighbor(cur, dst, sender);
+            nextHop = routingTable->findNewNeighbor(cur, dst, sender);
         else {
             const H3Index src = getCurH3IndexForEid(bundle->getSourceEid());
-            nextHop = routingTable.findNextHop(cur, src, dst, sender, bundle->getHopCount());
+            nextHop = routingTable->findNextHop(cur, src, dst, sender, bundle->getHopCount());
         }
 
         nextHopEid = getEidFromH3Index(nextHop);
@@ -53,7 +52,7 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
         const auto latLng = LatLng {mobility->getLatitude(), mobility->getLongitude()};
         H3Index cell = 0;
 
-        if (latLngToCell(&latLng, this->antopAlgorithm->getResolution(), &cell) != E_SUCCESS){
+        if (latLngToCell(&latLng, this->routingTable->getAntopResolution(), &cell) != E_SUCCESS){
             cout << "Error converting lat long to cell" << endl;
         }
 
