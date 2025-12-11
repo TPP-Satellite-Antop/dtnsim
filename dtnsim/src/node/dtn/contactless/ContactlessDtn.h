@@ -53,7 +53,7 @@ class ContactlessDtn : public cSimpleModule, public Observer {
   private:
     int eid_;
     bool onFault = false;
-    Antop* antop_;
+    Antop* antop;
     map<int, inet::SatelliteMobility*> *mobilityMap_;
     void initializeRouting(string routingString);
 
