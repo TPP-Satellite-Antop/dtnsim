@@ -78,7 +78,7 @@ int RoutingAntop::getEidFromH3Index(const H3Index idx) {
 
 // Equeue bundle for later if no candidate was found
 void RoutingAntop::storeBundle(BundlePkt *bundle) const {
-    if(!sdr_->pushBundle(bundle)) // ToDo: handle failed push.
+    if(!sdr_->pushBundle(bundle))
         std::cout << "Failed to enqueue bundle " << bundle->getBundleId() << " to SDR" << std::endl;
     else
         std::cout << "Enqueued bundle " << bundle->getBundleId() << " to SDR" << std::endl;
