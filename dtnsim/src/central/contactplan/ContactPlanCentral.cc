@@ -17,6 +17,7 @@ ContactPlanCentral::~ContactPlanCentral() {}
 
 void ContactPlanCentral::initialize() {
     Central::initialize();
+    this->metricCollector_.setAlgorithm("CGR");
 
     for (int i = 0; i <= nodesNumber_; i++) {
         ContactDtn *dtn = check_and_cast<ContactDtn *>(
@@ -140,6 +141,9 @@ void ContactPlanCentral::initialize() {
 void ContactPlanCentral::finish() {
     Central::finish();
     if (this->nodesNumber_ >= 1) {
+        cout << "Central: Evaluating and printing results..." << endl;
+        this->metricCollector_.evaluateAndPrintResults();
+    
         if (this->par("saveTopology")) {
             this->saveTopology();
         }

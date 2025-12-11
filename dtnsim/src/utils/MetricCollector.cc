@@ -19,10 +19,14 @@ void MetricCollector::initialize(int numOfNodes) {
         nodeMetric.eid_ = i + 1;
         this->nodeMetrics_.push_back(nodeMetric);
     }
+
+    this->bundleHops_ = map<long, int>();
+    this->bundleElapsedTime_ = map<long, double>();
+    this->bundleArrivalTime_ = map<long, ArrivalInfo>();
+    this->startWalltime = std::chrono::steady_clock::now();
 }
 
 void MetricCollector::updateCGRCalls(int eid) {
-
     this->nodeMetrics_.at(eid - 1).cgrCalls_ = this->nodeMetrics_.at(eid - 1).cgrCalls_ + 1;
 }
 
@@ -75,6 +79,34 @@ void MetricCollector::updateStartedBundles(int eid, long bundleId, int sourceEid
     }
 }
 
+void MetricCollector::increaseBundleHops(long bundleId) {
+    auto bundleHops = &this->bundleHops_;
+    if ((*bundleHops).find(bundleId) == (*bundleHops).end())
+        (*bundleHops)[bundleId] = 1;
+    else
+        (*bundleHops)[bundleId] = (*bundleHops)[bundleId] + 1;
+}
+
+void MetricCollector::updateBundleElapsedTime(long bundleId, double elapsedTime) {
+    auto bundleElapsedTime = &this->bundleElapsedTime_;
+    if ((*bundleElapsedTime).find(bundleId) == (*bundleElapsedTime).end())
+        (*bundleElapsedTime)[bundleId] = elapsedTime;
+    else
+        (*bundleElapsedTime)[bundleId] = (*bundleElapsedTime)[bundleId] + elapsedTime;
+}
+
+void MetricCollector::intializeArrivalTime(long bundleId, std::chrono::steady_clock::time_point initialTime) {
+    auto bundleArrivalTime = &this->bundleArrivalTime_;
+    if ((*bundleArrivalTime).find(bundleId) == (*bundleArrivalTime).end()){
+        (*bundleArrivalTime)[bundleId].generationTime = initialTime;
+    }
+    // if already initialized, do nothing because it is not the src node
+}
+
+void MetricCollector::setFinalArrivalTime(long bundleId, std::chrono::steady_clock::time_point finalTime) {
+    this->bundleArrivalTime_[bundleId].arrivalTime = finalTime;
+}
+
 void MetricCollector::updateCGRComputationTime(long computationTime) {
     this->cgrComputationTime_ += computationTime;
 }
@@ -114,9 +146,9 @@ int MetricCollector::getFileNumber(string prefix) {
 int MetricCollector::getMode() {
     return this->mode;
 }
+
 string MetricCollector::getPrefix() {
     string result = this->path_ + "/" + this->algorithm_;
-
     if (this->failureProb_ == -1) {
         result += "/pf=-1";
     } else if (this->failureProb_ == 20) {
@@ -135,8 +167,6 @@ string MetricCollector::getPrefix() {
 
     if (this->mode == 0) {
         result += "/no_opp";
-    } else if (this->mode == 1) {
-        result += "/opp_not_known";
     } else if (this->mode == 2) {
         result += "/opp_known";
     }
@@ -163,6 +193,8 @@ void MetricCollector::evaluateAndPrintResults() {
     // regular .txt file
     string prefix = this->getPrefix();
     int number = this->getFileNumber(prefix);
+    std::filesystem::create_directories(prefix + "/metrics");
+
     ofstream outputFile(prefix + "/metrics/output_" + to_string(number) + ".txt");
     outputFile << "The bundles with the following ids have been sent: " << endl;
     string sentIds = "";
@@ -222,7 +254,10 @@ void MetricCollector::evaluateAndPrintResults() {
             outputFile << "Bundle " << it->first << ": " << decisionsString << endl;
         }
     }
+
+    outputFile << seperator << endl;
     outputFile.close();
+
     // json file
     json j;
     vector<string> bundleIds;
@@ -260,6 +295,90 @@ void MetricCollector::evaluateAndPrintResults() {
     jsonFile << setw(4) << j << endl;
 
     jsonFile.close();
+
+    cout << "MetricCollector: Results written to " << prefix + "/metrics/" << endl;
+}
+
+
+void buildBundleMetrics(std::map<long, int> &bundleHops,
+                        std::map<long, double> &bundleElapseTime,
+                        std::map<long, ArrivalInfo> &bundleArrivalTime,
+                        int &avgNumberOfHops, double &avgElapsedTime, double &avgArrivalTime,
+                        nlohmann::json &bundleMetrics) {
+    for (auto it = bundleHops.begin(); it != bundleHops.end(); it++) {
+        long bundleId = it->first;
+        int hops = it->second;
+        double elapsedTime = bundleElapseTime[bundleId];
+        avgNumberOfHops += hops;
+        avgElapsedTime += elapsedTime;
+
+        json bundleMetric;
+        bundleMetric["id"] = bundleId;
+        bundleMetric["numberOfHops"] = hops;
+        bundleMetric["elapsedTime"] = elapsedTime;
+
+        if (bundleArrivalTime[bundleId].arrivalTime == std::chrono::steady_clock::time_point()) {
+            bundleMetrics.push_back(bundleMetric);
+            continue; // skip bundles that were not received
+        }
+        double arrivalTimeSecs = std::chrono::duration<double>(
+            (bundleArrivalTime[bundleId].arrivalTime) - (bundleArrivalTime[bundleId].generationTime)).count();
+        avgArrivalTime += arrivalTimeSecs;
+        bundleMetric["arrivalTime"] = arrivalTimeSecs;
+
+        bundleMetrics.push_back(bundleMetric);
+    }
+}
+
+/*
+ * All results from the node metrics are evaluated and printed into a .json file
+ */
+void MetricCollector::evaluateAndPrintContactlessResults() {
+    if(this->algorithm_ != "ANTOP"){
+        cout << "MetricCollector: Contactless results are only available for the ANTOP algorithm." << endl;
+        return;
+    }
+
+    string prefix = this->getPrefix();
+    int number = this->getFileNumber(prefix);
+    std::filesystem::create_directories(prefix + "/metrics");
+
+    auto endWalltime = std::chrono::steady_clock::now();
+    auto simTime = std::chrono::duration_cast<std::chrono::seconds>(endWalltime - this->startWalltime).count();
+
+    json j;
+
+    auto bundleMetrics = json::array();
+    auto avgNumberOfHops = 0;
+    auto avgElapsedTime = 0.0;
+    auto avgArrivalTime = 0.0;
+    buildBundleMetrics(
+        this->bundleHops_,
+        this->bundleElapsedTime_,
+        this->bundleArrivalTime_,
+        avgNumberOfHops, avgElapsedTime, avgArrivalTime,
+        bundleMetrics
+    );
+
+    if(!this->bundleHops_.empty()){
+        auto nBundles = this->bundleHops_.size();
+        avgNumberOfHops = avgNumberOfHops / nBundles;
+        avgElapsedTime = avgElapsedTime / nBundles;
+        avgArrivalTime = avgArrivalTime / nBundles;
+    }
+
+    j["bundles"] = bundleMetrics;
+    j["avgElapsedTime"] = avgElapsedTime; 
+    j["avgNumberOfHops"] = avgNumberOfHops;
+    if (avgArrivalTime > 0) // skip if no arrivals
+        j["avgArrivalTime"] = avgArrivalTime;
+    j["simulationWalltimeSeconds"] = simTime;
+
+    ofstream jsonFile(prefix + "/metrics/results_" + to_string(number) + ".json");
+    jsonFile << setw(4) << j << endl;
+    jsonFile.close();
+
+    cout << "MetricCollector: Results written to " << prefix + "/metrics/" << endl;
 }
 
 /*

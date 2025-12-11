@@ -15,10 +15,10 @@ sim-time-limit = 48h
 
 # Nodes quantity (identifiers (EiDs) matches their index, EiD=0 is ignored)			
 dtnsim.nodesNumber = {num_sats}
-dtnsim.node[1..{num_sats}].icon = "satellite"
+dtnsim.node[*].icon = "satellite"
 
 # Mobility
-dtnsim.node[1..].hasMobility = true
+dtnsim.node[*].hasMobility = true
 dtnsim.node[*].noradModule.satIndex = parentIndex()
 dtnsim.node[*].noradModule.satName = "sat"
 **.updateInterval = 20s
@@ -61,6 +61,11 @@ dtnsim.node[{src}].app.size = "{size}"
 dtnsim.node[*].com.typename = "Com"
 dtnsim.node[*].dtn.typename = "ContactlessDtn"
 dtnsim.central.typename = "ContactlessCentral"
+""")
+
+        f.write(f"""
+#Metrics
+dtnsim.central.collectorPath = "../../../experiment_results"
 """)
 
     print(f"Generated: {output_file}")

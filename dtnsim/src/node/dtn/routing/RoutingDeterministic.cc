@@ -5,6 +5,11 @@ RoutingDeterministic::RoutingDeterministic(int eid, SdrModel *sdr, ContactPlan *
     contactPlan_ = contactPlan;
 }
 
+RoutingDeterministic::RoutingDeterministic(int eid, SdrModel *sdr)
+    : Routing(eid, sdr) {
+    contactPlan_ = nullptr;
+}
+
 RoutingDeterministic::~RoutingDeterministic() {}
 
 void RoutingDeterministic::msgToOtherArrive(BundlePkt *bundle, double simTime) {

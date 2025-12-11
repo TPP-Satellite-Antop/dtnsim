@@ -1,9 +1,10 @@
 #include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 
-RoutingAntop::RoutingAntop(Antop* antop, const int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) {
+RoutingAntop::RoutingAntop(Antop* antop, const int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap, MetricCollector *metricCollector_): RoutingDeterministic(eid, sdr, nullptr) {
     this->mobilityMap = mobilityMap;
     this->routingTable = new RoutingTable(antop);
+    this->metricCollector = metricCollector_;
 }
 
 RoutingAntop::~RoutingAntop() {}
@@ -57,8 +58,8 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
         }
 
         return cell;
-    } catch (const std::out_of_range& e) {
-        cout << "Error in antop routing: no mobility module found for eid " << eid << endl;
+    } catch (exception& e) {
+        cout << "Error in antop routing: no mobility module found for eid " << eid << e.what() << endl;
         return 0;   
     }
 }
