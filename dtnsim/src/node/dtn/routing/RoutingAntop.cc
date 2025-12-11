@@ -65,9 +65,10 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
 }
 
 int RoutingAntop::getEidFromH3Index(const H3Index idx) {
-    /*for (const auto& [eid, _] : *this->mobilityMap) {
+    // Useful print for debugging. ToDo: remove at a later stage.
+    for (const auto& [eid, _] : *this->mobilityMap) {
         if (eid != 0) { std::cout << "Position: " << std::hex << this->getCurH3IndexForEid(eid) << std::endl; }
-    }*/
+    }
 
     for (const auto& [eid, _] : *this->mobilityMap) {
         if (eid != 0 && idx == this->getCurH3IndexForEid(eid)) return eid;

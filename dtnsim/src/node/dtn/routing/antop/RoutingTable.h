@@ -8,7 +8,7 @@
 #include "antop.h"
 #include "src/dtnsim_m.h"
 
-const int MAX_NEIGHBORS = 6;
+const int MAX_CANDIDATES = 6;
 
 struct PairTableKey {
     H3Index source;
@@ -32,7 +32,7 @@ struct RoutingInfo {
     H3Index nextHop = 0;
     double ttl = 0; // Simulation time until which this entry is valid
     int distance = 0;
-    bitset<MAX_NEIGHBORS> visitedNeighboursBitmap(0); // Each bit represents a neighbour. Since a pentagon has up to 5 neighbours, in that case, its last bit must never be used.
+    bitset<MAX_CANDIDATES> visitedNeighboursBitmap = 0; // Each bit represents a neighbour. Since a pentagon has up to 5 neighbours, in that case, its last bit must never be used.
 };
 
 class RoutingTable {

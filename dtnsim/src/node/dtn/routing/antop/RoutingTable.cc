@@ -53,14 +53,14 @@ bool RoutingTable::potentialLoop(int storedDistance, int curDistance) {
     return storedDistance != 0 && storedDistance + THRESHOLD_DISTANCE < curDistance;
 }
 
-constexpr std::bitset<MAX_NEIGHBORS> msbMask() {
-    std::bitset<MAX_NEIGHBORS> b;
-    b.set(MAX_NEIGHBORS - 1);  // highest bit
+constexpr std::bitset<MAX_CANDIDATES> msbMask() {
+    std::bitset<MAX_CANDIDATES> b;
+    b.set(MAX_CANDIDATES - 1);  // highest bit
     return b;
 }
 
 void markVisited(
-    std::bitset<MAX_NEIGHBORS>& bitmap,
+    std::bitset<MAX_CANDIDATES>& bitmap,
     const std::vector<H3Index>& candidates,
     H3Index visited
 ) {
@@ -74,11 +74,10 @@ void markVisited(
         curNeighbor >>= 1;
     }
 
-    throw std::runtime_error("Sender not found in candidates");
 }
 
 H3Index findNextUnvisitedNeighbor(
-    std::bitset<MAX_NEIGHBORS>& bitmap,
+    std::bitset<MAX_CANDIDATES>& bitmap,
     const std::vector<H3Index>& candidates,
     H3Index fallback
 ) {
