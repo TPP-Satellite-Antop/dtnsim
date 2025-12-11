@@ -103,7 +103,7 @@ void ContactlessDtn::initializeRouting(string routingString) {
     if (routingString == "antop") {
         inet::SatelliteMobility* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
         (*this->mobilityMap_)[eid_] = mobility;
-        this->routing = new RoutingAntop(this->antop_, this->eid_, &sdr_, mobilityMap_, this->metricCollector_);
+        this->routing = new RoutingAntop(this->antop, this->eid_, &sdr_, mobilityMap_, this->metricCollector_);
     } else {
         cout << "dtnsim error: unknown routing type: " << routingString << endl;
     }
@@ -301,5 +301,5 @@ void ContactlessDtn::update() {
 }
 
 void ContactlessDtn::setRoutingAlgorithm(Antop* antop) {
-    this->antop_ = antop;
+    this->antop = antop;
 }
