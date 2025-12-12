@@ -9,6 +9,7 @@ RoutingAntop::RoutingAntop(Antop* antop, const int eid, SdrModel *sdr, map<int, 
 RoutingAntop::~RoutingAntop() {}
 
 void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
+    cout << "hop count for bundle " << bundle->getBundleId() << ": " << bundle->getHopCount() << endl;
     const H3Index cur = getCurH3IndexForEid(eid_);
     const H3Index dst = getCurH3IndexForEid(bundle->getDestinationEid());
     const H3Index sender = getCurH3IndexForEid(bundle->getSenderEid());
@@ -23,6 +24,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     std::cout << "  Destination: " << std::dec << bundle->getDestinationEid() << " /// " << std::hex << dst << std::endl;
 
     auto mobilityModule = (*mobilityMap)[eid_];
+    auto ttlBefore = routingTable->getTtl();
     while (nextHopEid == 0) {
         // ToDo: I'm no longer sure why I'm checking bundle->getSenderEid(), but it's extremely important to validate this!!!!
         if (bundle->getReturnToSender() || bundle->getSenderEid())
@@ -32,11 +34,13 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
             nextHop = routingTable->findNextHop(cur, src, dst, sender, bundle->getHopCount(), mobilityModule->getNextUpdateTime().dbl());
         }
 
-        if(routingTable->hasRoutingTableExpired())
-            bundle->setHopCount(0); // todo revisar si no es 1
-
         nextHopEid = getEidFromH3Index(nextHop);
     }
+
+    auto ttlAfter = routingTable->getTtl();
+    if(ttlAfter != ttlBefore) // routing table was cleared due to ttl expiration
+        bundle->setHopCount(0); // todo revisar si no es 1
+
 
     if (nextHop == cur)
         storeBundle(bundle);
