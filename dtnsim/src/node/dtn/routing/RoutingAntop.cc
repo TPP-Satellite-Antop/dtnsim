@@ -32,6 +32,9 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
             nextHop = routingTable->findNextHop(cur, src, dst, sender, bundle->getHopCount(), mobilityModule->getNextUpdateTime().dbl());
         }
 
+        if(routingTable->hasRoutingTableExpired())
+            bundle->setHopCount(0); // todo revisar si no es 1
+
         nextHopEid = getEidFromH3Index(nextHop);
     }
 
