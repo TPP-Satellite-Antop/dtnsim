@@ -29,8 +29,9 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
             nextHop = routingTable->findNewNeighbor(cur, dst, sender);
         else {
             const H3Index src = getCurH3IndexForEid(bundle->getSourceEid());
-            nextHop = routingTable->findNextHop(cur, src, dst, sender, bundle->getHopCount());
-            if (routingTable->wasLoopDetected())
+            auto curDistance = bundle->getHopCount();
+            nextHop = routingTable->findNextHop(cur, src, dst, sender, &curDistance);
+            if (curDistance == 0)
                 bundle->setHopCount(0);
         }
 
