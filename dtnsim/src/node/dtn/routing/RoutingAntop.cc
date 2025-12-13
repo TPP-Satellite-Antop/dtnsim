@@ -9,7 +9,6 @@ RoutingAntop::RoutingAntop(Antop* antop, const int eid, SdrModel *sdr, map<int, 
 RoutingAntop::~RoutingAntop() {}
 
 void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
-    cout << "hop count for bundle " << bundle->getBundleId() << ": " << bundle->getHopCount() << endl;
     const H3Index cur = getCurH3IndexForEid(eid_);
     const H3Index dst = getCurH3IndexForEid(bundle->getDestinationEid());
     const H3Index sender = getCurH3IndexForEid(bundle->getSenderEid());
@@ -23,14 +22,14 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     std::cout << "  Sender: " << std::dec << bundle->getSenderEid() << " /// " << std::hex << sender << std::endl;
     std::cout << "  Destination: " << std::dec << bundle->getDestinationEid() << " /// " << std::hex << dst << std::endl;
 
-    auto mobilityModule = (*mobilityMap)[eid_];
+    auto nextUpdateTime = (*mobilityMap)[eid_]->getNextUpdateTime().dbl();
     while (nextHopEid == 0) {
         // ToDo: I'm no longer sure why I'm checking bundle->getSenderEid(), but it's extremely important to validate this!!!!
         if (bundle->getReturnToSender() || bundle->getSenderEid())
-            nextHop = routingTable->findNewNeighbor(cur, dst, sender, mobilityModule->getNextUpdateTime().dbl());
+            nextHop = routingTable->findNewNeighbor(cur, dst, sender, nextUpdateTime);
         else {
             const H3Index src = getCurH3IndexForEid(bundle->getSourceEid());
-            nextHop = routingTable->findNextHop(cur, src, dst, sender, bundle->getHopCount(), mobilityModule->getNextUpdateTime().dbl());
+            nextHop = routingTable->findNextHop(cur, src, dst, sender, bundle->getHopCount(), nextUpdateTime);
         }
 
         nextHopEid = getEidFromH3Index(nextHop);
