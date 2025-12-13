@@ -35,6 +35,8 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         nextHopEid = getEidFromH3Index(nextHop);
     }
 
+    this->metricCollector->increaseBundleHops(bundle->getBundleId());
+
     if (nextHop == cur)
         storeBundle(bundle);
     else {
