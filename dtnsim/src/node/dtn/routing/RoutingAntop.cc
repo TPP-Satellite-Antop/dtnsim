@@ -22,7 +22,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     std::cout << "  Sender: " << std::dec << bundle->getSenderEid() << " /// " << std::hex << sender << std::endl;
     std::cout << "  Destination: " << std::dec << bundle->getDestinationEid() << " /// " << std::hex << dst << std::endl;
 
-    auto nextUpdateTime = (*mobilityMap)[eid_]->getNextUpdateTime().dbl();
+    const auto nextUpdateTime = (*mobilityMap)[eid_]->getNextUpdateTime().dbl();
     while (nextHopEid == 0) {
         // ToDo: I'm no longer sure why I'm checking bundle->getSenderEid(), but it's extremely important to validate this!!!!
         if (bundle->getReturnToSender() || bundle->getSenderEid())
