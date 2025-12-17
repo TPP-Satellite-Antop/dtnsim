@@ -39,8 +39,6 @@ cOrbitA::cOrbitA(std::string satNameA, int epochY, double epochD, double altitud
    int planeIndex = satIndex % satPerPlane; //index of a satellite within a plane
 
    raan = ((360.0/planes)*currentPlane) * RADS_PER_DEG; //RAAN value, uniformly created so that there are equally spaced orbital planes for even coverage.
-   //double phaseOffsetVal = ((360.0/satPerPlane)*(phaseOffset/planes))*currentPlane;
-   //meanAnomaly = (((360.0/satPerPlane)*planeIndex))*RADS_PER_DEG; //Denotes the position of a satellite within its plane.
 
    double phaseOffsetVal = (360.0/satPerPlane)*(double(phaseOffset)/double(planes))*currentPlane;
    meanAnomaly = (((360.0/satPerPlane)*planeIndex) + phaseOffsetVal) * RADS_PER_DEG;
