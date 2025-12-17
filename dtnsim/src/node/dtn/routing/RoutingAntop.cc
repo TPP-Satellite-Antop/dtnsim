@@ -17,19 +17,31 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     int nextHopEid = 0;
 
     std::cout << "Routing:" << std::endl;
-    std::cout << "  Bundle: " << std::dec << bundle->getBundleId() << std::endl;
+    std::cout << "  Bundle: " << std::dec << bundle->getBundleId() << " /// " << bundle->getHopCount() << std::endl;
     std::cout << "  Current: " << std::dec << eid_ << " /// " << std::hex << cur << std::endl;
     std::cout << "  Source: " << std::dec << bundle->getSourceEid() << " /// " << std::hex << getCurH3IndexForEid(bundle->getSourceEid()) << std::endl;
     std::cout << "  Sender: " << std::dec << bundle->getSenderEid() << " /// " << std::hex << sender << std::endl;
     std::cout << "  Destination: " << std::dec << bundle->getDestinationEid() << " /// " << std::hex << dst << std::endl;
 
+	// Useful print for debugging. ToDo: remove at a later stage.
+    for (const auto& [eid, a] : *this->mobilityMap) {
+        if (eid != 0) {
+			std::cout << std::dec << "(" << a->getLatitude() << ", " << a->getLongitude() << ") /// " << std::hex << this->getCurH3IndexForEid(eid) << std::endl;
+			//std::cout << std::hex << this->getCurH3IndexForEid(eid) << std::endl;
+			//std::cout << std::dec << "lat: " << a->getLatitude() << ", lng: " << a->getLongitude() << std::endl;
+		}
+    }
+
+	const auto nextUpdateTime = (*mobilityMap)[eid_]->getNextUpdateTime().dbl();
+	int hopCount = bundle->getHopCount();
+
     while (nextHopEid == 0) {
         // ToDo: I'm no longer sure why I'm checking bundle->getSenderEid(), but it's extremely important to validate this!!!!
         if (bundle->getReturnToSender() || bundle->getSenderEid())
-            nextHop = routingTable->findNewNeighbor(cur, dst, sender);
+            nextHop = routingTable->findNewNeighbor(cur, dst, sender, nextUpdateTime);
         else {
             const H3Index src = getCurH3IndexForEid(bundle->getSourceEid());
-            nextHop = routingTable->findNextHop(cur, src, dst, sender, bundle->getHopCount());
+            nextHop = routingTable->findNextHop(cur, src, dst, sender, &hopCount, nextUpdateTime);
         }
 
         nextHopEid = getEidFromH3Index(nextHop);
@@ -50,7 +62,7 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
 
     try {
         const inet::SatelliteMobility *mobility = this->mobilityMap->at(eid);
-        const auto latLng = LatLng {mobility->getLatitude(), mobility->getLongitude()};
+        const auto latLng = LatLng {deg2rad(mobility->getLatitude()), deg2rad(mobility->getLongitude())};
         H3Index cell = 0;
 
         if (latLngToCell(&latLng, this->routingTable->getAntopResolution(), &cell) != E_SUCCESS){
@@ -65,11 +77,6 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
 }
 
 int RoutingAntop::getEidFromH3Index(const H3Index idx) {
-    // Useful print for debugging. ToDo: remove at a later stage.
-    for (const auto& [eid, _] : *this->mobilityMap) {
-        if (eid != 0) { std::cout << "Position: " << std::hex << this->getCurH3IndexForEid(eid) << std::endl; }
-    }
-
     for (const auto& [eid, _] : *this->mobilityMap) {
         if (eid != 0 && idx == this->getCurH3IndexForEid(eid)) return eid;
     }
