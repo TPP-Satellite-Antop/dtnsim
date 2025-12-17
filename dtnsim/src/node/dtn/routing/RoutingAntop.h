@@ -6,7 +6,6 @@
 #include "src/node/mobility/SatelliteMobility.h"
 #include <src/node/dtn/SdrModel.h>
 #include <src/node/dtn/routing/RoutingDeterministic.h>
-#include <src/utils/MetricCollector.h>
 
 class RoutingAntop : public RoutingDeterministic {
   public:
@@ -14,15 +13,13 @@ class RoutingAntop : public RoutingDeterministic {
       Antop* antop,
       int eid,
       SdrModel *sdr,
-      map<int, inet::SatelliteMobility *> *mobilityMap,
-      MetricCollector *metricCollector_);
+      map<int, inet::SatelliteMobility *> *mobilityMap);
     virtual ~RoutingAntop();
     virtual void routeAndQueueBundle(BundlePkt *bundle, double simTime);
 
   private:
     map<int, inet::SatelliteMobility *> *mobilityMap;
     RoutingTable *routingTable;
-    MetricCollector *metricCollector;
 
     // Returns the current H3 index of the node with given eid. Returns 0 if not found.
     [[nodiscard]] H3Index getCurH3IndexForEid(int eid) const;
