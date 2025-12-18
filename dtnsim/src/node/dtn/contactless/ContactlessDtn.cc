@@ -136,6 +136,7 @@ void ContactlessDtn::finish() {
  */
 
 void ContactlessDtn::handleMessage(cMessage *msg) {
+    auto elapsedTimeStart = std::chrono::steady_clock::now();
     ///////////////////////////////////////////
     // New Bundle (from App or Com):
     ///////////////////////////////////////////
@@ -147,7 +148,11 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
             if (msg->arrivedOn("gateToApp$i"))
                 emit(dtnBundleReceivedFromApp, true);
 
+            auto bundle = check_and_cast<BundlePkt *>(msg);
             dispatchBundle(check_and_cast<BundlePkt *>(msg));
+            double elapsedTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
+            this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTime);
+
             break;
         }
         case CUSTODY_TIMEOUT: {
@@ -172,11 +177,12 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
 
 void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
     if (this->eid_ == bundle->getDestinationEid()) { // We are the final destination of this bundle
+        this->metricCollector_->setFinalArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
         emit(dtnBundleSentToApp, true);
         emit(dtnBundleSentToAppHopCount, bundle->getHopCount());
         bundle->getVisitedNodesForUpdate().sort();
         bundle->getVisitedNodesForUpdate().unique();
-        // emit(dtnBundleSentToAppRevisitedHops, bundle->getHopCount() - bundle->getVisitedNodes().size());
+        emit(dtnBundleSentToAppRevisitedHops, bundle->getHopCount() - bundle->getVisitedNodes().size());
 
         // Check if this bundle has previously arrived here
         if (routing->msgToMeArrive(bundle)) {
@@ -212,8 +218,10 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
 
         if (sdr_.enqueuedBundle()) {
             scheduleRetry();
-        } else
+        } else{
+            this->metricCollector_->increaseBundleHops(bundle->getBundleId());
             sendMsg(bundle);
+        }
 
         sdr_.resetEnqueuedBundleFlag();
     }
@@ -244,6 +252,8 @@ void ContactlessDtn::sendMsg(BundlePkt *bundle) {
     bundle->setHopCount(bundle->getHopCount() + 1);
     bundle->setXmitCopiesCount(0);
 
+    std::cout << "Node " << eid_ << " --- Sending bundle to --> Node "<< bundle->getNextHopEid() << std::endl;
+    this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
     send(bundle, "gateToCom$o");
 
     // If custody requested, store a copy of the bundle until report received

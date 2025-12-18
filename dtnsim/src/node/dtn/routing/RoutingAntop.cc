@@ -29,7 +29,9 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
             nextHop = routingTable->findNewNeighbor(cur, dst, sender, nextUpdateTime);
         else {
             const H3Index src = getCurH3IndexForEid(bundle->getSourceEid());
-            nextHop = routingTable->findNextHop(cur, src, dst, sender, bundle->getHopCount(), nextUpdateTime);
+            auto curDistance = bundle->getHopCount();
+            nextHop = routingTable->findNextHop(cur, src, dst, sender, &curDistance, nextUpdateTime);
+            bundle->setHopCount(curDistance); // In case it was updated due to loop detection
         }
 
         nextHopEid = getEidFromH3Index(nextHop);
@@ -58,13 +60,14 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
         }
 
         return cell;
-    } catch (const std::out_of_range& e) {
-        cout << "Error in antop routing: no mobility module found for eid " << eid << endl;
+    } catch (exception& e) {
+        cout << "Error in antop routing: no mobility module found for eid " << eid << e.what() << endl;
         return 0;   
     }
 }
 
 int RoutingAntop::getEidFromH3Index(const H3Index idx) {
+    // Useful print for debugging. ToDo: remove at a later stage.
     /*for (const auto& [eid, _] : *this->mobilityMap) {
         if (eid != 0) { std::cout << "Position: " << std::hex << this->getCurH3IndexForEid(eid) << std::endl; }
     }*/
@@ -78,7 +81,7 @@ int RoutingAntop::getEidFromH3Index(const H3Index idx) {
 
 // Equeue bundle for later if no candidate was found
 void RoutingAntop::storeBundle(BundlePkt *bundle) const {
-    if(!sdr_->pushBundle(bundle)) // ToDo: handle failed push.
+    if(!sdr_->pushBundle(bundle))
         std::cout << "Failed to enqueue bundle " << bundle->getBundleId() << " to SDR" << std::endl;
     else
         std::cout << "Enqueued bundle " << bundle->getBundleId() << " to SDR" << std::endl;

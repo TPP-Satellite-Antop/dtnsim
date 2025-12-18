@@ -19,11 +19,7 @@ void Central::initialize() {
     this->metricCollector_.setPath(this->par("collectorPath"));
 }
 
-void Central::finish() {
-    if (nodesNumber_ >= 1) {
-        this->metricCollector_.evaluateAndPrintResults();
-    }
-}
+void Central::finish() {}
 
 void Central::handleMessage(cMessage *msg) {
     // delete dummy msg

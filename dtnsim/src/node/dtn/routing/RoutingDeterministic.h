@@ -30,6 +30,7 @@
 class RoutingDeterministic : public Routing {
   public:
     RoutingDeterministic(int eid, SdrModel *sdr, ContactPlan *contactPlan);
+    RoutingDeterministic(int eid, SdrModel *sdr); //for contactless dtn module
     virtual ~RoutingDeterministic();
 
     virtual void msgToOtherArrive(BundlePkt *bundle, double simTime);

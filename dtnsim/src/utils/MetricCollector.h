@@ -15,6 +15,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <chrono>
 
 using json = nlohmann::json;
 using namespace std;
@@ -32,6 +33,14 @@ class Metrics {
 
     ~Metrics(){};
 };
+
+struct ArrivalInfo
+{
+  std::chrono::steady_clock::time_point generationTime;
+  std::chrono::steady_clock::time_point arrivalTime;
+};
+
+
 class MetricCollector {
   public:
     MetricCollector();
@@ -51,7 +60,12 @@ class MetricCollector {
     void updateReceivedBundles(int eid, long bundleId, double receivingTime);
     void updateRUCoPComputationTime(long computationTime);
     void updateCGRComputationTime(long computationTime);
+    void increaseBundleHops(long bundleId);
+    void updateBundleElapsedTime(long bundleId, double elapsedTime);
+    void intializeArrivalTime(long bundleId, std::chrono::steady_clock::time_point initialTime);
+    void setFinalArrivalTime(long bundleId, std::chrono::steady_clock::time_point finalTime);
     void evaluateAndPrintResults();
+    void evaluateAndPrintContactlessResults();
     int getFileNumber(string prefix);
     int getMode();
 
@@ -65,15 +79,21 @@ class MetricCollector {
     string getPrefix();
     int getCGRCalls();
     int getRUCoPCalls();
+    int getAntopCalls();
     void putToJson();
     string path_;
     vector<Metrics> nodeMetrics_;
     long RUCoPComputationTime_ = 0;
     long cgrComputationTime_ = 0;
     map<long, tuple<int, int>> bundleInformation_;
+    std::chrono::steady_clock::time_point startWalltime;
     string algorithm_;
     double failureProb_;
     int mode;
+
+    map<long, int> bundleHops_;
+    map<long, double> bundleElapsedTime_;
+    map<long, ArrivalInfo> bundleArrivalTime_;
 };
 
 #endif /* SRC_UTILS_METRICCOLLECTOR_H_ */
