@@ -1,10 +1,9 @@
 #include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 
-RoutingAntop::RoutingAntop(Antop* antop, const int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap, MetricCollector *metricCollector_): RoutingDeterministic(eid, sdr, nullptr) {
+RoutingAntop::RoutingAntop(Antop* antop, const int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) {
     this->mobilityMap = mobilityMap;
     this->routingTable = new RoutingTable(antop);
-    this->metricCollector = metricCollector_;
 }
 
 RoutingAntop::~RoutingAntop() {}
@@ -35,7 +34,6 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     }
 
 	const auto nextUpdateTime = (*mobilityMap)[eid_]->getNextUpdateTime().dbl();
-	int hopCount = bundle->getHopCount();
 
     while (nextHopEid == 0) {
         // ToDo: I'm no longer sure why I'm checking bundle->getSenderEid(), but it's extremely important to validate this!!!!
@@ -43,8 +41,10 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
             nextHop = routingTable->findNewNeighbor(cur, dst, sender, nextUpdateTime);
         else {
             const H3Index src = getCurH3IndexForEid(bundle->getSourceEid());
+			int hopCount = bundle->getHopCount();
             nextHop = routingTable->findNextHop(cur, src, dst, sender, &hopCount, nextUpdateTime);
-        }
+            bundle->setHopCount(curDistance); // In case it was updated due to loop detection
+}
 
         nextHopEid = getEidFromH3Index(nextHop);
     }
