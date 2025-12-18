@@ -44,7 +44,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
 			int hopCount = bundle->getHopCount();
             nextHop = routingTable->findNextHop(cur, src, dst, sender, &hopCount, nextUpdateTime);
             bundle->setHopCount(curDistance); // In case it was updated due to loop detection
-}
+	}
 
         nextHopEid = getEidFromH3Index(nextHop);
     }
