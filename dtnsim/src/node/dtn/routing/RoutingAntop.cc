@@ -22,14 +22,15 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     std::cout << "  Sender: " << std::dec << bundle->getSenderEid() << " /// " << std::hex << sender << std::endl;
     std::cout << "  Destination: " << std::dec << bundle->getDestinationEid() << " /// " << std::hex << dst << std::endl;
 
+    const auto nextUpdateTime = (*mobilityMap)[eid_]->getNextUpdateTime().dbl();
     while (nextHopEid == 0) {
         // ToDo: I'm no longer sure why I'm checking bundle->getSenderEid(), but it's extremely important to validate this!!!!
         if (bundle->getReturnToSender() || bundle->getSenderEid())
-            nextHop = routingTable->findNewNeighbor(cur, dst, sender);
+            nextHop = routingTable->findNewNeighbor(cur, dst, sender, nextUpdateTime);
         else {
             const H3Index src = getCurH3IndexForEid(bundle->getSourceEid());
             auto curDistance = bundle->getHopCount();
-            nextHop = routingTable->findNextHop(cur, src, dst, sender, &curDistance);
+            nextHop = routingTable->findNextHop(cur, src, dst, sender, &curDistance, nextUpdateTime);
             bundle->setHopCount(curDistance); // In case it was updated due to loop detection
         }
 
@@ -67,9 +68,9 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
 
 int RoutingAntop::getEidFromH3Index(const H3Index idx) {
     // Useful print for debugging. ToDo: remove at a later stage.
-    for (const auto& [eid, _] : *this->mobilityMap) {
+    /*for (const auto& [eid, _] : *this->mobilityMap) {
         if (eid != 0) { std::cout << "Position: " << std::hex << this->getCurH3IndexForEid(eid) << std::endl; }
-    }
+    }*/
 
     for (const auto& [eid, _] : *this->mobilityMap) {
         if (eid != 0 && idx == this->getCurH3IndexForEid(eid)) return eid;
