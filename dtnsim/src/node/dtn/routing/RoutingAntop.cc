@@ -26,11 +26,11 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
 
         for (const auto& [eid, a] : *this->mobilityMap) {
             if (eid != 0) {
-                //std::cout << std::dec << "(" << a->getLatitude() << ", " << a->getLongitude() << ") /// " << std::hex << this->getCurH3IndexForEid(eid) << std::endl;
-                //std::cout << std::hex << this->getCurH3IndexForEid(eid) << std::endl;
-                //std::cout << std::dec << eid << "," << eid << "," << a->getLatitude() << "," << a->getLongitude() << std::endl;
-                //std::cout << std::dec << a->getLongitude() << "," << a->getLatitude() << std::endl;
-                //std::cout << std::dec << a->getLatitude() << "," << a->getLongitude() << std::endl;
+                // std::cout << std::dec << "(" << a->getLatitude() << ", " << a->getLongitude() << ") /// " << std::hex << this->getCurH3IndexForEid(eid) << std::endl;
+                // std::cout << std::hex << this->getCurH3IndexForEid(eid) << std::endl;
+                // std::cout << std::dec << eid << "," << eid << "," << a->getLatitude() << "," << a->getLongitude() << std::endl;
+                // std::cout << std::dec << a->getLongitude() << "," << a->getLatitude() << std::endl;
+                // std::cout << std::dec << a->getLatitude() << "," << a->getLongitude() << std::endl;
             }
         }
     }

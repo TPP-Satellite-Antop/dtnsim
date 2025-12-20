@@ -4,6 +4,7 @@
 #include "SatelliteMobility.h"
 #include "INorad.h"
 #include "NoradA.h"
+#include "h3api.h"
 
 namespace inet {
 
@@ -128,6 +129,16 @@ void SatelliteMobility::setTargetPosition()
     targetPosition.x = lastPosition.x;
     targetPosition.y = lastPosition.y;
     nextChange =  simTime() + updateInterval;
+
+    { // Debugging prints for satellite position.
+        H3Index cell = 0;
+        const auto latLng = LatLng {deg2rad(getLatitude()), deg2rad(getLongitude())};
+
+        latLngToCell(&latLng, 0, &cell);
+
+        // std::cout << noradModule->getLongitude() << ", " << noradModule->getLatitude() << std::endl;
+        // std::cout << std::hex << cell << std::dec << std::endl;
+    }
 }
 
 void SatelliteMobility::move()
