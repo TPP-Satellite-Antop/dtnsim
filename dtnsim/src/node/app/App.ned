@@ -11,7 +11,7 @@ parameters:
     string start = default("0");          // tiempo de generación de mensajes
     double interval = default(0);         // Bundles Generation Interval in Secs
     double ttl = default(9000000);        // Generated Bundles Time to Live in Secs
-    bool returnToSender = default(true);
+    bool returnToSender = default(false);
     bool critical = default(false);
     bool custodyTransfer = default(false);
     string externalTrafficEvents = default("");
