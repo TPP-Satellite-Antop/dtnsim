@@ -46,9 +46,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     }
 
     while (nextHopEid == 0) {
-        nextHop = routingTable->findNewNeighbor(cur, dst, sender, nextUpdateTime);
-		if (nextHop == 0)
-			nextHop = cur;
+        nextHop = routingTable->findNewNeighbor(cur, dst, sender == 0 ? cur : sender, nextUpdateTime);
 		nextHopEid = getEidFromH3Index(nextHop);
     }
 
