@@ -56,9 +56,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
             nextHop = routingTable->findNextHop(cur, src, dst, sender, &hopCount, nextUpdateTime);
             bundle->setHopCount(hopCount);
             nextHopEid = getEidFromH3Index(nextHop);
-        } else {
-            std::cout << "Source EID " << bundle->getSourceEid() << " is unreachable (node down). Storing bundle " << bundle->getBundleId() << " in SDR." << std::endl;
-        }
+        } //if src = 0 -> node down, will be handled below in findNewNeighbor
     }
 
     while (nextHopEid == 0) {
