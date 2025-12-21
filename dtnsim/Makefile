@@ -98,7 +98,6 @@ OBJS = \
     $O/src/node/dtn/routing/unibocgr/core/msr/msr_utils.o \
     $O/src/node/dtn/routing/unibocgr/core/routes/routes.o \
     $O/src/node/dtn/routing/unibocgr/core/time_analysis/time.o \
-    $O/src/node/fault/Fault.o \
     $O/src/node/graphics/Graphics.o \
     $O/src/utils/ContactPlanUtils.o \
     $O/src/utils/Lp.o \
