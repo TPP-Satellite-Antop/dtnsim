@@ -43,6 +43,7 @@ void ContactDtn::setContactTopology(ContactPlan &contactTopology) {
  */
 void ContactDtn::initialize(const int stage) {
     if (stage == 1) {
+        this->sdr_ = new ContactSdrModel();
         // Store this node eid
         this->eid_ = this->getParentModule()->getIndex();
 

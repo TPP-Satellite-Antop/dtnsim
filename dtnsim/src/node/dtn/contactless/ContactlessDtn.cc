@@ -24,6 +24,7 @@ ContactlessDtn::~ContactlessDtn() = default;
  */
 void ContactlessDtn::initialize(const int stage) {
     if (stage == 1) {
+        this->sdr_ = new ContactlessSdrModel();
         // Store this node eid
         this->eid_ = this->getParentModule()->getIndex();
 
