@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import random
 
-def generate_ini(num_sats, sat_per_plane, num_planes):
-    output_file = f"antop/antop-{num_sats}-sats.ini"
+def generate_ini(num_sats, sat_per_plane, num_planes, faultOn=False, faultMeanTTF=0, faultMeanTTR=0):
+    suffix = "-faults" if faultOn else ""
+    output_file = f"antop/antop-{num_sats}-sats{suffix}.ini"
+
     with open(output_file, "w") as f:
 
         f.write(f"""[General]
@@ -16,6 +18,11 @@ sim-time-limit = 48h
 # Nodes quantity (identifiers (EiDs) matches their index, EiD=0 is ignored)			
 dtnsim.nodesNumber = {num_sats}
 dtnsim.node[*].icon = "satellite"
+
+# Nodes's failure rates
+dtnsim.node[*].fault.enable = {str(faultOn).lower()}
+dtnsim.node[*].fault.meanTTF = {faultMeanTTF}s
+dtnsim.node[*].fault.meanTTR = {faultMeanTTR}s
 
 # Mobility
 dtnsim.node[*].hasMobility = true
@@ -75,6 +82,12 @@ if __name__ == "__main__":
     num_planes = int(input("Enter number of planes: "))
     num_sat_per_plane = int(input("Enter number of satellites per plane: "))
     num_sats = num_planes * num_sat_per_plane
+    failureOn = input("Enable node failures? (y/n): ").strip().lower() == 'y'
+    faultMeanTTF = 0
+    faultMeanTTR = 0
+    if failureOn:
+        faultMeanTTF = int(input("Enter mean Time To Failure (in seconds): "))
+        faultMeanTTR = int(input("Enter mean Time To Repair (in seconds): "))
     print(f"Generating configuration for {num_sats} satellites...")
 
-    generate_ini(num_sats, num_sat_per_plane, num_planes)
+    generate_ini(num_sats, num_sat_per_plane, num_planes, failureOn, faultMeanTTF, faultMeanTTR)

@@ -131,6 +131,12 @@ void ContactlessDtn::finish() {
  */
 
 void ContactlessDtn::handleMessage(cMessage *msg) {
+    if (this->onFault) { //TODO revisar
+        std::cout << "Node " << eid_ << " is FAULTY. Dropping message of type: " << msg->getKind() << std::endl;
+        delete msg;
+        return;
+    }
+
     auto elapsedTimeStart = std::chrono::steady_clock::now();
     ///////////////////////////////////////////
     // New Bundle (from App or Com):
@@ -232,17 +238,6 @@ void ContactlessDtn::sendMsg(BundlePkt *bundle) {
         ->getSubmodule("dtn")
     );
 
-    // ToDo: handle fault tolerance
-    // if ((!neighborContactDtn->onFault) && (!this->onFault)) {
-
-    // ToDo: calculate data rate and Tx duration
-    /*double dataRate = contactTopology_.getContactById(contactId)->getDataRate();
-    double txDuration = static_cast<double>(bundle->getByteLength()) / dataRate;
-    double linkDelay = contactTopology_.getRangeBySrcDst(eid_, neighborEid);*/
-
-    // ToDo: if the message can be fully transmitted before the end of the contact, transmit it
-    // if ((simTime() + txDuration + linkDelay) <= contact->getEnd()) {
-
     // Set bundle metadata (set by intermediate nodes)
     bundle->setSenderEid(eid_);
     bundle->setHopCount(bundle->getHopCount() + 1);
@@ -271,7 +266,8 @@ void ContactlessDtn::sendMsg(BundlePkt *bundle) {
 void ContactlessDtn::setOnFault(bool onFault) {
     this->onFault = onFault;
 
-    if(onFault){
+    if (onFault){
+        std::cout << "Node " << eid_ << " is now FAULTY." << std::endl;
         this->mobilityMap_->erase(eid_);
     } else {
         inet::SatelliteMobility* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
