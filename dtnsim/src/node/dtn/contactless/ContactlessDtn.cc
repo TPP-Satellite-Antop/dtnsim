@@ -131,9 +131,9 @@ void ContactlessDtn::finish() {
  */
 
 void ContactlessDtn::handleMessage(cMessage *msg) {
-    if (this->onFault) { //TODO revisar
+    if (this->onFault) {
         std::cout << "Node " << eid_ << " is FAULTY. Dropping message of type: " << msg->getKind() << std::endl;
-        delete msg;
+        delete msg; //TODO ver si no se borra en otro lado
         return;
     }
 

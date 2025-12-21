@@ -31,7 +31,6 @@ dtnsim.node[*].noradModule.satName = "sat"
 **.updateInterval = 20s
 **.numOfSats = {num_sats}
 **.satPerPlane = {sat_per_plane}
-**.inclination = 54
 **.altitude = 540
 **.planes = {num_planes}
 
