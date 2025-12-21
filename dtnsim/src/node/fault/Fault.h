@@ -22,6 +22,7 @@
 #include "src/dtnsim_m.h"
 #include "src/node/MsgTypes.h"
 #include "src/node/graphics/Graphics.h"
+#include "src/node/dtn/Dtn.h"
 
 using namespace omnetpp;
 
@@ -39,7 +40,7 @@ class Fault : public cSimpleModule {
     Graphics *graphicsModule;
 
     // Pointer to net module
-    ContactDtn *dtnModule;
+    Dtn *dtnModule;
 };
 
 #endif

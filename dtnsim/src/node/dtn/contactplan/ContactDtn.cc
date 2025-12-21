@@ -33,14 +33,6 @@ void ContactDtn::setContactTopology(ContactPlan &contactTopology) {
     this->contactTopology_ = contactTopology;
 }
 
-void ContactDtn::setMetricCollector(MetricCollector *metricCollector) {
-    this->metricCollector_ = metricCollector;
-}
-
-int ContactDtn::numInitStages() const {
-    return 2;
-}
-
 /**
  * Initializes the ContactDtn object
  *
@@ -56,13 +48,13 @@ void ContactDtn::initialize(const int stage) {
 
         this->custodyTimeout_ = par("custodyTimeout");
         this->custodyModel_.setEid(eid_);
-        this->custodyModel_.setSdr(&sdr_);
+        this->custodyModel_.setSdr(sdr_);
         this->custodyModel_.setCustodyReportByteSize(par("custodyReportByteSize"));
 
         // Get a pointer to graphics module
         graphicsModule = dynamic_cast<Graphics *>(this->getParentModule()->getSubmodule("graphics"));
         // Register this object as sdr observer, in order to display bundles stored in sdr properly.
-        sdr_.addObserver(this);
+        sdr_->addObserver(this);
         update();
 
         // Create (empty) contact history
@@ -160,8 +152,8 @@ void ContactDtn::initialize(const int stage) {
         routeCgrRouteTableEntriesExplored = registerSignal("routeCgrRouteTableEntriesExplored");
 
         if (eid_ != 0) {
-            emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
-            emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
+            emit(sdrBundleStored, sdr_->getBundlesCountInSdr());
+            emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
         }
 
         // Initialize BundleMap
@@ -193,37 +185,38 @@ void ContactDtn::initialize(const int stage) {
 }
 
 void ContactDtn::initializeRouting(const string& routingString) {
-    this->sdr_.setEid(eid_);
-    this->sdr_.setSize(par("sdrSize"));
-    this->sdr_.setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
-    this->sdr_.setContactPlan(&contactTopology_);
+    auto contactSdrModel = dynamic_cast<ContactSdrModel*>(sdr_);
+    contactSdrModel->setEid(eid_);
+    contactSdrModel->setSize(par("sdrSize"));
+    contactSdrModel->setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
+    contactSdrModel->setContactPlan(&contactTopology_);
 
     if (routingString == "direct")
-        routing = new RoutingDirect(eid_, &sdr_, &contactPlan_);
+        routing = new RoutingDirect(eid_, sdr_, &contactPlan_);
     else if (routingString == "cgrModel350")
-        routing = new RoutingCgrModel350(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
+        routing = new RoutingCgrModel350(eid_, sdr_, &contactPlan_, par("printRoutingDebug"));
     else if (routingString == "cgrModel350_Hops")
-        routing = new RoutingCgrModel350_Hops(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
+        routing = new RoutingCgrModel350_Hops(eid_, sdr_, &contactPlan_, par("printRoutingDebug"));
     else if (routingString == "cgrModelYen")
-        routing = new RoutingCgrModelYen(eid_, &sdr_, &contactPlan_, par("printRoutingDebug"));
+        routing = new RoutingCgrModelYen(eid_, sdr_, &contactPlan_, par("printRoutingDebug"));
     else if (routingString == "cgrModelRev17") {
         ContactPlan *globalContactPlan = dynamic_cast<ContactDtn*>(
             this->getParentModule()->getParentModule()->getSubmodule("node", 0)->getSubmodule("dtn")
         )->getContactPlanPointer();
 
-        routing = new RoutingCgrModelRev17(eid_, this->getParentModule()->getVectorSize(), &sdr_,
+        routing = new RoutingCgrModelRev17(eid_, this->getParentModule()->getVectorSize(), sdr_,
                                            &contactPlan_, globalContactPlan, par("routingType"),
                                            par("printRoutingDebug"));
     } else if (routingString == "epidemic") {
-        routing = new RoutingEpidemic(eid_, &sdr_, this);
+        routing = new RoutingEpidemic(eid_, sdr_, this);
     } else if (routingString == "sprayAndWait") {
         int bundlesCopies = par("bundlesCopies");
-        routing = new RoutingSprayAndWait(eid_, &sdr_, this, bundlesCopies, false,
+        routing = new RoutingSprayAndWait(eid_, sdr_, this, bundlesCopies, false,
                                           this->metricCollector_);
     } else if (routingString == "binarySprayAndWait") {
         int bundlesCopies = par("bundlesCopies");
         routing =
-            new RoutingSprayAndWait(eid_, &sdr_, this, bundlesCopies, true, this->metricCollector_);
+            new RoutingSprayAndWait(eid_, sdr_, this, bundlesCopies, true, this->metricCollector_);
     } else if (routingString == "PRoPHET") {
         int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
         double p_enc_max = par("pEncouterMax");
@@ -234,16 +227,16 @@ void ContactDtn::initializeRouting(const string& routingString) {
         double beta = par("beta");
         double gamma = par("gamma");
         double delta = par("delta");
-        routing = new RoutingPRoPHET(eid_, &sdr_, this, p_enc_max, p_enc_first, p_first_thresh,
+        routing = new RoutingPRoPHET(eid_, sdr_, this, p_enc_max, p_enc_first, p_first_thresh,
                                      forw_tresh, alpha, beta, gamma, delta, numOfNodes,
                                      this->metricCollector_);
     } else if (routingString == "cgrModel350_2Copies")
-        routing = new RoutingCgrModel350_2Copies(eid_, &sdr_, &contactPlan_,
+        routing = new RoutingCgrModel350_2Copies(eid_, sdr_, &contactPlan_,
                                                  par("printRoutingDebug"), this);
     else if (routingString == "cgrModel350_Probabilistic") {
         double sContactProb = par("sContactProb");
         routing = new RoutingCgrModel350_Probabilistic(
-            eid_, &sdr_, &contactPlan_, par("printRoutingDebug"), this, sContactProb);
+            eid_, sdr_, &contactPlan_, par("printRoutingDebug"), this, sContactProb);
     } else if (routingString == "uncertainUniboCgr") {
         bool useUncertainty =
             this->getParentModule()->getParentModule()->getSubmodule("central")->par(
@@ -252,25 +245,25 @@ void ContactDtn::initializeRouting(const string& routingString) {
         int repetition =
             this->getParentModule()->getParentModule()->getSubmodule("central")->par("repetition");
         routing =
-            new RoutingUncertainUniboCgr(eid_, &sdr_, &contactPlan_, this, this->metricCollector_,
+            new RoutingUncertainUniboCgr(eid_, contactSdrModel, &contactPlan_, this, this->metricCollector_,
                                          -1, useUncertainty, repetition, numOfNodes);
     } else if (routingString == "uniboCgr") {
         int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
         int repetition =
             this->getParentModule()->getParentModule()->getSubmodule("central")->par("repetition");
         routing =
-            new RoutingUncertainUniboCgr(eid_, &sdr_, &contactPlan_, this, this->metricCollector_,
+            new RoutingUncertainUniboCgr(eid_, contactSdrModel, &contactPlan_, this, this->metricCollector_,
                                          -1, false, repetition, numOfNodes);
     } else if (routingString == "ORUCOP") {
         int numOfNodes = this->getParentModule()->getParentModule()->par("nodesNumber");
         int repetition =
             this->getParentModule()->getParentModule()->getSubmodule("central")->par("repetition");
-        routing = new RoutingORUCOP(eid_, &sdr_, &contactPlan_, this, this->metricCollector_, 2,
+        routing = new RoutingORUCOP(eid_, sdr_, &contactPlan_, this, this->metricCollector_, 2,
                                     repetition, numOfNodes);
     } // 2 bundles for now.
     else if (routingString == "BRUF1T") {
         string frouting = par("frouting");
-        routing = new RoutingBRUF1T(eid_, &sdr_, &contactPlan_, frouting);
+        routing = new RoutingBRUF1T(eid_, sdr_, &contactPlan_, frouting);
     } else if (routingString == "BRUFNCopies") {
         string frouting = par("frouting");
         int bundlesCopies = par("bundlesCopies");
@@ -284,7 +277,7 @@ void ContactDtn::initializeRouting(const string& routingString) {
         ostringstream posfix;
         posfix << "-" << fixed << setprecision(2) << pf << ".json";
 
-        routing = new RoutingBRUFNCopies(eid_, &sdr_, &contactPlan_, bundlesCopies, numOfNodes,
+        routing = new RoutingBRUFNCopies(eid_, sdr_, &contactPlan_, bundlesCopies, numOfNodes,
                                          prefix.str(), posfix.str());
     } else if (routingString == "CGR_BRUFPowered") {
         string frouting = par("frouting");
@@ -306,7 +299,7 @@ void ContactDtn::initializeRouting(const string& routingString) {
         posfix << "-" << fixed << setprecision(2) << pf << ".json";
 
         routing = new CGRBRUFPowered(
-            eid_, &sdr_, &contactPlan_, par("printRoutingDebug"), pf,
+            eid_, sdr_, &contactPlan_, par("printRoutingDebug"), pf,
             ts_duration, ts_start_times, numOfNodes, prefix.str(), posfix.str()
         );
     } else {
@@ -318,8 +311,8 @@ void ContactDtn::initializeRouting(const string& routingString) {
 void ContactDtn::finish() {
     // Last call to sample-hold type metrics
     if (eid_ != 0) {
-        emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
-        emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
+        emit(sdrBundleStored, sdr_->getBundlesCountInSdr());
+        emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
     }
 
     // Delete scheduled forwardingMsg
@@ -327,7 +320,7 @@ void ContactDtn::finish() {
         cancelAndDelete(forwardingMsg);
 
     // Delete all stored bundles
-    sdr_.freeSdr();
+    sdr_->freeSdr();
 
     // BundleMap End
     if (saveBundleMap_)
@@ -428,7 +421,7 @@ void ContactDtn::handleMessage(cMessage *msg) {
         // for opportunistic extensions
         controller->coordinateContactEnd(contact);
 
-        for (int i = 0; i < sdr_.getBundlesCountInIndex(contactMsg->getId()); i++)
+        for (int i = 0; i < sdr_->getBundlesCountInIndex(contactMsg->getId()); i++)
             emit(dtnBundleReRouted, true);
 
         routing->contactEnd(contactTopology_.getContactById(contactMsg->getId()));
@@ -454,7 +447,7 @@ void ContactDtn::handleMessage(cMessage *msg) {
         forwardingMsgs_[forwardingMsgStart->getContactId()] = forwardingMsgStart;
 
         // if there are messages in the queue for this contact
-        if (sdr_.isBundleForId(contactId)) {
+        if (sdr_->isBundleForId(contactId)) {
             // If local/remote node are responsive, then transmit bundle
             const auto neighborContactDtn = check_and_cast<ContactDtn *>(this->getParentModule()
                                                          ->getParentModule()
@@ -462,7 +455,7 @@ void ContactDtn::handleMessage(cMessage *msg) {
                                                          ->getSubmodule("dtn"));
             if ((!neighborContactDtn->onFault) && (!this->onFault)) {
                 // Get bundle pointer from sdr
-                BundlePkt *bundle = sdr_.getBundle(contactId);
+                BundlePkt *bundle = sdr_->getBundle(contactId);
 
                 // Calculate data rate and Tx duration
                 double dataRate = contactTopology_.getContactById(contactId)->getDataRate();
@@ -488,11 +481,11 @@ void ContactDtn::handleMessage(cMessage *msg) {
                                    << bundle->getSourceEid() << "," << bundle->getDestinationEid()
                                    << "," << bundle->getBitLength() << "," << txDuration << endl;
 
-                    sdr_.popBundleFromId(contactId);
+                    sdr_->popBundleFromId(contactId);
 
                     // If custody requested, store a copy of the bundle until report received
                     if (bundle->getCustodyTransferRequested()) {
-                        sdr_.enqueueTransmittedBundleInCustody(bundle->dup());
+                        sdr_->enqueueTransmittedBundleInCustody(bundle->dup());
                         this->custodyModel_.printBundlesInCustody();
 
                         // Enqueue a retransmission event in case custody acceptance not received
@@ -502,8 +495,8 @@ void ContactDtn::handleMessage(cMessage *msg) {
                     }
 
                     emit(dtnBundleSentToCom, true);
-                    emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
-                    emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
+                    emit(sdrBundleStored, sdr_->getBundlesCountInSdr());
+                    emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
 
                     // Schedule next transmission
                     scheduleAt(simTime() + txDuration, forwardingMsgStart);
@@ -617,8 +610,8 @@ void ContactDtn::dispatchBundle(BundlePkt *bundle) {
             emit(routeCgrRouteTableEntriesCreated, dynamic_cast<RoutingCgrModelRev17 *>(routing)->getRouteTableEntriesCreated());
             emit(routeCgrRouteTableEntriesExplored, dynamic_cast<RoutingCgrModelRev17 *>(routing)->getRouteTableEntriesExplored());
         }
-        emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
-        emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
+        emit(sdrBundleStored, sdr_->getBundlesCountInSdr());
+        emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
 
         // Wake-up sleeping forwarding threads
         this->refreshForwarding();
@@ -628,7 +621,7 @@ void ContactDtn::dispatchBundle(BundlePkt *bundle) {
 void ContactDtn::refreshForwarding() {
     // Check all ongoing forwardingMsgs threads (contacts) and wake up those not scheduled.
     for (auto &[_, forwardingMsg] : forwardingMsgs_) {
-        if (const int cid = forwardingMsg->getContactId(); !sdr_.isBundleForId(cid))
+        if (const int cid = forwardingMsg->getContactId(); !sdr_->isBundleForId(cid))
             // Notify routing protocol that it has messages to send and contacts for routing
             routing->refreshForwarding(contactTopology_.getContactById(cid));
         if (!forwardingMsg->isScheduled())
@@ -657,19 +650,6 @@ void ContactDtn::setOnFault(bool onFault) {
 
 ContactPlan *ContactDtn::getContactPlanPointer() {
     return &this->contactPlan_;
-}
-
-Routing *ContactDtn::getRouting() {
-    return this->routing;
-}
-
-/**
- * Implementation of method inherited from observer to update gui according to the number of
- * bundles stored in sdr.
- */
-void ContactDtn::update() {
-    // Update srd size text
-    graphicsModule->setBundlesInSdr(sdr_.getBundlesCountInSdr());
 }
 
 // PROCEDURES FOR OPPORTUNISTIC ROUTING!

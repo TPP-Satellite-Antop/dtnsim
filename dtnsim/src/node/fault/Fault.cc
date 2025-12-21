@@ -3,14 +3,10 @@
 Define_Module(Fault);
 
 void Fault::initialize() {
-    // Store this node eid
-    this->eid_ = this->getParentModule()->getIndex();
-
-    // Get a pointer to graphics module
-    graphicsModule = (Graphics *)this->getParentModule()->getSubmodule("graphics");
-
-    // Get a pointer to dtn module
-    dtnModule = (ContactDtn *)this->getParentModule()->getSubmodule("dtn");
+    auto nodeModule = this->getParentModule();
+    this->eid_ = nodeModule->getIndex();
+    graphicsModule = (Graphics *)nodeModule->getSubmodule("graphics");
+    dtnModule = (Dtn *)nodeModule->getSubmodule("dtn");
 
     // Initialize faults
     if ((this->par("enable").boolValue() == true) && eid_ != 0) {

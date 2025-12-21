@@ -6,20 +6,13 @@
 #include "../routing/RoutingAntop.h"
 #include "src/node/app/App.h"
 #include "src/node/mobility/SatelliteMobility.h"
+#include "src/node/dtn/contactless/ContactlessSdrModel.h"
 
 Define_Module(ContactlessDtn);
 
 ContactlessDtn::ContactlessDtn() {}
 
 ContactlessDtn::~ContactlessDtn() = default;
-
-void ContactlessDtn::setMetricCollector(MetricCollector *metricCollector) {
-    this->metricCollector_ = metricCollector;
-}
-
-int ContactlessDtn::numInitStages() const {
-    return 2;
-}
 
 /**
  * Initializes the ContactlessDtn object
@@ -36,13 +29,13 @@ void ContactlessDtn::initialize(const int stage) {
 
         this->custodyTimeout_ = par("custodyTimeout");
         this->custodyModel_.setEid(eid_);
-        this->custodyModel_.setSdr(&sdr_);
+        this->custodyModel_.setSdr(sdr_);
         this->custodyModel_.setCustodyReportByteSize(par("custodyReportByteSize"));
 
         // Get a pointer to graphics module
         graphicsModule = dynamic_cast<Graphics *>(this->getParentModule()->getSubmodule("graphics"));
         // Register this object as sdr observer, in order to display bundles stored in sdr properly.
-        sdr_.addObserver(this);
+        sdr_->addObserver(this);
         update();
 
         this->initializeRouting(par("routing"));
@@ -59,8 +52,8 @@ void ContactlessDtn::initialize(const int stage) {
         sdrBytesStored = registerSignal("sdrBytesStored");
 
         if (eid_ != 0) {
-            emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
-            emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
+            emit(sdrBundleStored, sdr_->getBundlesCountInSdr());
+            emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
         }
 
         // Initialize BundleMap
@@ -96,14 +89,15 @@ void ContactlessDtn::setMobilityMap(map<int, inet::SatelliteMobility*> *mobility
 }
 
 void ContactlessDtn::initializeRouting(string routingString) {
-    this->sdr_.setEid(eid_);
-    this->sdr_.setSize(par("sdrSize"));
-    this->sdr_.setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
+    auto contactLessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
+    contactLessSdrModel->setEid(eid_);
+    contactLessSdrModel->setSize(par("sdrSize"));
+    contactLessSdrModel->setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
 
     if (routingString == "antop") {
         inet::SatelliteMobility* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
         (*this->mobilityMap_)[eid_] = mobility;
-        this->routing = new RoutingAntop(this->antop, this->eid_, &sdr_, mobilityMap_);
+        this->routing = new RoutingAntop(this->antop, this->eid_, sdr_, mobilityMap_);
     } else {
         cout << "dtnsim error: unknown routing type: " << routingString << endl;
     }
@@ -112,12 +106,12 @@ void ContactlessDtn::initializeRouting(string routingString) {
 void ContactlessDtn::finish() {
     // Last call to sample-hold type metrics
     if (eid_ != 0) {
-        emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
-        emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
+        emit(sdrBundleStored, sdr_->getBundlesCountInSdr());
+        emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
     }
 
     // Delete all stored bundles
-    sdr_.freeSdr();
+    sdr_->freeSdr();
 
     // BundleMap End
     if (saveBundleMap_)
@@ -213,17 +207,18 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
         // Either accepted or rejected custody, route bundle
         routing->msgToOtherArrive(bundle, simTime().dbl());
 
-        emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
-        emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
+        emit(sdrBundleStored, sdr_->getBundlesCountInSdr());
+        emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
 
-        if (sdr_.enqueuedBundle()) {
+        auto contactlessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
+        if (contactlessSdrModel->enqueuedBundle()) {
             scheduleRetry();
         } else{
             this->metricCollector_->increaseBundleHops(bundle->getBundleId());
             sendMsg(bundle);
         }
 
-        sdr_.resetEnqueuedBundleFlag();
+        contactlessSdrModel->resetEnqueuedBundleFlag();
     }
 }
 
@@ -258,7 +253,7 @@ void ContactlessDtn::sendMsg(BundlePkt *bundle) {
 
     // If custody requested, store a copy of the bundle until report received
     if (bundle->getCustodyTransferRequested()) {
-        sdr_.enqueueTransmittedBundleInCustody(bundle->dup());
+        sdr_->enqueueTransmittedBundleInCustody(bundle->dup());
         this->custodyModel_.printBundlesInCustody();
 
         // Enqueue a retransmission event in case custody acceptance not received
@@ -268,11 +263,19 @@ void ContactlessDtn::sendMsg(BundlePkt *bundle) {
     }
 
     emit(dtnBundleSentToCom, true);
-    emit(sdrBundleStored, sdr_.getBundlesCountInSdr());
-    emit(sdrBytesStored, sdr_.getBytesStoredInSdr());
+    emit(sdrBundleStored, sdr_->getBundlesCountInSdr());
+    emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
 }
 
 void ContactlessDtn::setOnFault(bool onFault) {
+    this->onFault = onFault;
+
+    if(onFault){
+        this->mobilityMap_->erase(eid_);
+    } else {
+        inet::SatelliteMobility* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
+        (*this->mobilityMap_)[eid_] = mobility;
+    }
 }
 
 void ContactlessDtn::scheduleRetry() {
@@ -285,21 +288,9 @@ void ContactlessDtn::scheduleRetry() {
 }
 
 void ContactlessDtn::retryForwarding() {
-    while (auto bundle = sdr_.popBundle())
+    auto contactlessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
+    while (auto bundle = contactlessSdrModel->popBundle())
         sendMsg(bundle);
-}
-
-Routing *ContactlessDtn::getRouting() {
-    return this->routing;
-}
-
-/**
- * Implementation of method inherited from observer to update gui according to the number of
- * bundles stored in sdr.
- */
-void ContactlessDtn::update() {
-    // Update srd size text
-    graphicsModule->setBundlesInSdr(sdr_.getBundlesCountInSdr());
 }
 
 void ContactlessDtn::setRoutingAlgorithm(Antop* antop) {
