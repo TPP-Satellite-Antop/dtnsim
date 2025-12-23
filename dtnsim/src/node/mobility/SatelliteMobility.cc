@@ -138,6 +138,12 @@ void SatelliteMobility::setTargetPosition()
 
         // std::cout << noradModule->getLongitude() << ", " << noradModule->getLatitude() << std::endl;
         // std::cout << std::hex << cell << std::dec << std::endl;
+
+        // std::cout << std::dec << "(" << a->getLatitude() << ", " << a->getLongitude() << ") /// " << std::hex << this->getCurH3IndexForEid(eid) << std::endl;
+        // std::cout << std::hex << this->getCurH3IndexForEid(eid) << std::endl;
+        // std::cout << std::dec << eid << "," << eid << "," << a->getLatitude() << "," << a->getLongitude() << std::endl;
+        // std::cout << std::dec << a->getLongitude() << "," << a->getLatitude() << std::endl;
+        // std::cout << std::dec << a->getLatitude() << "," << a->getLongitude() << std::endl;
     }
 }
 

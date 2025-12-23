@@ -23,16 +23,6 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         std::cout << "  Source: " << std::dec << bundle->getSourceEid() << " /// " << std::hex << getCurH3IndexForEid(bundle->getSourceEid()) << std::endl;
         std::cout << "  Sender: " << std::dec << bundle->getSenderEid() << " /// " << std::hex << sender << std::endl;
         std::cout << "  Destination: " << std::dec << bundle->getDestinationEid() << " /// " << std::hex << dst << std::endl;
-
-        for (const auto& [eid, a] : *this->mobilityMap) {
-            if (eid != 0) {
-                // std::cout << std::dec << "(" << a->getLatitude() << ", " << a->getLongitude() << ") /// " << std::hex << this->getCurH3IndexForEid(eid) << std::endl;
-                // std::cout << std::hex << this->getCurH3IndexForEid(eid) << std::endl;
-                // std::cout << std::dec << eid << "," << eid << "," << a->getLatitude() << "," << a->getLongitude() << std::endl;
-                // std::cout << std::dec << a->getLongitude() << "," << a->getLatitude() << std::endl;
-                // std::cout << std::dec << a->getLatitude() << "," << a->getLongitude() << std::endl;
-            }
-        }
     }
 
     const auto nextUpdateTime = (*mobilityMap)[eid_]->getNextUpdateTime().dbl();
