@@ -44,6 +44,7 @@ class ContactlessDtn : public Dtn {
     // BundlesMap
     bool saveBundleMap_;
     ofstream bundleMap_;
+    vector<AntopPkt*> pendingBundles_;
 
     // Signals
     simsignal_t dtnBundleSentToCom;

@@ -25,6 +25,7 @@ ContactlessDtn::~ContactlessDtn() = default;
 void ContactlessDtn::initialize(const int stage) {
     if (stage == 1) {
         this->sdr_ = new ContactlessSdrModel();
+        this->pendingBundles_ = vector<AntopPkt*>();
         // Store this node eid
         this->eid_ = this->getParentModule()->getIndex();
 
@@ -117,6 +118,13 @@ void ContactlessDtn::finish() {
     // BundleMap End
     if (saveBundleMap_)
         bundleMap_.close();
+    
+    //TODO creo q no anda:
+    for (AntopPkt* b : pendingBundles_) {
+        cancelAndDelete(b);
+    }
+    
+    pendingBundles_.clear();
 
     delete routing;
 }
@@ -149,8 +157,8 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
             if (msg->arrivedOn("gateToApp$i"))
                 emit(dtnBundleReceivedFromApp, true);
 
-            auto bundle = check_and_cast<BundlePkt *>(msg);
-            dispatchBundle(check_and_cast<BundlePkt *>(msg));
+            auto bundle = check_and_cast<AntopPkt *>(msg);
+            dispatchBundle(check_and_cast<AntopPkt *>(msg));
             double elapsedTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
             this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTime);
 
@@ -230,7 +238,8 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
 }
 
 void ContactlessDtn::sendMsg(BundlePkt *bundle) {
-    const int neighborEid = bundle->getNextHopEid();
+    const auto antopPkt = dynamic_cast<AntopPkt *>(bundle); //TODO ver si es necesario el cast
+    const int neighborEid = antopPkt->getNextHopEid();
     const auto neighborContactDtn = check_and_cast<ContactlessDtn *>(this
         ->getParentModule()
         ->getParentModule()
@@ -239,22 +248,22 @@ void ContactlessDtn::sendMsg(BundlePkt *bundle) {
     );
 
     // Set bundle metadata (set by intermediate nodes)
-    bundle->setSenderEid(eid_);
-    bundle->setHopCount(bundle->getHopCount() + 1);
-    bundle->setXmitCopiesCount(0);
+    antopPkt->setSenderEid(eid_);
+    antopPkt->setHopCount(antopPkt->getHopCount() + 1);
+    antopPkt->setXmitCopiesCount(0);
 
-    std::cout << "Node " << eid_ << " --- Sending bundle to --> Node "<< bundle->getNextHopEid() << std::endl;
-    this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
-    send(bundle, "gateToCom$o");
+    std::cout << "Node " << eid_ << " --- Sending bundle to --> Node "<< antopPkt->getNextHopEid() << std::endl;
+    this->metricCollector_->intializeArrivalTime(antopPkt->getBundleId(), std::chrono::steady_clock::now());
+    send(antopPkt, "gateToCom$o");
 
     // If custody requested, store a copy of the bundle until report received
-    if (bundle->getCustodyTransferRequested()) {
-        sdr_->enqueueTransmittedBundleInCustody(bundle->dup());
+    if (antopPkt->getCustodyTransferRequested()) {
+        sdr_->enqueueTransmittedBundleInCustody(antopPkt->dup());
         this->custodyModel_.printBundlesInCustody();
 
         // Enqueue a retransmission event in case custody acceptance not received
         auto *custodyTimeout = new CustodyTimout("custodyTimeout", CUSTODY_TIMEOUT);
-        custodyTimeout->setBundleId(bundle->getBundleId());
+        custodyTimeout->setBundleId(antopPkt->getBundleId());
         scheduleAt(simTime() + this->custodyTimeout_, custodyTimeout);
     }
 
@@ -276,7 +285,8 @@ void ContactlessDtn::setOnFault(bool onFault) {
 }
 
 void ContactlessDtn::scheduleRetry() {
-    auto retryBundle = new BundlePkt("pendingBundle", FORWARDING_RETRY);
+    auto retryBundle = new AntopPkt("pendingBundle", FORWARDING_RETRY);
+    pendingBundles_.push_back(retryBundle);
     auto mobilityModule = (*mobilityMap_)[eid_];
 
     std::cout << "Scheduling bundle retry... - Current time: " << simTime().dbl() <<  " - Scheduling time: " << mobilityModule->getNextUpdateTime() << std::endl;

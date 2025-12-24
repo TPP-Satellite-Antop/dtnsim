@@ -61,6 +61,10 @@ packet BundlePkt {
     int qos;
 };
 
+packet AntopPkt extends BundlePkt {
+    double cachedDstH3Index;
+};
+
 message TrafficGeneratorMsg {
     int bundlesNumber;
     int destinationEid;

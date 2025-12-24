@@ -16,11 +16,13 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         return;
     }
 
-    const H3Index dst = getCurH3IndexForEid(bundle->getDestinationEid());
-    if(dst == 0) {
-        std::cout << "Destination EID " << bundle->getDestinationEid() << " is unreachable (node down). Storing bundle " << bundle->getBundleId() << " in SDR." << std::endl;
+    H3Index dst = getCurH3IndexForEid(bundle->getDestinationEid());
+    const auto antopPkt = dynamic_cast<AntopPkt *>(bundle);
+    if (dst == 0 && (dst = antopPkt->getCachedDstH3Index()) == 0) { // try to use cached dst index to at least get closer
         storeBundle(bundle);
         return;
+    } else {
+        antopPkt->setCachedDstH3Index(dst);
     }
 
     const H3Index sender = getCurH3IndexForEid(bundle->getSenderEid());
