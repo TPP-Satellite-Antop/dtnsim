@@ -17,13 +17,13 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     }
 
     H3Index dst = getCurH3IndexForEid(bundle->getDestinationEid());
-    const auto antopPkt = dynamic_cast<AntopPkt *>(bundle);
+    auto *antopPkt = dynamic_cast<AntopPkt *>(bundle);
     if (dst == 0 && (dst = antopPkt->getCachedDstH3Index()) == 0) { // try to use cached dst index to at least get closer
         storeBundle(bundle);
         return;
-    } else {
-        antopPkt->setCachedDstH3Index(dst);
     }
+
+    antopPkt->setCachedDstH3Index(dst);
 
     const H3Index sender = getCurH3IndexForEid(bundle->getSenderEid());
     H3Index nextHop = 0;
@@ -60,9 +60,9 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         storeBundle(bundle);
     else {
         bundle->setReturnToSender(nextHop == sender);
-        bundle->setNextHopEid(getEidFromH3Index(nextHop));
+        bundle->setNextHopEid(nextHopEid);
 
-        std::cout << "Routing through " << std::hex << nextHop << std::dec << " ||| " << getEidFromH3Index(nextHop) << std::endl << std::endl;
+        std::cout << "Routing through " << std::hex << nextHop << std::dec << " ||| " << nextHopEid << std::endl << std::endl;
     }
 }
 

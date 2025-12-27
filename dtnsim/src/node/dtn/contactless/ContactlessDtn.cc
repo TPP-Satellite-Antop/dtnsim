@@ -238,7 +238,7 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
 }
 
 void ContactlessDtn::sendMsg(BundlePkt *bundle) {
-    const auto antopPkt = dynamic_cast<AntopPkt *>(bundle); //TODO ver si es necesario el cast
+    auto *antopPkt = dynamic_cast<AntopPkt *>(bundle);
     const int neighborEid = antopPkt->getNextHopEid();
     const auto neighborContactDtn = check_and_cast<ContactlessDtn *>(this
         ->getParentModule()

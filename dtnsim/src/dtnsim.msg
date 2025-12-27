@@ -62,7 +62,7 @@ packet BundlePkt {
 };
 
 packet AntopPkt extends BundlePkt {
-    double cachedDstH3Index;
+    uint64_t cachedDstH3Index;
 };
 
 message TrafficGeneratorMsg {

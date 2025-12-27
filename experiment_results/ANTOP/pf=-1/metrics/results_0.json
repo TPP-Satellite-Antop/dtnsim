@@ -1,430 +1,47 @@
 {
-    "avgArrivalTime": 0.2370239728589744,
-    "avgElapsedTime": 0.004735038487179486,
-    "avgNumberOfHops": 16,
+    "avgElapsedTime": 0.6003931161250011,
+    "avgNumberOfHops": 11125,
     "bundles": [
         {
-            "arrivalTime": 0.834947177,
-            "elapsedTime": 0.004446820999999999,
+            "elapsedTime": 0.5860508390000023,
             "id": 361,
-            "numberOfHops": 9
+            "numberOfHops": 11125
         },
         {
-            "elapsedTime": 0.022471815000000013,
+            "elapsedTime": 0.6321122880000011,
             "id": 362,
-            "numberOfHops": 74
+            "numberOfHops": 11126
         },
         {
-            "elapsedTime": 0.00732069,
+            "elapsedTime": 0.5987528710000015,
             "id": 363,
-            "numberOfHops": 31
+            "numberOfHops": 11126
         },
         {
-            "elapsedTime": 0.008952784999999998,
+            "elapsedTime": 0.5861516349999994,
             "id": 364,
-            "numberOfHops": 26
+            "numberOfHops": 11126
         },
         {
-            "elapsedTime": 0.007588288000000001,
+            "elapsedTime": 0.6019558870000017,
             "id": 365,
-            "numberOfHops": 28
+            "numberOfHops": 11126
         },
         {
-            "arrivalTime": 0.599860404,
-            "elapsedTime": 0.002477261,
+            "elapsedTime": 0.6091727930000002,
             "id": 366,
-            "numberOfHops": 6
+            "numberOfHops": 11126
         },
         {
-            "arrivalTime": 0.763325416,
-            "elapsedTime": 0.0030245709999999998,
+            "elapsedTime": 0.5968094390000015,
             "id": 367,
-            "numberOfHops": 8
+            "numberOfHops": 11125
         },
         {
-            "arrivalTime": 0.952697667,
-            "elapsedTime": 0.004140367,
+            "elapsedTime": 0.592139177000002,
             "id": 368,
-            "numberOfHops": 11
-        },
-        {
-            "arrivalTime": 0.121101275,
-            "elapsedTime": 0.001342183,
-            "id": 373,
-            "numberOfHops": 3
-        },
-        {
-            "arrivalTime": 0.160691293,
-            "elapsedTime": 0.0021538020000000002,
-            "id": 374,
-            "numberOfHops": 5
-        },
-        {
-            "arrivalTime": 0.14685365,
-            "elapsedTime": 0.001172957,
-            "id": 375,
-            "numberOfHops": 4
-        },
-        {
-            "elapsedTime": 0.008738564,
-            "id": 376,
-            "numberOfHops": 26
-        },
-        {
-            "arrivalTime": 0.40361458099999997,
-            "elapsedTime": 0.0017630990000000002,
-            "id": 377,
-            "numberOfHops": 5
-        },
-        {
-            "arrivalTime": 0.595461655,
-            "elapsedTime": 0.002275601,
-            "id": 378,
-            "numberOfHops": 8
-        },
-        {
-            "elapsedTime": 0.0037996,
-            "id": 379,
-            "numberOfHops": 15
-        },
-        {
-            "elapsedTime": 0.0048223599999999995,
-            "id": 380,
-            "numberOfHops": 23
-        },
-        {
-            "arrivalTime": 0.644799156,
-            "elapsedTime": 0.0032846579999999998,
-            "id": 382,
-            "numberOfHops": 9
-        },
-        {
-            "arrivalTime": 0.091398126,
-            "elapsedTime": 0.000326372,
-            "id": 384,
-            "numberOfHops": 1
-        },
-        {
-            "arrivalTime": 0.481026828,
-            "elapsedTime": 0.004355282,
-            "id": 389,
-            "numberOfHops": 9
-        },
-        {
-            "elapsedTime": 0.013968914999999998,
-            "id": 390,
-            "numberOfHops": 44
-        },
-        {
-            "elapsedTime": 0.010228314,
-            "id": 391,
-            "numberOfHops": 35
-        },
-        {
-            "elapsedTime": 0.007364780999999999,
-            "id": 393,
-            "numberOfHops": 26
-        },
-        {
-            "elapsedTime": 0.009725534,
-            "id": 398,
-            "numberOfHops": 24
-        },
-        {
-            "arrivalTime": 0.058329227,
-            "elapsedTime": 0.000730542,
-            "id": 400,
-            "numberOfHops": 2
-        },
-        {
-            "elapsedTime": 0.0043920980000000005,
-            "id": 406,
-            "numberOfHops": 15
-        },
-        {
-            "elapsedTime": 0.0041716620000000005,
-            "id": 407,
-            "numberOfHops": 19
-        },
-        {
-            "arrivalTime": 0.207534943,
-            "elapsedTime": 0.0006384919999999999,
-            "id": 408,
-            "numberOfHops": 2
-        },
-        {
-            "arrivalTime": 0.207243662,
-            "elapsedTime": 0.0006206779999999999,
-            "id": 409,
-            "numberOfHops": 2
-        },
-        {
-            "elapsedTime": 0.0021163939999999997,
-            "id": 410,
-            "numberOfHops": 7
-        },
-        {
-            "elapsedTime": 0.019516095000000004,
-            "id": 411,
-            "numberOfHops": 68
-        },
-        {
-            "elapsedTime": 0.002742744000000001,
-            "id": 413,
-            "numberOfHops": 13
-        },
-        {
-            "elapsedTime": 0.005866270999999999,
-            "id": 419,
-            "numberOfHops": 19
-        },
-        {
-            "arrivalTime": 0.271284129,
-            "elapsedTime": 0.0019041129999999998,
-            "id": 421,
-            "numberOfHops": 6
-        },
-        {
-            "elapsedTime": 0.0024413679999999998,
-            "id": 422,
-            "numberOfHops": 10
-        },
-        {
-            "elapsedTime": 0.006019384000000001,
-            "id": 435,
-            "numberOfHops": 23
-        },
-        {
-            "arrivalTime": 0.232690816,
-            "elapsedTime": 0.000971811,
-            "id": 440,
-            "numberOfHops": 3
-        },
-        {
-            "elapsedTime": 0.002909782,
-            "id": 442,
-            "numberOfHops": 13
-        },
-        {
-            "elapsedTime": 0.005686732000000002,
-            "id": 443,
-            "numberOfHops": 21
-        },
-        {
-            "elapsedTime": 0.007886770999999999,
-            "id": 444,
-            "numberOfHops": 31
-        },
-        {
-            "elapsedTime": 0.012392789999999997,
-            "id": 446,
-            "numberOfHops": 52
-        },
-        {
-            "elapsedTime": 0.005877257999999999,
-            "id": 456,
-            "numberOfHops": 18
-        },
-        {
-            "elapsedTime": 0.0019401899999999998,
-            "id": 460,
-            "numberOfHops": 5
-        },
-        {
-            "arrivalTime": 0.328354579,
-            "elapsedTime": 0.0019541339999999997,
-            "id": 462,
-            "numberOfHops": 5
-        },
-        {
-            "elapsedTime": 0.007951138999999998,
-            "id": 463,
-            "numberOfHops": 23
-        },
-        {
-            "elapsedTime": 0.0032925150000000006,
-            "id": 464,
-            "numberOfHops": 17
-        },
-        {
-            "elapsedTime": 0.010564822000000001,
-            "id": 470,
-            "numberOfHops": 40
-        },
-        {
-            "arrivalTime": 0.235740536,
-            "elapsedTime": 0.001560736,
-            "id": 471,
-            "numberOfHops": 7
-        },
-        {
-            "arrivalTime": 0.710775261,
-            "elapsedTime": 0.003468223,
-            "id": 474,
-            "numberOfHops": 7
-        },
-        {
-            "elapsedTime": 0.004367935999999999,
-            "id": 475,
-            "numberOfHops": 15
-        },
-        {
-            "elapsedTime": 0.005104288,
-            "id": 477,
-            "numberOfHops": 20
-        },
-        {
-            "elapsedTime": 0.005475517000000001,
-            "id": 478,
-            "numberOfHops": 22
-        },
-        {
-            "arrivalTime": 0.710159613,
-            "elapsedTime": 0.002141669,
-            "id": 479,
-            "numberOfHops": 7
-        },
-        {
-            "elapsedTime": 0.0033573900000000005,
-            "id": 480,
-            "numberOfHops": 11
-        },
-        {
-            "arrivalTime": 0.087674298,
-            "elapsedTime": 0.000411785,
-            "id": 486,
-            "numberOfHops": 1
-        },
-        {
-            "elapsedTime": 0.004963774,
-            "id": 487,
-            "numberOfHops": 18
-        },
-        {
-            "arrivalTime": 0.230314488,
-            "elapsedTime": 0.000893523,
-            "id": 488,
-            "numberOfHops": 3
-        },
-        {
-            "arrivalTime": 0.333963532,
-            "elapsedTime": 0.0013125090000000001,
-            "id": 490,
-            "numberOfHops": 5
-        },
-        {
-            "elapsedTime": 0.005265691,
-            "id": 491,
-            "numberOfHops": 15
-        },
-        {
-            "elapsedTime": 0.014204459000000001,
-            "id": 495,
-            "numberOfHops": 42
-        },
-        {
-            "arrivalTime": 0.788693947,
-            "elapsedTime": 0.005549974000000002,
-            "id": 498,
-            "numberOfHops": 15
-        },
-        {
-            "elapsedTime": 0.005639013000000001,
-            "id": 499,
-            "numberOfHops": 26
-        },
-        {
-            "elapsedTime": 0.0014109899999999998,
-            "id": 502,
-            "numberOfHops": 4
-        },
-        {
-            "arrivalTime": 0.140618232,
-            "elapsedTime": 0.001096355,
-            "id": 503,
-            "numberOfHops": 4
-        },
-        {
-            "elapsedTime": 0.0034213319999999996,
-            "id": 507,
-            "numberOfHops": 11
-        },
-        {
-            "arrivalTime": 3.168628262,
-            "elapsedTime": 0.008369028999999997,
-            "id": 508,
-            "numberOfHops": 29
-        },
-        {
-            "elapsedTime": 0.005523752000000001,
-            "id": 509,
-            "numberOfHops": 28
-        },
-        {
-            "arrivalTime": 0.615673673,
-            "elapsedTime": 0.0008944160000000001,
-            "id": 510,
-            "numberOfHops": 3
-        },
-        {
-            "elapsedTime": 0.007360739,
-            "id": 511,
-            "numberOfHops": 32
-        },
-        {
-            "elapsedTime": 0.003756528,
-            "id": 512,
-            "numberOfHops": 11
-        },
-        {
-            "arrivalTime": 0.79120177,
-            "elapsedTime": 0.001051573,
-            "id": 513,
-            "numberOfHops": 4
-        },
-        {
-            "arrivalTime": 1.587841706,
-            "elapsedTime": 0.002591379,
-            "id": 514,
-            "numberOfHops": 9
-        },
-        {
-            "elapsedTime": 0.003088041,
-            "id": 515,
-            "numberOfHops": 12
-        },
-        {
-            "elapsedTime": 0.006885267,
-            "id": 517,
-            "numberOfHops": 25
-        },
-        {
-            "elapsedTime": 0.000500487,
-            "id": 518,
-            "numberOfHops": 2
-        },
-        {
-            "arrivalTime": 1.87363444,
-            "elapsedTime": 0.003098536,
-            "id": 519,
-            "numberOfHops": 11
-        },
-        {
-            "arrivalTime": 0.111735541,
-            "elapsedTime": 0.0007646469999999999,
-            "id": 528,
-            "numberOfHops": 2
-        },
-        {
-            "elapsedTime": 0.0065715999999999995,
-            "id": 529,
-            "numberOfHops": 20
-        },
-        {
-            "elapsedTime": 0.000899439,
-            "id": 530,
-            "numberOfHops": 3
+            "numberOfHops": 11124
         }
     ],
-    "simulationWalltimeSeconds": 69
+    "simulationWalltimeSeconds": 29
 }
