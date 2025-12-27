@@ -80,11 +80,7 @@ void MetricCollector::updateStartedBundles(int eid, long bundleId, int sourceEid
 }
 
 void MetricCollector::increaseBundleHops(long bundleId) {
-    auto bundleHops = &this->bundleHops_;
-    if ((*bundleHops).find(bundleId) == (*bundleHops).end())
-        (*bundleHops)[bundleId] = 1;
-    else
-        (*bundleHops)[bundleId] = (*bundleHops)[bundleId] + 1;
+    bundleHops_[bundleId]++;
 }
 
 void MetricCollector::updateBundleElapsedTime(long bundleId, double elapsedTime) {
@@ -131,13 +127,18 @@ void MetricCollector::setPath(string path) {
     this->path_ = path;
 }
 
-int MetricCollector::getFileNumber(string prefix) {
+int MetricCollector::getFileNumber(string prefix) { 
     int number = 0;
-    string fileName = prefix + "/metrics/output_" + to_string(number) + ".txt";
+    std::string fileName;
 
-    while (FILE *test = fopen(fileName.c_str(), "r")) {
+    while (true) {
+        fileName = prefix + "/metrics/results_" + std::to_string(number) + ".json";
+        FILE* test = fopen(fileName.c_str(), "r");
+        if (!test) {
+            break;
+        }
+        fclose(test);
         number++;
-        fileName = prefix + "/metrics/output_" + to_string(number) + ".txt";
     }
 
     return number;
@@ -341,7 +342,8 @@ void MetricCollector::evaluateAndPrintContactlessResults() {
 
     string prefix = this->getPrefix();
     int number = this->getFileNumber(prefix);
-    std::filesystem::create_directories(prefix + "/metrics");
+    if (number == 0)
+        std::filesystem::create_directories(prefix + "/metrics");
 
     auto endWalltime = std::chrono::steady_clock::now();
     auto simTime = std::chrono::duration_cast<std::chrono::seconds>(endWalltime - this->startWalltime).count();

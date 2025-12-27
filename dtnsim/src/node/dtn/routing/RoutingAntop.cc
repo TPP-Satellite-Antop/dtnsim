@@ -12,7 +12,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     const H3Index cur = getCurH3IndexForEid(eid_);
     if(cur == 0) {
         std::cout << "Current EID " << eid_ << " is down. Skipping routing" << std::endl;
-       // storeBundle(bundle); TODO si solo retornamos no avanza el sim time pero si lo guardo se queda en loop
+        storeBundle(bundle);
         return;
     }
 
