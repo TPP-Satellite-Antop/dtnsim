@@ -7,6 +7,6 @@ simple Fault
 
         bool enable = default(false);
         int faultSeed = default(0);
-        double meanTTF @unit(seconds) = default(0s); // If 0 no faults enabled 
-        double meanTTR @unit(seconds) = default(0s); // If 0 no faults enabled
+        double meanTTF @unit(seconds) = default(0s); // If 0 no faults enabled. Mean Time To Failure
+        double meanTTR @unit(seconds) = default(0s); // If 0 no faults enabled. Mean Time To Repair / Recovery
 }
