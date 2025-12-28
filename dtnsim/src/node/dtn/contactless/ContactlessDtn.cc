@@ -297,8 +297,12 @@ void ContactlessDtn::scheduleRetry() {
 void ContactlessDtn::retryForwarding() {
     auto contactlessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
     while (auto bundle = contactlessSdrModel->popBundle()) {
+        // ToDo: we're currently popping bundles at the same time we're potentially storing them.
+        //       This could lead to infinite loops or unexpected behaviour depending on how C++ works.
+        contactlessSdrModel->resetEnqueuedBundleFlag();
         routing->msgToOtherArrive(bundle, simTime().dbl());
-        sendMsg(bundle);
+        if (!contactlessSdrModel->enqueuedBundle())
+            sendMsg(bundle);
     }
 }
 

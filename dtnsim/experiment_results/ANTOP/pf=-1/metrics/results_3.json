@@ -1,0 +1,14 @@
+{
+    "avgArrivalTime": 0.171917124,
+    "avgElapsedTime": 0.001533891,
+    "avgNumberOfHops": 5,
+    "bundles": [
+        {
+            "arrivalTime": 0.171917124,
+            "elapsedTime": 0.001533891,
+            "id": 242,
+            "numberOfHops": 5
+        }
+    ],
+    "simulationWalltimeSeconds": 5
+}
