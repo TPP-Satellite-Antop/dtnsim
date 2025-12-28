@@ -20,7 +20,6 @@ void Fault::initialize() {
 
 void Fault::handleMessage(cMessage *msg) {
     if (msg->getKind() == FAULT_START_TIMER) {
-        std::cout << "Received fault start timer" << std::endl;
         // Enable fault mode
         graphicsModule->setFaultOn();
         dtnModule->setOnFault(true);
@@ -29,8 +28,6 @@ void Fault::handleMessage(cMessage *msg) {
         msg->setKind(FAULT_END_TIMER);
         scheduleAt(simTime() + exponential(meanTTR), msg);
     } else if (msg->getKind() == FAULT_END_TIMER) {
-        std::cout << "Received fault end timer" << std::endl;
-
         // Disable fault mode
         graphicsModule->setFaultOff();
         dtnModule->setOnFault(false);
