@@ -252,7 +252,7 @@ void ContactlessDtn::sendMsg(BundlePkt *bundle) {
     antopPkt->setHopCount(antopPkt->getHopCount() + 1);
     antopPkt->setXmitCopiesCount(0);
 
-    std::cout << "Node " << eid_ << " --- Sending bundle to --> Node "<< antopPkt->getNextHopEid() << std::endl;
+    std::cout << "Node " << eid_ << " --- Sending " << antopPkt->getBundleId() << " bundle to --> Node "<< antopPkt->getNextHopEid() << std::endl;
     this->metricCollector_->intializeArrivalTime(antopPkt->getBundleId(), std::chrono::steady_clock::now());
     send(antopPkt, "gateToCom$o");
 
@@ -296,8 +296,10 @@ void ContactlessDtn::scheduleRetry() {
 
 void ContactlessDtn::retryForwarding() {
     auto contactlessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
-    while (auto bundle = contactlessSdrModel->popBundle())
+    while (auto bundle = contactlessSdrModel->popBundle()) {
+        routing->msgToOtherArrive(bundle, simTime().dbl());
         sendMsg(bundle);
+    }
 }
 
 void ContactlessDtn::setRoutingAlgorithm(Antop* antop) {
