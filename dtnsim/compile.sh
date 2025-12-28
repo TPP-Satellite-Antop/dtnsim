@@ -5,6 +5,8 @@ rm -rf out
 # Build antop
 (
   cd ../external/lib
+  git fetch
+  git checkout main
   git pull
   ./lib-build.sh
 )
