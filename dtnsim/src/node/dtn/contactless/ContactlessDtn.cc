@@ -225,15 +225,7 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
         emit(sdrBundleStored, sdr_->getBundlesCountInSdr());
         emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
 
-        auto contactlessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
-        if (contactlessSdrModel->enqueuedBundle()) {
-            scheduleRetry();
-        } else{
-            this->metricCollector_->increaseBundleHops(bundle->getBundleId());
-            sendMsg(bundle);
-        }
-
-        contactlessSdrModel->resetEnqueuedBundleFlag();
+        handleBundleForwarding(bundle);
     }
 }
 
@@ -276,7 +268,7 @@ void ContactlessDtn::setOnFault(bool onFault) {
     this->onFault = onFault;
 
     if (onFault){
-        std::cout << "Node " << eid_ << " is now FAULTY." << std::endl;
+        // std::cout << "Node " << eid_ << " is now FAULTY." << std::endl;
         this->mobilityMap_->erase(eid_);
     } else {
         inet::SatelliteMobility* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
@@ -296,14 +288,24 @@ void ContactlessDtn::scheduleRetry() {
 
 void ContactlessDtn::retryForwarding() {
     auto contactlessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
-    while (auto bundle = contactlessSdrModel->popBundle()) {
-        // ToDo: we're currently popping bundles at the same time we're potentially storing them.
-        //       This could lead to infinite loops or unexpected behaviour depending on how C++ works.
-        contactlessSdrModel->resetEnqueuedBundleFlag();
-        routing->msgToOtherArrive(bundle, simTime().dbl());
-        if (!contactlessSdrModel->enqueuedBundle())
-            sendMsg(bundle);
+
+    auto bundle = contactlessSdrModel->popBundle();
+    contactlessSdrModel->resetEnqueuedBundleFlag(); // ToDo: this could be removed if we handle flag resetting appropriately.
+
+    routing->msgToOtherArrive(bundle, simTime().dbl());
+
+    handleBundleForwarding(bundle);
+}
+
+void ContactlessDtn::handleBundleForwarding(BundlePkt *bundle) {
+    auto contactlessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
+    if (contactlessSdrModel->enqueuedBundle())
+        scheduleRetry();
+    else {
+        this->metricCollector_->increaseBundleHops(bundle->getBundleId());
+        sendMsg(bundle);
     }
+    contactlessSdrModel->resetEnqueuedBundleFlag();
 }
 
 void ContactlessDtn::setRoutingAlgorithm(Antop* antop) {

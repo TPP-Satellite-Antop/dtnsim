@@ -29,6 +29,7 @@ class ContactlessDtn : public Dtn {
     void handleMessage(cMessage *msg) override;
     void finish() override;
     void dispatchBundle(BundlePkt *bundle) override;
+    void handleBundleForwarding(BundlePkt *bundle);
     virtual void sendMsg(BundlePkt *bundle);
     virtual void retryForwarding();
 
