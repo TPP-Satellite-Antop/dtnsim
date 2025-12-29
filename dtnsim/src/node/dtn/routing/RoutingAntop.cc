@@ -94,8 +94,7 @@ int RoutingAntop::getEidFromH3Index(const H3Index idx) {
         if (eid == 0 || !mobility)
             continue;
 
-        const H3Index curIdx = getCurH3IndexForEid(eid);
-        if (curIdx == idx)
+        if (getCurH3IndexForEid(eid) == idx)
             return eid;
     }
 
