@@ -280,9 +280,7 @@ void ContactlessDtn::retryForwarding() {
     std::cout << "Poped bundle " << bundle->getBundleId() << " from SDR for retrying forwarding." << std::endl;
     contactlessSdrModel->resetEnqueuedBundleFlag(); // ToDo: this could be removed if we handle flag resetting appropriately.
 
-    routing->msgToOtherArrive(bundle, simTime().dbl());
-
-    handleBundleForwarding(bundle);
+    dispatchBundle(bundle);
 }
 
 void ContactlessDtn::handleBundleForwarding(BundlePkt *bundle) {
