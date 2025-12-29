@@ -29,7 +29,7 @@ void ContactlessCentral::initialize() {
     auto antop = new Antop();
     antop->init(nodesNumber_);
     auto* mobilityMap = new std::map<int, inet::SatelliteMobility*>();
-    for (int i = 0; i <= nodesNumber_; i++) {
+    for (int i = 0; i <= nodesNumber_; i++) { // todo: i = 1?
         auto dtn = check_and_cast<ContactlessDtn *>(
             this->getParentModule()
                 ->getSubmodule("node", i)
