@@ -17,14 +17,16 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     }
 
     H3Index dst = getCurH3IndexForEid(bundle->getDestinationEid());
-    auto *antopPkt = dynamic_cast<AntopPkt *>(bundle);
-    if (dst == 0 && (dst = antopPkt->getCachedDstH3Index()) == 0) { // try to use cached dst index to at least get closer
-        storeBundle(bundle);
-        return;
-    }
-
-    antopPkt->setCachedDstH3Index(dst);
-
+    const auto antopPkt = static_cast<AntopPkt*>(bundle);
+    if (dst == 0){
+        dst = antopPkt->getCachedDstH3Index();
+        if (dst == 0) {
+            storeBundle(bundle);
+            return;
+        }
+    } else 
+        antopPkt->setCachedDstH3Index(dst);
+    
     const H3Index sender = getCurH3IndexForEid(bundle->getSenderEid());
     H3Index nextHop = 0;
     int nextHopEid = 0;
