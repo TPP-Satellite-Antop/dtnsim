@@ -114,6 +114,14 @@ void ContactlessDtn::finish() {
     // Delete all stored bundles
     sdr_->freeSdr();
 
+    for(auto& pendingBundle : pendingBundles_) {
+        if(pendingBundle->isScheduled())
+            cancelEvent(pendingBundle);
+    
+        delete pendingBundle;
+    }
+    pendingBundles_.clear();
+
     // BundleMap End
     if (saveBundleMap_)
         bundleMap_.close();
@@ -200,7 +208,6 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
                 send(bundle, "gateToApp$o");
             }
         } else
-            // A copy of this bundle was previously received
             delete bundle;
     } else { // This is a bundle in transit
         // Manage custody transfer
@@ -256,7 +263,6 @@ void ContactlessDtn::setOnFault(bool onFault) {
     this->onFault = onFault;
 
     if (onFault){
-        // std::cout << "Node " << eid_ << " is now FAULTY." << std::endl;
         this->mobilityMap_->erase(eid_);
     } else {
         inet::SatelliteMobility* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
@@ -272,6 +278,7 @@ void ContactlessDtn::scheduleRetry() {
     std::cout << "Scheduling bundle retry... - Current time: " << simTime().dbl() <<  " - Scheduling time: " << scheduleTime << std::endl;
 
     scheduleAt(scheduleTime, retryBundle);
+    this->pendingBundles_.push_back(retryBundle);
 }
 
 void ContactlessDtn::retryForwarding() {
