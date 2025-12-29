@@ -101,7 +101,6 @@ int RoutingAntop::getEidFromH3Index(const H3Index idx) {
     return 0;
 }
 
-
 // Equeue bundle for later if no candidate was found
 void RoutingAntop::storeBundle(BundlePkt *bundle) const {
     if(!sdr_->pushBundle(bundle))
