@@ -173,6 +173,7 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
 void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
     if (this->eid_ == bundle->getDestinationEid()) { // We are the final destination of this bundle
         this->metricCollector_->setFinalArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
+        this->metricCollector_->setNumberOfHops(bundle->getBundleId(), bundle->getHopCount());
         emit(dtnBundleSentToApp, true);
         emit(dtnBundleSentToAppHopCount, bundle->getHopCount());
         bundle->getVisitedNodesForUpdate().sort();
@@ -287,10 +288,9 @@ void ContactlessDtn::handleBundleForwarding(BundlePkt *bundle) {
     auto contactlessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
     if (contactlessSdrModel->enqueuedBundle())
         scheduleRetry();
-    else {
-        this->metricCollector_->increaseBundleHops(bundle->getBundleId());
+    else
         sendMsg(bundle);
-    }
+
     contactlessSdrModel->resetEnqueuedBundleFlag();
 }
 

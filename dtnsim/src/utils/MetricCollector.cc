@@ -79,8 +79,8 @@ void MetricCollector::updateStartedBundles(int eid, long bundleId, int sourceEid
     }
 }
 
-void MetricCollector::increaseBundleHops(long bundleId) {
-    bundleHops_[bundleId]++;
+void MetricCollector::setNumberOfHops(long bundleId, int hops) {
+    this->bundleHops_[bundleId] = hops;
 }
 
 void MetricCollector::updateBundleElapsedTime(long bundleId, double elapsedTime) {
