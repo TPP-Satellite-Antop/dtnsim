@@ -25,7 +25,6 @@ ContactlessDtn::~ContactlessDtn() = default;
 void ContactlessDtn::initialize(const int stage) {
     if (stage == 1) {
         this->sdr_ = new ContactlessSdrModel();
-        this->pendingBundles_ = vector<AntopPkt*>();
         // Store this node eid
         this->eid_ = this->getParentModule()->getIndex();
 
@@ -118,13 +117,6 @@ void ContactlessDtn::finish() {
     // BundleMap End
     if (saveBundleMap_)
         bundleMap_.close();
-    
-    //TODO creo q no anda:
-    for (AntopPkt* b : pendingBundles_) {
-        cancelAndDelete(b);
-    }
-    
-    pendingBundles_.clear();
 
     delete routing;
 }
@@ -158,7 +150,7 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
                 emit(dtnBundleReceivedFromApp, true);
 
             auto bundle = check_and_cast<AntopPkt *>(msg);
-            dispatchBundle(check_and_cast<AntopPkt *>(msg));
+            dispatchBundle(bundle);
             double elapsedTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
             this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTime);
 
@@ -194,6 +186,7 @@ void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
         emit(dtnBundleSentToAppRevisitedHops, bundle->getHopCount() - bundle->getVisitedNodes().size());
 
         // Check if this bundle has previously arrived here
+        // TODO esto creo q no se usa
         if (routing->msgToMeArrive(bundle)) {
             // This is the first time this bundle arrives
             if (bundle->getBundleIsCustodyReport()) {
@@ -277,19 +270,20 @@ void ContactlessDtn::setOnFault(bool onFault) {
 }
 
 void ContactlessDtn::scheduleRetry() {
-    auto retryBundle = new AntopPkt("pendingBundle", FORWARDING_RETRY);
-    pendingBundles_.push_back(retryBundle);
     auto mobilityModule = (*mobilityMap_)[eid_];
+    auto retryBundle = new AntopPkt("pendingBundle", FORWARDING_RETRY);
 
-    std::cout << "Scheduling bundle retry... - Current time: " << simTime().dbl() <<  " - Scheduling time: " << mobilityModule->getNextUpdateTime() << std::endl;
+    auto scheduleTime = mobilityModule ? mobilityModule->getNextUpdateTime() : simTime() + 1; // if mobilityModule is null, node is down, schedule retry in 1 second
+    std::cout << "Scheduling bundle retry... - Current time: " << simTime().dbl() <<  " - Scheduling time: " << scheduleTime << std::endl;
 
-    scheduleAt(mobilityModule->getNextUpdateTime(), retryBundle);
+    scheduleAt(scheduleTime, retryBundle);
 }
 
 void ContactlessDtn::retryForwarding() {
     auto contactlessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
 
     auto bundle = contactlessSdrModel->popBundle();
+    std::cout << "Poped bundle " << bundle->getBundleId() << " from SDR for retrying forwarding." << std::endl;
     contactlessSdrModel->resetEnqueuedBundleFlag(); // ToDo: this could be removed if we handle flag resetting appropriately.
 
     routing->msgToOtherArrive(bundle, simTime().dbl());

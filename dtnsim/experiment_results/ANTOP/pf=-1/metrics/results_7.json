@@ -1,0 +1,703 @@
+{
+    "avgArrivalTime": 15.863251094361354,
+    "avgElapsedTime": 0.0073766724369747905,
+    "avgNumberOfHops": 46,
+    "bundles": [
+        {
+            "arrivalTime": 1.103421426,
+            "elapsedTime": 0.0029562860000000002,
+            "id": 361,
+            "numberOfHops": 9
+        },
+        {
+            "arrivalTime": 47.728632303,
+            "elapsedTime": 0.0069895370000000005,
+            "id": 362,
+            "numberOfHops": 44
+        },
+        {
+            "arrivalTime": 1.002465464,
+            "elapsedTime": 0.00178853,
+            "id": 363,
+            "numberOfHops": 8
+        },
+        {
+            "arrivalTime": 81.991642809,
+            "elapsedTime": 0.019778438000000002,
+            "id": 364,
+            "numberOfHops": 185
+        },
+        {
+            "arrivalTime": 17.395852728,
+            "elapsedTime": 0.0035876929999999994,
+            "id": 365,
+            "numberOfHops": 22
+        },
+        {
+            "elapsedTime": 0.0037584779999999987,
+            "id": 366,
+            "numberOfHops": 29
+        },
+        {
+            "arrivalTime": 1.10148026,
+            "elapsedTime": 0.0023270090000000005,
+            "id": 367,
+            "numberOfHops": 9
+        },
+        {
+            "arrivalTime": 0.287993057,
+            "elapsedTime": 0.0006199179999999999,
+            "id": 368,
+            "numberOfHops": 2
+        },
+        {
+            "arrivalTime": 59.354913301,
+            "elapsedTime": 0.023267923,
+            "id": 373,
+            "numberOfHops": 137
+        },
+        {
+            "arrivalTime": 0.300234287,
+            "elapsedTime": 0.0019842559999999998,
+            "id": 374,
+            "numberOfHops": 6
+        },
+        {
+            "arrivalTime": 63.459579082,
+            "elapsedTime": 0.021628755999999992,
+            "id": 375,
+            "numberOfHops": 138
+        },
+        {
+            "arrivalTime": 1.438997071,
+            "elapsedTime": 0.004915131,
+            "id": 378,
+            "numberOfHops": 15
+        },
+        {
+            "elapsedTime": 0.002940897,
+            "id": 379,
+            "numberOfHops": 22
+        },
+        {
+            "arrivalTime": 0.449302039,
+            "elapsedTime": 0.000691109,
+            "id": 380,
+            "numberOfHops": 3
+        },
+        {
+            "arrivalTime": 55.363007202,
+            "elapsedTime": 0.013408630000000001,
+            "id": 381,
+            "numberOfHops": 90
+        },
+        {
+            "arrivalTime": 44.199743539,
+            "elapsedTime": 0.008678619000000002,
+            "id": 382,
+            "numberOfHops": 61
+        },
+        {
+            "arrivalTime": 66.166716838,
+            "elapsedTime": 0.013641668999999995,
+            "id": 383,
+            "numberOfHops": 116
+        },
+        {
+            "arrivalTime": 0.798305108,
+            "elapsedTime": 0.0009786530000000001,
+            "id": 384,
+            "numberOfHops": 6
+        },
+        {
+            "arrivalTime": 0.700060904,
+            "elapsedTime": 0.000658138,
+            "id": 385,
+            "numberOfHops": 5
+        },
+        {
+            "arrivalTime": 77.103481153,
+            "elapsedTime": 0.021574148000000008,
+            "id": 386,
+            "numberOfHops": 183
+        },
+        {
+            "elapsedTime": 0.012633438,
+            "id": 392,
+            "numberOfHops": 60
+        },
+        {
+            "arrivalTime": 69.793332393,
+            "elapsedTime": 0.030822935,
+            "id": 393,
+            "numberOfHops": 212
+        },
+        {
+            "arrivalTime": 0.528226096,
+            "elapsedTime": 0.001391898,
+            "id": 394,
+            "numberOfHops": 8
+        },
+        {
+            "arrivalTime": 11.980023298,
+            "elapsedTime": 0.004229044,
+            "id": 395,
+            "numberOfHops": 16
+        },
+        {
+            "arrivalTime": 53.610768182,
+            "elapsedTime": 0.017890359999999998,
+            "id": 396,
+            "numberOfHops": 98
+        },
+        {
+            "arrivalTime": 0.329372126,
+            "elapsedTime": 0.0021203959999999997,
+            "id": 400,
+            "numberOfHops": 7
+        },
+        {
+            "arrivalTime": 12.712467406,
+            "elapsedTime": 0.004070029,
+            "id": 401,
+            "numberOfHops": 19
+        },
+        {
+            "arrivalTime": 4.708146807,
+            "elapsedTime": 0.0012090450000000002,
+            "id": 402,
+            "numberOfHops": 6
+        },
+        {
+            "arrivalTime": 0.26043524,
+            "elapsedTime": 0.0008283989999999998,
+            "id": 403,
+            "numberOfHops": 5
+        },
+        {
+            "arrivalTime": 26.580957077,
+            "elapsedTime": 0.003421526,
+            "id": 404,
+            "numberOfHops": 28
+        },
+        {
+            "arrivalTime": 53.453795231,
+            "elapsedTime": 0.038292833,
+            "id": 408,
+            "numberOfHops": 232
+        },
+        {
+            "arrivalTime": 4.045918388,
+            "elapsedTime": 0.001147784,
+            "id": 409,
+            "numberOfHops": 5
+        },
+        {
+            "arrivalTime": 13.710414457,
+            "elapsedTime": 0.005763203,
+            "id": 410,
+            "numberOfHops": 35
+        },
+        {
+            "arrivalTime": 72.092987464,
+            "elapsedTime": 0.02039632700000001,
+            "id": 411,
+            "numberOfHops": 130
+        },
+        {
+            "arrivalTime": 0.862281155,
+            "elapsedTime": 0.0025790410000000002,
+            "id": 412,
+            "numberOfHops": 10
+        },
+        {
+            "arrivalTime": 3.314032658,
+            "elapsedTime": 0.0009016310000000001,
+            "id": 413,
+            "numberOfHops": 4
+        },
+        {
+            "arrivalTime": 0.508790609,
+            "elapsedTime": 0.000670668,
+            "id": 414,
+            "numberOfHops": 5
+        },
+        {
+            "arrivalTime": 0.594036559,
+            "elapsedTime": 0.0015671110000000002,
+            "id": 415,
+            "numberOfHops": 6
+        },
+        {
+            "arrivalTime": 0.208711,
+            "elapsedTime": 0.001015261,
+            "id": 420,
+            "numberOfHops": 6
+        },
+        {
+            "elapsedTime": 0.0019363760000000003,
+            "id": 421,
+            "numberOfHops": 10
+        },
+        {
+            "arrivalTime": 52.385391477,
+            "elapsedTime": 0.017685337,
+            "id": 422,
+            "numberOfHops": 137
+        },
+        {
+            "arrivalTime": 5.321157136,
+            "elapsedTime": 0.0014285390000000002,
+            "id": 423,
+            "numberOfHops": 7
+        },
+        {
+            "arrivalTime": 4.307227348,
+            "elapsedTime": 0.005977856,
+            "id": 424,
+            "numberOfHops": 33
+        },
+        {
+            "elapsedTime": 0.013119767999999993,
+            "id": 428,
+            "numberOfHops": 67
+        },
+        {
+            "arrivalTime": 45.317050086,
+            "elapsedTime": 0.0022474509999999997,
+            "id": 429,
+            "numberOfHops": 30
+        },
+        {
+            "arrivalTime": 3.93362528,
+            "elapsedTime": 0.0021520749999999994,
+            "id": 430,
+            "numberOfHops": 11
+        },
+        {
+            "elapsedTime": 0.00075782,
+            "id": 431,
+            "numberOfHops": 2
+        },
+        {
+            "arrivalTime": 55.050979358,
+            "elapsedTime": 0.023134442,
+            "id": 435,
+            "numberOfHops": 162
+        },
+        {
+            "arrivalTime": 8.00433544,
+            "elapsedTime": 0.0021690659999999994,
+            "id": 436,
+            "numberOfHops": 12
+        },
+        {
+            "elapsedTime": 0.0009064920000000001,
+            "id": 437,
+            "numberOfHops": 2
+        },
+        {
+            "arrivalTime": 47.031353043,
+            "elapsedTime": 0.006318062000000002,
+            "id": 440,
+            "numberOfHops": 46
+        },
+        {
+            "arrivalTime": 7.532477149,
+            "elapsedTime": 0.0024576730000000005,
+            "id": 441,
+            "numberOfHops": 11
+        },
+        {
+            "arrivalTime": 0.735549906,
+            "elapsedTime": 0.0030416980000000002,
+            "id": 442,
+            "numberOfHops": 11
+        },
+        {
+            "arrivalTime": 0.735461604,
+            "elapsedTime": 0.001884041,
+            "id": 443,
+            "numberOfHops": 11
+        },
+        {
+            "elapsedTime": 0.004108693000000001,
+            "id": 444,
+            "numberOfHops": 22
+        },
+        {
+            "arrivalTime": 1.751894772,
+            "elapsedTime": 0.000239914,
+            "id": 445,
+            "numberOfHops": 2
+        },
+        {
+            "arrivalTime": 0.342104431,
+            "elapsedTime": 0.000623948,
+            "id": 446,
+            "numberOfHops": 4
+        },
+        {
+            "arrivalTime": 43.066956195,
+            "elapsedTime": 0.011078092,
+            "id": 447,
+            "numberOfHops": 70
+        },
+        {
+            "arrivalTime": 25.487851188,
+            "elapsedTime": 0.028960038000000007,
+            "id": 453,
+            "numberOfHops": 169
+        },
+        {
+            "arrivalTime": 0.051781899,
+            "elapsedTime": 0.000599907,
+            "id": 454,
+            "numberOfHops": 3
+        },
+        {
+            "arrivalTime": 0.694721067,
+            "elapsedTime": 0.006896458,
+            "id": 455,
+            "numberOfHops": 37
+        },
+        {
+            "arrivalTime": 1.504519617,
+            "elapsedTime": 0.0006415,
+            "id": 456,
+            "numberOfHops": 4
+        },
+        {
+            "arrivalTime": 49.082084707,
+            "elapsedTime": 0.015011487999999995,
+            "id": 458,
+            "numberOfHops": 111
+        },
+        {
+            "elapsedTime": 0.0051545160000000005,
+            "id": 459,
+            "numberOfHops": 36
+        },
+        {
+            "arrivalTime": 0.331220792,
+            "elapsedTime": 0.001524069,
+            "id": 460,
+            "numberOfHops": 5
+        },
+        {
+            "arrivalTime": 0.3310973,
+            "elapsedTime": 0.001119185,
+            "id": 461,
+            "numberOfHops": 5
+        },
+        {
+            "elapsedTime": 0.00255287,
+            "id": 462,
+            "numberOfHops": 17
+        },
+        {
+            "arrivalTime": 2.568048501,
+            "elapsedTime": 0.000231233,
+            "id": 463,
+            "numberOfHops": 3
+        },
+        {
+            "arrivalTime": 24.129807769,
+            "elapsedTime": 0.03685593400000001,
+            "id": 466,
+            "numberOfHops": 227
+        },
+        {
+            "arrivalTime": 23.446185571,
+            "elapsedTime": 0.005137496999999999,
+            "id": 467,
+            "numberOfHops": 37
+        },
+        {
+            "arrivalTime": 0.258726394,
+            "elapsedTime": 0.000887381,
+            "id": 468,
+            "numberOfHops": 5
+        },
+        {
+            "arrivalTime": 14.266724556,
+            "elapsedTime": 0.004075860000000001,
+            "id": 469,
+            "numberOfHops": 23
+        },
+        {
+            "arrivalTime": 0.361111866,
+            "elapsedTime": 0.001064083,
+            "id": 472,
+            "numberOfHops": 5
+        },
+        {
+            "arrivalTime": 1.824346946,
+            "elapsedTime": 0.0013412670000000002,
+            "id": 473,
+            "numberOfHops": 5
+        },
+        {
+            "arrivalTime": 34.801063026,
+            "elapsedTime": 0.013169612999999997,
+            "id": 474,
+            "numberOfHops": 105
+        },
+        {
+            "arrivalTime": 73.881655627,
+            "elapsedTime": 0.05423211200000002,
+            "id": 475,
+            "numberOfHops": 364
+        },
+        {
+            "elapsedTime": 0.00040883499999999997,
+            "id": 476,
+            "numberOfHops": 1
+        },
+        {
+            "arrivalTime": 4.706661018,
+            "elapsedTime": 0.0014199379999999997,
+            "id": 477,
+            "numberOfHops": 6
+        },
+        {
+            "arrivalTime": 6.306011783,
+            "elapsedTime": 0.001425068,
+            "id": 478,
+            "numberOfHops": 17
+        },
+        {
+            "arrivalTime": 6.092230956,
+            "elapsedTime": 0.007206341999999999,
+            "id": 485,
+            "numberOfHops": 47
+        },
+        {
+            "arrivalTime": 39.806598288000004,
+            "elapsedTime": 0.011675955999999996,
+            "id": 486,
+            "numberOfHops": 78
+        },
+        {
+            "arrivalTime": 0.305692929,
+            "elapsedTime": 0.005293775,
+            "id": 487,
+            "numberOfHops": 17
+        },
+        {
+            "arrivalTime": 66.765304884,
+            "elapsedTime": 0.018947684999999995,
+            "id": 488,
+            "numberOfHops": 126
+        },
+        {
+            "arrivalTime": 46.729620248,
+            "elapsedTime": 0.008381870000000001,
+            "id": 489,
+            "numberOfHops": 50
+        },
+        {
+            "arrivalTime": 0.606526797,
+            "elapsedTime": 0.0018874430000000004,
+            "id": 490,
+            "numberOfHops": 8
+        },
+        {
+            "arrivalTime": 21.797036264,
+            "elapsedTime": 0.011294668000000004,
+            "id": 496,
+            "numberOfHops": 101
+        },
+        {
+            "arrivalTime": 0.104862874,
+            "elapsedTime": 0.001297925,
+            "id": 497,
+            "numberOfHops": 5
+        },
+        {
+            "arrivalTime": 2.828771504,
+            "elapsedTime": 0.002126787,
+            "id": 498,
+            "numberOfHops": 11
+        },
+        {
+            "arrivalTime": 21.198331154,
+            "elapsedTime": 0.07086291100000001,
+            "id": 499,
+            "numberOfHops": 430
+        },
+        {
+            "elapsedTime": 0.000452656,
+            "id": 500,
+            "numberOfHops": 1
+        },
+        {
+            "arrivalTime": 14.448248348,
+            "elapsedTime": 0.006763059999999999,
+            "id": 501,
+            "numberOfHops": 40
+        },
+        {
+            "arrivalTime": 58.572367932,
+            "elapsedTime": 0.026152044000000003,
+            "id": 503,
+            "numberOfHops": 188
+        },
+        {
+            "arrivalTime": 0.140516479,
+            "elapsedTime": 0.000855811,
+            "id": 504,
+            "numberOfHops": 4
+        },
+        {
+            "arrivalTime": 20.492812846,
+            "elapsedTime": 0.004988979000000001,
+            "id": 505,
+            "numberOfHops": 50
+        },
+        {
+            "elapsedTime": 0.006178370000000002,
+            "id": 507,
+            "numberOfHops": 46
+        },
+        {
+            "elapsedTime": 0.001826882,
+            "id": 508,
+            "numberOfHops": 5
+        },
+        {
+            "arrivalTime": 43.866225152,
+            "elapsedTime": 0.012001335,
+            "id": 509,
+            "numberOfHops": 63
+        },
+        {
+            "elapsedTime": 0.00026604199999999997,
+            "id": 510,
+            "numberOfHops": 1
+        },
+        {
+            "arrivalTime": 2.567785117,
+            "elapsedTime": 0.00016618200000000002,
+            "id": 511,
+            "numberOfHops": 3
+        },
+        {
+            "elapsedTime": 0.00088269,
+            "id": 512,
+            "numberOfHops": 3
+        },
+        {
+            "arrivalTime": 7.166966734,
+            "elapsedTime": 0.0038878100000000002,
+            "id": 513,
+            "numberOfHops": 21
+        },
+        {
+            "arrivalTime": 22.272459447,
+            "elapsedTime": 0.014019102999999998,
+            "id": 514,
+            "numberOfHops": 87
+        },
+        {
+            "arrivalTime": 1.305042184,
+            "elapsedTime": 0.002088165,
+            "id": 515,
+            "numberOfHops": 13
+        },
+        {
+            "arrivalTime": 0.298390935,
+            "elapsedTime": 0.000145752,
+            "id": 517,
+            "numberOfHops": 2
+        },
+        {
+            "arrivalTime": 5.029144098,
+            "elapsedTime": 0.003005368,
+            "id": 518,
+            "numberOfHops": 23
+        },
+        {
+            "elapsedTime": 0.018971421,
+            "id": 519,
+            "numberOfHops": 103
+        },
+        {
+            "arrivalTime": 1.822809377,
+            "elapsedTime": 0.0009738910000000001,
+            "id": 529,
+            "numberOfHops": 5
+        },
+        {
+            "arrivalTime": 10.335786929,
+            "elapsedTime": 0.005806991999999999,
+            "id": 530,
+            "numberOfHops": 31
+        },
+        {
+            "arrivalTime": 1.504442936,
+            "elapsedTime": 0.000669137,
+            "id": 531,
+            "numberOfHops": 4
+        },
+        {
+            "elapsedTime": 0.004201722,
+            "id": 532,
+            "numberOfHops": 17
+        },
+        {
+            "elapsedTime": 0.002569411,
+            "id": 553,
+            "numberOfHops": 10
+        },
+        {
+            "arrivalTime": 1.248350872,
+            "elapsedTime": 0.000474646,
+            "id": 554,
+            "numberOfHops": 3
+        },
+        {
+            "arrivalTime": 5.038172173,
+            "elapsedTime": 0.002211649,
+            "id": 555,
+            "numberOfHops": 7
+        },
+        {
+            "arrivalTime": 3.368520102,
+            "elapsedTime": 0.0023264180000000002,
+            "id": 556,
+            "numberOfHops": 9
+        },
+        {
+            "arrivalTime": 21.299174821,
+            "elapsedTime": 0.008287033999999997,
+            "id": 557,
+            "numberOfHops": 38
+        },
+        {
+            "arrivalTime": 39.697132835,
+            "elapsedTime": 0.002450939,
+            "id": 558,
+            "numberOfHops": 27
+        },
+        {
+            "arrivalTime": 5.037957931,
+            "elapsedTime": 0.001467918,
+            "id": 559,
+            "numberOfHops": 7
+        },
+        {
+            "arrivalTime": 3.827446195,
+            "elapsedTime": 0.0007311600000000001,
+            "id": 560,
+            "numberOfHops": 5
+        },
+        {
+            "arrivalTime": 23.362443319,
+            "elapsedTime": 0.012925129000000006,
+            "id": 561,
+            "numberOfHops": 76
+        }
+    ],
+    "simulationWalltimeSeconds": 119
+}

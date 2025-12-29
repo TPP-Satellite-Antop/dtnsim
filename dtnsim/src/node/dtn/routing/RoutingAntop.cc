@@ -71,12 +71,13 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
 
     try {
         const inet::SatelliteMobility *mobility = this->mobilityMap->at(eid);
+        if (!mobility) return 0;
+        
         const auto latLng = LatLng {deg2rad(mobility->getLatitude()), deg2rad(mobility->getLongitude())};
         H3Index cell = 0;
 
-        if (latLngToCell(&latLng, this->routingTable->getAntopResolution(), &cell) != E_SUCCESS){
+        if (latLngToCell(&latLng, this->routingTable->getAntopResolution(), &cell) != E_SUCCESS)
             cout << "Error converting lat long to cell" << endl;
-        }
 
         return cell;
     } catch (exception& e) {
@@ -86,12 +87,21 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
 }
 
 int RoutingAntop::getEidFromH3Index(const H3Index idx) {
-    for (const auto& [eid, _] : *this->mobilityMap) {
-        if (eid != 0 && idx == this->getCurH3IndexForEid(eid)) return eid;
+    if (!mobilityMap)
+        return 0;
+
+    for (const auto& [eid, mobility] : *mobilityMap) {
+        if (eid == 0 || !mobility)
+            continue;
+
+        const H3Index curIdx = getCurH3IndexForEid(eid);
+        if (curIdx == idx)
+            return eid;
     }
 
     return 0;
 }
+
 
 // Equeue bundle for later if no candidate was found
 void RoutingAntop::storeBundle(BundlePkt *bundle) const {
