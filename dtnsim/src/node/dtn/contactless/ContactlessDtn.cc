@@ -131,12 +131,6 @@ void ContactlessDtn::finish() {
  */
 
 void ContactlessDtn::handleMessage(cMessage *msg) {
-    if (this->onFault) {
-        std::cout << "Node " << eid_ << " is FAULTY. Dropping message of type: " << msg->getKind() << std::endl;
-        delete msg; //TODO ver si no se borra en otro lado
-        return;
-    }
-
     auto elapsedTimeStart = std::chrono::steady_clock::now();
     ///////////////////////////////////////////
     // New Bundle (from App or Com):
