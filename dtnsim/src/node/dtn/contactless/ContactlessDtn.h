@@ -1,15 +1,11 @@
-#ifndef _DTN_H_
-#define _DTN_H_
+#ifndef _CONTACTLESS_DTN_H_
+#define _CONTACTLESS_DTN_H_
 
 #include "src/dtnsim_m.h"
+#include "src/node/dtn/Dtn.h"
 #include "src/node/dtn/CustodyModel.h"
-#include "src/node/dtn/SdrModel.h"
-#include "src/node/dtn/contactless/ContactlessSdrModel.h"
-#include "src/node/dtn/routing/Routing.h"
 #include "src/node/dtn/routing/RoutingORUCOP.h"
 #include "src/node/dtn/routing/RoutingAntop.h"
-#include "src/node/graphics/Graphics.h"
-#include "src/utils/MetricCollector.h"
 #include "src/utils/Observer.h"
 #include "src/utils/RouterUtils.h"
 #include "src/utils/TopologyUtils.h"
@@ -18,62 +14,38 @@
 #include <omnetpp.h>
 #include <string>
 
-using namespace omnetpp;
-using namespace std;
-
-class ContactlessDtn : public cSimpleModule, public Observer {
+class ContactlessDtn : public Dtn {
   public:
     ContactlessDtn();
     virtual ~ContactlessDtn();
 
-    virtual void setOnFault(bool onFault);
+    void setOnFault(bool onFault) override;
     void scheduleRetry();
-    virtual void setMetricCollector(MetricCollector *metricCollector);
-    virtual Routing *getRouting();
-
-    virtual void update();
-
-    // Opportunistic procedures
-    map<int, int> getReachableNodes() const;
-    void addCurrentNeighbor(int neighborEid);
-    void removeCurrentNeighbor(int neighborEid);
     void setRoutingAlgorithm(Antop* antop);
     void setMobilityMap(map<int, inet::SatelliteMobility*> *mobilityMap);
 
   protected:
-    virtual void initialize(int stage);
-    virtual int numInitStages() const;
-    virtual void handleMessage(cMessage *msg);
-    virtual void finish();
-
-    virtual void dispatchBundle(BundlePkt *bundle);
+    void initialize(int stage) override;
+    void handleMessage(cMessage *msg) override;
+    void finish() override;
+    void dispatchBundle(BundlePkt *bundle) override;
+    void handleBundleForwarding(BundlePkt *bundle);
     virtual void sendMsg(BundlePkt *bundle);
     virtual void retryForwarding();
 
   private:
     int eid_;
-    bool onFault = false;
     Antop* antop;
     map<int, inet::SatelliteMobility*> *mobilityMap_;
     void initializeRouting(string routingString);
 
-    // Pointer to grahics module
-    Graphics *graphicsModule;
-
-    // Routing and storage
-    Routing *routing;
-
-    // An observer that collects and evaluates all the necessary simulation metrics
-    MetricCollector *metricCollector_;
-
     CustodyModel custodyModel_;
     double custodyTimeout_;
-
-    ContactlessSdrModel sdr_;
 
     // BundlesMap
     bool saveBundleMap_;
     ofstream bundleMap_;
+    vector<BundlePkt*> pendingBundles_;
 
     // Signals
     simsignal_t dtnBundleSentToCom;
@@ -87,4 +59,4 @@ class ContactlessDtn : public cSimpleModule, public Observer {
     simsignal_t sdrBytesStored;
 };
 
-#endif /* DTN_H_ */
+#endif /* _CONTACTLESS_DTN_H_ */

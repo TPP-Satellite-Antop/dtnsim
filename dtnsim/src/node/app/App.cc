@@ -93,7 +93,13 @@ void App::initialize() {
 void App::handleMessage(cMessage *msg) {
     if (msg->getKind() == TRAFFIC_TIMER) {
         TrafficGeneratorMsg *trafficGenMsg = check_and_cast<TrafficGeneratorMsg *>(msg);
-        BundlePkt *bundle = new BundlePkt("bundle", BUNDLE);
+
+        BundlePkt *bundle = nullptr;
+        const auto isContactless = this->getParentModule()->par("hasMobility").boolValue();
+        if (isContactless)
+            bundle = new AntopPkt("bundle", BUNDLE);
+        else
+            bundle = new BundlePkt("bundle", BUNDLE);
         bundle->setSchedulingPriority(BUNDLE);
 
         // Bundle properties

@@ -1,17 +1,14 @@
-#ifndef _DTN_H_
-#define _DTN_H_
+#ifndef _CONTACT_DTN_H_
+#define _CONTACT_DTN_H_
 
 #include "src/dtnsim_m.h"
+#include "src/node/dtn/Dtn.h"
 #include "src/node/dtn/CustodyModel.h"
 #include "src/node/dtn/SdrModel.h"
 #include "src/node/dtn/contactplan/Contact.h"
 #include "src/node/dtn/contactplan/ContactHistory.h"
 #include "src/node/dtn/contactplan/ContactPlan.h"
-#include "src/node/dtn/contactplan/ContactSdrModel.h"
-#include "src/node/dtn/routing/Routing.h"
 #include "src/node/dtn/routing/RoutingORUCOP.h"
-#include "src/node/graphics/Graphics.h"
-#include "src/utils/MetricCollector.h"
 #include "src/utils/Observer.h"
 #include "src/utils/RouterUtils.h"
 #include "src/utils/TopologyUtils.h"
@@ -20,23 +17,16 @@
 #include <omnetpp.h>
 #include <string>
 
-using namespace omnetpp;
-using namespace std;
-
-class ContactDtn : public cSimpleModule, public Observer {
+class ContactDtn : public Dtn {
   public:
     ContactDtn();
     virtual ~ContactDtn();
 
-    virtual void setOnFault(bool onFault);
-    virtual void refreshForwarding();
+    void setOnFault(bool onFault) override;
+    void refreshForwarding();
     ContactPlan *getContactPlanPointer();
-    virtual void setContactPlan(ContactPlan &contactPlan);
-    virtual void setContactTopology(ContactPlan &contactTopology);
-    virtual void setMetricCollector(MetricCollector *metricCollector);
-    virtual Routing *getRouting();
-
-    virtual void update();
+    void setContactPlan(ContactPlan &contactPlan);
+    void setContactTopology(ContactPlan &contactTopology);
 
     // Opportunistic procedures
     void syncDiscoveredContact(Contact *c, bool start) const;
@@ -58,26 +48,17 @@ class ContactDtn : public cSimpleModule, public Observer {
     int checkExistenceOfContact(int sourceEid, int destinationEid, int start);
 
   protected:
-    virtual void initialize(int stage);
-    virtual int numInitStages() const;
-    virtual void handleMessage(cMessage *msg);
-    virtual void finish();
-
-    virtual void dispatchBundle(BundlePkt *bundle);
+    void initialize(int stage) override;
+    void handleMessage(cMessage *msg) override;
+    void finish() override;
+    void dispatchBundle(BundlePkt *bundle) override;
 
   private:
     int eid_;
-    bool onFault = false;
     void initializeRouting(const string& routingString);
-
-    // Pointer to grahics module
-    Graphics *graphicsModule;
 
     // Forwarding threads
     map<int, ForwardingMsgStart *> forwardingMsgs_;
-
-    // Routing and storage
-    Routing *routing;
 
     // Contact Plan to feed CGR
     // and get transmission rates
@@ -87,17 +68,12 @@ class ContactDtn : public cSimpleModule, public Observer {
     // discovered contacts;
     ContactHistory contactHistory_;
 
-    // An observer that collects and evaluates all the necessary simulation metrics
-    MetricCollector *metricCollector_;
-
     // Contact Topology to schedule Contacts
     // and get transmission rates
     ContactPlan contactTopology_;
 
     CustodyModel custodyModel_;
     double custodyTimeout_;
-
-    ContactSdrModel sdr_;
 
     // BundlesMap
     bool saveBundleMap_;
@@ -119,4 +95,4 @@ class ContactDtn : public cSimpleModule, public Observer {
     simsignal_t routeCgrRouteTableEntriesExplored;
 };
 
-#endif /* DTN_H_ */
+#endif /* _CONTACT_DTN_H_ */
