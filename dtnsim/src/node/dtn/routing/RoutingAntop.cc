@@ -62,7 +62,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         bundle->setReturnToSender(nextHop == sender);
         bundle->setNextHopEid(nextHopEid);
 
-        std::cout << "Routing through " << std::hex << nextHop << std::dec << " ||| " << nextHopEid << std::endl << std::endl;
+        std::cout << "Routing through " << std::hex << nextHop << std::dec << " ||| " << nextHopEid << std::endl;
     }
 }
 
