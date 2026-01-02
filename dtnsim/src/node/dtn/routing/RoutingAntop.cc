@@ -26,7 +26,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         }
     } else 
         antopPkt->setCachedDstH3Index(dst);
-    
+
     const H3Index sender = getCurH3IndexForEid(bundle->getSenderEid());
     H3Index nextHop = 0;
     int nextHopEid = 0;
@@ -49,16 +49,16 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
             int hopCount = bundle->getHopCount();
             nextHop = routingTable->findNextHop(cur, src, dst, sender, &hopCount, nextUpdateTime);
             bundle->setHopCount(hopCount);
-            nextHopEid = getEidFromH3Index(nextHop);
+            nextHopEid = getEidFromH3Index(nextHop, dst, bundle->getDestinationEid());
         } //if src = 0 -> node down, will be handled below in findNewNeighbor
     }
 
     while (nextHopEid == 0) {
         nextHop = routingTable->findNewNeighbor(cur, dst, sender == 0 ? cur : sender, nextUpdateTime);
-		nextHopEid = getEidFromH3Index(nextHop);
+        nextHopEid = getEidFromH3Index(nextHop, dst, bundle->getDestinationEid());
     }
 
-    if (nextHop == cur)
+    if (nextHop == cur || nextHopEid == eid_)
         storeBundle(bundle);
     else {
         bundle->setReturnToSender(nextHop == sender);
@@ -84,18 +84,20 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
         return cell;
     } catch (exception& e) {
         cout << "No mobility module found for eid " << eid  << ". Node must be down! " << endl;
-        return 0;   
+        return 0;
     }
 }
 
-int RoutingAntop::getEidFromH3Index(const H3Index idx) {
+int RoutingAntop::getEidFromH3Index(const H3Index idx, const H3Index dst, const int dstEid) {
+    if (idx == dst)
+        return getCurH3IndexForEid(dstEid) == idx ? dstEid : eid_;
+
     if (!mobilityMap)
         return 0;
 
     for (const auto& [eid, mobility] : *mobilityMap) {
         if (eid == 0 || !mobility)
             continue;
-
         if (getCurH3IndexForEid(eid) == idx)
             return eid;
     }
