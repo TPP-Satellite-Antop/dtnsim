@@ -344,12 +344,15 @@ void ContactDtn::handleMessage(cMessage *msg) {
     // New Bundle (from App or ContactPlanCom):
     ///////////////////////////////////////////
     if (msg->getKind() == BUNDLE || msg->getKind() == BUNDLE_CUSTODY_REPORT) {
+        auto *bundle = check_and_cast<BundlePkt *>(msg);
+
         if (msg->arrivedOn("gateToCom$i"))
             emit(dtnBundleReceivedFromCom, true);
-        if (msg->arrivedOn("gateToApp$i"))
+        if (msg->arrivedOn("gateToApp$i")) {
             emit(dtnBundleReceivedFromApp, true);
+            this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
+        }
 
-        auto *bundle = check_and_cast<BundlePkt *>(msg);
         dispatchBundle(bundle);
     } else if (msg->getKind() == CONTACT_FAILED) { // A failed contact was noticed!
         const auto *contactMsg = check_and_cast<ContactMsg *>(msg);

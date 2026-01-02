@@ -5,7 +5,6 @@ Define_Module(App);
 void App::initialize() {
     // Store this node eid
     this->eid_ = this->getParentModule()->getIndex();
-
     // Configure Traffic Generator
     if (par("enable")) {
         const char *bundlesNumberChar = par("bundlesNumber");
@@ -151,6 +150,7 @@ void App::handleMessage(cMessage *msg) {
             emit(appBundleReceived, true);
             emit(appBundleReceivedHops, bundle->getHopCount());
             emit(appBundleReceivedDelay, simTime() - bundle->getCreationTimestamp());
+            this->metricCollector_->setFinalArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
             delete msg;
         } else {
             throw cException("Error: message received in wrong destination");
@@ -182,4 +182,8 @@ vector<int> App::getSizeVec() {
 
 vector<double> App::getStartVec() {
     return this->startVec_;
+}
+
+void App::setMetricCollector(MetricCollector *metricCollector) {
+    this->metricCollector_ = metricCollector;
 }

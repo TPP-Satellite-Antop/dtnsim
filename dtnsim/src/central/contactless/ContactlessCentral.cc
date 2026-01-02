@@ -24,6 +24,10 @@ void ContactlessCentral::initialize() {
             this->getParentModule()->getSubmodule("node", i)->getSubmodule("dtn"));
 
         dtn->setMetricCollector(&metricCollector_);
+
+        auto app = check_and_cast<App *>(
+            this->getParentModule()->getSubmodule("node", i)->getSubmodule("app"));
+        app->setMetricCollector(&metricCollector_);
     }
 
     auto antop = new Antop();
