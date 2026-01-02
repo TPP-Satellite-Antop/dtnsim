@@ -88,5 +88,7 @@ BundlePkt* ContactlessSdrModel::popBundle(){
         return nullptr;
     auto bundle = genericBundleQueue_.front();
     genericBundleQueue_.pop_front();
+    bundlesNumber_--;
+    bytesStored_ -= bundle->getByteLength();
     return bundle;
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import random
 
-def generate_ini(num_sats, sat_per_plane, num_planes, faultOn=False, faultMeanTTF=0, faultMeanTTR=0):
+def generate_ini(num_sats, sat_per_plane, num_planes, phaseOffset=0, faultOn=False, faultMeanTTF=0, faultMeanTTR=0):
     suffix = "-faults" if faultOn else ""
     output_file = f"antop/antop-{num_sats}-sats{suffix}.ini"
 
@@ -13,7 +13,7 @@ repeat = 1
 allow-object-stealing-on-deletion = true
 
 # Simulation end time
-sim-time-limit = 48h
+sim-time-limit = 84600s
 
 # Nodes quantity (identifiers (EiDs) matches their index, EiD=0 is ignored)			
 dtnsim.nodesNumber = {num_sats}
@@ -33,6 +33,7 @@ dtnsim.node[*].noradModule.satName = "sat"
 **.satPerPlane = {sat_per_plane}
 **.altitude = 540
 **.planes = {num_planes}
+**.phaseOffset = {phaseOffset}
 
 dtnsim.node[*].dtn.routing = "antop"
 dtnsim.node[*].dtn.printRoutingDebug = true
@@ -44,9 +45,14 @@ dtnsim.node[*].dtn.printRoutingDebug = true
         MAX_START_TIME = 20   # seconds
 
         for src in range(1, num_sats + 1):
-            num_bundles = random.randint(MIN_BUNDLES, MAX_BUNDLES)
+            num_flows = random.randint(MIN_BUNDLES, MAX_BUNDLES)
 
-            for _ in range(num_bundles):
+            bundles_vec = []
+            start_vec = []
+            dest_vec = []
+            size_vec = []
+
+            for _ in range(num_flows):
                 dest = random.randint(1, num_sats)
                 while dest == src:
                     dest = random.randint(1, num_sats)
@@ -54,13 +60,20 @@ dtnsim.node[*].dtn.printRoutingDebug = true
                 start_time = random.randint(1, MAX_START_TIME)
                 size = random.choice([50, 100, 200, 500])
 
-                f.write(f"""# Node {src} -> Node {dest}
+                bundles_vec.append("1")          # 1 bundle por flow
+                start_vec.append(str(start_time))
+                dest_vec.append(str(dest))
+                size_vec.append(str(size))
+
+            f.write(
+f"""# Node {src} random traffic
 dtnsim.node[{src}].app.enable = true
-dtnsim.node[{src}].app.bundlesNumber = "1"
-dtnsim.node[{src}].app.start = "{start_time}"
-dtnsim.node[{src}].app.destinationEid = "{dest}"
-dtnsim.node[{src}].app.size = "{size}"
-""")
+dtnsim.node[{src}].app.bundlesNumber = "{",".join(bundles_vec)}"
+dtnsim.node[{src}].app.start = "{",".join(start_vec)}"
+dtnsim.node[{src}].app.destinationEid = "{",".join(dest_vec)}"
+dtnsim.node[{src}].app.size = "{",".join(size_vec)}"
+        """)
+
 
         f.write("""
 # Submodule types
@@ -81,12 +94,40 @@ if __name__ == "__main__":
     num_planes = int(input("Enter number of planes: "))
     num_sat_per_plane = int(input("Enter number of satellites per plane: "))
     num_sats = num_planes * num_sat_per_plane
+    phaseOffset = int(input("Enter phase offset between planes (must be equal or less than the number of planes): "))
+
     failureOn = input("Enable node failures? (y/n): ").strip().lower() == 'y'
+
     faultMeanTTF = 0
     faultMeanTTR = 0
+
     if failureOn:
-        faultMeanTTF = int(input("Enter mean Time To Failure (in seconds): "))
-        faultMeanTTR = int(input("Enter mean Time To Repair (in seconds): "))
+        print("Select failure percentage:")
+        print("  5  -> 5%")
+        print(" 10  -> 10%")
+        print(" 20  -> 20%")
+
+        failure_pct = int(input("Enter failure percentage (5/10/20): "))
+
+        faultMeanTTR = 10
+
+        if failure_pct == 5:
+            faultMeanTTF = 190
+        elif failure_pct == 10:
+            faultMeanTTF = 90
+        elif failure_pct == 20:
+            faultMeanTTF = 40
+        else:
+            raise ValueError("Invalid failure percentage. Use 5, 10, or 20.")
+
     print(f"Generating configuration for {num_sats} satellites...")
 
-    generate_ini(num_sats, num_sat_per_plane, num_planes, failureOn, faultMeanTTF, faultMeanTTR)
+    generate_ini(
+        num_sats,
+        num_sat_per_plane,
+        num_planes,
+        phaseOffset,
+        failureOn,
+        faultMeanTTF,
+        faultMeanTTR
+    )
