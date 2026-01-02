@@ -13,7 +13,7 @@ repeat = 1
 allow-object-stealing-on-deletion = true
 
 # Simulation end time
-# sim-time-limit = 4800000s
+sim-time-limit = 84600s
 
 # Nodes quantity (identifiers (EiDs) matches their index, EiD=0 is ignored)			
 dtnsim.nodesNumber = {num_sats}
