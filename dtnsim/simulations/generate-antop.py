@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import random
 
-def generate_ini(num_sats, sat_per_plane, num_planes, faultOn=False, faultMeanTTF=0, faultMeanTTR=0):
+def generate_ini(num_sats, sat_per_plane, num_planes, phaseOffset=0, faultOn=False, faultMeanTTF=0, faultMeanTTR=0):
     suffix = "-faults" if faultOn else ""
     output_file = f"antop/antop-{num_sats}-sats{suffix}.ini"
 
@@ -33,7 +33,7 @@ dtnsim.node[*].noradModule.satName = "sat"
 **.satPerPlane = {sat_per_plane}
 **.altitude = 540
 **.planes = {num_planes}
-**.phaseOffset = 7
+**.phaseOffset = {phaseOffset}
 
 dtnsim.node[*].dtn.routing = "antop"
 dtnsim.node[*].dtn.printRoutingDebug = true
@@ -94,6 +94,7 @@ if __name__ == "__main__":
     num_planes = int(input("Enter number of planes: "))
     num_sat_per_plane = int(input("Enter number of satellites per plane: "))
     num_sats = num_planes * num_sat_per_plane
+    phaseOffset = int(input("Enter phase offset between planes: "))
 
     failureOn = input("Enable node failures? (y/n): ").strip().lower() == 'y'
 
@@ -125,6 +126,7 @@ if __name__ == "__main__":
         num_sats,
         num_sat_per_plane,
         num_planes,
+        phaseOffset,
         failureOn,
         faultMeanTTF,
         faultMeanTTR
