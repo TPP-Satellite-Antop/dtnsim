@@ -94,7 +94,7 @@ if __name__ == "__main__":
     num_planes = int(input("Enter number of planes: "))
     num_sat_per_plane = int(input("Enter number of satellites per plane: "))
     num_sats = num_planes * num_sat_per_plane
-    phaseOffset = int(input("Enter phase offset between planes: "))
+    phaseOffset = int(input("Enter phase offset between planes (must be equal or less than the number of planes): "))
 
     failureOn = input("Enable node failures? (y/n): ").strip().lower() == 'y'
 
