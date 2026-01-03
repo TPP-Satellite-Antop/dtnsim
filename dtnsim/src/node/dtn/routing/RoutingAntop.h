@@ -23,7 +23,7 @@ class RoutingAntop : public RoutingDeterministic {
 
     // Returns the current H3 index of the node with given eid. Returns 0 if not found.
     [[nodiscard]] H3Index getCurH3IndexForEid(int eid) const;
-    int getEidFromH3Index(H3Index idx);
+    int getEidFromH3Index(H3Index idx, H3Index dst, int dstEid);
     void storeBundle(BundlePkt *bundle) const; //to retry routing later
 };
 
