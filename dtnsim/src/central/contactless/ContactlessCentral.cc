@@ -70,7 +70,7 @@ vector<int> ContactlessCentral::getCentralityNodeIds(int n, int nodesNumber) {
 void ContactlessCentral::finish() {
     if (this->nodesNumber_ >= 1) {
         cout << "Central: Evaluating and printing results..." << endl;
-        this->metricCollector_.evaluateAndPrintContactlessResults();
+        this->metricCollector_.evaluateAndPrintJsonResults();
     }
 }
 
