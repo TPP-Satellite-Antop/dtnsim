@@ -334,12 +334,7 @@ void buildBundleMetrics(std::map<long, int> &bundleHops,
 /*
  * All results from the node metrics are evaluated and printed into a .json file
  */
-void MetricCollector::evaluateAndPrintContactlessResults() {
-    if(this->algorithm_ != "ANTOP"){
-        cout << "MetricCollector: Contactless results are only available for the ANTOP algorithm." << endl;
-        return;
-    }
-
+void MetricCollector::evaluateAndPrintJsonResults() {
     string prefix = this->getPrefix();
     int number = this->getFileNumber(prefix);
     if (number == 0)

@@ -24,3 +24,5 @@ dtnsim/simulations/tutorial/**/results/
 .vscode
 .nedexclusions
 .settings
+
+**/.qtenvrc
