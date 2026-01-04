@@ -183,7 +183,6 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
 
 void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
     if (this->eid_ == bundle->getDestinationEid()) { // We are the final destination of this bundle
-        this->metricCollector_->setNumberOfHops(bundle->getBundleId(), bundle->getHopCount());
         emit(dtnBundleSentToApp, true);
         emit(dtnBundleSentToAppHopCount, bundle->getHopCount());
         bundle->getVisitedNodesForUpdate().sort();

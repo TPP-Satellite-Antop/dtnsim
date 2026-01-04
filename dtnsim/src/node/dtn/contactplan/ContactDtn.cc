@@ -340,6 +340,8 @@ void ContactDtn::finish() {
  */
 
 void ContactDtn::handleMessage(cMessage *msg) {
+    auto elapsedTimeStart = std::chrono::steady_clock::now();
+
     ///////////////////////////////////////////
     // New Bundle (from App or ContactPlanCom):
     ///////////////////////////////////////////
@@ -354,6 +356,8 @@ void ContactDtn::handleMessage(cMessage *msg) {
         }
 
         dispatchBundle(bundle);
+        double elapsedTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
+        this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTime);
     } else if (msg->getKind() == CONTACT_FAILED) { // A failed contact was noticed!
         const auto *contactMsg = check_and_cast<ContactMsg *>(msg);
 

@@ -151,6 +151,7 @@ void App::handleMessage(cMessage *msg) {
             emit(appBundleReceivedHops, bundle->getHopCount());
             emit(appBundleReceivedDelay, simTime() - bundle->getCreationTimestamp());
             this->metricCollector_->setFinalArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
+            this->metricCollector_->setNumberOfHops(bundle->getBundleId(), bundle->getHopCount());
             delete msg;
         } else {
             throw cException("Error: message received in wrong destination");
