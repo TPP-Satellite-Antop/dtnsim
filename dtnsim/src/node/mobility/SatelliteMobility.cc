@@ -28,7 +28,7 @@ void SatelliteMobility::initialize(int stage)
         //noradModule->initializeMobility(nextChange);
     }
     LineSegmentsMobilityBase::initialize(stage);
-    noradModule = check_and_cast< INorad* >(getParentModule()->getSubmodule("noradModule"));
+    noradModule = check_and_cast< INorad* >(getParentModule()->getSubmodule("norad"));
     if (noradModule == nullptr) {
         error("Error in SatSGP4Mobility::initializeMobility(): Cannot find module Norad.");
     }
