@@ -45,12 +45,10 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
 
     if (!bundle->getReturnToSender()) {
         const H3Index src = getCurH3IndexForEid(bundle->getSourceEid());
-        if (src != 0){
-            int hopCount = bundle->getHopCount();
-            nextHop = routingTable->findNextHop(cur, src, dst, sender, &hopCount, nextUpdateTime);
-            bundle->setHopCount(hopCount);
-            nextHopEid = getEidFromH3Index(nextHop, dst, bundle->getDestinationEid());
-        } //if src = 0 -> node down, will be handled below in findNewNeighbor
+        int hopCount = bundle->getHopCount();
+        nextHop = routingTable->findNextHop(cur, src, dst, sender, &hopCount, nextUpdateTime);
+        bundle->setHopCount(hopCount);
+        nextHopEid = getEidFromH3Index(nextHop, dst, bundle->getDestinationEid());
     }
 
     while (nextHopEid == 0) {
