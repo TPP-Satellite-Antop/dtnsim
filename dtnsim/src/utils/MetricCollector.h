@@ -65,7 +65,7 @@ class MetricCollector {
     void intializeArrivalTime(long bundleId, std::chrono::steady_clock::time_point initialTime);
     void setFinalArrivalTime(long bundleId, std::chrono::steady_clock::time_point finalTime);
     void evaluateAndPrintResults();
-    void evaluateAndPrintContactlessResults();
+    void evaluateAndPrintJsonResults();
     int getFileNumber(string prefix);
     int getMode();
 

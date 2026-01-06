@@ -146,11 +146,15 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
     switch (msg->getKind()) {
         case BUNDLE: {}
         case BUNDLE_CUSTODY_REPORT: {
+            auto *bundle = check_and_cast<BundlePkt *>(msg);
+
             if (msg->arrivedOn("gateToCom$i"))
                 emit(dtnBundleReceivedFromCom, true);
-            if (msg->arrivedOn("gateToApp$i"))
+            if (msg->arrivedOn("gateToApp$i")) {
                 emit(dtnBundleReceivedFromApp, true);
-            auto *bundle = check_and_cast<BundlePkt *>(msg);
+                this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
+            }
+            
             dispatchBundle(bundle);
             double elapsedTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
             this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTime);
@@ -179,8 +183,6 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
 
 void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
     if (this->eid_ == bundle->getDestinationEid()) { // We are the final destination of this bundle
-        this->metricCollector_->setFinalArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
-        this->metricCollector_->setNumberOfHops(bundle->getBundleId(), bundle->getHopCount());
         emit(dtnBundleSentToApp, true);
         emit(dtnBundleSentToAppHopCount, bundle->getHopCount());
         bundle->getVisitedNodesForUpdate().sort();
@@ -238,7 +240,7 @@ void ContactlessDtn::sendMsg(BundlePkt *bundle) {
     bundle->setXmitCopiesCount(0);
 
     std::cout << "Node " << eid_ << " --- Sending " << bundle->getBundleId() << " bundle to --> Node "<< bundle->getNextHopEid() << std::endl << std::endl;
-    this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
+
     send(bundle, "gateToCom$o");
 
     // If custody requested, store a copy of the bundle until report received

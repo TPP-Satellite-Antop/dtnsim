@@ -7,6 +7,7 @@
 
 #include "src/dtnsim_m.h"
 #include "src/node/MsgTypes.h"
+#include "src/utils/MetricCollector.h"
 
 #include <fstream>
 #include <iostream>
@@ -22,6 +23,7 @@ class App : public cSimpleModule {
     virtual vector<int> getDestinationEidVec();
     virtual vector<int> getSizeVec();
     virtual vector<double> getStartVec();
+    void setMetricCollector(MetricCollector *metricCollector);
 
   protected:
     virtual void initialize();
@@ -30,6 +32,7 @@ class App : public cSimpleModule {
 
   private:
     int eid_;
+    MetricCollector *metricCollector_;
 
     std::vector<int> bundlesNumberVec_;
     std::vector<int> destinationEidVec_;
