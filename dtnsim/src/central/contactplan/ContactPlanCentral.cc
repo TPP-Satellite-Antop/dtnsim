@@ -22,8 +22,11 @@ void ContactPlanCentral::initialize() {
     for (int i = 0; i <= nodesNumber_; i++) {
         ContactDtn *dtn = check_and_cast<ContactDtn *>(
             this->getParentModule()->getSubmodule("node", i)->getSubmodule("dtn"));
-
         dtn->setMetricCollector(&metricCollector_);
+
+        auto app = check_and_cast<App *>(
+            this->getParentModule()->getSubmodule("node", i)->getSubmodule("app"));
+        app->setMetricCollector(&metricCollector_);
     }
 
     // Initialize contact plan
@@ -142,7 +145,8 @@ void ContactPlanCentral::finish() {
     Central::finish();
     if (this->nodesNumber_ >= 1) {
         cout << "Central: Evaluating and printing results..." << endl;
-        this->metricCollector_.evaluateAndPrintResults();
+        //this->metricCollector_.evaluateAndPrintResults();
+        this->metricCollector_.evaluateAndPrintJsonResults();
     
         if (this->par("saveTopology")) {
             this->saveTopology();
