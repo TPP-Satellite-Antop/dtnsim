@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import random
 
-def generate_ini(num_sats, sat_per_plane, num_planes, phaseOffset=0, faultOn=False, faultMeanTTF=0, faultMeanTTR=0):
-    suffix = "-faults" if faultOn else ""
-    output_file = f"antop/antop-{num_sats}-sats{suffix}.ini"
+def generate_ini(num_sats, sat_per_plane, num_planes, phaseOffset=0, faultOn=False, faultMeanTTF=0, faultMeanTTR=0, failure_pct=0):
+    suffix = f"-{failure_pct}-faults" if faultOn else ""
+    output_file = f"antop/final/antop-{num_sats}-sats{suffix}.ini"
 
     with open(output_file, "w") as f:
 v
@@ -40,12 +40,10 @@ dtnsim.node[*].dtn.printRoutingDebug = true
 
 # --- Random Traffic Configuration ---
 """)
-        MIN_BUNDLES = 1
-        MAX_BUNDLES = 5
         MAX_START_TIME = 20   # seconds
 
         for src in range(1, num_sats + 1):
-            num_flows = random.randint(MIN_BUNDLES, MAX_BUNDLES)
+            num_flows = 100
 
             bundles_vec = []
             start_vec = []
@@ -129,5 +127,6 @@ if __name__ == "__main__":
         phaseOffset,
         failureOn,
         faultMeanTTF,
-        faultMeanTTR
+        faultMeanTTR,
+        failure_pct
     )
