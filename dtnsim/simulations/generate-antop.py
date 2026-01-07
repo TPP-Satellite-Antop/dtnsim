@@ -82,7 +82,7 @@ dtnsim.central.typename = "ContactlessCentral"
 
         f.write(f"""
 #Metrics
-dtnsim.central.collectorPath = "../../experiment_results"
+dtnsim.central.collectorPath = "../../experiment_results/antop/{failure_pct}-faults/walker-53x{num_sats}x{num_planes}x{phaseOffset}.json"
 """)
 
     print(f"Generated: {output_file}")
