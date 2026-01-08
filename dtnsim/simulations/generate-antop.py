@@ -6,7 +6,7 @@ def generate_ini(num_sats, sat_per_plane, num_planes, phaseOffset=0, faultOn=Fal
     output_file = f"antop/final/antop-{num_sats}-sats{suffix}.ini"
 
     with open(output_file, "w") as f:
-
+v
         f.write(f"""[General]
 network = src.dtnsim										
 repeat = 1
