@@ -156,9 +156,8 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
             }
             
             dispatchBundle(bundle);
-            auto elapsedTimeMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
-
-            this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeMs);
+            double elapsedTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
+            this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTime);
 
             break;
         }
