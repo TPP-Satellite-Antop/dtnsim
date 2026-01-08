@@ -21,7 +21,7 @@ void MetricCollector::initialize(int numOfNodes) {
     }
 
     this->bundleHops_ = map<long, int>();
-    this->bundleElapsedTime_ = map<long, double>();
+    this->bundleElapsedTime_ = map<long, int64_t>();
     this->bundleArrivalTime_ = map<long, ArrivalInfo>();
     this->startWalltime = std::chrono::steady_clock::now();
     this->nodesNumber_ = numOfNodes;
@@ -84,7 +84,7 @@ void MetricCollector::setNumberOfHops(long bundleId, int hops) {
     this->bundleHops_[bundleId] = hops;
 }
 
-void MetricCollector::updateBundleElapsedTime(long bundleId, double elapsedTime) {
+void MetricCollector::updateBundleElapsedTime(long bundleId, int64_t elapsedTime) {
     auto bundleElapsedTime = &this->bundleElapsedTime_;
     if ((*bundleElapsedTime).find(bundleId) == (*bundleElapsedTime).end())
         (*bundleElapsedTime)[bundleId] = elapsedTime;
@@ -286,7 +286,7 @@ void MetricCollector::evaluateAndPrintResults() {
 
 
 void buildBundleMetrics(std::map<long, int> &bundleHops,
-                        std::map<long, double> &bundleElapseTime,
+                        std::map<long, int64_t> &bundleElapseTime,
                         std::map<long, ArrivalInfo> &bundleArrivalTime,
                         int &avgNumberOfHops, double &avgElapsedTime, double &avgArrivalTime,
                         nlohmann::json &bundleMetrics) {
@@ -306,10 +306,13 @@ void buildBundleMetrics(std::map<long, int> &bundleHops,
             bundleMetrics.push_back(bundleMetric);
             continue; // skip bundles that were not received
         }
-        double arrivalTimeSecs = std::chrono::duration<double>(
-            (bundleArrivalTime[bundleId].arrivalTime) - (bundleArrivalTime[bundleId].generationTime)).count();
-        avgArrivalTime += arrivalTimeSecs;
-        bundleMetric["arrivalTime"] = arrivalTimeSecs;
+
+        auto arrivalTimeMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+            bundleArrivalTime[bundleId].arrivalTime - bundleArrivalTime[bundleId].generationTime
+        ).count();
+
+        avgArrivalTime += arrivalTimeMs;
+        bundleMetric["arrivalTime"] = arrivalTimeMs;
 
         bundleMetrics.push_back(bundleMetric);
     }

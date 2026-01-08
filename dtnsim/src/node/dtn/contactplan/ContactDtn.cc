@@ -356,8 +356,9 @@ void ContactDtn::handleMessage(cMessage *msg) {
         }
 
         dispatchBundle(bundle);
-        double elapsedTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
-        this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTime);
+        auto elapsedTimeMs = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
+
+        this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeMs);
     } else if (msg->getKind() == CONTACT_FAILED) { // A failed contact was noticed!
         const auto *contactMsg = check_and_cast<ContactMsg *>(msg);
 

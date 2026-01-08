@@ -131,11 +131,11 @@ def main():
     antop_scenarios = sorted(antop_scenarios, key=lambda s: s["name"])
     cgr_scenarios = sorted(cgr_scenarios, key=lambda s: s["name"])
 
-    paired_bar_plot("avgElapsedTime", antop_scenarios, cgr_scenarios, "Time (secs)", faults)
-    paired_bar_plot("avgArrivalTime", antop_scenarios, cgr_scenarios, "Time (secs)", faults)
+    paired_bar_plot("avgElapsedTime", antop_scenarios, cgr_scenarios, "Time (ms)", faults)
+    paired_bar_plot("avgArrivalTime", antop_scenarios, cgr_scenarios, "Time (ms)", faults)
     paired_bar_plot("avgNumberOfHops", antop_scenarios, cgr_scenarios, "Hops", faults)
     
-    paired_boxplot("elapsedTime", antop_scenarios, cgr_scenarios, "Time (secs)", faults)
+    paired_boxplot("elapsedTime", antop_scenarios, cgr_scenarios, "Time (ms)", faults)
     paired_boxplot("arrivalTime", antop_scenarios, cgr_scenarios, "Time", faults)
     paired_boxplot("numberOfHops", antop_scenarios, cgr_scenarios, "Hops", faults)
 
