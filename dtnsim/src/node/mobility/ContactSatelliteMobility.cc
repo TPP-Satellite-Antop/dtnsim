@@ -57,18 +57,16 @@ void ContactSatelliteMobility::setTargetPosition() {
             continue;
         }
 
-	if (std::find(neighbors.begin(), neighbors.end(), cell) != neighbors.end()) {
+	if (std::find(neighbors.begin(), neighbors.end(), cell) != neighbors.end())
 	    updateContactPlan(contactPlans[i-1], from, to);
-	}
     }
 }
 
 void ContactSatelliteMobility::updateContactPlan(std::vector<ContactData>& plan, const omnetpp::SimTime from, const omnetpp::SimTime to) {
-    if (!plan.empty() && plan.back().to == from) {
+    if (!plan.empty() && plan.back().to == from)
         plan.back().to = to;
-    } else {
+    else
         plan.push_back({from, to});
-    }
 }
 
 void ContactSatelliteMobility::finish() {
