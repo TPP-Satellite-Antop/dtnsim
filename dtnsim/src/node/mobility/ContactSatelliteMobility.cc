@@ -1,10 +1,12 @@
 #include <ctime>
 #include <cmath>
-
+#include <fstream>
 #include "ContactSatelliteMobility.h"
 #include "INorad.h"
 #include "NoradA.h"
 #include "h3api.h"
+
+constexpr int RATE = 100;
 
 namespace inet {
 
@@ -74,11 +76,28 @@ void ContactSatelliteMobility::finish() {
 
     if (idx == 0) return;
 
+    const char* filename = "contact_plan.txt";
+
+    if (idx == 1) {
+        std::ofstream out(filename, std::ios::out);
+        if (!out.is_open())
+            throw cRuntimeError("Failed to create contact_plan.txt");
+
+        out << "m horizon +0" << std::endl;
+        out.close();
+    }
+
+    std::ofstream out(filename, std::ios::app);
+    if (!out.is_open())
+        throw cRuntimeError("Failed to open contact_plan.txt for appending");
+
     for (int i = 0; i < contactPlans.size(); i++) {
 	for (auto& contact : contactPlans[i]) {
-	    std::cout << idx << "<->" << i+1 << ": " << contact.from << " -> " << contact.to << std::endl;
+	    out << "a contact " << contact.from << " " << contact.to << " " << idx << " " << i+1 << " " << RATE << std::endl;
+	    out << "a contact " << contact.from << " " << contact.to << " " << i+1 << " " << idx << " " << RATE << std::endl;
 	}
     }
-    std::cout << std::endl;
+
+    out.close();
 }
 } // namespace inet
