@@ -97,6 +97,11 @@ int RoutingAntop::getEidFromH3Index(const H3Index idx, const H3Index dst, const 
         if (eid == 0 || !mobility)
             continue;
         if (getCurH3IndexForEid(eid) == idx)
+            // ToDo: figure a better way of choosing a destination EID as always choosing the first one found
+            //       may lead to transmission link saturation.
+            //       Potential options are:
+            //       - Round-robin.
+            //       - Link availability-based election (choose the least busy link).
             return eid;
     }
 

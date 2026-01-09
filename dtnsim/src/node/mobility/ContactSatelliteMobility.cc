@@ -95,6 +95,7 @@ void ContactSatelliteMobility::finish() {
 	for (auto& contact : contactPlans[i]) {
 	    out << "a contact " << contact.from << " " << contact.to << " " << idx << " " << i+1 << " " << RATE << std::endl;
 	    out << "a contact " << contact.from << " " << contact.to << " " << i+1 << " " << idx << " " << RATE << std::endl;
+	    // ToDo: add range lines in case not having them makes contacts have an infinite range instead of 0.
 	}
     }
 
