@@ -114,7 +114,10 @@ void ContactlessDtn::finish() {
 
     // Delete FWDs in flight.
     for (auto &[_, fwd] : fwdByEid_)
-        delete fwd;
+        cancelAndDelete(fwd);
+    fwdByEid_.clear();
+
+    // ToDo: cancel and delete routing retry message(s).
 
     delete routing;
 }
@@ -227,9 +230,12 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
  * A bundle gets popped from the node's SDR generic queue and gets immediatly scheduled to be routed.
  */
 void ContactlessDtn::handleRoutingRetry() {
+    // ToDo: Loop through all stored bundles after this is implemented:
+    //       - Only schedule one retry bundle to avoid flooding handler.
+
     const auto sdr = dynamic_cast<ContactlessSdrModel*>(sdr_);
     const auto bundle = sdr->popBundle();
-    std::cout << "Poped bundle " << bundle->getBundleId() << " from SDR for retrying forwarding." << std::endl;
+    std::cout << "Popped bundle " << bundle->getBundleId() << " from SDR to retry routing." << std::endl;
     scheduleAt(simTime(), bundle); // Resend bundle to be handled alongisde transmission delay logic.
 }
 
@@ -253,7 +259,7 @@ void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
 
     sdr_->pushBundleToId(bundle, nextHop);
 
-    if (!fwdByEid_.contains(nextHop)) {
+    if (fwdByEid_.find(nextHop) == fwdByEid_.end()) {
         auto *fwd = new ForwardingMsgStart("forwardingStart", FORWARDING_MSG_START);
         fwd->setNeighborEid(nextHop);
         fwdByEid_[nextHop] = fwd;
@@ -277,10 +283,12 @@ void ContactlessDtn::scheduleRoutingRetry(BundlePkt *bundle) {
         return;
     }
 
-    const auto mobilityModule = (*mobilityMap_)[eid_];
-    const auto retryBundle = new BundlePkt("pendingBundle", ROUTING_RETRY);
+    // ToDo: only schedule one retry bundle to avoid flooding handler.
 
-    // ToDo: that one second policy seems arbitrary. Can we assume the bundle to be re-routed would be in SDR, signaling
+    const auto mobilityModule = (*mobilityMap_)[eid_];
+    const auto retryBundle = new RoutingRetry("RoutingRetry", ROUTING_RETRY);
+
+    // ToDo: that one-second policy seems arbitrary. Can we assume the bundle to be re-routed would be in SDR, signaling
     //		 that it shouldn't simply be dropped if the node is down?
     const auto scheduleTime = mobilityModule ? mobilityModule->getNextUpdateTime() : simTime() + 1; // if mobilityModule is null, node is down, schedule retry in 1 second
     std::cout << "Scheduling bundle retry... - Current time: " << simTime().dbl() <<  " - Scheduling time: " << scheduleTime << std::endl;
