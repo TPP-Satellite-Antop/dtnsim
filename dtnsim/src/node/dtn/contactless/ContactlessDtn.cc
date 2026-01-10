@@ -176,7 +176,7 @@ void ContactlessDtn::handleBundle(BundlePkt *bundle) {
 }
 
 /*
- * Handles a forwarding start message, which signal the opportunity to dispatch a new bundle towards the message's
+ * Handles a forwarding start message, which signals the opportunity to dispatch a new bundle towards the message's
  * destination EID.
  *
  * If no bundles are waiting to be dispatched to said EID, the link is freed. Otherwise, the awaiting bundle gets
