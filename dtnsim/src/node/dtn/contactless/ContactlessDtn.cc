@@ -110,9 +110,11 @@ void ContactlessDtn::finish() {
         emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
     }
 
-    // Delete all stored bundles
     sdr_->freeSdr();
 
+    // Delete FWDs in flight.
+    for (auto &[_, fwd] : fwdByEid_)
+        delete fwd;
 
     delete routing;
 }
@@ -172,7 +174,7 @@ void ContactlessDtn::handleBundle(BundlePkt *bundle) {
 }
 
 /*
- * Handles forwarding start message, which signal the opportunity to dispatch a new bundle towards the message's
+ * Handles a forwarding start message, which signal the opportunity to dispatch a new bundle towards the message's
  * destination EID.
  *
  * If no bundles are waiting to be dispatched to said EID, the link is freed. Otherwise, the awaiting bundle gets
@@ -189,7 +191,7 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
     const int nextHop = fwd->getNeighborEid();
 
     if (!sdr_->isBundleForId(nextHop)) { // No bundles to route.
-        linkBusy_[nextHop] = false;
+        fwdByEid_.erase(nextHop);
         delete fwd;
         return;
     }
@@ -206,7 +208,7 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
 
     // ToDo: compute transmission time
     // double txDuration = bundle->getByteLength() / dataRate;
-    const double txDuration = 0;
+    constexpr double txDuration = 0;
 
     if (simTime() + txDuration >= (*mobilityMap_)[eid_]->getNextUpdateTime()) {
 	scheduleRoutingRetry(bundle);
@@ -251,10 +253,10 @@ void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
 
     sdr_->pushBundleToId(bundle, nextHop);
 
-    if (!linkBusy_[nextHop]) {
-        linkBusy_[nextHop] = true;
+    if (!fwdByEid_.contains(nextHop)) {
         auto *fwd = new ForwardingMsgStart("forwardingStart", FORWARDING_MSG_START);
         fwd->setNeighborEid(nextHop);
+        fwdByEid_[nextHop] = fwd;
 	scheduleAt(simTime(), fwd);
     }
 }

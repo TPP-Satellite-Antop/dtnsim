@@ -47,7 +47,10 @@ class ContactlessDtn : public Dtn {
     bool saveBundleMap_;
     ofstream bundleMap_;
     vector<BundlePkt*> pendingBundles_;
-    std::unordered_map<int, bool> linkBusy_;
+    // Maps a FWD message to a neighboring node's EID. There can be up to one FWD message in flight
+    // per EID. Existence of a FWD signals a forwarding loop for the related EID is currently being
+    // executed.
+    std::unordered_map<int, ForwardingMsgStart*> fwdByEid_;
 
     // Signals
     simsignal_t dtnBundleSentToCom;
