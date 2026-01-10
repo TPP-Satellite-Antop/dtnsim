@@ -114,17 +114,6 @@ void ContactlessDtn::finish() {
     // Delete all stored bundles
     sdr_->freeSdr();
 
-    for(auto& pendingBundle : pendingBundles_) {
-        if(pendingBundle->isScheduled())
-            cancelEvent(pendingBundle);
-    
-        delete pendingBundle;
-    }
-    pendingBundles_.clear();
-
-    // BundleMap End
-    if (saveBundleMap_)
-        bundleMap_.close();
 
     delete routing;
 }
@@ -196,7 +185,7 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
 	const int nextHop = fwd->getNeighborEid();
 
     if (!sdr_->isBundleForId(nextHop)) { // No bundles to route.
-        linkAvailability_[nextHop] = true;
+        linkBusy_[nextHop] = false;
         delete fwd;
         return;
     }
@@ -215,7 +204,7 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
     // double txDuration = bundle->getByteLength() / dataRate;
     double txDuration = 0;
 
-    if (simTime() + txDuration >= mobilityModule->getNextUpdateTime()) {
+    if (simTime() + txDuration >= (*mobilityMap_)[eid_]->getNextUpdateTime()) {
 		scheduleRoutingRetry(bundle);
 		return;
 	}
@@ -231,7 +220,8 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
  * A bundle gets popped from the node's SDR generic queue and gets immediatly scheduled to be routed.
  */
 void ContactlessDtn::handleRoutingRetry() {
-    const auto bundle = sdr_->popBundle();
+    auto sdr = dynamic_cast<ContactlessSdrModel*>(sdr_);
+    const auto bundle = sdr->popBundle();
     std::cout << "Poped bundle " << bundle->getBundleId() << " from SDR for retrying forwarding." << std::endl;
     scheduleAt(simTime(), bundle); // Resend bundle to be handled alongisde transmission delay logic.
 }
@@ -256,10 +246,11 @@ void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
 
     sdr_->pushBundleToId(bundle, nextHop);
 
-    if (linkAvailability_[nextHop]) {
-        linkAvailability_[nextHop] = false;
+    if (!linkBusy_[nextHop]) {
+        linkBusy_[nextHop] = true;
         auto *fwd = new ForwardingMsgStart("forwardingStart", FORWARDING_MSG_START);
         fwd->setNeighborEid(nextHop);
+		scheduleAt(simTime(), fwd);
     }
 }
 

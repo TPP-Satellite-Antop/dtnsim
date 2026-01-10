@@ -1,7 +1,7 @@
 #include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 
-RoutingAntop::RoutingAntop(Antop* antop, const int eid, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) {
+RoutingAntop::RoutingAntop(Antop* antop, const int eid, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, nullptr) {
     this->mobilityMap = mobilityMap;
     this->routingTable = new RoutingTable(antop);
 }
@@ -9,10 +9,11 @@ RoutingAntop::RoutingAntop(Antop* antop, const int eid, map<int, inet::Satellite
 RoutingAntop::~RoutingAntop() {}
 
 void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
+    bundle->setNextHopEid(eid_); // Default to storing bundle in SDR.
+
     const H3Index cur = getCurH3IndexForEid(eid_);
     if(cur == 0) {
         std::cout << "Current EID " << eid_ << " is down. Skipping routing" << std::endl;
-        storeBundle(bundle);
         return;
     }
 
@@ -21,7 +22,6 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     if (dst == 0){
         dst = antopPkt->getCachedDstH3Index();
         if (dst == 0) {
-            storeBundle(bundle);
             return;
         }
     } else 
@@ -32,14 +32,14 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     int nextHopEid = 0;
 
     // Useful print for debugging. ToDo: remove at a later stage.
-    /*{
+    {
         std::cout << "Routing:" << std::endl;
         std::cout << "  Bundle: " << std::dec << bundle->getBundleId() << " /// " << bundle->getHopCount() << " /// " << (bundle->getReturnToSender() ? "true" : "false") << std::endl;
         std::cout << "  Current: " << std::dec << eid_ << " /// " << std::hex << cur << std::endl;
         std::cout << "  Source: " << std::dec << bundle->getSourceEid() << " /// " << std::hex << getCurH3IndexForEid(bundle->getSourceEid()) << std::endl;
         std::cout << "  Sender: " << std::dec << bundle->getSenderEid() << " /// " << std::hex << sender << std::endl;
         std::cout << "  Destination: " << std::dec << bundle->getDestinationEid() << " /// " << std::hex << dst << std::endl;
-    }*/
+    }
 
     const auto nextUpdateTime = (*mobilityMap)[eid_]->getNextUpdateTime().dbl();
 
@@ -56,7 +56,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         nextHopEid = getEidFromH3Index(nextHop, dst, bundle->getDestinationEid());
     }
 
-    if (nextHop == cur) nextHopEid == eid_
+    if (nextHop == cur) nextHopEid = eid_;
 
     bundle->setNextHopEid(nextHopEid);
 
