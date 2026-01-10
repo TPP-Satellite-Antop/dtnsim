@@ -46,6 +46,7 @@ class ContactlessDtn : public Dtn {
     bool saveBundleMap_;
     ofstream bundleMap_;
     vector<BundlePkt*> pendingBundles_;
+    std::unordered_map<int, bool> linkAvailability_;
 
     // Signals
     simsignal_t dtnBundleSentToCom;

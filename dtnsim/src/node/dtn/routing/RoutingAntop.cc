@@ -1,7 +1,7 @@
 #include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 
-RoutingAntop::RoutingAntop(Antop* antop, const int eid, SdrModel *sdr, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) {
+RoutingAntop::RoutingAntop(Antop* antop, const int eid, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, sdr, nullptr) {
     this->mobilityMap = mobilityMap;
     this->routingTable = new RoutingTable(antop);
 }
@@ -56,12 +56,12 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         nextHopEid = getEidFromH3Index(nextHop, dst, bundle->getDestinationEid());
     }
 
-    if (nextHop == cur || nextHopEid == eid_)
-        storeBundle(bundle);
-    else {
-        bundle->setReturnToSender(nextHop == sender);
-        bundle->setNextHopEid(nextHopEid);
+    if (nextHop == cur) nextHopEid == eid_
 
+    bundle->setNextHopEid(nextHopEid);
+
+    if (nextHopEid != eid_) {
+        bundle->setReturnToSender(nextHop == sender);
         std::cout << "Routing through " << std::hex << nextHop << std::dec << " ||| " << nextHopEid << std::endl;
     }
 }
@@ -106,12 +106,4 @@ int RoutingAntop::getEidFromH3Index(const H3Index idx, const H3Index dst, const 
     }
 
     return 0;
-}
-
-// Equeue bundle for later if no candidate was found
-void RoutingAntop::storeBundle(BundlePkt *bundle) const {
-    if(!sdr_->pushBundle(bundle))
-        std::cout << "Failed to enqueue bundle " << bundle->getBundleId() << " to SDR" << std::endl;
-    else
-        std::cout << "Enqueued bundle " << bundle->getBundleId() << " to SDR" << std::endl;
 }
