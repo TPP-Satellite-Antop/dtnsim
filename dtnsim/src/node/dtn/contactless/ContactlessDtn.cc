@@ -155,6 +155,14 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
  * gets routed and scheduled for transmission.
  */
 void ContactlessDtn::handleBundle(BundlePkt *bundle) {
+	if (msg->arrivedOn("gateToCom$i"))
+        emit(dtnBundleReceivedFromCom, true);
+    if (msg->arrivedOn("gateToApp$i")) {
+        emit(dtnBundleReceivedFromApp, true);
+        this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
+		// ToDo: figure out where to place arrival time metrics.
+    }
+
 	if (eid_ != bundle->getDestinationEid()) {
 		routing->msgToOtherArrive(bundle, simTime().dbl());
     	scheduleBundle(bundle);
