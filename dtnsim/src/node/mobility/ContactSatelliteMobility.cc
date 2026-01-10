@@ -23,7 +23,7 @@ ContactSatelliteMobility::ContactSatelliteMobility() {
 }
 
 void ContactSatelliteMobility::initialize(int stage) {
-    if (!initilised) {
+    if (!initialized) {
 	nodes = getParentModule()->getParentModule()->par("nodesNumber").intValue();
 	idx = getParentModule()->getSubmodule("norad")->par("satIndex").intValue();
 	contactPlans.resize(nodes);
