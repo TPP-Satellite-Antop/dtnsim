@@ -7,6 +7,9 @@
 #include "h3api.h"
 
 constexpr int RATE = 100;
+constexpr int MAX_NEIGHBORS = 7;
+constexpr int DISK_DISTANCE = 1;
+const auto FILENAME = "contact_plan.txt";
 
 namespace inet {
 
@@ -44,8 +47,8 @@ void ContactSatelliteMobility::setTargetPosition() {
         return;
     }
 
-    std::array<H3Index, 7> neighbors{};
-    if (const H3Error err = gridDisk(cell, 1, neighbors.data()); err != E_SUCCESS) {
+    std::array<H3Index, MAX_NEIGHBORS> neighbors{};
+    if (const H3Error err = gridDisk(cell, DISK_DISTANCE, neighbors.data()); err != E_SUCCESS) {
 	std::cout << "Error obtaining cell " << std::hex << cell << " neighbors" << std::endl;
         return;
     }
@@ -76,10 +79,8 @@ void ContactSatelliteMobility::finish() {
 
     if (idx == 0) return;
 
-    const char* filename = "contact_plan.txt";
-
     if (idx == 1) {
-        std::ofstream out(filename, std::ios::out);
+        std::ofstream out(FILENAME, std::ios::out);
         if (!out.is_open())
             throw cRuntimeError("Failed to create contact_plan.txt");
 
@@ -87,7 +88,7 @@ void ContactSatelliteMobility::finish() {
         out.close();
     }
 
-    std::ofstream out(filename, std::ios::app);
+    std::ofstream out(FILENAME, std::ios::app);
     if (!out.is_open())
         throw cRuntimeError("Failed to open contact_plan.txt for appending");
 
