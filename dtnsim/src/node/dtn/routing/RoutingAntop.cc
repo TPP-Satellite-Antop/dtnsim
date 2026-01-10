@@ -60,10 +60,8 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
 
     bundle->setNextHopEid(nextHopEid);
 
-    if (nextHopEid != eid_) {
+    if (nextHopEid != eid_)
         bundle->setReturnToSender(nextHop == sender);
-        std::cout << "Routing through " << std::hex << nextHop << std::dec << " ||| " << nextHopEid << std::endl;
-    }
 }
 
 H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {

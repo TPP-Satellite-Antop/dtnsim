@@ -219,6 +219,9 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
 	return;
     }
 
+    std::cout << "Sending bundle " << std::dec << bundle->getBundleId() << " from " << eid_ << " to " << bundle->getNextHopEid() << std::endl;
+    bundle->setHopCount(bundle->getHopCount() + 1);
+
     send(bundle, "gateToCom$o");
 
     scheduleAt(simTime() + txDuration, fwd);
@@ -227,7 +230,7 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
 /*
  * Handles a routing retry message.
  *
- * A bundle gets popped from the node's SDR generic queue and gets immediatly scheduled to be routed.
+ * A bundle gets popped from the node's SDR generic queue and gets immediately scheduled to be routed.
  */
 void ContactlessDtn::handleRoutingRetry() {
     // ToDo: Loop through all stored bundles after this is implemented:
