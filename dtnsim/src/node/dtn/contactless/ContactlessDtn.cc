@@ -262,6 +262,11 @@ void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
 
     sdr_->pushBundleToId(bundle, nextHop);
 
+    // If the returnToSender flag is true, it could trigger a findNewNeighbor on the validation routing
+    // (performed by the FWD handler). Even if no mobility update occurred, it would lead to two different
+    // results from the routing algorithm. ToDo: validate that this action doesn't break anything.
+    bundle->setReturnToSender(false);
+
     if (fwdByEid_.find(nextHop) == fwdByEid_.end()) {
         auto *fwd = new ForwardingMsgStart("forwardingStart", FORWARDING_MSG_START);
         fwd->setNeighborEid(nextHop);
