@@ -131,6 +131,19 @@ ifdef CLION_IDE
 CONFIGFILE :=
 OMNETPP_LIBS :=
 INCLUDE_PATH += -I$(INET_ROOT)/src
+OMNETPP_ROOT ?= $(shell echo $$OMNETPP_ROOT)
+
+ifeq ($(OMNETPP_ROOT),)
+    OMNETPP_ROOT := $(dir $(shell which opp_configfilepath))/..
+endif
+
+ifeq ("$(wildcard $(OMNETPP_ROOT)/include/omnetpp.h)","")
+    $(error OMNETPP_ROOT '$(OMNETPP_ROOT)' is invalid or OMNeT++ not found)
+endif
+CXXFLAGS += \
+	-I$(OMNETPP_ROOT)/include \
+	-I$(OMNETPP_ROOT)/src \
+	-I$(INET_ROOT)/src
 else
 $(info OMNeT++ config file: $(OMNETPP_CONFIGFILE))
 
