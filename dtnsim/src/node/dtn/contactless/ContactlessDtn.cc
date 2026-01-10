@@ -4,7 +4,6 @@
 #include "../../../dtnsim_m.h"
 #include "../../MsgTypes.h"
 #include "../routing/RoutingAntop.h"
-#include "src/node/app/App.h"
 #include "src/node/mobility/SatelliteMobility.h"
 #include "src/node/dtn/contactless/ContactlessSdrModel.h"
 
@@ -227,7 +226,7 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
  * A bundle gets popped from the node's SDR generic queue and gets immediatly scheduled to be routed.
  */
 void ContactlessDtn::handleRoutingRetry() {
-    auto sdr = dynamic_cast<ContactlessSdrModel*>(sdr_);
+    const auto sdr = dynamic_cast<ContactlessSdrModel*>(sdr_);
     const auto bundle = sdr->popBundle();
     std::cout << "Poped bundle " << bundle->getBundleId() << " from SDR for retrying forwarding." << std::endl;
     scheduleAt(simTime(), bundle); // Resend bundle to be handled alongisde transmission delay logic.
@@ -277,12 +276,12 @@ void ContactlessDtn::scheduleRoutingRetry(BundlePkt *bundle) {
         return;
     }
 
-    auto mobilityModule = (*mobilityMap_)[eid_];
-    auto retryBundle = new BundlePkt("pendingBundle", ROUTING_RETRY);
+    const auto mobilityModule = (*mobilityMap_)[eid_];
+    const auto retryBundle = new BundlePkt("pendingBundle", ROUTING_RETRY);
 
     // ToDo: that one second policy seems arbitrary. Can we assume the bundle to be re-routed would be in SDR, signaling
     //		 that it shouldn't simply be dropped if the node is down?
-    auto scheduleTime = mobilityModule ? mobilityModule->getNextUpdateTime() : simTime() + 1; // if mobilityModule is null, node is down, schedule retry in 1 second
+    const auto scheduleTime = mobilityModule ? mobilityModule->getNextUpdateTime() : simTime() + 1; // if mobilityModule is null, node is down, schedule retry in 1 second
     std::cout << "Scheduling bundle retry... - Current time: " << simTime().dbl() <<  " - Scheduling time: " << scheduleTime << std::endl;
 
     scheduleAt(scheduleTime, retryBundle);
