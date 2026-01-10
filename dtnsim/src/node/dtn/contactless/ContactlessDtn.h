@@ -38,7 +38,7 @@ class ContactlessDtn : public Dtn {
     int eid_;
     Antop* antop;
     map<int, inet::SatelliteMobility*> *mobilityMap_;
-    void initializeRouting(string routingString);
+    void initializeRouting(const string& routingString);
 
     CustodyModel custodyModel_;
     double custodyTimeout_;

@@ -89,14 +89,14 @@ void ContactlessDtn::setMobilityMap(map<int, inet::SatelliteMobility*> *mobility
     this->mobilityMap_ = mobilityMap;
 }
 
-void ContactlessDtn::initializeRouting(string routingString) {
-    auto contactLessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
+void ContactlessDtn::initializeRouting(const string& routingString) {
+    const auto contactLessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
     contactLessSdrModel->setEid(eid_);
     contactLessSdrModel->setSize(par("sdrSize"));
     contactLessSdrModel->setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
 
     if (routingString == "antop") {
-        inet::SatelliteMobility* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
+        auto* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
         (*this->mobilityMap_)[eid_] = mobility;
         this->routing = new RoutingAntop(this->antop, this->eid_, mobilityMap_);
     } else {
@@ -129,6 +129,13 @@ void ContactlessDtn::finish() {
 void ContactlessDtn::handleMessage(cMessage *msg) {
     switch (msg->getKind()) {
         case BUNDLE:
+	    if (msg->arrivedOn("gateToCom$i"))
+                emit(dtnBundleReceivedFromCom, true);
+            if (msg->arrivedOn("gateToApp$i")) {
+                emit(dtnBundleReceivedFromApp, true);
+		// ToDo: figure out where to place arrival time metrics.
+                // this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
+            }
             handleBundle(check_and_cast<BundlePkt *>(msg));
             break;
 
@@ -136,7 +143,7 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
             handleForwardingStart(check_and_cast<ForwardingMsgStart *>(msg));
             break;
 
-		// ToDo: implement bundle custody!!!!!!!!!
+	// ToDo: implement bundle custody!!!!!!!!!
 
         case ROUTING_RETRY:
             handleRoutingRetry();
@@ -155,24 +162,16 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
  * gets routed and scheduled for transmission.
  */
 void ContactlessDtn::handleBundle(BundlePkt *bundle) {
-	if (msg->arrivedOn("gateToCom$i"))
-        emit(dtnBundleReceivedFromCom, true);
-    if (msg->arrivedOn("gateToApp$i")) {
-        emit(dtnBundleReceivedFromApp, true);
-        this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
-		// ToDo: figure out where to place arrival time metrics.
+    if (eid_ != bundle->getDestinationEid()) {
+	routing->msgToOtherArrive(bundle, simTime().dbl());
+    scheduleBundle(bundle);
+	return;
     }
 
-	if (eid_ != bundle->getDestinationEid()) {
-		routing->msgToOtherArrive(bundle, simTime().dbl());
-    	scheduleBundle(bundle);
-		return;
-	}
-
-	emit(dtnBundleSentToApp, true);
+    emit(dtnBundleSentToApp, true);
     emit(dtnBundleSentToAppHopCount, bundle->getHopCount());
 
-	send(bundle, "gateToApp$o");
+    send(bundle, "gateToApp$o");
 }
 
 /*
@@ -182,7 +181,7 @@ void ContactlessDtn::handleBundle(BundlePkt *bundle) {
  * If no bundles are waiting to be dispatched to said EID, the link is freed. Otherwise, the awaiting bundle gets
  * re-routed to ensure that the previously calculated route continues being valid. If the bundle's route changes,
  * it gets either stored in the node's SDR or scheduled for transmission with the new, corresponding next hop EID. The
- * bundle may also be stored in the node's SDR if its transmission would finish after the next mobility update occurs,
+ * bundle may also be stored in the node's SDR if its transmission finishes after the next mobility update occurs,
  * as a topology change can change the bundle's would-be next hop's availability.
  *
  * If all checks succeed, the bundle gets sent to the Com layer to be sent towards its next hop, and the same
@@ -190,7 +189,7 @@ void ContactlessDtn::handleBundle(BundlePkt *bundle) {
  * simulating transmission delays.
  */
 void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
-	const int nextHop = fwd->getNeighborEid();
+    const int nextHop = fwd->getNeighborEid();
 
     if (!sdr_->isBundleForId(nextHop)) { // No bundles to route.
         linkBusy_[nextHop] = false;
@@ -201,21 +200,21 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
     BundlePkt *bundle = sdr_->getBundle(nextHop);
     sdr_->popBundleFromId(nextHop);
 
-	routing->msgToOtherArrive(bundle, simTime().dbl());
-	if (nextHop != bundle->getNextHopEid()) { // While awaiting a transmission delay, satellite movement occurred.
-		scheduleBundle(bundle);
-		scheduleAt(simTime(), fwd); // Continue trying to dispatch other bundles.
-		return;
-	}
+    routing->msgToOtherArrive(bundle, simTime().dbl());
+    if (nextHop != bundle->getNextHopEid()) { // While awaiting a transmission delay, satellite movement occurred.
+	scheduleBundle(bundle);
+	delete fwd;
+	return;
+    }
 
     // ToDo: compute transmission time
     // double txDuration = bundle->getByteLength() / dataRate;
     double txDuration = 0;
 
     if (simTime() + txDuration >= (*mobilityMap_)[eid_]->getNextUpdateTime()) {
-		scheduleRoutingRetry(bundle);
-		return;
-	}
+	scheduleRoutingRetry(bundle);
+	return;
+    }
 
     send(bundle, "gateToCom$o");
 
@@ -246,7 +245,7 @@ void ContactlessDtn::handleRoutingRetry() {
  * will eventually provoke the dispatch of the enqueued bundle.
  */
 void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
-	const int nextHop = bundle->getNextHopEid();
+    const int nextHop = bundle->getNextHopEid();
     if (nextHop == eid_) {
         scheduleRoutingRetry(bundle);
         return;
@@ -258,7 +257,7 @@ void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
         linkBusy_[nextHop] = true;
         auto *fwd = new ForwardingMsgStart("forwardingStart", FORWARDING_MSG_START);
         fwd->setNeighborEid(nextHop);
-		scheduleAt(simTime(), fwd);
+	scheduleAt(simTime(), fwd);
     }
 }
 
@@ -267,7 +266,7 @@ void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
  *
  * An attempt to save the bundle into the node's SDR generic queue is made (since routing must not be successful for
  * this function to be called, there's no next hop with which to index the indexed queues of SDR). If space is not
- * sufficient, the bundle gets dropped and unhandled as it's expected for upper layers to detect and handle packet loss.
+ * enough, the bundle gets dropped and unhandled as it's expected for upper layers to detect and handle packet loss.
  *
  * If saving to SDR is successful, a routing retry message is scheduled for the next mobility update, as a topology
  * change may result in new paths being available for the bundle to reach its destination.
@@ -281,8 +280,8 @@ void ContactlessDtn::scheduleRoutingRetry(BundlePkt *bundle) {
     auto mobilityModule = (*mobilityMap_)[eid_];
     auto retryBundle = new BundlePkt("pendingBundle", ROUTING_RETRY);
 
-	// ToDo: that one second policy seems arbitrary. Can we assume the bundle to be re-routed would be in SDR, signaling
-	//		 that it shouldn't simply be dropped if the node is down?
+    // ToDo: that one second policy seems arbitrary. Can we assume the bundle to be re-routed would be in SDR, signaling
+    //		 that it shouldn't simply be dropped if the node is down?
     auto scheduleTime = mobilityModule ? mobilityModule->getNextUpdateTime() : simTime() + 1; // if mobilityModule is null, node is down, schedule retry in 1 second
     std::cout << "Scheduling bundle retry... - Current time: " << simTime().dbl() <<  " - Scheduling time: " << scheduleTime << std::endl;
 
@@ -296,7 +295,7 @@ void ContactlessDtn::setOnFault(bool onFault) {
     if (onFault){
         this->mobilityMap_->erase(eid_); // ToDo: why do we have to erase the mobility module when we already have a flag to know if the node is on fault?
     } else {
-        inet::SatelliteMobility* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
+        auto* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
         (*this->mobilityMap_)[eid_] = mobility;
     }
 }
