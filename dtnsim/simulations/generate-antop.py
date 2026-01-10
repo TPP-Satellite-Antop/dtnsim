@@ -6,7 +6,6 @@ def generate_ini(num_sats, sat_per_plane, num_planes, phaseOffset=0, faultOn=Fal
     output_file = f"antop/final/antop-{num_sats}-sats{suffix}.ini"
 
     with open(output_file, "w") as f:
-
         f.write(f"""[General]
 network = src.dtnsim										
 repeat = 1
@@ -82,7 +81,7 @@ dtnsim.central.typename = "ContactlessCentral"
 
         f.write(f"""
 #Metrics
-dtnsim.central.collectorPath = "../../experiment_results"
+dtnsim.central.collectorPath = "../../experiment_results/antop/{failure_pct}-faults/walker-53x{num_sats}x{num_planes}x{phaseOffset}.json"
 """)
 
     print(f"Generated: {output_file}")
