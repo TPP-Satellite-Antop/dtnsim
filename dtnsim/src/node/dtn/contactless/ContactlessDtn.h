@@ -28,10 +28,11 @@ class ContactlessDtn : public Dtn {
     void initialize(int stage) override;
     void handleMessage(cMessage *msg) override;
     void finish() override;
-    void dispatchBundle(BundlePkt *bundle) override;
-    void handleBundleForwarding(BundlePkt *bundle);
-    virtual void sendMsg(BundlePkt *bundle);
-    virtual void retryForwarding();
+    void handleBundle(BundlePkt *bundle);
+    void handleForwardingStart(ForwardingMsgStart *fwd);
+    void handleRoutingRetry();
+    void scheduleBundle(BundlePkt *bundle);
+    void scheduleRoutingRetry(BundlePkt *bundle);
 
   private:
     int eid_;

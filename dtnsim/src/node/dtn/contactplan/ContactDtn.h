@@ -51,7 +51,7 @@ class ContactDtn : public Dtn {
     void initialize(int stage) override;
     void handleMessage(cMessage *msg) override;
     void finish() override;
-    void dispatchBundle(BundlePkt *bundle) override;
+    void dispatchBundle(BundlePkt *bundle);
 
   private:
     int eid_;
