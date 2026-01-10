@@ -127,8 +127,7 @@ void ContactlessDtn::finish() {
  *
  * @param: msg: A pointer to the received message
  *
- * @authors The original implementation was done by the authors of DTNSim and then modified by Simon
- * Rink
+ * @authors Gastón Frenkel & Valentina Adelsflügel.
  */
 void ContactlessDtn::handleMessage(cMessage *msg) {
     switch (msg->getKind()) {
@@ -221,6 +220,7 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
 
     std::cout << "Sending bundle " << std::dec << bundle->getBundleId() << " from " << eid_ << " to " << bundle->getNextHopEid() << std::endl;
     bundle->setHopCount(bundle->getHopCount() + 1);
+    bundle->setSenderEid(eid_);
 
     send(bundle, "gateToCom$o");
 
