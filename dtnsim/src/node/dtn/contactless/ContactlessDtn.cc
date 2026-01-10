@@ -163,14 +163,12 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
 void ContactlessDtn::handleBundle(BundlePkt *bundle) {
     if (eid_ != bundle->getDestinationEid()) {
 	routing->msgToOtherArrive(bundle, simTime().dbl());
-    scheduleBundle(bundle);
-	return;
+        scheduleBundle(bundle);
+    } else {
+        emit(dtnBundleSentToApp, true);
+        emit(dtnBundleSentToAppHopCount, bundle->getHopCount());
+        send(bundle, "gateToApp$o");
     }
-
-    emit(dtnBundleSentToApp, true);
-    emit(dtnBundleSentToAppHopCount, bundle->getHopCount());
-
-    send(bundle, "gateToApp$o");
 }
 
 /*
@@ -202,16 +200,17 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
     routing->msgToOtherArrive(bundle, simTime().dbl());
     if (nextHop != bundle->getNextHopEid()) { // While awaiting a transmission delay, satellite movement occurred.
 	scheduleBundle(bundle);
-	delete fwd;
-	return;
+        scheduleAt(simTime(), fwd);
+        return;
     }
 
     // ToDo: compute transmission time
     // double txDuration = bundle->getByteLength() / dataRate;
-    double txDuration = 0;
+    const double txDuration = 0;
 
     if (simTime() + txDuration >= (*mobilityMap_)[eid_]->getNextUpdateTime()) {
 	scheduleRoutingRetry(bundle);
+        scheduleAt(simTime(), fwd);
 	return;
     }
 
