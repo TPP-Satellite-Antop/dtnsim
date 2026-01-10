@@ -54,7 +54,7 @@ void ContactSatelliteMobility::setTargetPosition() {
     }
 
     for (int i = idx-1; i > 0; i--) {
-	auto mobility = dynamic_cast<ContactSatelliteMobility*>(getSimulation()->getSystemModule()->getSubmodule("node", i)->getSubmodule("mobility"));
+        const auto mobility = dynamic_cast<ContactSatelliteMobility*>(getSimulation()->getSystemModule()->getSubmodule("node", i)->getSubmodule("mobility"));
 
 	latLng = LatLng {deg2rad(mobility->getLatitude()), deg2rad(mobility->getLongitude())};
         if (latLngToCell(&latLng, 0, &cell) != E_SUCCESS) {
@@ -93,9 +93,9 @@ void ContactSatelliteMobility::finish() {
         throw cRuntimeError("Failed to open contact_plan.txt for appending");
 
     for (int i = 0; i < contactPlans.size(); i++) {
-	for (auto& contact : contactPlans[i]) {
-	    out << "a contact " << contact.from << " " << contact.to << " " << idx << " " << i+1 << " " << RATE << std::endl;
-	    out << "a contact " << contact.from << " " << contact.to << " " << i+1 << " " << idx << " " << RATE << std::endl;
+	for (auto &[from, to] : contactPlans[i]) {
+	    out << "a contact " << from << " " << to << " " << idx << " " << i+1 << " " << RATE << std::endl;
+	    out << "a contact " << from << " " << to << " " << i+1 << " " << idx << " " << RATE << std::endl;
 	    // ToDo: add range lines in case not having them makes contacts have an infinite range instead of 0.
 	}
     }
