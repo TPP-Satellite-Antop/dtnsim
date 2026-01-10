@@ -123,12 +123,16 @@ def to_ms(scenarios):
             s["avgElapsedTime"] *= 1000
         if "avgArrivalTime" in s:
             s["avgArrivalTime"] *= 1000
-        
-        if "elapsedTime" in s:
-            s["elapsedTime"] = [x * 1000 for x in s["elapsedTime"]]
-        if "arrivalTime" in s:
-            s["arrivalTime"] = [x * 1000 for x in s["arrivalTime"]]
+
+        if "bundles" in s:
+            for b in s["bundles"]:
+                if "elapsedTime" in b:
+                    b["elapsedTime"] *= 1000
+                if "arrivalTime" in b:
+                    b["arrivalTime"] *= 1000
+
     return scenarios
+
 
 def main():
     if len(sys.argv) != 2:
