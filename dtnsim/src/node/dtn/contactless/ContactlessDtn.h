@@ -52,7 +52,7 @@ class ContactlessDtn : public Dtn {
     std::unordered_map<int, ForwardingMsgStart*> fwdByEid_;
     // Reference to the self-sent routing retry message signaling one or more bundles are expecting
     // handling upon the next mobility update.
-    RoutingRetry* routingRetry_;
+    RoutingRetry* routingRetry_ = nullptr;
 
     // Signals
     simsignal_t dtnBundleSentToCom;
