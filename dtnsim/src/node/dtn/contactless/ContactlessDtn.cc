@@ -150,7 +150,6 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
 
         case ROUTING_RETRY:
             handleRoutingRetry();
-            delete msg;
             break;
 
         default:
