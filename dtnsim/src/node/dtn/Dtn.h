@@ -25,7 +25,6 @@ class Dtn : public cSimpleModule, public Observer {
     int numInitStages() const;
     virtual void handleMessage(cMessage *msg) override = 0;
     virtual void finish() override = 0;
-    virtual void dispatchBundle(BundlePkt *bundle) = 0;
 
     Graphics *graphicsModule; 
     Routing *routing;

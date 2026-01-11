@@ -98,3 +98,5 @@ message ForwardingMsgStart {
 message CustodyTimout {
     int bundleId;
 };
+
+message RoutingRetry {};

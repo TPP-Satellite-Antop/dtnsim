@@ -30,6 +30,6 @@
 #define FAULT_START_TIMER 20
 #define FAULT_END_TIMER 21
 
-#define FORWARDING_RETRY 30
+#define ROUTING_RETRY 30
 
 #endif /* SRC_NODE_MSGTYPES_H_ */
