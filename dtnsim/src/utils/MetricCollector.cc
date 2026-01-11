@@ -24,6 +24,7 @@ void MetricCollector::initialize(int numOfNodes) {
     this->bundleElapsedTime_ = map<long, double>();
     this->bundleArrivalTime_ = map<long, ArrivalInfo>();
     this->startWalltime = std::chrono::steady_clock::now();
+    this->nodesNumber_ = numOfNodes;
 }
 
 void MetricCollector::updateCGRCalls(int eid) {
@@ -125,23 +126,6 @@ void MetricCollector::setMode(int mode) {
 
 void MetricCollector::setPath(string path) {
     this->path_ = path;
-}
-
-int MetricCollector::getFileNumber(string prefix) { 
-    int number = 0;
-    std::string fileName;
-
-    while (true) {
-        fileName = prefix + "/metrics/results_" + std::to_string(number) + ".json";
-        FILE* test = fopen(fileName.c_str(), "r");
-        if (!test) {
-            break;
-        }
-        fclose(test);
-        number++;
-    }
-
-    return number;
 }
 
 int MetricCollector::getMode() {
@@ -335,11 +319,6 @@ void buildBundleMetrics(std::map<long, int> &bundleHops,
  * All results from the node metrics are evaluated and printed into a .json file
  */
 void MetricCollector::evaluateAndPrintJsonResults() {
-    string prefix = this->getPrefix();
-    int number = this->getFileNumber(prefix);
-    if (number == 0)
-        std::filesystem::create_directories(prefix + "/metrics");
-
     auto endWalltime = std::chrono::steady_clock::now();
     auto simTime = std::chrono::duration_cast<std::chrono::seconds>(endWalltime - this->startWalltime).count();
 
@@ -371,11 +350,14 @@ void MetricCollector::evaluateAndPrintJsonResults() {
         j["avgArrivalTime"] = avgArrivalTime;
     j["simulationWalltimeSeconds"] = simTime;
 
-    ofstream jsonFile(prefix + "/metrics/results_" + to_string(number) + ".json");
+    std::filesystem::path p = this->path_;
+    std::filesystem::create_directories(p.parent_path());
+
+    ofstream jsonFile(this->path_);
     jsonFile << setw(4) << j << endl;
     jsonFile.close();
 
-    cout << "MetricCollector: Results written to " << prefix + "/metrics/" << endl;
+    cout << "MetricCollector: Results written to " << this->path_ << endl;
 }
 
 /*
@@ -518,4 +500,18 @@ int MetricCollector::getCGRCalls() {
     }
 
     return djikstraCalls;
+}
+
+int MetricCollector::getFileNumber(string prefix)
+{
+	int number = 0;
+	string fileName = prefix + "/metrics/output_" + to_string(number) + ".txt";
+
+	while (FILE *test = fopen(fileName.c_str(), "r"))
+	{
+		number++;
+		fileName = prefix + "/metrics/output_" + to_string(number) + ".txt";
+	}
+
+	return number;
 }

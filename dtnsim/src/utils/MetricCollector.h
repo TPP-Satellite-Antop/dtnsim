@@ -90,6 +90,7 @@ class MetricCollector {
     string algorithm_;
     double failureProb_;
     int mode;
+    int nodesNumber_;
 
     map<long, int> bundleHops_;
     map<long, double> bundleElapsedTime_;
