@@ -42,7 +42,7 @@ module Node
             parameters:
                 @display("p=194,103");
         }
-        noradModule: NoradA if hasMobility {
+        norad: NoradA if hasMobility {
             parameters:
                 @display("p=98,35");
         }

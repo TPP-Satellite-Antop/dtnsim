@@ -67,7 +67,7 @@ protected:
     INorad* noradModule;
     int mapX, mapY;
     double transmitPower;
-    bool initilised;
+    bool initialized;
     virtual int numInitStages() const override { return NUM_INIT_STAGES; }
 
     // initialize module
