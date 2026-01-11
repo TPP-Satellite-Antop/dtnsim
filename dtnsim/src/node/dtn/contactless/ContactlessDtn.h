@@ -51,6 +51,9 @@ class ContactlessDtn : public Dtn {
     // per EID. Existence of a FWD signals a forwarding loop for the related EID is currently being
     // executed.
     std::unordered_map<int, ForwardingMsgStart*> fwdByEid_;
+    // Reference to the self-sent routing retry message signaling one or more bundles are expecting
+    // handling upon the next mobility update.
+    RoutingRetry* routingRetry_;
 
     // Signals
     simsignal_t dtnBundleSentToCom;
