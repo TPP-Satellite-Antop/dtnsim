@@ -26,7 +26,7 @@ class ContactSatelliteMobility : public SatelliteMobility {
     int idx;
     int nodes;
 
-    void updateContactPlan(std::vector<ContactData>& plan, omnetpp::SimTime from, omnetpp::SimTime to);
+    static void updateContactPlan(std::vector<ContactData>& plan, omnetpp::SimTime from, omnetpp::SimTime to);
 
 public:
     ContactSatelliteMobility();

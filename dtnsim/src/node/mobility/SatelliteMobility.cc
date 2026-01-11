@@ -22,7 +22,7 @@ void SatelliteMobility::initialize(int stage)
 {
     // noradModule must be initialized before LineSegmentsMobilityBase calling setTargetPosition() in its initialization at stage 1
     //simTime()
-    initilised = false;
+    initialized = false;
     if (stage == INITSTAGE_PHYSICAL_ENVIRONMENT) {
         noradModule->initializeMobility(0);
         //noradModule->initializeMobility(nextChange);

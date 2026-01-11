@@ -7,6 +7,9 @@
 #include "h3api.h"
 
 constexpr int RATE = 100;
+constexpr int MAX_NEIGHBORS = 7;
+constexpr int DISK_DISTANCE = 1;
+const auto FILENAME = "contact_plan.txt";
 
 namespace inet {
 
@@ -20,7 +23,7 @@ ContactSatelliteMobility::ContactSatelliteMobility() {
 }
 
 void ContactSatelliteMobility::initialize(int stage) {
-    if (!initilised) {
+    if (!initialized) {
 	nodes = getParentModule()->getParentModule()->par("nodesNumber").intValue();
 	idx = getParentModule()->getSubmodule("norad")->par("satIndex").intValue();
 	contactPlans.resize(nodes);
@@ -44,14 +47,14 @@ void ContactSatelliteMobility::setTargetPosition() {
         return;
     }
 
-    std::array<H3Index, 7> neighbors{};
-    if (const H3Error err = gridDisk(cell, 1, neighbors.data()); err != E_SUCCESS) {
+    std::array<H3Index, MAX_NEIGHBORS> neighbors{};
+    if (const H3Error err = gridDisk(cell, DISK_DISTANCE, neighbors.data()); err != E_SUCCESS) {
 	std::cout << "Error obtaining cell " << std::hex << cell << " neighbors" << std::endl;
         return;
     }
 
     for (int i = idx-1; i > 0; i--) {
-	auto mobility = dynamic_cast<ContactSatelliteMobility*>(getSimulation()->getSystemModule()->getSubmodule("node", i)->getSubmodule("mobility"));
+        const auto mobility = dynamic_cast<ContactSatelliteMobility*>(getSimulation()->getSystemModule()->getSubmodule("node", i)->getSubmodule("mobility"));
 
 	latLng = LatLng {deg2rad(mobility->getLatitude()), deg2rad(mobility->getLongitude())};
         if (latLngToCell(&latLng, 0, &cell) != E_SUCCESS) {
@@ -76,10 +79,8 @@ void ContactSatelliteMobility::finish() {
 
     if (idx == 0) return;
 
-    const char* filename = "contact_plan.txt";
-
     if (idx == 1) {
-        std::ofstream out(filename, std::ios::out);
+        std::ofstream out(FILENAME, std::ios::out);
         if (!out.is_open())
             throw cRuntimeError("Failed to create contact_plan.txt");
 
@@ -87,14 +88,14 @@ void ContactSatelliteMobility::finish() {
         out.close();
     }
 
-    std::ofstream out(filename, std::ios::app);
+    std::ofstream out(FILENAME, std::ios::app);
     if (!out.is_open())
         throw cRuntimeError("Failed to open contact_plan.txt for appending");
 
     for (int i = 0; i < contactPlans.size(); i++) {
-	for (auto& contact : contactPlans[i]) {
-	    out << "a contact " << contact.from << " " << contact.to << " " << idx << " " << i+1 << " " << RATE << std::endl;
-	    out << "a contact " << contact.from << " " << contact.to << " " << i+1 << " " << idx << " " << RATE << std::endl;
+	for (auto &[from, to] : contactPlans[i]) {
+	    out << "a contact " << from << " " << to << " " << idx << " " << i+1 << " " << RATE << std::endl;
+	    out << "a contact " << from << " " << to << " " << i+1 << " " << idx << " " << RATE << std::endl;
 	    // ToDo: add range lines in case not having them makes contacts have an infinite range instead of 0.
 	}
     }
