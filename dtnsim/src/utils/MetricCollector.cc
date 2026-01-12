@@ -297,7 +297,7 @@ void buildBundleMetrics(std::map<long, int> &bundleHops,
         avgNumberOfHops += hops;
         avgElapsedTime += elapsedTime;
 
-        json bundleMetric;
+        json bundleMetric = json::object();
         bundleMetric["id"] = bundleId;
         bundleMetric["numberOfHops"] = hops;
         bundleMetric["elapsedTime"] = elapsedTime;
@@ -322,7 +322,7 @@ void MetricCollector::evaluateAndPrintJsonResults() {
     auto endWalltime = std::chrono::steady_clock::now();
     auto simTime = std::chrono::duration_cast<std::chrono::seconds>(endWalltime - this->startWalltime).count();
 
-    json j;
+    json j = json::object();
 
     auto bundleMetrics = json::array();
     auto avgNumberOfHops = 0;
