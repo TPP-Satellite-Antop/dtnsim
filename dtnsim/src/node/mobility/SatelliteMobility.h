@@ -64,7 +64,7 @@ public:
     omnetpp::simtime_t getNextUpdateTime();
 
 protected:
-    INorad* noradModule;
+    INorad* norad;
     int mapX, mapY;
     double transmitPower;
     bool initialized;

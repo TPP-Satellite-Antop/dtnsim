@@ -16,7 +16,7 @@ namespace inet {
 Define_Module(ContactSatelliteMobility);
 
 ContactSatelliteMobility::ContactSatelliteMobility() {
-   noradModule = nullptr;
+   norad = nullptr;
    mapX = 0;
    mapY = 0;
    transmitPower = 0.0;
