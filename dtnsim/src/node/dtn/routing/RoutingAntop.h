@@ -3,7 +3,7 @@
 
 #include "routingTable.h"
 #include "h3api.h"
-#include "src/node/mobility/SatelliteMobility.h"
+#include "src/node/mobility/MobilityData.h"
 #include <src/node/dtn/routing/RoutingDeterministic.h>
 
 class RoutingAntop : public RoutingDeterministic {
@@ -11,12 +11,12 @@ class RoutingAntop : public RoutingDeterministic {
     RoutingAntop(
       Antop* antop,
       int eid,
-      map<int, inet::SatelliteMobility *> *mobilityMap);
+      map<int, MobilityData> *mobilityMap);
     virtual ~RoutingAntop();
     virtual void routeAndQueueBundle(BundlePkt *bundle, double simTime);
 
   private:
-    map<int, inet::SatelliteMobility *> *mobilityMap;
+    map<int, MobilityData> *mobilityMap;
     RoutingTable *routingTable;
 
     // Returns the current H3 index of the node with given eid. Returns 0 if not found.

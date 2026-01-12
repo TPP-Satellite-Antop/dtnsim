@@ -12,6 +12,7 @@
 #include <fstream>
 #include <map>
 #include <omnetpp.h>
+#include "src/node/mobility/MobilityData.h"
 #include <string>
 
 class ContactlessDtn : public Dtn {
@@ -22,7 +23,7 @@ class ContactlessDtn : public Dtn {
     void setOnFault(bool onFault) override;
     void scheduleRetry();
     void setRoutingAlgorithm(Antop* antop);
-    void setMobilityMap(map<int, inet::SatelliteMobility*> *mobilityMap);
+    void setMobilityMap(map<int, MobilityData> *mobilityMap);
 
   protected:
     void initialize(int stage) override;
@@ -37,7 +38,7 @@ class ContactlessDtn : public Dtn {
   private:
     int eid_;
     Antop* antop;
-    map<int, inet::SatelliteMobility*> *mobilityMap_;
+    map<int, MobilityData> *mobilityMap_;
     void initializeRouting(const string& routingString);
 
     CustodyModel custodyModel_;

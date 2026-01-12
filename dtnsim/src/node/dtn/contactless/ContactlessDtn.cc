@@ -84,7 +84,7 @@ void ContactlessDtn::initialize(const int stage) {
     }
 }
 
-void ContactlessDtn::setMobilityMap(map<int, inet::SatelliteMobility*> *mobilityMap) {
+void ContactlessDtn::setMobilityMap(map<int, MobilityData> *mobilityMap) {
     this->mobilityMap_ = mobilityMap;
 }
 
@@ -96,7 +96,7 @@ void ContactlessDtn::initializeRouting(const string& routingString) {
 
     if (routingString == "antop") {
         auto* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
-        (*this->mobilityMap_)[eid_] = mobility;
+        (*this->mobilityMap_)[eid_] = {mobility, this->onFault};
         this->routing = new RoutingAntop(this->antop, this->eid_, mobilityMap_);
     } else {
         cout << "dtnsim error: unknown routing type: " << routingString << endl;
@@ -211,7 +211,7 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
     // double txDuration = bundle->getByteLength() / dataRate;
     constexpr double txDuration = 0;
 
-    if (simTime() + txDuration >= (*mobilityMap_)[eid_]->getNextUpdateTime()) {
+    if (simTime() + txDuration >= (*mobilityMap_)[eid_].mobility->getNextUpdateTime()) {
 	scheduleRoutingRetry(bundle);
         scheduleAt(simTime(), fwd);
 	return;
@@ -294,7 +294,7 @@ void ContactlessDtn::scheduleRoutingRetry(BundlePkt *bundle) {
 
     if (routingRetry_) return;
 
-    const auto mobilityModule = (*mobilityMap_)[eid_];
+    const auto mobilityModule = (*mobilityMap_)[eid_].mobility;
 
     // ToDo: that one-second policy seems arbitrary. Can we assume the bundle to be re-routed would be in SDR, signaling
     //		 that it shouldn't simply be dropped if the node is down?
@@ -307,13 +307,7 @@ void ContactlessDtn::scheduleRoutingRetry(BundlePkt *bundle) {
 
 void ContactlessDtn::setOnFault(bool onFault) {
     this->onFault = onFault;
-
-    if (onFault){
-        this->mobilityMap_->erase(eid_); // ToDo: why do we have to erase the mobility module when we already have a flag to know if the node is on fault?
-    } else {
-        auto* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
-        (*this->mobilityMap_)[eid_] = mobility;
-    }
+    (*this->mobilityMap_)[eid_].onFault = !(*this->mobilityMap_)[eid_].onFault;
 }
 
 void ContactlessDtn::setRoutingAlgorithm(Antop* antop) {

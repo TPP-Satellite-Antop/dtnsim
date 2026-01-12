@@ -1,7 +1,8 @@
 #include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 
-RoutingAntop::RoutingAntop(Antop* antop, const int eid, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, nullptr) {
+
+RoutingAntop::RoutingAntop(Antop* antop, const int eid, map<int, MobilityData> *mobilityMap): RoutingDeterministic(eid, nullptr) {
     this->mobilityMap = mobilityMap;
     this->routingTable = new RoutingTable(antop);
 }
@@ -41,7 +42,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         std::cout << "  Destination: " << std::dec << bundle->getDestinationEid() << " /// " << std::hex << dst << std::endl;
     }*/
 
-    const auto nextUpdateTime = (*mobilityMap)[eid_]->getNextUpdateTime().dbl();
+    const auto nextUpdateTime = (*mobilityMap)[eid_].mobility->getNextUpdateTime().dbl();
 
     if (!bundle->getReturnToSender()) {
         const H3Index src = getCurH3IndexForEid(bundle->getSourceEid());
@@ -68,9 +69,10 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
     if (eid == 0) return 0;
 
     try {
-        const inet::SatelliteMobility *mobility = this->mobilityMap->at(eid);
-        if (!mobility) return 0;
+        const MobilityData mobilityData = this->mobilityMap->at(eid);
+        if (mobilityData.onFault) return 0;
         
+        const auto mobility = mobilityData.mobility;
         const auto latLng = LatLng {deg2rad(mobility->getLatitude()), deg2rad(mobility->getLongitude())};
         H3Index cell = 0;
 
@@ -79,7 +81,7 @@ H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
 
         return cell;
     } catch (exception& e) {
-        cout << "No mobility module found for eid " << eid  << ". Node must be down! " << endl;
+        cout << "No mobility module found for eid " << eid << endl;
         return 0;
     }
 }
@@ -88,11 +90,11 @@ int RoutingAntop::getEidFromH3Index(const H3Index idx, const H3Index dst, const 
     if (idx == dst)
         return getCurH3IndexForEid(dstEid) == idx ? dstEid : eid_;
 
-    if (!mobilityMap)
+    if (!mobilityMap || mobilityMap->at(eid_).onFault) // current node is down
         return 0;
 
-    for (const auto& [eid, mobility] : *mobilityMap) {
-        if (eid == 0 || !mobility)
+    for (const auto& [eid, mobilityData] : *mobilityMap) {
+        if (eid == 0 || mobilityData.onFault)
             continue;
         if (getCurH3IndexForEid(eid) == idx)
             // ToDo: figure a better way of choosing a destination EID as always choosing the first one found
