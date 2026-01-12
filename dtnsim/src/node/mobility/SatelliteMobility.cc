@@ -22,13 +22,13 @@ void SatelliteMobility::initialize(int stage)
 {
     // noradModule must be initialized before LineSegmentsMobilityBase calling setTargetPosition() in its initialization at stage 1
     //simTime()
-    initilised = false;
+    initialized = false;
     if (stage == INITSTAGE_PHYSICAL_ENVIRONMENT) {
         noradModule->initializeMobility(0);
         //noradModule->initializeMobility(nextChange);
     }
     LineSegmentsMobilityBase::initialize(stage);
-    noradModule = check_and_cast< INorad* >(getParentModule()->getSubmodule("noradModule"));
+    noradModule = check_and_cast< INorad* >(getParentModule()->getSubmodule("norad"));
     if (noradModule == nullptr) {
         error("Error in SatSGP4Mobility::initializeMobility(): Cannot find module Norad.");
     }

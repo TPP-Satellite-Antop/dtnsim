@@ -59,6 +59,7 @@ OBJS = \
     $O/src/node/mobility/INorad.o \
     $O/src/node/mobility/NoradA.o \
     $O/src/node/mobility/SatelliteMobility.o \
+    $O/src/node/mobility/ContactSatelliteMobility.o \
     $O/src/node/dtn/routing/RoutingBRUF1T.o \
     $O/src/node/dtn/routing/RoutingCgrModel350.o \
     $O/src/node/dtn/routing/RoutingAntop.o \

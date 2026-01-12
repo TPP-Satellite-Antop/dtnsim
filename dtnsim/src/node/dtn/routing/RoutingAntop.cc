@@ -45,12 +45,10 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
 
     if (!bundle->getReturnToSender()) {
         const H3Index src = getCurH3IndexForEid(bundle->getSourceEid());
-        if (src != 0){
-            int hopCount = bundle->getHopCount();
-            nextHop = routingTable->findNextHop(cur, src, dst, sender, &hopCount, nextUpdateTime);
-            bundle->setHopCount(hopCount);
-            nextHopEid = getEidFromH3Index(nextHop, dst, bundle->getDestinationEid());
-        } //if src = 0 -> node down, will be handled below in findNewNeighbor
+        int hopCount = bundle->getHopCount();
+        nextHop = routingTable->findNextHop(cur, src, dst, sender, &hopCount, nextUpdateTime);
+        bundle->setHopCount(hopCount);
+        nextHopEid = getEidFromH3Index(nextHop, dst, bundle->getDestinationEid());
     }
 
     while (nextHopEid == 0) {
@@ -99,6 +97,11 @@ int RoutingAntop::getEidFromH3Index(const H3Index idx, const H3Index dst, const 
         if (eid == 0 || !mobility)
             continue;
         if (getCurH3IndexForEid(eid) == idx)
+            // ToDo: figure a better way of choosing a destination EID as always choosing the first one found
+            //       may lead to transmission link saturation.
+            //       Potential options are:
+            //       - Round-robin.
+            //       - Link availability-based election (choose the least busy link).
             return eid;
     }
 
