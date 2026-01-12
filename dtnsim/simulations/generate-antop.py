@@ -40,37 +40,88 @@ dtnsim.node[*].dtn.printRoutingDebug = true
 # --- Random Traffic Configuration ---
 """)
         MAX_START_TIME = 20   # seconds
+        MAX_BUNDLES_PER_TIME = 5
+        MAX_DELAY = 10        # seconds after question
+        ANSWER_PROB = 0.6     # 60% of questions get answered
+        MAX_BUNDLES_PER_NODE = 100
+
+        node_data = {
+            i: {
+                "bundles": [],
+                "start": [],
+                "dest": [],
+                "size": []
+            }
+            for i in range(1, num_sats + 1)
+        }
+
+        def node_bundle_count(node):
+            return len(node_data[node]["bundles"])
 
         for src in range(1, num_sats + 1):
-            num_flows = 100
+            for dst in range(src + 1, num_sats + 1):
 
-            bundles_vec = []
-            start_vec = []
-            dest_vec = []
-            size_vec = []
+                # keep creating paired conversational opportunities
+                while (
+                    node_bundle_count(src) < MAX_BUNDLES_PER_NODE
+                    or node_bundle_count(dst) < MAX_BUNDLES_PER_NODE
+                ):
 
-            for _ in range(num_flows):
-                dest = random.randint(1, num_sats)
-                while dest == src:
-                    dest = random.randint(1, num_sats)
+                    # stop if both nodes are full
+                    if (
+                        node_bundle_count(src) >= MAX_BUNDLES_PER_NODE
+                        and node_bundle_count(dst) >= MAX_BUNDLES_PER_NODE
+                    ):
+                        break
 
-                start_time = random.randint(1, MAX_START_TIME)
-                size = random.choice([50, 100, 200, 500])
+                    # ------------ QUESTION src -> dst ------------
+                    if node_bundle_count(src) < MAX_BUNDLES_PER_NODE:
+                        q_start = random.randint(1, MAX_START_TIME)
+                        q_size = random.choice([50, 100, 200, 500])
 
-                bundles_vec.append("1")          # 1 bundle por flow
-                start_vec.append(str(start_time))
-                dest_vec.append(str(dest))
-                size_vec.append(str(size))
+                        node_data[src]["bundles"].append(str(random.randint(1, MAX_BUNDLES_PER_TIME)))
+                        node_data[src]["start"].append(str(q_start))
+                        node_data[src]["dest"].append(str(dst))
+                        node_data[src]["size"].append(str(q_size))
+                    else:
+                        # src full, skip making question
+                        break
 
+                    # decide whether dst answers
+                    will_answer = random.random() < ANSWER_PROB
+
+                    if not will_answer:
+                        continue  # unanswered question, move on
+
+                    # ------------ ANSWER dst -> src ------------
+                    if node_bundle_count(dst) < MAX_BUNDLES_PER_NODE:
+                        min_answer_time = q_start + 1
+                        max_answer_time = min(q_start + MAX_DELAY, MAX_START_TIME)
+
+                        if min_answer_time > MAX_START_TIME:
+                            min_answer_time = MAX_START_TIME
+
+                        if max_answer_time < min_answer_time:
+                            max_answer_time = min_answer_time
+
+                        a_start = random.randint(min_answer_time, max_answer_time)
+                        a_size = random.choice([50, 100, 200, 500])
+
+                        node_data[dst]["bundles"].append(str(random.randint(1, MAX_BUNDLES_PER_TIME)))
+                        node_data[dst]["start"].append(str(a_start))
+                        node_data[dst]["dest"].append(str(src))
+                        node_data[dst]["size"].append(str(a_size))
+                    # else dst is full → cannot answer, skip
+
+        for src in range(1, num_sats + 1):
             f.write(
-f"""# Node {src} random traffic
+f"""# Node {src} random conversational traffic
 dtnsim.node[{src}].app.enable = true
-dtnsim.node[{src}].app.bundlesNumber = "{",".join(bundles_vec)}"
-dtnsim.node[{src}].app.start = "{",".join(start_vec)}"
-dtnsim.node[{src}].app.destinationEid = "{",".join(dest_vec)}"
-dtnsim.node[{src}].app.size = "{",".join(size_vec)}"
-        """)
-
+dtnsim.node[{src}].app.bundlesNumber = "{','.join(node_data[src]['bundles'])}"
+dtnsim.node[{src}].app.start = "{','.join(node_data[src]['start'])}"
+dtnsim.node[{src}].app.destinationEid = "{','.join(node_data[src]['dest'])}"
+dtnsim.node[{src}].app.size = "{','.join(node_data[src]['size'])}"
+""")
 
         f.write("""
 # Submodule types
@@ -97,6 +148,7 @@ if __name__ == "__main__":
 
     faultMeanTTF = 0
     faultMeanTTR = 0
+    failure_pct = 0
 
     if failureOn:
         print("Select failure percentage:")
