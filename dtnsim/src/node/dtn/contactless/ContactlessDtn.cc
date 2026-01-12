@@ -4,7 +4,6 @@
 #include "../../../dtnsim_m.h"
 #include "../../MsgTypes.h"
 #include "../routing/RoutingAntop.h"
-#include "src/node/app/App.h"
 #include "src/node/mobility/SatelliteMobility.h"
 #include "src/node/dtn/contactless/ContactlessSdrModel.h"
 
@@ -89,16 +88,16 @@ void ContactlessDtn::setMobilityMap(map<int, inet::SatelliteMobility*> *mobility
     this->mobilityMap_ = mobilityMap;
 }
 
-void ContactlessDtn::initializeRouting(string routingString) {
-    auto contactLessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
+void ContactlessDtn::initializeRouting(const string& routingString) {
+    const auto contactLessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
     contactLessSdrModel->setEid(eid_);
     contactLessSdrModel->setSize(par("sdrSize"));
     contactLessSdrModel->setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
 
     if (routingString == "antop") {
-        inet::SatelliteMobility* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
+        auto* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
         (*this->mobilityMap_)[eid_] = mobility;
-        this->routing = new RoutingAntop(this->antop, this->eid_, sdr_, mobilityMap_);
+        this->routing = new RoutingAntop(this->antop, this->eid_, mobilityMap_);
     } else {
         cout << "dtnsim error: unknown routing type: " << routingString << endl;
     }
@@ -111,20 +110,14 @@ void ContactlessDtn::finish() {
         emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
     }
 
-    // Delete all stored bundles
     sdr_->freeSdr();
 
-    for(auto& pendingBundle : pendingBundles_) {
-        if(pendingBundle->isScheduled())
-            cancelEvent(pendingBundle);
-    
-        delete pendingBundle;
-    }
-    pendingBundles_.clear();
+    // Delete FWDs in flight.
+    for (auto &[_, fwd] : fwdByEid_)
+        cancelAndDelete(fwd);
+    fwdByEid_.clear();
 
-    // BundleMap End
-    if (saveBundleMap_)
-        bundleMap_.close();
+    cancelAndDelete(routingRetry_);
 
     delete routing;
 }
@@ -134,171 +127,193 @@ void ContactlessDtn::finish() {
  *
  * @param: msg: A pointer to the received message
  *
- * @authors The original implementation was done by the authors of DTNSim and then modified by Simon
- * Rink
+ * @authors Gastón Frenkel & Valentina Adelsflügel.
  */
-
 void ContactlessDtn::handleMessage(cMessage *msg) {
-    auto elapsedTimeStart = std::chrono::steady_clock::now();
-    ///////////////////////////////////////////
-    // New Bundle (from App or Com):
-    ///////////////////////////////////////////
     switch (msg->getKind()) {
-        case BUNDLE: {}
-        case BUNDLE_CUSTODY_REPORT: {
-            auto *bundle = check_and_cast<BundlePkt *>(msg);
-
-            if (msg->arrivedOn("gateToCom$i"))
+        case BUNDLE:
+	    if (msg->arrivedOn("gateToCom$i"))
                 emit(dtnBundleReceivedFromCom, true);
             if (msg->arrivedOn("gateToApp$i")) {
                 emit(dtnBundleReceivedFromApp, true);
-                this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
+		// ToDo: figure out where to place arrival time metrics.
+                // this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
             }
-            
-            dispatchBundle(bundle);
-            double elapsedTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
-            this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTime);
+            handleBundle(check_and_cast<BundlePkt *>(msg));
+            break;
 
+        case FORWARDING_MSG_START:
+            handleForwardingStart(check_and_cast<ForwardingMsgStart *>(msg));
             break;
-        }
-        case CUSTODY_TIMEOUT: {
-            // Custody timer expired, check if bundle still in custody memory space and retransmit it if positive.
-            auto *custodyTimeout = check_and_cast<CustodyTimout *>(msg);
 
-            if (BundlePkt *reSendBundle = this->custodyModel_.custodyTimerExpired(custodyTimeout); reSendBundle != nullptr)
-                this->dispatchBundle(reSendBundle);
-            delete custodyTimeout;
+	// ToDo: implement bundle custody!!!!!!!!!
+
+        case ROUTING_RETRY:
+            handleRoutingRetry();
             break;
-        }
-        case FORWARDING_RETRY:
-            retryForwarding();
-            break;
-        default: {
-            std::cout << "Unable to handle message of type: " << msg->getKind() << std::endl;
-            EV << "Unable to handle message of type: " << msg->getKind() << std::endl;
-            break;
-        }
+
+        default:
+            EV << "Unhandled message type: " << msg->getKind() << endl;
     }
 }
 
-void ContactlessDtn::dispatchBundle(BundlePkt *bundle) {
-    if (this->eid_ == bundle->getDestinationEid()) { // We are the final destination of this bundle
+/*
+ * Handles an inbound bundle.
+ *
+ * If the bundle's destination is the node's EID, the bundle gets dispatched to the application layer. Otherwise, it
+ * gets routed and scheduled for transmission.
+ */
+void ContactlessDtn::handleBundle(BundlePkt *bundle) {
+    if (eid_ != bundle->getDestinationEid()) {
+	routing->msgToOtherArrive(bundle, simTime().dbl());
+        scheduleBundle(bundle);
+    } else {
         emit(dtnBundleSentToApp, true);
         emit(dtnBundleSentToAppHopCount, bundle->getHopCount());
-        bundle->getVisitedNodesForUpdate().sort();
-        bundle->getVisitedNodesForUpdate().unique();
-        emit(dtnBundleSentToAppRevisitedHops, bundle->getHopCount() - bundle->getVisitedNodes().size());
-
-        // Check if this bundle has previously arrived here
-        // TODO esto creo q no se usa
-        if (routing->msgToMeArrive(bundle)) {
-            // This is the first time this bundle arrives
-            if (bundle->getBundleIsCustodyReport()) {
-                // This is a custody report destined to me
-
-                // If custody was rejected, reroute
-                if (BundlePkt *reSendBundle = this->custodyModel_.custodyReportArrived(bundle);
-                    reSendBundle != nullptr)
-                    this->dispatchBundle(reSendBundle);
-            } else {
-                // This is a data bundle destined to me
-                if (bundle->getCustodyTransferRequested())
-                    this->dispatchBundle(this->custodyModel_.bundleWithCustodyRequestedArrived(bundle));
-
-                // Send to app layer
-                send(bundle, "gateToApp$o");
-            }
-        } else
-            delete bundle;
-    } else { // This is a bundle in transit
-        // Manage custody transfer
-        if (bundle->getCustodyTransferRequested())
-            this->dispatchBundle(this->custodyModel_.bundleWithCustodyRequestedArrived(bundle));
-
-        // Either accepted or rejected custody, route bundle
-        routing->msgToOtherArrive(bundle, simTime().dbl());
-
-        emit(sdrBundleStored, sdr_->getBundlesCountInSdr());
-        emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
-
-        handleBundleForwarding(bundle);
+        send(bundle, "gateToApp$o");
     }
 }
 
-void ContactlessDtn::sendMsg(BundlePkt *bundle) {
-    const int neighborEid = bundle->getNextHopEid();
-    const auto neighborContactDtn = check_and_cast<ContactlessDtn *>(this
-        ->getParentModule()
-        ->getParentModule()
-        ->getSubmodule("node", neighborEid)
-        ->getSubmodule("dtn")
-    );
+/*
+ * Handles a forwarding start message, which signals the opportunity to dispatch a new bundle towards the message's
+ * destination EID.
+ *
+ * If no bundles are waiting to be dispatched to said EID, the link is freed. Otherwise, the awaiting bundle gets
+ * re-routed to ensure that the previously calculated route continues being valid. If the bundle's route changes,
+ * it gets either stored in the node's SDR or scheduled for transmission with the new, corresponding next hop EID. The
+ * bundle may also be stored in the node's SDR if its transmission finishes after the next mobility update occurs,
+ * as a topology change can change the bundle's would-be next hop's availability.
+ *
+ * If all checks succeed, the bundle gets sent to the Com layer to be sent towards its next hop, and the same
+ * forwarding start message gets re-scheduled with a delay equal to the bundle's transmission duration, effectively
+ * simulating transmission delays.
+ */
+void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
+    const int nextHop = fwd->getNeighborEid();
 
-    // Set bundle metadata (set by intermediate nodes)
-    bundle->setSenderEid(eid_);
+    if (!sdr_->isBundleForId(nextHop)) { // No bundles to route.
+        fwdByEid_.erase(nextHop);
+        delete fwd;
+        return;
+    }
+
+    BundlePkt *bundle = sdr_->getBundle(nextHop);
+    sdr_->popBundleFromId(nextHop);
+
+    routing->msgToOtherArrive(bundle, simTime().dbl());
+    if (nextHop != bundle->getNextHopEid()) { // While awaiting a transmission delay, satellite movement occurred.
+	scheduleBundle(bundle);
+        scheduleAt(simTime(), fwd);
+        return;
+    }
+
+    // ToDo: compute transmission time
+    // double txDuration = bundle->getByteLength() / dataRate;
+    constexpr double txDuration = 0;
+
+    if (simTime() + txDuration >= (*mobilityMap_)[eid_]->getNextUpdateTime()) {
+	scheduleRoutingRetry(bundle);
+        scheduleAt(simTime(), fwd);
+	return;
+    }
+
+    std::cout << "Sending bundle " << std::dec << bundle->getBundleId() << " from " << eid_ << " to " << bundle->getNextHopEid() << std::endl;
     bundle->setHopCount(bundle->getHopCount() + 1);
-    bundle->setXmitCopiesCount(0);
-
-    std::cout << "Node " << eid_ << " --- Sending " << bundle->getBundleId() << " bundle to --> Node "<< bundle->getNextHopEid() << std::endl << std::endl;
+    bundle->setSenderEid(eid_);
 
     send(bundle, "gateToCom$o");
 
-    // If custody requested, store a copy of the bundle until report received
-    if (bundle->getCustodyTransferRequested()) {
-        sdr_->enqueueTransmittedBundleInCustody(bundle->dup());
-        this->custodyModel_.printBundlesInCustody();
+    scheduleAt(simTime() + txDuration, fwd);
+}
 
-        // Enqueue a retransmission event in case custody acceptance not received
-        auto *custodyTimeout = new CustodyTimout("custodyTimeout", CUSTODY_TIMEOUT);
-        custodyTimeout->setBundleId(bundle->getBundleId());
-        scheduleAt(simTime() + this->custodyTimeout_, custodyTimeout);
+/*
+ * Handles a routing retry message.
+ *
+ * A bundle gets popped from the node's SDR generic queue and gets immediately scheduled to be routed.
+ */
+void ContactlessDtn::handleRoutingRetry() {
+    const auto sdr = dynamic_cast<ContactlessSdrModel*>(sdr_);
+
+    while (const auto bundle = sdr->popBundle()) {
+        std::cout << "Popped bundle " << bundle->getBundleId() << " from SDR to retry routing." << std::endl;
+        scheduleAt(simTime(), bundle); // Resend bundle to be handled alongside transmission delay logic.
     }
 
-    emit(dtnBundleSentToCom, true);
-    emit(sdrBundleStored, sdr_->getBundlesCountInSdr());
-    emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
+    delete routingRetry_;
+    routingRetry_ = nullptr;
+}
+
+/*
+ * Schedules a routed bundle to be dispatched.
+ *
+ * If its next hop is the same as the node's EID, meaning that no route was found for the bundle's destination, the
+ * bundle gets stored into SDR and a routing retry message is scheduled for the next satellite movement update.
+ *
+ * Otherwise, the bundle gets stored into its next hop's queue, and a forwarding start message is generated, as long
+ * as the link is not busy, to handle the bundle's dispatch. If the link is busy (meaning that there's another bundle
+ * being transmitted towards the same next hop), it's assumed that the forwarding start message loop in handleMessage
+ * will eventually provoke the dispatch of the enqueued bundle.
+ */
+void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
+    const int nextHop = bundle->getNextHopEid();
+    if (nextHop == eid_) {
+        scheduleRoutingRetry(bundle);
+        return;
+    }
+
+    sdr_->pushBundleToId(bundle, nextHop);
+
+    // If the returnToSender flag is true, it could trigger a findNewNeighbor on the validation routing
+    // (performed by the FWD handler). Even if no mobility update occurred, it would lead to two different
+    // results from the routing algorithm. ToDo: validate that this action doesn't break anything.
+    bundle->setReturnToSender(false);
+
+    if (fwdByEid_.find(nextHop) == fwdByEid_.end()) {
+        auto *fwd = new ForwardingMsgStart("forwardingStart", FORWARDING_MSG_START);
+        fwd->setNeighborEid(nextHop);
+        fwdByEid_[nextHop] = fwd;
+	scheduleAt(simTime(), fwd);
+    }
+}
+
+/*
+ * Schedules a routing retry message.
+ *
+ * An attempt to save the bundle into the node's SDR generic queue is made (since routing must not be successful for
+ * this function to be called, there's no next hop with which to index the indexed queues of SDR). If space is not
+ * enough, the bundle gets dropped and unhandled as it's expected for upper layers to detect and handle packet loss.
+ *
+ * If saving to SDR is successful, a routing retry message is scheduled for the next mobility update, as a topology
+ * change may result in new paths being available for the bundle to reach its destination.
+ */
+void ContactlessDtn::scheduleRoutingRetry(BundlePkt *bundle) {
+    if(!sdr_->pushBundle(bundle)) {
+        std::cout << "Failed to enqueue bundle " << bundle->getBundleId() << " to SDR. Dropping bundle..." << std::endl;
+        return;
+    }
+
+    if (routingRetry_) return;
+
+    const auto mobilityModule = (*mobilityMap_)[eid_];
+
+    // ToDo: that one-second policy seems arbitrary. Can we assume the bundle to be re-routed would be in SDR, signaling
+    //		 that it shouldn't simply be dropped if the node is down?
+    const auto scheduleTime = mobilityModule ? mobilityModule->getNextUpdateTime() : simTime() + 1; // if mobilityModule is null, node is down, schedule retry in 1 second
+    std::cout << "Scheduling bundle retry... - Current time: " << simTime().dbl() <<  " - Scheduling time: " << scheduleTime << std::endl;
+
+    routingRetry_ = new RoutingRetry("RoutingRetry", ROUTING_RETRY);
+    scheduleAt(scheduleTime, routingRetry_);
 }
 
 void ContactlessDtn::setOnFault(bool onFault) {
     this->onFault = onFault;
 
     if (onFault){
-        this->mobilityMap_->erase(eid_);
+        this->mobilityMap_->erase(eid_); // ToDo: why do we have to erase the mobility module when we already have a flag to know if the node is on fault?
     } else {
-        inet::SatelliteMobility* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
+        auto* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
         (*this->mobilityMap_)[eid_] = mobility;
     }
-}
-
-void ContactlessDtn::scheduleRetry() {
-    auto mobilityModule = (*mobilityMap_)[eid_];
-    auto retryBundle = new BundlePkt("pendingBundle", FORWARDING_RETRY);
-
-    auto scheduleTime = mobilityModule ? mobilityModule->getNextUpdateTime() : simTime() + 1; // if mobilityModule is null, node is down, schedule retry in 1 second
-    std::cout << "Scheduling bundle retry... - Current time: " << simTime().dbl() <<  " - Scheduling time: " << scheduleTime << std::endl;
-
-    scheduleAt(scheduleTime, retryBundle);
-    this->pendingBundles_.push_back(retryBundle);
-}
-
-void ContactlessDtn::retryForwarding() {
-    auto contactlessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
-
-    auto bundle = contactlessSdrModel->popBundle();
-    std::cout << "Poped bundle " << bundle->getBundleId() << " from SDR for retrying forwarding." << std::endl;
-    contactlessSdrModel->resetEnqueuedBundleFlag(); // ToDo: this could be removed if we handle flag resetting appropriately.
-
-    dispatchBundle(bundle);
-}
-
-void ContactlessDtn::handleBundleForwarding(BundlePkt *bundle) {
-    auto contactlessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
-    if (contactlessSdrModel->enqueuedBundle())
-        scheduleRetry();
-    else
-        sendMsg(bundle);
-
-    contactlessSdrModel->resetEnqueuedBundleFlag();
 }
 
 void ContactlessDtn::setRoutingAlgorithm(Antop* antop) {

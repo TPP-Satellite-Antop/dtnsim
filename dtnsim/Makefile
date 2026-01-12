@@ -6,6 +6,10 @@ TARGET_IMPLIB = $(TARGET_NAME)$(IMPLIB_SUFFIX)
 TARGET_IMPDEF = $(TARGET_NAME)$(IMPDEF_SUFFIX)
 TARGET_FILES = $(TARGET_DIR)/$(TARGET)
 
+$(info INET_ROOT=$(INET_ROOT))
+
+
+
 #User interface(uncomment one)(-u option)
 USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(CMDENV_LIBS)
@@ -122,6 +126,25 @@ SMFILES =
 
 #Pull in OMNeT++ configuration(Makefile.inc)
 
+ifdef CLION_IDE
+# ---- CLion analysis mode ----
+CONFIGFILE :=
+OMNETPP_LIBS :=
+INCLUDE_PATH += -I$(INET_ROOT)/src
+OMNETPP_ROOT ?= $(shell echo $$OMNETPP_ROOT)
+
+ifeq ($(OMNETPP_ROOT),)
+    OMNETPP_ROOT := $(dir $(shell which opp_configfilepath))/..
+endif
+
+ifeq ("$(wildcard $(OMNETPP_ROOT)/include/omnetpp.h)","")
+    $(error OMNETPP_ROOT '$(OMNETPP_ROOT)' is invalid or OMNeT++ not found)
+endif
+CXXFLAGS += \
+	-I$(OMNETPP_ROOT)/include \
+	-I$(OMNETPP_ROOT)/src \
+	-I$(INET_ROOT)/src
+else
 $(info OMNeT++ config file: $(OMNETPP_CONFIGFILE))
 
 ifneq ("$(OMNETPP_CONFIGFILE)","")
@@ -137,6 +160,7 @@ $(error Config file '$(CONFIGFILE)' does not exist -- add the OMNeT++ bin direct
 endif
 
 include $(CONFIGFILE)
+endif
 
 #Simulation kernel and user interface libraries
 OMNETPP_LIBS = $(OPPMAIN_LIB) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
