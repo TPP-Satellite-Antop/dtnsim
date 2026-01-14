@@ -39,7 +39,7 @@ dtnsim.node[*].dtn.printRoutingDebug = true
 
 # --- Random Traffic Configuration ---
 """)
-        MAX_START_TIME = 20   # seconds
+        MAX_START_TIME = 100   # seconds
         MAX_BUNDLES_PER_TIME = 5
         MAX_DELAY = 10        # seconds after question
         ANSWER_PROB = 0.6     # 60% of questions get answered
