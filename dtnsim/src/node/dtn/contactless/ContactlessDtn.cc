@@ -1,6 +1,5 @@
 #include <iostream>
 #include "ContactlessDtn.h"
-#include "../../../../../../omnetpp-6.1/include/omnetpp/clog.h"
 #include "../../../dtnsim_m.h"
 #include "../../MsgTypes.h"
 #include "../routing/RoutingAntop.h"
