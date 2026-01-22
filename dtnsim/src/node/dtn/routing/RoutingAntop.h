@@ -3,7 +3,6 @@
 
 #include "routingTable.h"
 #include "h3api.h"
-#include <src/node/dtn/SdrModel.h>
 #include <src/node/dtn/routing/RoutingDeterministic.h>
 
 class RoutingAntop : public RoutingDeterministic {
@@ -15,7 +14,6 @@ class RoutingAntop : public RoutingDeterministic {
     RoutingAntop(
       Antop* antop,
       int eid,
-      SdrModel *sdr,
       GetH3Fn getH3Index,
       GetEidFromH3Fn getEidFromH3,
       NextMobilityUpdateFn nextMobilityUpdateFn);

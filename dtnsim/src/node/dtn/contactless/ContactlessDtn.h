@@ -33,16 +33,17 @@ class ContactlessDtn : public Dtn {
     void initialize(int stage) override;
     void handleMessage(cMessage *msg) override;
     void finish() override;
-    void dispatchBundle(BundlePkt *bundle) override;
-    void handleBundleForwarding(BundlePkt *bundle);
-    virtual void sendMsg(BundlePkt *bundle);
-    virtual void retryForwarding();
+    void handleBundle(BundlePkt *bundle);
+    void handleForwardingStart(ForwardingMsgStart *fwd);
+    void handleRoutingRetry();
+    void scheduleBundle(BundlePkt *bundle);
+    void scheduleRoutingRetry(BundlePkt *bundle);
 
   private:
     int eid_;
     Antop* antop;
     map<int, inet::SatelliteMobility*> *mobilityMap_;
-    void initializeRouting(string routingString);
+    void initializeRouting(const string& routingString);
 
     CustodyModel custodyModel_;
     double custodyTimeout_;
@@ -50,7 +51,13 @@ class ContactlessDtn : public Dtn {
     // BundlesMap
     bool saveBundleMap_;
     ofstream bundleMap_;
-    vector<BundlePkt*> pendingBundles_;
+    // Maps a FWD message to a neighboring node's EID. There can be up to one FWD message in flight
+    // per EID. Existence of a FWD signals a forwarding loop for the related EID is currently being
+    // executed.
+    std::unordered_map<int, ForwardingMsgStart*> fwdByEid_;
+    // Reference to the self-sent routing retry message signaling one or more bundles are expecting
+    // handling upon the next mobility update.
+    RoutingRetry* routingRetry_ = nullptr;
 
     // Signals
     simsignal_t dtnBundleSentToCom;
