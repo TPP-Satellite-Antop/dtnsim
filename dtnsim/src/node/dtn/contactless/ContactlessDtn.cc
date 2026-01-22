@@ -215,7 +215,7 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
     constexpr double txDuration = 0;
 
     if (simTime() + txDuration >= (*mobilityMap_)[eid_]->getNextUpdateTime()) {
-	scheduleRoutingRetry(bundle);
+	    scheduleRoutingRetry(bundle);
         scheduleAt(simTime(), fwd);
 	return;
     }
@@ -295,7 +295,7 @@ void ContactlessDtn::scheduleRoutingRetry(BundlePkt *bundle) {
         return;
     }
 
-    if (routingRetry_) return;
+    if (routingRetry_ || onFault) return;
 
     const auto mobilityModule = (*mobilityMap_)[eid_];
 
