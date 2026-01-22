@@ -25,7 +25,6 @@ class RoutingAntop : public RoutingDeterministic {
     GetEidFromH3Fn getEidFromH3Index_;
     NextMobilityUpdateFn nextMobilityUpdateFn_;
     RoutingTable *routingTable;
-    void storeBundle(BundlePkt *bundle) const; //to retry routing later
 };
 
 #endif /* SRC_NODE_DTN_ROUTINGANTOP_H_ */

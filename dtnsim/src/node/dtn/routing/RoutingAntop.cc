@@ -68,11 +68,3 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     if (nextHopEid != eid_)
         bundle->setReturnToSender(nextHop == sender);
 }
-
-// Equeue bundle for later if no candidate was found
-void RoutingAntop::storeBundle(BundlePkt *bundle) const {
-    if(!sdr_->pushBundle(bundle))
-        std::cout << "Failed to enqueue bundle " << bundle->getBundleId() << " to SDR" << std::endl;
-    else
-        std::cout << "Enqueued bundle " << bundle->getBundleId() << " to SDR" << std::endl;
-}
