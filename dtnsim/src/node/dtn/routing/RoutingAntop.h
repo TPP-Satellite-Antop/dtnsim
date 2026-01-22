@@ -3,27 +3,33 @@
 
 #include "routingTable.h"
 #include "h3api.h"
-#include "src/node/mobility/SatelliteMobility.h"
 #include <src/node/dtn/SdrModel.h>
 #include <src/node/dtn/routing/RoutingDeterministic.h>
 
 class RoutingAntop : public RoutingDeterministic {
   public:
+    using GetH3Fn = std::function<H3Index(int)>;
+    using GetEidFromH3Fn = std::function<int(H3Index, H3Index, int)>;
+    using NextMobilityUpdateFn = std::function<double()>;
+
     RoutingAntop(
       Antop* antop,
       int eid,
       SdrModel *sdr,
-      map<int, inet::SatelliteMobility *> *mobilityMap);
+      GetH3Fn getH3Index,
+      GetEidFromH3Fn getEidFromH3,
+      NextMobilityUpdateFn nextMobilityUpdateFn);
     virtual ~RoutingAntop();
     virtual void routeAndQueueBundle(BundlePkt *bundle, double simTime);
+    int getAntopResolution() const {
+        return this->routingTable->getAntopResolution();
+    }
 
   private:
-    map<int, inet::SatelliteMobility *> *mobilityMap;
+    GetH3Fn getH3Index_;
+    GetEidFromH3Fn getEidFromH3Index_;
+    NextMobilityUpdateFn nextMobilityUpdateFn_;
     RoutingTable *routingTable;
-
-    // Returns the current H3 index of the node with given eid. Returns 0 if not found.
-    [[nodiscard]] H3Index getCurH3IndexForEid(int eid) const;
-    int getEidFromH3Index(H3Index idx, H3Index dst, int dstEid);
     void storeBundle(BundlePkt *bundle) const; //to retry routing later
 };
 
