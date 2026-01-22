@@ -21,9 +21,6 @@ class RoutingAntop : public RoutingDeterministic {
       NextMobilityUpdateFn nextMobilityUpdateFn);
     virtual ~RoutingAntop();
     virtual void routeAndQueueBundle(BundlePkt *bundle, double simTime);
-    int getAntopResolution() const {
-        return this->routingTable->getAntopResolution();
-    }
 
   private:
     GetH3Fn getH3Index_;
