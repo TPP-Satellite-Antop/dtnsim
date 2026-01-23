@@ -87,19 +87,21 @@ void ContactlessDtn::setMobilityMap(map<int, inet::SatelliteMobility*> *mobility
 }
 
 void ContactlessDtn::initializeRouting(const string& routingString) {
-    const auto contactLessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
-    contactLessSdrModel->setEid(eid_);
-    contactLessSdrModel->setSize(par("sdrSize"));
-    contactLessSdrModel->setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
+    const int nodes = this->getParentModule()->getParentModule()->par("nodesNumber");
+    const auto contactlessSdr = dynamic_cast<ContactlessSdrModel*>(sdr_);
+    contactlessSdr->setEid(eid_);
+    contactlessSdr->setSize(par("sdrSize"));
+    contactlessSdr->setNodesNumber(nodes);
 
     if (routingString == "antop") {
         auto* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
         (*this->mobilityMap_)[eid_] = mobility;
         this->routing = new RoutingAntop(
-            this->antop, this->eid_,
-            [this](int eid) { return this->getCurH3IndexForEid(eid); },
-            [this](H3Index idx, H3Index dst, int dstEid) { return this->getEidFromH3Index(idx, dst, dstEid);},
-            [this]() { return this->nextMobilityUpdate(); }
+            this->antop,
+            this->eid_,
+            nodes,
+            [this](const int eid) { return this->getPosition(eid); },
+            [this] { return this->nextMobilityUpdate(); }
         );
     } else {
         cout << "dtnsim error: unknown routing type: " << routingString << endl;
@@ -160,7 +162,7 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
     }
 }
 
-/*
+/**
  * Handles an inbound bundle.
  *
  * If the bundle's destination is the node's EID, the bundle gets dispatched to the application layer. Otherwise, it
@@ -177,7 +179,7 @@ void ContactlessDtn::handleBundle(BundlePkt *bundle) {
     }
 }
 
-/*
+/**
  * Handles a forwarding start message, which signals the opportunity to dispatch a new bundle towards the message's
  * destination EID.
  *
@@ -229,7 +231,7 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
     scheduleAt(simTime() + txDuration, fwd);
 }
 
-/*
+/**
  * Handles a routing retry message.
  *
  * A bundle gets popped from the node's SDR generic queue and gets immediately scheduled to be routed.
@@ -246,7 +248,7 @@ void ContactlessDtn::handleRoutingRetry() {
     routingRetry_ = nullptr;
 }
 
-/*
+/**
  * Schedules a routed bundle to be dispatched.
  *
  * If its next hop is the same as the node's EID, meaning that no route was found for the bundle's destination, the
@@ -280,7 +282,7 @@ void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
     }
 }
 
-/*
+/**
  * Schedules a routing retry message.
  *
  * An attempt to save the bundle into the node's SDR generic queue is made (since routing must not be successful for
@@ -325,56 +327,26 @@ void ContactlessDtn::setRoutingAlgorithm(Antop* antop) {
     this->antop = antop;
 }
 
-H3Index ContactlessDtn::getCurH3IndexForEid(const int eid) const {
-    const auto dtnModule = check_and_cast<ContactlessDtn *>(this
+LatLng ContactlessDtn::getPosition(const int eid) {
+    if (onFault) throw std::runtime_error("Local node unavailable");
+
+    if (const auto dtn = getModule(eid); eid == 0 || dtn->onFault)
+        throw std::runtime_error("Remote node unavailable");
+
+    const auto mobility = (*mobilityMap_)[eid];
+    return LatLng {deg2rad(mobility->getLatitude()), deg2rad(mobility->getLongitude())};
+}
+
+ContactlessDtn* ContactlessDtn::getModule(const int eid) {
+    if (eid == eid_) {
+        return this;
+    }
+    return check_and_cast<ContactlessDtn *>(this
         ->getParentModule()
         ->getParentModule()
         ->getSubmodule("node", eid)
         ->getSubmodule("dtn")
     );
-
-    if (eid == 0 || dtnModule->onFault) return 0;
-
-    try {
-        const inet::SatelliteMobility *mobility = mobilityMap_->at(eid);
-        
-        const auto latLng = LatLng {deg2rad(mobility->getLatitude()), deg2rad(mobility->getLongitude())};
-        H3Index cell = 0;
-
-        if (latLngToCell(&latLng, this->antop->getResolution(), &cell) != E_SUCCESS)
-            cout << "Error converting lat long to cell" << endl;
-
-        return cell;
-    } catch (exception& e) {
-        cout << "No mobility module found for eid " << eid  << "." << endl;
-        return 0;
-    }
-}
-
-int ContactlessDtn::getEidFromH3Index(const H3Index idx, const H3Index dst, const int dstEid) {
-    if (idx == dst)
-        return getCurH3IndexForEid(dstEid) == idx ? dstEid : eid_;
-
-    for (const auto& [eid, mobility] : *mobilityMap_) {
-        const auto dtnModule = check_and_cast<ContactlessDtn *>(this
-            ->getParentModule()
-            ->getParentModule()
-            ->getSubmodule("node", eid)
-            ->getSubmodule("dtn")
-        );
-        if (eid == 0 || dtnModule->onFault)
-            continue;
-
-        if (getCurH3IndexForEid(eid) == idx)
-            // ToDo: figure a better way of choosing a destination EID as always choosing the first one found
-            //       may lead to transmission link saturation.
-            //       Potential options are:
-            //       - Round-robin.
-            //       - Link availability-based election (choose the least busy link).
-            return eid;
-    }
-
-    return 0;
 }
 
 double ContactlessDtn::nextMobilityUpdate() const {

@@ -5,25 +5,28 @@
 #include "h3api.h"
 #include <src/node/dtn/routing/RoutingDeterministic.h>
 
+
+
 class RoutingAntop : public RoutingDeterministic {
   public:
-    using GetH3Fn = std::function<H3Index(int)>;
-    using GetEidFromH3Fn = std::function<int(H3Index, H3Index, int)>;
-    using NextMobilityUpdateFn = std::function<double()>;
+    using GetPosition = std::function<LatLng(int)>;
+    using GetNextMobilityUpdate = std::function<double()>;
 
     RoutingAntop(
       Antop* antop,
       int eid,
-      GetH3Fn getH3Index,
-      GetEidFromH3Fn getEidFromH3,
-      NextMobilityUpdateFn nextMobilityUpdateFn);
+      int nodes, const GetPosition &getPosition,
+                 const GetNextMobilityUpdate &getNextMobilityUpdate);
     virtual ~RoutingAntop();
     virtual void routeAndQueueBundle(BundlePkt *bundle, double simTime);
+    int getEidFromH3Index(H3Index idx, H3Index dst, int dstEid) const;
+    H3Index getH3Index(int eid) const;
 
   private:
-    GetH3Fn getH3Index_;
-    GetEidFromH3Fn getEidFromH3Index_;
-    NextMobilityUpdateFn nextMobilityUpdateFn_;
+    int resolution_;
+    int nodes;
+    GetPosition getPosition;
+    GetNextMobilityUpdate getNextMobilityUpdate_;
     RoutingTable *routingTable;
 };
 
