@@ -40,15 +40,18 @@ dtnsim.node[*].dtn.printRoutingDebug = true
 # --- Random Traffic Configuration ---
 """)
         MAX_START_TIME = 100   # seconds
-        MAX_BUNDLES = 50
+        TOTAL_BUNDLES = 100
+        MAX_BUNDLES = 25
+
         for src in range(1, num_sats + 1):
-            num_flows = 100
+            remaining = TOTAL_BUNDLES
+
             bundles_vec = []
             start_vec = []
             dest_vec = []
             size_vec = []
 
-            for _ in range(num_flows):
+            while remaining > 0:
                 dest = random.randint(1, num_sats)
                 while dest == src:
                     dest = random.randint(1, num_sats)
@@ -56,10 +59,17 @@ dtnsim.node[*].dtn.printRoutingDebug = true
                 start_time = random.randint(1, MAX_START_TIME)
                 size = random.choice([50, 100, 200, 500])
 
-                bundles_vec.append(str(random.randint(1, MAX_BUNDLES)))
+                # lo máximo que puedo asignar sin pasarme
+                max_for_flow = min(remaining, MAX_BUNDLES)
+
+                bundles = random.randint(1, max_for_flow)
+
+                bundles_vec.append(str(bundles))
                 start_vec.append(str(start_time))
                 dest_vec.append(str(dest))
                 size_vec.append(str(size))
+
+                remaining -= bundles
 
             f.write(
 f"""# Node {src} random traffic
