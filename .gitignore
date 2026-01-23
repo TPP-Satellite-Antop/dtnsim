@@ -6,10 +6,10 @@
 dtnsim/out/
 dtnsim/dtnsim
 dtnsim/dtnsim_dbg
-dtnsim/experiment_results/
 
 # Ignore results files in simulations folder
 dtnsim/simulations/**/results/
+dtnsim/simulations/**/experiment_results/
 
 dtnsim/simulations/opportunistic/**/.sca
 dtnsim/simulations/opportunistic/**/.vci

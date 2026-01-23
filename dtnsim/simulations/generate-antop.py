@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 import random
 
-def generate_ini(num_sats, sat_per_plane, num_planes, phaseOffset=0, faultOn=False, faultMeanTTF=0, faultMeanTTR=0):
-    suffix = "-faults" if faultOn else ""
-    output_file = f"antop/antop-{num_sats}-sats{suffix}.ini"
+def generate_ini(num_sats, sat_per_plane, num_planes, phaseOffset=0, faultOn=False, faultMeanTTF=0, faultMeanTTR=0, failure_pct=0):
+    suffix = f"-{failure_pct}-faults" if faultOn else ""
+    output_file = f"antop/final/antop-{num_sats}-sats{suffix}.ini"
 
     with open(output_file, "w") as f:
-
         f.write(f"""[General]
 network = src.dtnsim										
 repeat = 1
@@ -40,19 +39,19 @@ dtnsim.node[*].dtn.printRoutingDebug = true
 
 # --- Random Traffic Configuration ---
 """)
-        MIN_BUNDLES = 1
-        MAX_BUNDLES = 5
-        MAX_START_TIME = 20   # seconds
+        MAX_START_TIME = 100   # seconds
+        TOTAL_BUNDLES = 100
+        MAX_BUNDLES = 25
 
         for src in range(1, num_sats + 1):
-            num_flows = random.randint(MIN_BUNDLES, MAX_BUNDLES)
+            remaining = TOTAL_BUNDLES
 
             bundles_vec = []
             start_vec = []
             dest_vec = []
             size_vec = []
 
-            for _ in range(num_flows):
+            while remaining > 0:
                 dest = random.randint(1, num_sats)
                 while dest == src:
                     dest = random.randint(1, num_sats)
@@ -60,10 +59,17 @@ dtnsim.node[*].dtn.printRoutingDebug = true
                 start_time = random.randint(1, MAX_START_TIME)
                 size = random.choice([50, 100, 200, 500])
 
-                bundles_vec.append("1")          # 1 bundle por flow
+                # lo máximo que puedo asignar sin pasarme
+                max_for_flow = min(remaining, MAX_BUNDLES)
+
+                bundles = random.randint(1, max_for_flow)
+
+                bundles_vec.append(str(bundles))
                 start_vec.append(str(start_time))
                 dest_vec.append(str(dest))
                 size_vec.append(str(size))
+
+                remaining -= bundles
 
             f.write(
 f"""# Node {src} random traffic
@@ -72,20 +78,19 @@ dtnsim.node[{src}].app.bundlesNumber = "{",".join(bundles_vec)}"
 dtnsim.node[{src}].app.start = "{",".join(start_vec)}"
 dtnsim.node[{src}].app.destinationEid = "{",".join(dest_vec)}"
 dtnsim.node[{src}].app.size = "{",".join(size_vec)}"
-        """)
-
+""")
 
         f.write("""
-# Submodule types
-dtnsim.node[*].com.typename = "Com"
-dtnsim.node[*].dtn.typename = "ContactlessDtn"
-dtnsim.central.typename = "ContactlessCentral"
-""")
+    # Submodule types
+    dtnsim.node[*].com.typename = "Com"
+    dtnsim.node[*].dtn.typename = "ContactlessDtn"
+    dtnsim.central.typename = "ContactlessCentral"
+    """)
 
         f.write(f"""
-#Metrics
-dtnsim.central.collectorPath = "../../experiment_results"
-""")
+    #Metrics
+    dtnsim.central.collectorPath = "../../experiment_results/antop/{failure_pct}-faults/walker-53x{num_sats}x{num_planes}x{phaseOffset}.json"
+    """)
 
     print(f"Generated: {output_file}")
 
@@ -100,6 +105,7 @@ if __name__ == "__main__":
 
     faultMeanTTF = 0
     faultMeanTTR = 0
+    failure_pct = 0
 
     if failureOn:
         print("Select failure percentage:")
@@ -129,5 +135,6 @@ if __name__ == "__main__":
         phaseOffset,
         failureOn,
         faultMeanTTF,
-        faultMeanTTR
+        faultMeanTTR,
+        failure_pct
     )
