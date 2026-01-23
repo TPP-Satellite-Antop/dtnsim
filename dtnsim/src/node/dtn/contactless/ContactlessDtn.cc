@@ -149,7 +149,7 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
             handleForwardingStart(check_and_cast<ForwardingMsgStart *>(msg));
             break;
 
-	// ToDo: implement bundle custody!!!!!!!!!
+	// ToDo: implement bundle custody
 
         case ROUTING_RETRY:
             handleRoutingRetry();
@@ -269,6 +269,7 @@ void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
     // If the returnToSender flag is true, it could trigger a findNewNeighbor on the validation routing
     // (performed by the FWD handler). Even if no mobility update occurred, it would lead to two different
     // results from the routing algorithm. ToDo: validate that this action doesn't break anything.
+    // See Case #2: https://github.com/TPP-Satellite-Antop/dtnsim/issues/50
     bundle->setReturnToSender(false);
 
     if (fwdByEid_.find(nextHop) == fwdByEid_.end()) {
@@ -308,14 +309,21 @@ void ContactlessDtn::scheduleRoutingRetry(BundlePkt *bundle) {
     scheduleAt(scheduleTime, routingRetry_);
 }
 
-void ContactlessDtn::setOnFault(bool onFault) {
+void ContactlessDtn::setOnFault(const bool onFault) {
     this->onFault = onFault;
+
+    if (onFault && routingRetry_) {
+        cancelAndDelete(routingRetry_);
+        routingRetry_ = nullptr;
+    } else {
+        routingRetry_ = new RoutingRetry("RoutingRetry", ROUTING_RETRY);
+        scheduleAt(simTime(), routingRetry_);
+    }
 }
 
 void ContactlessDtn::setRoutingAlgorithm(Antop* antop) {
     this->antop = antop;
 }
-
 
 H3Index ContactlessDtn::getCurH3IndexForEid(const int eid) const {
     const auto dtnModule = check_and_cast<ContactlessDtn *>(this
@@ -369,6 +377,6 @@ int ContactlessDtn::getEidFromH3Index(const H3Index idx, const H3Index dst, cons
     return 0;
 }
 
-double ContactlessDtn::nextMobilityUpdate(){
+double ContactlessDtn::nextMobilityUpdate() const {
    return (*mobilityMap_)[eid_]->getNextUpdateTime().dbl();
 }
