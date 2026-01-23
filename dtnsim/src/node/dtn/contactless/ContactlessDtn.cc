@@ -321,6 +321,7 @@ void ContactlessDtn::scheduleRoutingRetry(BundlePkt *bundle) {
  * @param onFault: True to mark the node as faulted (down); false to mark it as operational (up).
  */
 void ContactlessDtn::setOnFault(const bool onFault) {
+    Enter_Method_Silent();
     this->onFault = onFault;
 
     if (onFault && routingRetry_) {
