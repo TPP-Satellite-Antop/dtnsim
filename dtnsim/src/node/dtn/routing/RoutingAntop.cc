@@ -27,9 +27,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     const auto antopPkt = dynamic_cast<AntopPkt*>(bundle);
     if (dst == 0){
         dst = antopPkt->getCachedDstH3Index();
-        if (dst == 0) {
-            return;
-        }
+        if (dst == 0) return;
     } else 
         antopPkt->setCachedDstH3Index(dst);
 
