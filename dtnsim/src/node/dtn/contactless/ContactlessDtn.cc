@@ -101,7 +101,7 @@ void ContactlessDtn::initializeRouting(const string& routingString) {
             this->eid_,
             nodes,
             [this](const int eid) { return this->getPosition(eid); },
-            [this] { return this->nextMobilityUpdate(); }
+            [this] { return this->getNextMobilityUpdate(); }
         );
     } else {
         cout << "dtnsim error: unknown routing type: " << routingString << endl;
@@ -130,9 +130,7 @@ void ContactlessDtn::finish() {
 /**
  * Reacts to a system message.
  *
- * @param: msg: A pointer to the received message
- *
- * @authors Gastón Frenkel & Valentina Adelsflügel.
+ * @param: msg: a pointer to the received message.
  */
 void ContactlessDtn::handleMessage(cMessage *msg) {
     switch (msg->getKind()) {
@@ -165,8 +163,8 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
 /**
  * Handles an inbound bundle.
  *
- * If the bundle's destination is the node's EID, the bundle gets dispatched to the application layer. Otherwise, it
- * gets routed and scheduled for transmission.
+ * If the bundle's destination is the node's EID, the bundle gets dispatched to the application layer.
+ * Otherwise, it gets routed and scheduled for transmission.
  */
 void ContactlessDtn::handleBundle(BundlePkt *bundle) {
     if (eid_ != bundle->getDestinationEid()) {
@@ -289,8 +287,8 @@ void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
  * this function to be called, there's no next hop with which to index the indexed queues of SDR). If space is not
  * enough, the bundle gets dropped and unhandled as it's expected for upper layers to detect and handle packet loss.
  *
- * If saving to SDR is successful, a routing retry message is scheduled for the next mobility update, as a topology
- * change may result in new paths being available for the bundle to reach its destination.
+ * If saving to SDR is successful and node is up, a routing retry message is scheduled for the next mobility update,
+ * as a topology change may result in new paths being available for the bundle to reach its destination.
  */
 void ContactlessDtn::scheduleRoutingRetry(BundlePkt *bundle) {
     if(!sdr_->pushBundle(bundle)) {
@@ -311,6 +309,17 @@ void ContactlessDtn::scheduleRoutingRetry(BundlePkt *bundle) {
     scheduleAt(scheduleTime, routingRetry_);
 }
 
+/**
+ * Sets the local node's fault status.
+ *
+ * When set to true, the node is considered faulty: any pending routing retry event is canceled and
+ * no new routing retries are scheduled while the fault persists.
+ *
+ * When set to false, the node is considered operational again and a routing retry event is scheduled
+ * immediately to resume bundle forwarding attempts.
+ *
+ * @param onFault: True to mark the node as faulted (down); false to mark it as operational (up).
+ */
 void ContactlessDtn::setOnFault(const bool onFault) {
     this->onFault = onFault;
 
@@ -327,6 +336,12 @@ void ContactlessDtn::setRoutingAlgorithm(Antop* antop) {
     this->antop = antop;
 }
 
+/**
+ * Fetches the latitude and longitude in radians of the provided EID. Runtime errors may be thrown
+ * if the EID is invalid or if either the local or target nodes are on fault.
+ *
+ * @param eid: endpoint ID of the target DTN node.
+ */
 LatLng ContactlessDtn::getPosition(const int eid) {
     if (onFault) throw std::runtime_error("Local node unavailable");
 
@@ -337,6 +352,11 @@ LatLng ContactlessDtn::getPosition(const int eid) {
     return LatLng {deg2rad(mobility->getLatitude()), deg2rad(mobility->getLongitude())};
 }
 
+/**
+ * Fetches the Contactless DTN module of the provided EID.
+ *
+ * @param eid: endpoint ID of the target DTN node.
+ */
 ContactlessDtn* ContactlessDtn::getModule(const int eid) {
     if (eid == eid_) {
         return this;
@@ -349,6 +369,9 @@ ContactlessDtn* ContactlessDtn::getModule(const int eid) {
     );
 }
 
-double ContactlessDtn::nextMobilityUpdate() const {
+/**
+ * Fetches the simulation time at which the next mobility update occurs.
+ */
+double ContactlessDtn::getNextMobilityUpdate() const {
    return (*mobilityMap_)[eid_]->getNextUpdateTime().dbl();
 }

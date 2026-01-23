@@ -70,6 +70,14 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         bundle->setReturnToSender(nextHop == sender);
 }
 
+/**
+ * Returns the first valid EID of a node in the target H3 cell. Returns 0 (invalid EID) if no
+ * nodes are inside the target H3 cell.
+ *
+ * @param idx: H3Index of the target cell.
+ * @param dst: current H3Index of the bundle being routed.
+ * @param dstEid: destination EID of the bundle being routed.
+ */
 int RoutingAntop::getEidFromH3Index(const H3Index idx, const H3Index dst, const int dstEid) const {
     // If the next hop is the destination, route to destination. If impossible (node is down), save to SDR.
     if (idx == dst) return getH3Index(dstEid) == idx ? dstEid : eid_;
@@ -87,6 +95,12 @@ int RoutingAntop::getEidFromH3Index(const H3Index idx, const H3Index dst, const 
     return 0;
 }
 
+/**
+ * Fetches the H3Index of the cell the target EID is in. Returns 0 (invalid H3Index) if unable to
+ * obtain the target EID's position, or if the position cannot be mapped to a valid cell.
+ *
+ * @param eid: endpoint ID of the target node.
+ */
 H3Index RoutingAntop::getH3Index(const int eid) const {
     try {
         const auto latLng = getPosition(eid);

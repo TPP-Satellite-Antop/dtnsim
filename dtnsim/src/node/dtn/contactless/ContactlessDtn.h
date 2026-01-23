@@ -26,7 +26,7 @@ class ContactlessDtn : public Dtn {
     LatLng getPosition(int eid);
     void setMobilityMap(map<int, inet::SatelliteMobility*> *mobilityMap);
     ContactlessDtn *getModule(int eid);
-    double nextMobilityUpdate() const;
+    double getNextMobilityUpdate() const;
     // Returns the current H3 index of the node with given eid. Returns 0 if not found.
     H3Index getCurH3IndexForEid(int eid) const;
     int getEidFromH3Index(H3Index idx, H3Index dst, int dstEid);
