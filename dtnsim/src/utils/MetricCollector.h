@@ -61,7 +61,7 @@ class MetricCollector {
     void updateRUCoPComputationTime(long computationTime);
     void updateCGRComputationTime(long computationTime);
     void setNumberOfHops(long bundleId, int hops);
-    void updateBundleElapsedTime(long bundleId, double elapsedTime);
+    void updateBundleElapsedTime(long bundleId, double elapsedTimeStart);
     void intializeArrivalTime(long bundleId, std::chrono::steady_clock::time_point initialTime);
     void setFinalArrivalTime(long bundleId, std::chrono::steady_clock::time_point finalTime);
     void evaluateAndPrintResults();
@@ -92,9 +92,12 @@ class MetricCollector {
     int mode;
     int nodesNumber_;
 
-    map<long, int> bundleHops_;
-    map<long, double> bundleElapsedTime_;
-    map<long, ArrivalInfo> bundleArrivalTime_;
+    map<long, int> bundleHops_; // number of hops per bundle
+    map<long, double> bundleElapsedTime_; // total elapsed time per bundle in seconds. It measures the time spent
+                                         // processing the bundle in each node (handleMessage + routing).
+                                         // Doesn´t measure time spent waiting in queues.
+    map<long, ArrivalInfo> bundleArrivalTime_; // generation and arrival time per bundle. With this info it is then
+                                               // possible to compute final arrival time (arrival - generation)
 };
 
 #endif /* SRC_UTILS_METRICCOLLECTOR_H_ */
