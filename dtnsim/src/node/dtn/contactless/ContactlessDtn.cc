@@ -3,7 +3,6 @@
 #include "../../../dtnsim_m.h"
 #include "../../MsgTypes.h"
 #include "../routing/RoutingAntop.h"
-#include "src/node/mobility/SatelliteMobility.h"
 #include "src/node/dtn/contactless/ContactlessSdrModel.h"
 
 Define_Module(ContactlessDtn);
@@ -88,15 +87,22 @@ void ContactlessDtn::setMobilityMap(map<int, inet::SatelliteMobility*> *mobility
 }
 
 void ContactlessDtn::initializeRouting(const string& routingString) {
-    const auto contactLessSdrModel = dynamic_cast<ContactlessSdrModel*>(sdr_);
-    contactLessSdrModel->setEid(eid_);
-    contactLessSdrModel->setSize(par("sdrSize"));
-    contactLessSdrModel->setNodesNumber(this->getParentModule()->getParentModule()->par("nodesNumber"));
+    const int nodes = this->getParentModule()->getParentModule()->par("nodesNumber");
+    const auto contactlessSdr = dynamic_cast<ContactlessSdrModel*>(sdr_);
+    contactlessSdr->setEid(eid_);
+    contactlessSdr->setSize(par("sdrSize"));
+    contactlessSdr->setNodesNumber(nodes);
 
     if (routingString == "antop") {
         auto* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
         (*this->mobilityMap_)[eid_] = mobility;
-        this->routing = new RoutingAntop(this->antop, this->eid_, mobilityMap_);
+        this->routing = new RoutingAntop(
+            this->antop,
+            this->eid_,
+            nodes,
+            [this](const int eid) { return this->getPosition(eid); },
+            [this] { return this->getNextMobilityUpdate(); }
+        );
     } else {
         cout << "dtnsim error: unknown routing type: " << routingString << endl;
     }
@@ -124,9 +130,7 @@ void ContactlessDtn::finish() {
 /**
  * Reacts to a system message.
  *
- * @param: msg: A pointer to the received message
- *
- * @authors Gastón Frenkel & Valentina Adelsflügel.
+ * @param: msg: a pointer to the received message.
  */
 void ContactlessDtn::handleMessage(cMessage *msg) {
     switch (msg->getKind()) {
@@ -145,7 +149,7 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
             handleForwardingStart(check_and_cast<ForwardingMsgStart *>(msg));
             break;
 
-	// ToDo: implement bundle custody!!!!!!!!!
+	// ToDo: implement bundle custody
 
         case ROUTING_RETRY:
             handleRoutingRetry();
@@ -156,11 +160,11 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
     }
 }
 
-/*
+/**
  * Handles an inbound bundle.
  *
- * If the bundle's destination is the node's EID, the bundle gets dispatched to the application layer. Otherwise, it
- * gets routed and scheduled for transmission.
+ * If the bundle's destination is the node's EID, the bundle gets dispatched to the application layer.
+ * Otherwise, it gets routed and scheduled for transmission.
  */
 void ContactlessDtn::handleBundle(BundlePkt *bundle) {
     if (eid_ != bundle->getDestinationEid()) {
@@ -173,7 +177,7 @@ void ContactlessDtn::handleBundle(BundlePkt *bundle) {
     }
 }
 
-/*
+/**
  * Handles a forwarding start message, which signals the opportunity to dispatch a new bundle towards the message's
  * destination EID.
  *
@@ -211,7 +215,7 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
     constexpr double txDuration = 0;
 
     if (simTime() + txDuration >= (*mobilityMap_)[eid_]->getNextUpdateTime()) {
-	scheduleRoutingRetry(bundle);
+	    scheduleRoutingRetry(bundle);
         scheduleAt(simTime(), fwd);
 	return;
     }
@@ -225,7 +229,7 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
     scheduleAt(simTime() + txDuration, fwd);
 }
 
-/*
+/**
  * Handles a routing retry message.
  *
  * A bundle gets popped from the node's SDR generic queue and gets immediately scheduled to be routed.
@@ -242,7 +246,7 @@ void ContactlessDtn::handleRoutingRetry() {
     routingRetry_ = nullptr;
 }
 
-/*
+/**
  * Schedules a routed bundle to be dispatched.
  *
  * If its next hop is the same as the node's EID, meaning that no route was found for the bundle's destination, the
@@ -265,6 +269,7 @@ void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
     // If the returnToSender flag is true, it could trigger a findNewNeighbor on the validation routing
     // (performed by the FWD handler). Even if no mobility update occurred, it would lead to two different
     // results from the routing algorithm. ToDo: validate that this action doesn't break anything.
+    // See Case #2: https://github.com/TPP-Satellite-Antop/dtnsim/issues/50
     bundle->setReturnToSender(false);
 
     if (fwdByEid_.find(nextHop) == fwdByEid_.end()) {
@@ -275,15 +280,15 @@ void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
     }
 }
 
-/*
+/**
  * Schedules a routing retry message.
  *
  * An attempt to save the bundle into the node's SDR generic queue is made (since routing must not be successful for
  * this function to be called, there's no next hop with which to index the indexed queues of SDR). If space is not
  * enough, the bundle gets dropped and unhandled as it's expected for upper layers to detect and handle packet loss.
  *
- * If saving to SDR is successful, a routing retry message is scheduled for the next mobility update, as a topology
- * change may result in new paths being available for the bundle to reach its destination.
+ * If saving to SDR is successful and node is up, a routing retry message is scheduled for the next mobility update,
+ * as a topology change may result in new paths being available for the bundle to reach its destination.
  */
 void ContactlessDtn::scheduleRoutingRetry(BundlePkt *bundle) {
     if(!sdr_->pushBundle(bundle)) {
@@ -291,30 +296,83 @@ void ContactlessDtn::scheduleRoutingRetry(BundlePkt *bundle) {
         return;
     }
 
-    if (routingRetry_) return;
+    if (routingRetry_ || onFault) return;
 
     const auto mobilityModule = (*mobilityMap_)[eid_];
 
     // ToDo: that one-second policy seems arbitrary. Can we assume the bundle to be re-routed would be in SDR, signaling
     //		 that it shouldn't simply be dropped if the node is down?
-    const auto scheduleTime = mobilityModule ? mobilityModule->getNextUpdateTime() : simTime() + 1; // if mobilityModule is null, node is down, schedule retry in 1 second
+    const auto scheduleTime = mobilityModule->getNextUpdateTime();
     std::cout << "Scheduling bundle retry... - Current time: " << simTime().dbl() <<  " - Scheduling time: " << scheduleTime << std::endl;
 
     routingRetry_ = new RoutingRetry("RoutingRetry", ROUTING_RETRY);
     scheduleAt(scheduleTime, routingRetry_);
 }
 
-void ContactlessDtn::setOnFault(bool onFault) {
+/**
+ * Sets the local node's fault status.
+ *
+ * When set to true, the node is considered faulty: any pending routing retry event is canceled and
+ * no new routing retries are scheduled while the fault persists.
+ *
+ * When set to false, the node is considered operational again and a routing retry event is scheduled
+ * immediately to resume bundle forwarding attempts.
+ *
+ * @param onFault: True to mark the node as faulted (down); false to mark it as operational (up).
+ */
+void ContactlessDtn::setOnFault(const bool onFault) {
+    Enter_Method_Silent();
     this->onFault = onFault;
 
-    if (onFault){
-        this->mobilityMap_->erase(eid_); // ToDo: why do we have to erase the mobility module when we already have a flag to know if the node is on fault?
+    if (onFault && routingRetry_) {
+        cancelAndDelete(routingRetry_);
+        routingRetry_ = nullptr;
     } else {
-        auto* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
-        (*this->mobilityMap_)[eid_] = mobility;
+        routingRetry_ = new RoutingRetry("RoutingRetry", ROUTING_RETRY);
+        scheduleAt(simTime(), routingRetry_);
     }
 }
 
 void ContactlessDtn::setRoutingAlgorithm(Antop* antop) {
     this->antop = antop;
+}
+
+/**
+ * Fetches the latitude and longitude in radians of the provided EID. Runtime errors may be thrown
+ * if the EID is invalid or if either the local or target nodes are on fault.
+ *
+ * @param eid: endpoint ID of the target DTN node.
+ */
+LatLng ContactlessDtn::getPosition(const int eid) {
+    if (onFault) throw std::runtime_error("Local node unavailable");
+
+    if (const auto dtn = getModule(eid); eid == 0 || dtn->onFault)
+        throw std::runtime_error("Remote node unavailable");
+
+    const auto mobility = (*mobilityMap_)[eid];
+    return LatLng {deg2rad(mobility->getLatitude()), deg2rad(mobility->getLongitude())};
+}
+
+/**
+ * Fetches the Contactless DTN module of the provided EID.
+ *
+ * @param eid: endpoint ID of the target DTN node.
+ */
+ContactlessDtn* ContactlessDtn::getModule(const int eid) {
+    if (eid == eid_) {
+        return this;
+    }
+    return check_and_cast<ContactlessDtn *>(this
+        ->getParentModule()
+        ->getParentModule()
+        ->getSubmodule("node", eid)
+        ->getSubmodule("dtn")
+    );
+}
+
+/**
+ * Fetches the simulation time at which the next mobility update occurs.
+ */
+double ContactlessDtn::getNextMobilityUpdate() const {
+   return (*mobilityMap_)[eid_]->getNextUpdateTime().dbl();
 }

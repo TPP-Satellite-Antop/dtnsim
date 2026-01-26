@@ -1,33 +1,37 @@
 #include <functional>
 #include "src/node/dtn/routing/RoutingAntop.h"
 
-RoutingAntop::RoutingAntop(Antop* antop, const int eid, map<int, inet::SatelliteMobility *> *mobilityMap): RoutingDeterministic(eid, nullptr) {
-    this->mobilityMap = mobilityMap;
+RoutingAntop::RoutingAntop(
+    Antop* antop,
+    const int eid,
+    const int nodes,
+    const GetPosition &getPosition,
+    const GetNextMobilityUpdate &getNextMobilityUpdate
+): RoutingDeterministic(eid, nullptr) {
+    this->resolution_ = antop->getResolution();
     this->routingTable = new RoutingTable(antop);
+    this->getPosition = getPosition;
+    this->nodes = nodes;
+    this->getNextMobilityUpdate_ = getNextMobilityUpdate;
 }
 
-RoutingAntop::~RoutingAntop() {}
+RoutingAntop::~RoutingAntop() = default;
 
 void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     bundle->setNextHopEid(eid_); // Default to storing bundle in SDR.
 
-    const H3Index cur = getCurH3IndexForEid(eid_);
-    if(cur == 0) {
-        std::cout << "Current EID " << eid_ << " is down. Skipping routing" << std::endl;
-        return;
-    }
+    const H3Index cur = getH3Index(eid_);
+    if(cur == 0) return;
 
-    H3Index dst = getCurH3IndexForEid(bundle->getDestinationEid());
+    H3Index dst = getH3Index(bundle->getDestinationEid());
     const auto antopPkt = dynamic_cast<AntopPkt*>(bundle);
     if (dst == 0){
         dst = antopPkt->getCachedDstH3Index();
-        if (dst == 0) {
-            return;
-        }
+        if (dst == 0) return;
     } else 
         antopPkt->setCachedDstH3Index(dst);
 
-    const H3Index sender = getCurH3IndexForEid(bundle->getSenderEid());
+    const H3Index sender = getH3Index(bundle->getSenderEid());
     H3Index nextHop = 0;
     int nextHopEid = 0;
 
@@ -36,15 +40,15 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         std::cout << "Routing:" << std::endl;
         std::cout << "  Bundle: " << std::dec << bundle->getBundleId() << " /// " << bundle->getHopCount() << " /// " << (bundle->getReturnToSender() ? "true" : "false") << std::endl;
         std::cout << "  Current: " << std::dec << eid_ << " /// " << std::hex << cur << std::endl;
-        std::cout << "  Source: " << std::dec << bundle->getSourceEid() << " /// " << std::hex << getCurH3IndexForEid(bundle->getSourceEid()) << std::endl;
+        std::cout << "  Source: " << std::dec << bundle->getSourceEid() << " /// " << std::hex << getH3Index_(bundle->getSourceEid()) << std::endl;
         std::cout << "  Sender: " << std::dec << bundle->getSenderEid() << " /// " << std::hex << sender << std::endl;
         std::cout << "  Destination: " << std::dec << bundle->getDestinationEid() << " /// " << std::hex << dst << std::endl;
     }*/
 
-    const auto nextUpdateTime = (*mobilityMap)[eid_]->getNextUpdateTime().dbl();
+    const auto nextUpdateTime = getNextMobilityUpdate_();
 
     if (!bundle->getReturnToSender()) {
-        const H3Index src = getCurH3IndexForEid(bundle->getSourceEid());
+        const H3Index src = getH3Index(bundle->getSourceEid());
         int hopCount = bundle->getHopCount();
         nextHop = routingTable->findNextHop(cur, src, dst, sender, &hopCount, nextUpdateTime);
         bundle->setHopCount(hopCount);
@@ -64,37 +68,20 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
         bundle->setReturnToSender(nextHop == sender);
 }
 
-H3Index RoutingAntop::getCurH3IndexForEid(const int eid) const {
-    if (eid == 0) return 0;
+/**
+ * Returns the first valid EID of a node in the target H3 cell. Returns 0 (invalid EID) if no
+ * nodes are inside the target H3 cell.
+ *
+ * @param idx: H3Index of the target cell.
+ * @param dst: current H3Index of the bundle being routed.
+ * @param dstEid: destination EID of the bundle being routed.
+ */
+int RoutingAntop::getEidFromH3Index(const H3Index idx, const H3Index dst, const int dstEid) const {
+    // If the next hop is the destination, route to destination. If impossible (node is down), save to SDR.
+    if (idx == dst) return getH3Index(dstEid) == idx ? dstEid : eid_;
 
-    try {
-        const inet::SatelliteMobility *mobility = this->mobilityMap->at(eid);
-        if (!mobility) return 0;
-        
-        const auto latLng = LatLng {deg2rad(mobility->getLatitude()), deg2rad(mobility->getLongitude())};
-        H3Index cell = 0;
-
-        if (latLngToCell(&latLng, this->routingTable->getAntopResolution(), &cell) != E_SUCCESS)
-            cout << "Error converting lat long to cell" << endl;
-
-        return cell;
-    } catch (exception& e) {
-        cout << "No mobility module found for eid " << eid  << ". Node must be down! " << endl;
-        return 0;
-    }
-}
-
-int RoutingAntop::getEidFromH3Index(const H3Index idx, const H3Index dst, const int dstEid) {
-    if (idx == dst)
-        return getCurH3IndexForEid(dstEid) == idx ? dstEid : eid_;
-
-    if (!mobilityMap)
-        return 0;
-
-    for (const auto& [eid, mobility] : *mobilityMap) {
-        if (eid == 0 || !mobility)
-            continue;
-        if (getCurH3IndexForEid(eid) == idx)
+    for (int eid = 1; eid <= nodes; eid++) {
+        if (getH3Index(eid) == idx)
             // ToDo: figure a better way of choosing a destination EID as always choosing the first one found
             //       may lead to transmission link saturation.
             //       Potential options are:
@@ -104,4 +91,24 @@ int RoutingAntop::getEidFromH3Index(const H3Index idx, const H3Index dst, const 
     }
 
     return 0;
+}
+
+/**
+ * Fetches the H3Index of the cell the target EID is in. Returns 0 (invalid H3Index) if unable to
+ * obtain the target EID's position, or if the position cannot be mapped to a valid cell.
+ *
+ * @param eid: endpoint ID of the target node.
+ */
+H3Index RoutingAntop::getH3Index(const int eid) const {
+    try {
+        const auto latLng = getPosition(eid);
+        H3Index cell = 0;
+
+        if (latLngToCell(&latLng, resolution_, &cell) != E_SUCCESS)
+            cout << "Error converting lat long to cell" << endl;
+
+        return cell;
+    } catch (exception& _) {
+        return 0;
+    }
 }
