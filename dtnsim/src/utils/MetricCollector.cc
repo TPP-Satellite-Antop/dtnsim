@@ -89,7 +89,7 @@ void MetricCollector::setNumberOfHops(long bundleId, int hops) {
 * If the bundle is not yet in the map, it initializes it with the given elapsed time.
 * Otherwise, calculates the new elapsed time and adds it to the existing one.
 */
-void MetricCollector::updateBundleElapsedTime(long bundleId, double elapsedTimeStart) {
+void MetricCollector::updateBundleElapsedTime(long bundleId, std::chrono::steady_clock::time_point elapsedTimeStart) {
     double elapsedTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
 
     auto bundleElapsedTime = &this->bundleElapsedTime_;

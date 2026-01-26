@@ -61,7 +61,7 @@ class MetricCollector {
     void updateRUCoPComputationTime(long computationTime);
     void updateCGRComputationTime(long computationTime);
     void setNumberOfHops(long bundleId, int hops);
-    void updateBundleElapsedTime(long bundleId, double elapsedTimeStart);
+    void updateBundleElapsedTime(long bundleId, std::chrono::steady_clock::time_point elapsedTimeStart);
     void intializeArrivalTime(long bundleId, std::chrono::steady_clock::time_point initialTime);
     void setFinalArrivalTime(long bundleId, std::chrono::steady_clock::time_point finalTime);
     void evaluateAndPrintResults();

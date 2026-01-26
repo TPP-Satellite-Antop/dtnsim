@@ -444,7 +444,6 @@ void ContactDtn::handleMessage(cMessage *msg) {
     // Forwarding Stage
     ///////////////////////////////////////////
     else if (msg->getKind() == FORWARDING_MSG_START) {
-        auto elapsedTimeStart = std::chrono::steady_clock::now();
 
         auto *forwardingMsgStart = check_and_cast<ForwardingMsgStart *>(msg);
         const int neighborEid = forwardingMsgStart->getNeighborEid();
@@ -479,7 +478,6 @@ void ContactDtn::handleMessage(cMessage *msg) {
                     bundle->setHopCount(bundle->getHopCount() + 1);
                     bundle->getVisitedNodesForUpdate().push_back(eid_);
                     bundle->setXmitCopiesCount(0);
-                    this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);
 
                     // cout<<"-----> sending bundle to node "<bundle->getNextHopEid()<<endl;
                     send(bundle, "gateToCom$o");
@@ -569,7 +567,6 @@ void ContactDtn::dispatchBundle(BundlePkt *bundle) {
 
         // Check if this bundle has previously arrived here
         if (routing->msgToMeArrive(bundle)) {
-            auto elapsedTimeStart = std::chrono::steady_clock::now();
             // This is the first time this bundle arrives
             if (bundle->getBundleIsCustodyReport()) {
                 // This is a custody report destined to me
@@ -578,14 +575,11 @@ void ContactDtn::dispatchBundle(BundlePkt *bundle) {
                 if (BundlePkt *reSendBundle = this->custodyModel_.custodyReportArrived(bundle);
                     reSendBundle != nullptr)
                     this->dispatchBundle(reSendBundle);
-
-                this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);
             } else {
                 // This is a data bundle destined to me
                 if (bundle->getCustodyTransferRequested())
                     this->dispatchBundle(
-                        this->custodyModel_.bundleWithCustodyRequestedArrived(bundle));
-                this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);
+                    this->custodyModel_.bundleWithCustodyRequestedArrived(bundle));
                 // Send to app layer
                 send(bundle, "gateToApp$o");
             }
@@ -594,15 +588,12 @@ void ContactDtn::dispatchBundle(BundlePkt *bundle) {
             delete bundle;
     } else {
         // This is a bundle in transit
-
-        auto elapsedTimeStart = std::chrono::steady_clock::now();
         // Manage custody transfer
         if (bundle->getCustodyTransferRequested())
             this->dispatchBundle(this->custodyModel_.bundleWithCustodyRequestedArrived(bundle));
 
         // Either accepted or rejected custody, route bundle
         routing->msgToOtherArrive(bundle, simTime().dbl());
-        this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);
 
         // Emit routing specific statistics
         // TODO
