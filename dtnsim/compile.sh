@@ -6,7 +6,7 @@ rm -rf out
 (
   cd ../external/lib
   git fetch
-  git checkout main
+  git checkout fix/loop-detection
   git pull
   ./lib-build.sh
 )
