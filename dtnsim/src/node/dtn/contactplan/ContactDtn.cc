@@ -348,7 +348,7 @@ void ContactDtn::handleMessage(cMessage *msg) {
         auto *bundle = check_and_cast<BundlePkt *>(msg);
         
         if (msg->arrivedOn("gateToCom$i"))
-        emit(dtnBundleReceivedFromCom, true);
+            emit(dtnBundleReceivedFromCom, true);
         if (msg->arrivedOn("gateToApp$i")) {
             emit(dtnBundleReceivedFromApp, true);
             this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
@@ -443,8 +443,8 @@ void ContactDtn::handleMessage(cMessage *msg) {
     ///////////////////////////////////////////
     // Forwarding Stage
     ///////////////////////////////////////////
-    else if (msg->getKind() == FORWARDING_MSG_START) {
-
+    else if (msg->getKind() == FORWARDING_MSG_START) { 
+        auto elapsedTimeStart = std::chrono::steady_clock::now();
         auto *forwardingMsgStart = check_and_cast<ForwardingMsgStart *>(msg);
         const int neighborEid = forwardingMsgStart->getNeighborEid();
         const int contactId = forwardingMsgStart->getContactId();
@@ -515,6 +515,7 @@ void ContactDtn::handleMessage(cMessage *msg) {
                     forwardingMsgEnd->setBundleId(bundle->getBundleId());
                     forwardingMsgEnd->setSentToDestination(neighborEid == bundle->getDestinationEid());
                     scheduleAt(simTime() + txDuration, forwardingMsgEnd);
+                    this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);
                 }
             } else {
                 // If local/remote node unresponsive, then do nothing.
@@ -587,6 +588,8 @@ void ContactDtn::dispatchBundle(BundlePkt *bundle) {
             // A copy of this bundle was previously received
             delete bundle;
     } else {
+        auto elapsedTimeStart = std::chrono::steady_clock::now();
+
         // This is a bundle in transit
         // Manage custody transfer
         if (bundle->getCustodyTransferRequested())
@@ -618,6 +621,7 @@ void ContactDtn::dispatchBundle(BundlePkt *bundle) {
         emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
 
         // Wake-up sleeping forwarding threads
+        this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart); //TODO aca o abajo?
         this->refreshForwarding();
     }
 }
