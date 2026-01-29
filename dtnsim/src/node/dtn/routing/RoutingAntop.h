@@ -18,7 +18,6 @@ class RoutingAntop : public RoutingDeterministic {
         );
         virtual ~RoutingAntop();
         void routeAndQueueBundle(BundlePkt *bundle, double simTime) override;
-        void routeAndQueueAntopBundle(AntopPkt *bundle, double simTime) const;
         [[nodiscard]] int getEidFromH3Index(H3Index idx, H3Index dst, int dstEid) const;
         [[nodiscard]] H3Index getH3Index(int eid) const;
 
