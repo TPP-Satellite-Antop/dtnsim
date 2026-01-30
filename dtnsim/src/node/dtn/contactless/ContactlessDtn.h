@@ -44,7 +44,7 @@ class ContactlessDtn : public Dtn {
   private:
     int eid_;
     Antop* antop;
-    map<int, inet::SatelliteMobility*> *mobilityMap_;
+    map<int, inet::SatelliteMobility*> *mobilityMap_; // helper Map to access other nodes' mobility modules
     void initializeRouting(const string& routingString);
 
     CustodyModel custodyModel_;
