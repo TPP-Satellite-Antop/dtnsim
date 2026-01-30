@@ -3,25 +3,30 @@
 
 #include "routingTable.h"
 #include "h3api.h"
-#include "src/node/mobility/SatelliteMobility.h"
 #include <src/node/dtn/routing/RoutingDeterministic.h>
 
 class RoutingAntop : public RoutingDeterministic {
-  public:
-    RoutingAntop(
-      Antop* antop,
-      int eid,
-      map<int, inet::SatelliteMobility *> *mobilityMap);
-    virtual ~RoutingAntop();
-    virtual void routeAndQueueBundle(BundlePkt *bundle, double simTime);
+    public:
+        using GetPosition = std::function<LatLng(int)>;
+        using GetNextMobilityUpdate = std::function<double()>;
 
-  private:
-    map<int, inet::SatelliteMobility *> *mobilityMap;
-    RoutingTable *routingTable;
+        RoutingAntop(
+            Antop* antop,
+            int eid,
+            int nodes, const GetPosition &getPosition,
+            const GetNextMobilityUpdate &getNextMobilityUpdate
+        );
+        virtual ~RoutingAntop();
+        void routeAndQueueBundle(BundlePkt *bundle, double simTime) override;
+        [[nodiscard]] int getEidFromH3Index(H3Index idx, H3Index dst, int dstEid) const;
+        [[nodiscard]] H3Index getH3Index(int eid) const;
 
-    // Returns the current H3 index of the node with given eid. Returns 0 if not found.
-    [[nodiscard]] H3Index getCurH3IndexForEid(int eid) const;
-    int getEidFromH3Index(H3Index idx, H3Index dst, int dstEid);
+    private:
+        int resolution_;
+        int nodes;
+        GetPosition getPosition;
+        GetNextMobilityUpdate getNextMobilityUpdate_;
+        RoutingTable *routingTable;
 };
 
 #endif /* SRC_NODE_DTN_ROUTINGANTOP_H_ */
