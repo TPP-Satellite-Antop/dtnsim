@@ -358,7 +358,7 @@ void ContactDtn::handleMessage(cMessage *msg) {
     } else if (msg->getKind() == CONTACT_FAILED) { // A failed contact was noticed!
         const auto *contactMsg = check_and_cast<ContactMsg *>(msg);
 
-        auto *uniboRouting = check_and_cast<RoutingUncertainUniboCgr *>(this->routing); //TODO vamos a usar esto?
+        auto *uniboRouting = check_and_cast<RoutingUncertainUniboCgr *>(this->routing);
         uniboRouting->contactFailure(contactMsg->getId()); // reroute all failed bundles!
 
         this->refreshForwarding();
@@ -526,7 +526,7 @@ void ContactDtn::handleMessage(cMessage *msg) {
             // Do nothing, if new data arrives, a refreshForwarding
             // will wake up this forwarding thread
         }
-    } else if (msg->getKind() == FORWARDING_MSG_END) { //TODO consideramos esto para el tiempo de procesamiento?
+    } else if (msg->getKind() == FORWARDING_MSG_END) {
         // A bundle was successfully forwarded. Notify routing schema in order to it makes proper
         // decisions.
         const auto *forwardingMsgEnd = check_and_cast<ForwardingMsgEnd *>(msg);
@@ -620,8 +620,8 @@ void ContactDtn::dispatchBundle(BundlePkt *bundle) {
         emit(sdrBundleStored, sdr_->getBundlesCountInSdr());
         emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
 
+        this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);
         // Wake-up sleeping forwarding threads
-        this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart); //TODO aca o abajo?
         this->refreshForwarding();
     }
 }
