@@ -340,24 +340,21 @@ void ContactDtn::finish() {
  */
 
 void ContactDtn::handleMessage(cMessage *msg) {
-    auto elapsedTimeStart = std::chrono::steady_clock::now();
 
     ///////////////////////////////////////////
     // New Bundle (from App or ContactPlanCom):
     ///////////////////////////////////////////
     if (msg->getKind() == BUNDLE || msg->getKind() == BUNDLE_CUSTODY_REPORT) {
         auto *bundle = check_and_cast<BundlePkt *>(msg);
-
+        
         if (msg->arrivedOn("gateToCom$i"))
             emit(dtnBundleReceivedFromCom, true);
         if (msg->arrivedOn("gateToApp$i")) {
             emit(dtnBundleReceivedFromApp, true);
             this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
         }
-
+        
         dispatchBundle(bundle);
-        double elapsedTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
-        this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTime);
     } else if (msg->getKind() == CONTACT_FAILED) { // A failed contact was noticed!
         const auto *contactMsg = check_and_cast<ContactMsg *>(msg);
 
@@ -446,7 +443,8 @@ void ContactDtn::handleMessage(cMessage *msg) {
     ///////////////////////////////////////////
     // Forwarding Stage
     ///////////////////////////////////////////
-    else if (msg->getKind() == FORWARDING_MSG_START) {
+    else if (msg->getKind() == FORWARDING_MSG_START) { 
+        auto elapsedTimeStart = std::chrono::steady_clock::now();
         auto *forwardingMsgStart = check_and_cast<ForwardingMsgStart *>(msg);
         const int neighborEid = forwardingMsgStart->getNeighborEid();
         const int contactId = forwardingMsgStart->getContactId();
@@ -517,6 +515,7 @@ void ContactDtn::handleMessage(cMessage *msg) {
                     forwardingMsgEnd->setBundleId(bundle->getBundleId());
                     forwardingMsgEnd->setSentToDestination(neighborEid == bundle->getDestinationEid());
                     scheduleAt(simTime() + txDuration, forwardingMsgEnd);
+                    this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);
                 }
             } else {
                 // If local/remote node unresponsive, then do nothing.
@@ -581,8 +580,7 @@ void ContactDtn::dispatchBundle(BundlePkt *bundle) {
                 // This is a data bundle destined to me
                 if (bundle->getCustodyTransferRequested())
                     this->dispatchBundle(
-                        this->custodyModel_.bundleWithCustodyRequestedArrived(bundle));
-
+                    this->custodyModel_.bundleWithCustodyRequestedArrived(bundle));
                 // Send to app layer
                 send(bundle, "gateToApp$o");
             }
@@ -590,8 +588,9 @@ void ContactDtn::dispatchBundle(BundlePkt *bundle) {
             // A copy of this bundle was previously received
             delete bundle;
     } else {
-        // This is a bundle in transit
+        auto elapsedTimeStart = std::chrono::steady_clock::now();
 
+        // This is a bundle in transit
         // Manage custody transfer
         if (bundle->getCustodyTransferRequested())
             this->dispatchBundle(this->custodyModel_.bundleWithCustodyRequestedArrived(bundle));
@@ -621,6 +620,7 @@ void ContactDtn::dispatchBundle(BundlePkt *bundle) {
         emit(sdrBundleStored, sdr_->getBundlesCountInSdr());
         emit(sdrBytesStored, sdr_->getBytesStoredInSdr());
 
+        this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);
         // Wake-up sleeping forwarding threads
         this->refreshForwarding();
     }
