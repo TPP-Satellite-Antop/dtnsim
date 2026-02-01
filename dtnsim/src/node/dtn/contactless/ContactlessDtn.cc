@@ -136,7 +136,7 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
     switch (msg->getKind()) {
         case BUNDLE: {
             const auto bundle = check_and_cast<BundlePkt *>(msg);
-	    if (msg->arrivedOn("gateToCom$i"))
+            if (msg->arrivedOn("gateToCom$i"))
                 emit(dtnBundleReceivedFromCom, true);
             if (msg->arrivedOn("gateToApp$i")) {
                 emit(dtnBundleReceivedFromApp, true);
@@ -167,7 +167,7 @@ void ContactlessDtn::handleBundle(BundlePkt *bundle) {
     if (eid_ != bundle->getDestinationEid()) {
         const auto elapsedTimeStart = steady_clock::now();
 
-	routing->msgToOtherArrive(bundle, simTime().dbl());
+        routing->msgToOtherArrive(bundle, simTime().dbl());
         scheduleBundle(bundle);
 
         this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);
@@ -207,7 +207,7 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
 
     routing->msgToOtherArrive(bundle, simTime().dbl());
     if (nextHop != bundle->getNextHopEid()) { // While awaiting a transmission delay, satellite movement occurred.
-	scheduleBundle(bundle);
+        scheduleBundle(bundle);
         this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);
         scheduleAt(simTime(), fwd);
         return;
@@ -218,10 +218,10 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
     constexpr double txDuration = 0;
 
     if (simTime() + txDuration >= (*mobilityMap_)[eid_]->getNextUpdateTime()) {
-	scheduleRoutingRetry(bundle);
+        scheduleRoutingRetry(bundle);
         this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);
         scheduleAt(simTime(), fwd);
-	return;
+        return;
     }
 
     std::cout << "Sending bundle " << std::dec << bundle->getBundleId() << " from " << eid_ << " to " << bundle->getNextHopEid() << std::endl;
@@ -281,7 +281,7 @@ void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
         auto *fwd = new ForwardingMsgStart("forwardingStart", FORWARDING_MSG_START);
         fwd->setNeighborEid(nextHop);
         fwdByEid_[nextHop] = fwd;
-	scheduleAt(simTime(), fwd);
+        scheduleAt(simTime(), fwd);
     }
 }
 
