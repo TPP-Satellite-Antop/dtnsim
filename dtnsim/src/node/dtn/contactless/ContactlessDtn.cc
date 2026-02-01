@@ -140,7 +140,7 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
                 emit(dtnBundleReceivedFromCom, true);
             if (msg->arrivedOn("gateToApp$i")) {
                 emit(dtnBundleReceivedFromApp, true);
-                this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
+                this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), steady_clock::now());
             }
             handleBundle(bundle);
             break;
@@ -167,7 +167,7 @@ void ContactlessDtn::handleBundle(BundlePkt *bundle) {
     if (eid_ != bundle->getDestinationEid()) {
         const auto elapsedTimeStart = steady_clock::now();
 
-        routing->msgToOtherArrive(bundle, simTime().dbl());
+	routing->msgToOtherArrive(bundle, simTime().dbl());
         scheduleBundle(bundle);
 
         this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);

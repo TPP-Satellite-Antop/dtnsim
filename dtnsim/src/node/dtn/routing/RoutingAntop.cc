@@ -17,43 +17,46 @@ RoutingAntop::RoutingAntop(
 
 RoutingAntop::~RoutingAntop() = default;
 
-void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
+void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, const double simTime) {
+    routeAndQueueAntopBundle(dynamic_cast<AntopPkt*>(bundle), simTime);
+}
+
+void RoutingAntop::routeAndQueueAntopBundle(AntopPkt *bundle, const double simTime) const {
     bundle->setNextHopEid(eid_); // Default to storing bundle in SDR.
 
     const H3Index cur = getH3Index(eid_);
     if(cur == 0) return;
 
     H3Index dst = getH3Index(bundle->getDestinationEid());
-    const auto antopPkt = dynamic_cast<AntopPkt*>(bundle);
     if (dst == 0){
-        dst = antopPkt->getCachedDstH3Index();
+        dst = bundle->getCachedDstH3Index();
         if (dst == 0) return;
-    } else 
-        antopPkt->setCachedDstH3Index(dst);
+    } else
+        bundle->setCachedDstH3Index(dst);
 
+    const auto nextUpdateTime = getNextMobilityUpdate_();
+    const H3Index src = getH3Index(bundle->getSourceEid());
     const H3Index sender = getH3Index(bundle->getSenderEid());
-    H3Index nextHop = 0;
+    int loopEpoch = bundle->getLoopEpoch();
+    int hopCount = bundle->getHopCount();
     int nextHopEid = 0;
+    H3Index nextHop = 0;
 
     // Useful print for debugging. ToDo: remove at a later stage.
     {
         std::cout << "Routing:" << std::endl;
-        std::cout << "  Bundle: " << std::dec << bundle->getBundleId() << " /// " << bundle->getHopCount() << " /// " << (bundle->getReturnToSender() ? "true" : "false") << std::endl;
+        std::cout << "  Bundle: " << std::dec << bundle->getBundleId() << " /// " << bundle->getHopCount() << " /// " << bundle->getLoopEpoch() << std::endl;
         std::cout << "  Current: " << std::dec << eid_ << " /// " << std::hex << cur << std::endl;
         std::cout << "  Source: " << std::dec << bundle->getSourceEid() << " /// " << std::hex << getH3Index(bundle->getSourceEid()) << std::endl;
         std::cout << "  Sender: " << std::dec << bundle->getSenderEid() << " /// " << std::hex << sender << std::endl;
         std::cout << "  Destination: " << std::dec << bundle->getDestinationEid() << " /// " << std::hex << dst << std::endl;
     }
 
-    const auto nextUpdateTime = getNextMobilityUpdate_();
+    nextHop = routingTable->findNextHop(cur, src, dst, sender, &hopCount, &loopEpoch, nextUpdateTime);
+    nextHopEid = getEidFromH3Index(nextHop, dst, bundle->getDestinationEid());
 
-    if (!bundle->getReturnToSender()) {
-        const H3Index src = getH3Index(bundle->getSourceEid());
-        int hopCount = bundle->getHopCount();
-        nextHop = routingTable->findNextHop(cur, src, dst, sender, &hopCount, nextUpdateTime);
-        bundle->setHopCount(hopCount);
-        nextHopEid = getEidFromH3Index(nextHop, dst, bundle->getDestinationEid());
-    }
+    bundle->setHopCount(hopCount);
+    bundle->setLoopEpoch(loopEpoch);
 
     while (nextHopEid == 0) {
         nextHop = routingTable->findNewNeighbor(cur, dst, sender == 0 ? cur : sender, nextUpdateTime);
@@ -64,8 +67,7 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
 
     bundle->setNextHopEid(nextHopEid);
 
-    if (nextHopEid != eid_)
-        bundle->setReturnToSender(nextHop == sender);
+    if (nextHopEid != eid_) bundle->setReturnToSender(nextHop == sender);
 }
 
 /**
