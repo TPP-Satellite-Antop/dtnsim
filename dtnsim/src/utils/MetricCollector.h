@@ -79,8 +79,6 @@ class MetricCollector {
     string getPrefix();
     int getCGRCalls();
     int getRUCoPCalls();
-    int getAntopCalls();
-    void putToJson();
     string path_;
     vector<Metrics> nodeMetrics_;
     long RUCoPComputationTime_ = 0;
