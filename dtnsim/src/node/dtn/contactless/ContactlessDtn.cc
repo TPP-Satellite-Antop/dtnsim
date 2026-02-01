@@ -134,21 +134,20 @@ void ContactlessDtn::finish() {
  */
 void ContactlessDtn::handleMessage(cMessage *msg) {
     switch (msg->getKind()) {
-        case BUNDLE:
-	    if (msg->arrivedOn("gateToCom$i"))
+        case BUNDLE: {
+            auto bundle = check_and_cast<BundlePkt *>(msg);
+	        if (msg->arrivedOn("gateToCom$i"))
                 emit(dtnBundleReceivedFromCom, true);
             if (msg->arrivedOn("gateToApp$i")) {
                 emit(dtnBundleReceivedFromApp, true);
-		// ToDo: figure out where to place arrival time metrics.
-                // this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
+                this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
             }
-            handleBundle(check_and_cast<BundlePkt *>(msg));
+            handleBundle(bundle);
             break;
-
+        }
         case FORWARDING_MSG_START:
             handleForwardingStart(check_and_cast<ForwardingMsgStart *>(msg));
             break;
-
 	// ToDo: implement bundle custody
 
         case ROUTING_RETRY:
@@ -168,8 +167,12 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
  */
 void ContactlessDtn::handleBundle(BundlePkt *bundle) {
     if (eid_ != bundle->getDestinationEid()) {
-	routing->msgToOtherArrive(bundle, simTime().dbl());
+        auto elapsedTimeStart = std::chrono::steady_clock::now();
+
+	    routing->msgToOtherArrive(bundle, simTime().dbl());
         scheduleBundle(bundle);
+        
+        this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);
     } else {
         emit(dtnBundleSentToApp, true);
         emit(dtnBundleSentToAppHopCount, bundle->getHopCount());
@@ -192,6 +195,7 @@ void ContactlessDtn::handleBundle(BundlePkt *bundle) {
  * simulating transmission delays.
  */
 void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
+    auto elapsedTimeStart = std::chrono::steady_clock::now();
     const int nextHop = fwd->getNeighborEid();
 
     if (!sdr_->isBundleForId(nextHop)) { // No bundles to route.
@@ -205,7 +209,8 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
 
     routing->msgToOtherArrive(bundle, simTime().dbl());
     if (nextHop != bundle->getNextHopEid()) { // While awaiting a transmission delay, satellite movement occurred.
-	scheduleBundle(bundle);
+	    scheduleBundle(bundle);
+        this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);
         scheduleAt(simTime(), fwd);
         return;
     }
@@ -216,13 +221,15 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
 
     if (simTime() + txDuration >= (*mobilityMap_)[eid_]->getNextUpdateTime()) {
 	    scheduleRoutingRetry(bundle);
+        this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);
         scheduleAt(simTime(), fwd);
-	return;
+	    return;
     }
 
     std::cout << "Sending bundle " << std::dec << bundle->getBundleId() << " from " << eid_ << " to " << bundle->getNextHopEid() << std::endl;
     bundle->setHopCount(bundle->getHopCount() + 1);
     bundle->setSenderEid(eid_);
+    this->metricCollector_->updateBundleElapsedTime(bundle->getBundleId(), elapsedTimeStart);
 
     send(bundle, "gateToCom$o");
 
@@ -276,7 +283,7 @@ void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
         auto *fwd = new ForwardingMsgStart("forwardingStart", FORWARDING_MSG_START);
         fwd->setNeighborEid(nextHop);
         fwdByEid_[nextHop] = fwd;
-	scheduleAt(simTime(), fwd);
+	    scheduleAt(simTime(), fwd);
     }
 }
 
