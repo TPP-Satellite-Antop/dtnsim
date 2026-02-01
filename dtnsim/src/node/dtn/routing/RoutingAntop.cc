@@ -36,14 +36,14 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
     int nextHopEid = 0;
 
     // Useful print for debugging. ToDo: remove at a later stage.
-    /*{
+    {
         std::cout << "Routing:" << std::endl;
         std::cout << "  Bundle: " << std::dec << bundle->getBundleId() << " /// " << bundle->getHopCount() << " /// " << (bundle->getReturnToSender() ? "true" : "false") << std::endl;
         std::cout << "  Current: " << std::dec << eid_ << " /// " << std::hex << cur << std::endl;
-        std::cout << "  Source: " << std::dec << bundle->getSourceEid() << " /// " << std::hex << getH3Index_(bundle->getSourceEid()) << std::endl;
+        std::cout << "  Source: " << std::dec << bundle->getSourceEid() << " /// " << std::hex << getH3Index(bundle->getSourceEid()) << std::endl;
         std::cout << "  Sender: " << std::dec << bundle->getSenderEid() << " /// " << std::hex << sender << std::endl;
         std::cout << "  Destination: " << std::dec << bundle->getDestinationEid() << " /// " << std::hex << dst << std::endl;
-    }*/
+    }
 
     const auto nextUpdateTime = getNextMobilityUpdate_();
 
