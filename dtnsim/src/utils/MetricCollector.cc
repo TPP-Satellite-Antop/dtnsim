@@ -84,7 +84,14 @@ void MetricCollector::setNumberOfHops(long bundleId, int hops) {
     this->bundleHops_[bundleId] = hops;
 }
 
-void MetricCollector::updateBundleElapsedTime(long bundleId, double elapsedTime) {
+/*
+* Updates the elapsed time for a bundle.
+* If the bundle is not yet in the map, it initializes it with the given elapsed time.
+* Otherwise, calculates the new elapsed time and adds it to the existing one.
+*/
+void MetricCollector::updateBundleElapsedTime(long bundleId, std::chrono::steady_clock::time_point elapsedTimeStart) {
+    double elapsedTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
+
     auto bundleElapsedTime = &this->bundleElapsedTime_;
     if ((*bundleElapsedTime).find(bundleId) == (*bundleElapsedTime).end())
         (*bundleElapsedTime)[bundleId] = elapsedTime;
@@ -92,6 +99,11 @@ void MetricCollector::updateBundleElapsedTime(long bundleId, double elapsedTime)
         (*bundleElapsedTime)[bundleId] = (*bundleElapsedTime)[bundleId] + elapsedTime;
 }
 
+/*
+* Initializes the arrival time for a bundle.
+* If the bundle is not yet in the map, it sets the generation time to the given initial time.
+* If the bundle is already in the map, it does nothing (because it's not the node that generated the bundle).
+*/
 void MetricCollector::intializeArrivalTime(long bundleId, std::chrono::steady_clock::time_point initialTime) {
     auto bundleArrivalTime = &this->bundleArrivalTime_;
     if ((*bundleArrivalTime).find(bundleId) == (*bundleArrivalTime).end()){
@@ -100,6 +112,9 @@ void MetricCollector::intializeArrivalTime(long bundleId, std::chrono::steady_cl
     // if already initialized, do nothing because it is not the src node
 }
 
+/*
+* Sets the final arrival time for a bundle.
+*/
 void MetricCollector::setFinalArrivalTime(long bundleId, std::chrono::steady_clock::time_point finalTime) {
     this->bundleArrivalTime_[bundleId].arrivalTime = finalTime;
 }
