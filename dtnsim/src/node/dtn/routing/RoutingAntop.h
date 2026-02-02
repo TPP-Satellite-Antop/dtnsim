@@ -1,7 +1,7 @@
 #ifndef SRC_NODE_DTN_ROUTINGANTOP_H_
 #define SRC_NODE_DTN_ROUTINGANTOP_H_
 
-#include "routingTable.h"
+#include "RoutingTable.h"
 #include "h3api.h"
 #include <src/node/dtn/routing/RoutingDeterministic.h>
 
