@@ -330,19 +330,6 @@ void buildBundleMetrics(std::map<long, int> &bundleHops,
     }
 }
 
-// Build timestamp string: YYYYMMDD-HHMMSS
-std::string makeTimestamp() {
-    const auto now = std::chrono::system_clock::now();
-    const std::time_t t = std::chrono::system_clock::to_time_t(now);
-
-    std::tm tm{};
-    localtime_r(&t, &tm);
-
-    std::ostringstream oss;
-    oss << std::put_time(&tm, "%Y%m%d-%H%M%S");
-    return oss.str();
-}
-
 /*
  * All results from the node metrics are evaluated and printed into a .json file
  */
@@ -381,16 +368,16 @@ void MetricCollector::evaluateAndPrintJsonResults() {
     std::filesystem::path p = this->path_;
     std::filesystem::create_directories(p.parent_path());
 
-    std::string timestamp = makeTimestamp();
-    std::filesystem::path newPath =
+    std::string timestamp = std::format("{:%Y%m%d-%H%M%S}", std::chrono::system_clock::now());;
+    std::filesystem::path timestampedPath =
         p.parent_path() /
         (p.stem().string() + "-" + timestamp + p.extension().string());
 
-    ofstream jsonFile(newPath);
+    ofstream jsonFile(timestampedPath);
     jsonFile << setw(4) << j << endl;
     jsonFile.close();
 
-    cout << "MetricCollector: Results written to " << newPath << endl;
+    cout << "MetricCollector: Results written to " << timestampedPath << endl;
 }
 
 /*
