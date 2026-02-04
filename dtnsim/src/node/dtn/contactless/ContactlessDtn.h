@@ -30,7 +30,6 @@ class ContactlessDtn : public Dtn {
     // Returns the current H3 index of the node with given eid. Returns 0 if not found.
     H3Index getCurH3IndexForEid(int eid) const;
     int getEidFromH3Index(H3Index idx, H3Index dst, int dstEid);
-    void setDataRate(double dataRate);
 
   protected:
     void initialize(int stage) override;

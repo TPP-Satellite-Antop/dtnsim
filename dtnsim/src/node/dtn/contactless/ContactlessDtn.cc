@@ -24,6 +24,7 @@ void ContactlessDtn::initialize(const int stage) {
         this->sdr_ = new ContactlessSdrModel();
         // Store this node eid
         this->eid_ = this->getParentModule()->getIndex();
+        this->dataRate = par("dataRate");
 
         this->custodyTimeout_ = par("custodyTimeout");
         this->custodyModel_.setEid(eid_);
@@ -84,10 +85,6 @@ void ContactlessDtn::initialize(const int stage) {
 
 void ContactlessDtn::setMobilityMap(map<int, inet::SatelliteMobility*> *mobilityMap) {
     this->mobilityMap_ = mobilityMap;
-}
-
-void ContactlessDtn::setDataRate(double dataRate) {
-    this->dataRate = dataRate;
 }
 
 void ContactlessDtn::initializeRouting(const string& routingString) {
