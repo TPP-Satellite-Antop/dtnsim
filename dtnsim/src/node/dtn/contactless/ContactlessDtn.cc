@@ -215,7 +215,6 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
     }
 
     double txDuration = bundle->getByteLength() / dataRate;
-    std::cout << "Calculated txDuration for bundle " << std::dec << bundle->getBundleId() << ": " << txDuration << " seconds." << std::endl;
 
     if (simTime() + txDuration >= (*mobilityMap_)[eid_]->getNextUpdateTime()) {
         scheduleRoutingRetry(bundle);
