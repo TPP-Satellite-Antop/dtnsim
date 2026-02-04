@@ -207,6 +207,8 @@ $O/$(TARGET): $(OBJS)  $(wildcard $(EXTRA_OBJS)) Makefile $(CONFIGFILE)
 .SUFFIXES :
 .PRECIOUS : %_m.h %_m.cc
 
+CXXFLAGS += -std=c++20
+
 $O/%.o: %.cc $(COPTS_FILE) | msgheaders smheaders
 	@$(MKPATH) $(dir $@)
 	$(qecho) "$<"

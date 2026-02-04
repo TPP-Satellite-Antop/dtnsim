@@ -1,7 +1,7 @@
 #ifndef SRC_NODE_DTN_ROUTINGANTOP_H_
 #define SRC_NODE_DTN_ROUTINGANTOP_H_
 
-#include "routingTable.h"
+#include "RoutingTable.h"
 #include "h3api.h"
 #include <src/node/dtn/routing/RoutingDeterministic.h>
 
@@ -18,8 +18,6 @@ class RoutingAntop : public RoutingDeterministic {
         );
         virtual ~RoutingAntop();
         void routeAndQueueBundle(BundlePkt *bundle, double simTime) override;
-        [[nodiscard]] int getEidFromH3Index(H3Index idx, H3Index dst, int dstEid) const;
-        [[nodiscard]] H3Index getH3Index(int eid) const;
 
     private:
         int resolution_;
@@ -27,6 +25,10 @@ class RoutingAntop : public RoutingDeterministic {
         GetPosition getPosition;
         GetNextMobilityUpdate getNextMobilityUpdate_;
         RoutingTable *routingTable;
+
+        void routeAndQueueAntopBundle(AntopPkt *bundle, double simTime) const;
+        [[nodiscard]] int getEidFromH3Index(H3Index idx, H3Index dst, int dstEid) const;
+        [[nodiscard]] H3Index getH3Index(int eid) const;
 };
 
 #endif /* SRC_NODE_DTN_ROUTINGANTOP_H_ */

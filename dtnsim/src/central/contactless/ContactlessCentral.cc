@@ -1,19 +1,17 @@
 #include <iostream>
 #include "ContactlessCentral.h"
 #include "src/central/Central.h"
-#include "src/node/MsgTypes.h"
 #include "src/node/app/App.h"
-#include "src/node/com/Com.h"
 #include "src/node/dtn/contactless/ContactlessDtn.h"
-#include "src/node/dtn/routing/RoutingAntop.h"
+#include "Antop.h"
 
 Define_Module(dtnsim::ContactlessCentral);
 
 namespace dtnsim {
 
-ContactlessCentral::ContactlessCentral() {}
+ContactlessCentral::ContactlessCentral() = default;
 
-ContactlessCentral::~ContactlessCentral() {}
+ContactlessCentral::~ContactlessCentral() = default;
 
 void ContactlessCentral::initialize() {
     Central::initialize();
@@ -30,11 +28,10 @@ void ContactlessCentral::initialize() {
         app->setMetricCollector(&metricCollector_);
     }
 
-    auto antop = new Antop();
-    antop->init(nodesNumber_);
+    auto antop = new Antop(nodesNumber_);
     auto* mobilityMap = new std::map<int, inet::SatelliteMobility*>();
     for (int i = 0; i <= nodesNumber_; i++) { // todo: i = 1?
-        auto dtn = check_and_cast<ContactlessDtn *>(
+        const auto dtn = check_and_cast<ContactlessDtn *>(
             this->getParentModule()
                 ->getSubmodule("node", i)
                 ->getSubmodule("dtn")
@@ -52,19 +49,19 @@ void ContactlessCentral::deleteNodes(vector<int> nodesToDelete, bool faultsAware
 }
 
 vector<int> ContactlessCentral::getRandomNodeIds(int n) {
-    return vector<int>();
+    return {};
 }
 
 vector<int> ContactlessCentral::getRandomNodeIdsWithFProb(double failureProbability) {
-    return vector<int>();
+    return {};
 }
 
 vector<int> ContactlessCentral::getNodeIdsWithSpecificFProb() {
-    return vector<int>();
+    return {};
 }
 
 vector<int> ContactlessCentral::getCentralityNodeIds(int n, int nodesNumber) {
-    return vector<int>();
+    return {};
 }
 
 void ContactlessCentral::finish() {
