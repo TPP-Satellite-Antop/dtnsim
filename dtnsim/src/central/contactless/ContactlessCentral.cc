@@ -13,6 +13,9 @@ ContactlessCentral::ContactlessCentral() = default;
 
 ContactlessCentral::~ContactlessCentral() = default;
 
+const double BASE_DATA_RATE = 100;
+const double DATA_RATE_INCREMENT = 10;
+
 void ContactlessCentral::initialize() {
     Central::initialize();
 
@@ -38,6 +41,7 @@ void ContactlessCentral::initialize() {
         );
         dtn->setRoutingAlgorithm(antop);
         dtn->setMobilityMap(mobilityMap);
+        dtn->setDataRate(BASE_DATA_RATE + i);
     }
 }
 

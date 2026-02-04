@@ -86,6 +86,10 @@ void ContactlessDtn::setMobilityMap(map<int, inet::SatelliteMobility*> *mobility
     this->mobilityMap_ = mobilityMap;
 }
 
+void ContactlessDtn::setDataRate(double dataRate) {
+    this->dataRate = dataRate;
+}
+
 void ContactlessDtn::initializeRouting(const string& routingString) {
     const int nodes = this->getParentModule()->getParentModule()->par("nodesNumber");
     const auto contactlessSdr = dynamic_cast<ContactlessSdrModel*>(sdr_);
@@ -213,9 +217,8 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
         return;
     }
 
-    // ToDo: compute transmission time
-    // double txDuration = bundle->getByteLength() / dataRate;
-    constexpr double txDuration = 0;
+    double txDuration = bundle->getByteLength() / dataRate;
+    std::cout << "Calculated txDuration for bundle " << std::dec << bundle->getBundleId() << ": " << txDuration << " seconds." << std::endl;
 
     if (simTime() + txDuration >= (*mobilityMap_)[eid_]->getNextUpdateTime()) {
         scheduleRoutingRetry(bundle);

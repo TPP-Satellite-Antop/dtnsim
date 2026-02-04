@@ -30,6 +30,7 @@ class ContactlessDtn : public Dtn {
     // Returns the current H3 index of the node with given eid. Returns 0 if not found.
     H3Index getCurH3IndexForEid(int eid) const;
     int getEidFromH3Index(H3Index idx, H3Index dst, int dstEid);
+    void setDataRate(double dataRate);
 
   protected:
     void initialize(int stage) override;
@@ -44,6 +45,7 @@ class ContactlessDtn : public Dtn {
   private:
     int eid_;
     Antop* antop;
+    double dataRate; // represents the data rate in bytes per second
     map<int, inet::SatelliteMobility*> *mobilityMap_; // helper Map to access other nodes' mobility modules
     void initializeRouting(const string& routingString);
 
