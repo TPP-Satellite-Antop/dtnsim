@@ -24,6 +24,7 @@ void ContactlessDtn::initialize(const int stage) {
         this->sdr_ = new ContactlessSdrModel();
         // Store this node eid
         this->eid_ = this->getParentModule()->getIndex();
+        this->dataRate = par("dataRate");
 
         this->custodyTimeout_ = par("custodyTimeout");
         this->custodyModel_.setEid(eid_);
@@ -213,9 +214,7 @@ void ContactlessDtn::handleForwardingStart(ForwardingMsgStart *fwd) {
         return;
     }
 
-    // ToDo: compute transmission time
-    // double txDuration = bundle->getByteLength() / dataRate;
-    constexpr double txDuration = 0;
+    double txDuration = bundle->getByteLength() / dataRate;
 
     if (simTime() + txDuration >= (*mobilityMap_)[eid_]->getNextUpdateTime()) {
         scheduleRoutingRetry(bundle);

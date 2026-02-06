@@ -44,6 +44,7 @@ class ContactlessDtn : public Dtn {
   private:
     int eid_;
     Antop* antop;
+    double dataRate; // represents the data rate in bytes per second
     map<int, inet::SatelliteMobility*> *mobilityMap_; // helper Map to access other nodes' mobility modules
     void initializeRouting(const string& routingString);
 

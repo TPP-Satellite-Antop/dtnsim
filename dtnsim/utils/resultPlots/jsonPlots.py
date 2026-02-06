@@ -136,7 +136,7 @@ def to_ms(scenarios):
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python plot_scenarios.py <faults_number>")
+        print("Usage: python3 jsonPlots.py <faults_number>")
         sys.exit(1)
 
     faults = sys.argv[1]
