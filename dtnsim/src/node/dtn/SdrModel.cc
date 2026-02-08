@@ -121,22 +121,20 @@ BundlePkt *SdrModel::getBundle(int id) {
 
     return it->second.front(); // ToDo: if queue is empty, this might cause the program to panic.
 }
-
 void SdrModel::popBundleFromId(const int id) {
-    // Pop the next bundle for this contact
-    const auto it = indexedBundleQueue_.find(id);
+    auto it = indexedBundleQueue_.find(id);
     if (it == indexedBundleQueue_.end() || it->second.empty()) {
         std::cerr << "*** popBundleFromId called with missing or empty queue ***" << std::endl;
         return;
     }
 
-    auto bundles = it->second;
-    const int size = bundles.front()->getByteLength();
-    bundles.pop_front();
+    BundlePkt* bundle = it->second.front();
+    const int size = bundle->getByteLength();
 
-    // Update queue after popping the bundle
-    if (bundles.empty())
-        indexedBundleQueue_.erase(id);
+    it->second.pop_front();
+
+    if (it->second.empty())
+        indexedBundleQueue_.erase(it);
 
     bundlesNumber_--;
     bytesStored_ -= size;
