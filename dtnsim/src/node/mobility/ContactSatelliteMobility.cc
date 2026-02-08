@@ -24,9 +24,9 @@ ContactSatelliteMobility::ContactSatelliteMobility() {
 
 void ContactSatelliteMobility::initialize(int stage) {
     if (!initialized) {
-	nodes = getParentModule()->getParentModule()->par("nodesNumber").intValue();
-	idx = getParentModule()->getSubmodule("norad")->par("satIndex").intValue();
-	contactPlans.resize(nodes);
+        nodes = getParentModule()->getParentModule()->par("nodesNumber").intValue();
+        idx = getParentModule()->getSubmodule("norad")->par("satIndex").intValue();
+        contactPlans.resize(nodes);
     }
 
     SatelliteMobility::initialize(stage);
@@ -49,7 +49,7 @@ void ContactSatelliteMobility::setTargetPosition() {
 
     std::array<H3Index, MAX_NEIGHBORS> neighbors{};
     if (const H3Error err = gridDisk(cell, DISK_DISTANCE, neighbors.data()); err != E_SUCCESS) {
-	std::cout << "Error obtaining cell " << std::hex << cell << " neighbors" << std::endl;
+	    std::cout << "Error obtaining cell " << std::hex << cell << " neighbors" << std::endl;
         return;
     }
 
@@ -93,11 +93,11 @@ void ContactSatelliteMobility::finish() {
         throw cRuntimeError("Failed to open contact_plan.txt for appending");
 
     for (int i = 0; i < contactPlans.size(); i++) {
-	for (auto &[from, to] : contactPlans[i]) {
-	    out << "a contact " << from << " " << to << " " << idx << " " << i+1 << " " << RATE << std::endl;
-	    out << "a contact " << from << " " << to << " " << i+1 << " " << idx << " " << RATE << std::endl;
-	    // ToDo: add range lines in case not having them makes contacts have an infinite range instead of 0.
-	}
+        for (auto &[from, to] : contactPlans[i]) {
+            out << "a contact " << from << " " << to << " " << idx << " " << i+1 << " " << RATE << std::endl;
+            out << "a contact " << from << " " << to << " " << i+1 << " " << idx << " " << RATE << std::endl;
+            // ToDo: add range lines in case not having them makes contacts have an infinite range instead of 0.
+        }
     }
 
     out.close();
