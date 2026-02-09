@@ -25,6 +25,7 @@ class ContactSatelliteMobility : public SatelliteMobility {
     std::vector<std::vector<ContactData>> contactPlans;
     int idx;
     int nodes;
+    double rate;
 
     static void updateContactPlan(std::vector<ContactData>& plan, omnetpp::SimTime from, omnetpp::SimTime to);
 

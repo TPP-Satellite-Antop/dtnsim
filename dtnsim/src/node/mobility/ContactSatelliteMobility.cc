@@ -6,7 +6,6 @@
 #include "NoradA.h"
 #include "h3api.h"
 
-constexpr int RATE = 100;
 constexpr int MAX_NEIGHBORS = 7;
 constexpr int DISK_DISTANCE = 1;
 const auto FILENAME = "contact_plan.txt";
@@ -26,6 +25,7 @@ void ContactSatelliteMobility::initialize(int stage) {
     if (!initialized) {
         nodes = getParentModule()->getParentModule()->par("nodesNumber").intValue();
         idx = getParentModule()->getSubmodule("norad")->par("satIndex").intValue();
+        rate = getParentModule()->getParentModule()->getSubmodule("node", idx)->par("rate").doubleValue();
         contactPlans.resize(nodes);
     }
 
@@ -94,8 +94,8 @@ void ContactSatelliteMobility::finish() {
 
     for (int i = 0; i < contactPlans.size(); i++) {
         for (auto &[from, to] : contactPlans[i]) {
-            out << "a contact " << from << " " << to << " " << idx << " " << i+1 << " " << RATE << std::endl;
-            out << "a contact " << from << " " << to << " " << i+1 << " " << idx << " " << RATE << std::endl;
+            out << "a contact " << from << " " << to << " " << idx << " " << i+1 << " " << rate << std::endl;
+            out << "a contact " << from << " " << to << " " << i+1 << " " << idx << " " << rate << std::endl;
             // ToDo: add range lines in case not having them makes contacts have an infinite range instead of 0.
         }
     }
