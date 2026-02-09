@@ -10,6 +10,8 @@ RoutingCgrModel350::RoutingCgrModel350(int eid, SdrModel *sdr, ContactPlan *cont
 RoutingCgrModel350::~RoutingCgrModel350() {}
 
 void RoutingCgrModel350::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
+    cout << "NODE: " << eid_ << ", routeAndQueueBundle for dst: "
+         << bundle->getDestinationEid() << " (" << bundle->getByteLength() << "Bytes)" << endl;
     if (!printDebug_) // disable cout if degug disabled
         cout.setstate(std::ios_base::failbit);
 
@@ -424,10 +426,10 @@ void RoutingCgrModel350::loadRouteList(int terminusNode, double simTime) {
             }
 
         // Record route
-        cout << "NODE " << eid_ << ", *New route found through node:" << route.nextHop
-             << ", arrivalConf:" << route.confidence << ", arrivalT:" << route.arrivalTime
-             << ", txWin:(" << route.fromTime << "-" << route.toTime
-             << "), maxCap:" << route.maxVolume << "Bytes:" << endl;
+        // cout << "NODE " << eid_ << ", *New route found through node:" << route.nextHop
+        //      << ", arrivalConf:" << route.confidence << ", arrivalT:" << route.arrivalTime
+        //      << ", txWin:(" << route.fromTime << "-" << route.toTime
+        //      << "), maxCap:" << route.maxVolume << "Bytes:" << endl;
         routeList_[terminusNode].push_back(route);
 
         // Find limiting contact for next iteration
@@ -517,8 +519,8 @@ void RoutingCgrModel350::findNextBestRoute(Contact *rootContact, int terminusNod
             double owlt =
                 contactPlan_->getRangeBySrcDst((*it).getSourceEid(), (*it).getDestinationEid());
             if (owlt == -1) {
-                cout << "warning, range not available for nodes " << (*it).getSourceEid() << "-"
-                     << (*it).getDestinationEid() << ", assuming range=0" << endl;
+                // cout << "warning, range not available for nodes " << (*it).getSourceEid() << "-"
+                //      << (*it).getDestinationEid() << ", assuming range=0" << endl;
                 owlt = 0;
             }
             // double owltMargin = ((MAX_SPEED_MPH / 3600) * owlt) / 186282;

@@ -332,10 +332,11 @@ void buildBundleMetrics(std::map<long, int> &bundleHops,
 
 // Build timestamp string: YYYYMMDD-HHMMSS
 std::string makeTimestamp() {
-    const auto now = std::chrono::system_clock::now();
-    const auto localTime = std::chrono::current_zone()->to_local(now);
-    const auto localTimeSec = std::chrono::floor<std::chrono::seconds>(localTime);
-    return std::format("{:%Y%m%d-%H%M%S}", localTimeSec);
+    // const auto now = std::chrono::system_clock::now();
+    // const auto localTime = std::chrono::current_zone()->to_local(now);
+    // const auto localTimeSec = std::chrono::floor<std::chrono::seconds>(localTime);
+    // return std::format("{:%Y%m%d-%H%M%S}", localTimeSec);
+    return "";
 }
 
 /*

@@ -29,19 +29,12 @@ void ContactPlanCentral::initialize() {
         app->setMetricCollector(&metricCollector_);
     }
 
-    // Initialize contact plan
-    contactPlan_.parseContactPlanFile(par("contactsFile"), nodesNumber_, this->par("mode"),
-                                      this->par("failureProbability"));
-
-    // Initialize topology
+    ContactPlanParser parser;
+    ParsedContactPlan parsedPlan = parser.parse(par("contactsFile"), nodesNumber_, this->par("failureProbability"));
+    
     int mode = this->par("mode");
-    if (mode < 2) {
-        contactTopology_.parseOpportunisticContactPlanFile(par("contactsFile"), nodesNumber_, mode,
-                                                           this->par("failureProbability"));
-    } else {
-        contactTopology_.parseContactPlanFile(par("contactsFile"), nodesNumber_, 2,
-                                              this->par("failureProbability"));
-    }
+    contactPlan_.initializeFromParsedPlan(parsedPlan, mode);
+    contactTopology_.initializeFromParsedPlan(parsedPlan, mode);
 
     bool faultsAware = this->par("faultsAware");
     int deleteNIds = this->par("deleteNNodes");

@@ -8,6 +8,7 @@
 #include <vector>
 #include "../PositionEntry.h"
 #include "src/node/dtn/contactplan/Contact.h"
+#include "src/node/dtn/contactplan/ContactPlanParser.h"
 
 using namespace std;
 using namespace omnetpp;
@@ -46,15 +47,11 @@ class ContactPlan {
     vector<int> getCurrentNeighbors();
     Contact *getContactBySrcDstStart(int sourceEid, int destinationEid, double start);
     int getNodesNumber();
-    unordered_map<TimeInterval, vector<PositionEntry>> getNodePositions();
     double getRangeBySrcDst(int Src, int Dst);
-    void parseContactPlanFile(string fileName, int nodesNumber, int mode, double failureProb);
+    void initializeFromParsedPlan(const ParsedContactPlan &parsedPlan, int mode);
     void parseAction(std::string &command, double start, double end, int sourceEid,
                      int destinationEid, double dataRateOrRange, double failureProbability,
                      int mode, std::string &fileLine, int &retFlag);
-    void parseOpportunisticContactPlanFile(string fileName, int nodesNumber, int mode,
-                                           double failureProb);
-    void setFailureProb(double failureProb, double &failureProbability);
     void setContactsFile(string contactsFile);
     const string &getContactsFile() const;
     simtime_t getLastEditTime();
@@ -93,7 +90,6 @@ class ContactPlan {
     simtime_t lastEditTime;
     string contactsFile_;
     int nodesNumber_;
-    unordered_map<TimeInterval, vector<PositionEntry>> nodePositions_;
 };
 
 #endif /* CONTACTPLAN_H_ */
