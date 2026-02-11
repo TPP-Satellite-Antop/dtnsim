@@ -24,6 +24,7 @@ def load_scenarios(algorithm, faults):
         scenarios.append(load_result(path))
 
     return scenarios
+
 def paired_bar_plot(metric, antop_scenarios, cgr_scenarios, ylabel, faults):
     names = [s["name"] for s in antop_scenarios]
 
@@ -72,10 +73,8 @@ def paired_boxplot(metric, antop_scenarios, cgr_scenarios, ylabel, faults):
     antop_map = map_name_to_values(antop_scenarios)
     cgr_map = map_name_to_values(cgr_scenarios)
 
-    # common scenario names (intersection)
     names = sorted(set(antop_map.keys()) & set(cgr_map.keys()))
 
-    # build data in paired order
     data = []
     labels = []
     colors = []
@@ -97,19 +96,19 @@ def paired_boxplot(metric, antop_scenarios, cgr_scenarios, ylabel, faults):
         patch_artist=True
     )
 
-    # apply colors
+    plt.yscale("log")
+
     for box, c in zip(bp["boxes"], colors):
         box.set_facecolor(c)
         box.set_edgecolor("black")
 
-    # median emphasis
     for med in bp["medians"]:
         med.set_color("black")
         med.set_linewidth(2)
 
     plt.title(f"{metric} — {faults}% faults")
     plt.ylabel(ylabel)
-    plt.grid(axis="y")
+    plt.grid(axis="y", which="both", linestyle="--", alpha=0.6)
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
 
