@@ -426,10 +426,10 @@ void RoutingCgrModel350::loadRouteList(int terminusNode, double simTime) {
             }
 
         // Record route
-        // cout << "NODE " << eid_ << ", *New route found through node:" << route.nextHop
-        //      << ", arrivalConf:" << route.confidence << ", arrivalT:" << route.arrivalTime
-        //      << ", txWin:(" << route.fromTime << "-" << route.toTime
-        //      << "), maxCap:" << route.maxVolume << "Bytes:" << endl;
+        cout << "simtme: " << simTime << " NODE " << eid_ << ", *New route found through node:" << route.nextHop
+             << ", arrivalConf:" << route.confidence << ", arrivalT:" << route.arrivalTime
+             << ", txWin:(" << route.fromTime << "-" << route.toTime
+             << "), maxCap:" << route.maxVolume << "Bytes:" << endl;
         routeList_[terminusNode].push_back(route);
 
         // Find limiting contact for next iteration
