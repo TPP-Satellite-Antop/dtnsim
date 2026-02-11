@@ -8,6 +8,7 @@ module ContactMobilityNode {
         @display("i=device/satellite");
         string icon = default("satellite");
         string satelliteName = default(""); // Parameter for satellite name
+        double rate = default(5000);
 
     submodules:
         mobility: ContactSatelliteMobility {
