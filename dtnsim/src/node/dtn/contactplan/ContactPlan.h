@@ -52,8 +52,6 @@ class ContactPlan {
     void parseAction(std::string &command, double start, double end, int sourceEid,
                      int destinationEid, double dataRateOrRange, double failureProbability,
                      int mode, std::string &fileLine, int &retFlag);
-    void setContactsFile(string contactsFile);
-    const string &getContactsFile() const;
     simtime_t getLastEditTime();
     int getHighestId();
 

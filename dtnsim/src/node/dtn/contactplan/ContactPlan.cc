@@ -35,40 +35,71 @@ void ContactPlan::initializeFromParsedPlan(
     const ParsedContactPlan& parsed,
     int mode)
 {
-    const bool opportunistic = mode < 2;
+    const bool opportunisticMode = mode < 2;
     this->nodesNumber_ = parsed.nodesNumber;
     this->contactIdsBySrc_.clear();
     this->contactIdsBySrc_.resize(nodesNumber_ + 1);
 
-    // --- Contacts ---
     for (const auto& c : parsed.contacts) {
         if (c.src <= 0 || c.dst <= 0)
             continue;
+        
+        // The following conditions replicate the behavior of the previous code to be backwards compatible, even if they look confusing.
+        if(c.opportunistic){ // command was "ocontact"
+            if (opportunisticMode){
+                this->addDiscoveredContact(
+                    c.start,
+                    c.end,
+                    c.src,
+                    c.dst,
+                    c.dataRate,
+                    1.0,
+                    c.failureProbability
+                );
 
-        this->addContact(
-            c.start,
-            c.end,
-            c.src,
-            c.dst,
-            c.dataRate,
-            1.0,
-            c.failureProbability
-        );
+                this->addDiscoveredContact(
+                    c.start,
+                    c.end,
+                    c.dst,
+                    c.src,
+                    c.dataRate,
+                    1.0,
+                    c.failureProbability
+                );
+            } else {
+                this->addContact(
+                    c.start,
+                    c.end,
+                    c.src,
+                    c.dst,
+                    c.dataRate,
+                    1.0,
+                    c.failureProbability
+                ); 
 
-        if (opportunistic) { // contacts are added in both directions as discovered contacts
+                this->addContact(
+                    c.start,
+                    c.end,
+                    c.dst,
+                    c.src,
+                    c.dataRate,
+                    1.0,
+                    c.failureProbability
+                );
+            }
+        } else {
             this->addContact(
                 c.start,
                 c.end,
-                c.dst,
                 c.src,
+                c.dst,
                 c.dataRate,
                 1.0,
                 c.failureProbability
-            );
+            ); 
         }
     }
 
-    // --- Ranges ---
     for (const auto& r : parsed.ranges) {
         this->addRange(
             r.start,
@@ -79,7 +110,7 @@ void ContactPlan::initializeFromParsedPlan(
             1.0
         );
 
-        if (opportunistic) {
+        if(r.opportunistic) {
             this->addRange(
                 r.start,
                 r.end,
@@ -331,14 +362,6 @@ vector<int> ContactPlan::getCurrentNeighbors() {
 
 simtime_t ContactPlan::getLastEditTime() {
     return lastEditTime;
-}
-
-void ContactPlan::setContactsFile(string contactsFile) {
-    contactsFile_ = contactsFile;
-}
-
-const string &ContactPlan::getContactsFile() const {
-    return contactsFile_;
 }
 
 void ContactPlan::printContactPlan() {

@@ -12,6 +12,7 @@ struct ParsedContact {
     int src;
     int dst;
     double dataRate;
+    bool opportunistic;
     double failureProbability;
 };
 
@@ -20,6 +21,7 @@ struct ParsedRange {
     double end;
     int src;
     int dst;
+    bool opportunistic;
     double owlt;
 };
 

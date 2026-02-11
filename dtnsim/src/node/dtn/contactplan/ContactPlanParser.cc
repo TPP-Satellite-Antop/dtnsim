@@ -54,6 +54,7 @@ void ContactPlanParser::processLine(const std::string& fileLine,
         c.dst   = destinationEid;
         c.dataRate = dataRateOrRange;
         c.failureProbability = failureProbability / 100.0;
+        c.opportunistic = command == "ocontact";
 
         output.contacts.push_back(c);
     }
@@ -64,6 +65,7 @@ void ContactPlanParser::processLine(const std::string& fileLine,
         r.src   = sourceEid;
         r.dst   = destinationEid;
         r.owlt  = dataRateOrRange;
+        r.opportunistic = command == "orange";
 
         output.ranges.push_back(r);
     }
