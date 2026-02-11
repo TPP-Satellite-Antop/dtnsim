@@ -474,14 +474,14 @@ void RoutingCgrModelYen::loadRouteListYen(int terminusNode, double simTime) {
     routeList_[terminusNode].push_back(route);
 
     // Print new route
-    cout << "        first path: ";
-    for (vector<Contact *>::iterator it2 = route.hops.begin(); it2 != route.hops.end(); ++it2) {
-        cout << (*it2)->getId() << ",";
-    }
-    cout << endl;
+    // cout << "        first path: ";
+    // for (vector<Contact *>::iterator it2 = route.hops.begin(); it2 != route.hops.end(); ++it2) {
+    //     cout << (*it2)->getId() << ",";
+    // }
+    // cout << endl;
 
     while (1) { // for k from 1 to K:
-        cout << "        new Yen's iteration" << endl;
+        //cout << "        new Yen's iteration" << endl;
         // The spur node ranges from the first node to the next to (penultimate)
         // last node in the previous k-shortest path. Actually, we are using Lawler
         // modification which starts from the node where the previous route deviated
@@ -503,11 +503,11 @@ void RoutingCgrModelYen::loadRouteListYen(int terminusNode, double simTime) {
             double maxCapacity = numeric_limits<double>::max();
             double arrivalTime = 0;
             rootPath.arrivalConfidence = 1.0;
-            cout << "          rootPath: ";
+            //cout << "          rootPath: ";
             for (vector<Contact *>::iterator it2 = routeList_[terminusNode].back().hops.begin();
                  it2 != std::next(it, 1); ++it2) {
                 rootPath.hops.push_back((*it2));
-                cout << (*it2)->getId() << ",";
+                //cout << (*it2)->getId() << ",";
 
                 if ((*it2)->getId() == 0) // Ignore rootContact for metrics
                     continue;
@@ -525,8 +525,8 @@ void RoutingCgrModelYen::loadRouteListYen(int terminusNode, double simTime) {
                 double owlt = contactPlan_->getRangeBySrcDst((*it2)->getSourceEid(),
                                                              (*it2)->getDestinationEid());
                 if (owlt == -1) {
-                    cout << "warning, range not available for nodes " << (*it2)->getSourceEid()
-                         << "-" << (*it2)->getDestinationEid() << ", assuming range=0" << endl;
+                    // cout << "warning, range not available for nodes " << (*it2)->getSourceEid()
+                    //      << "-" << (*it2)->getDestinationEid() << ", assuming range=0" << endl;
                     owlt = 0;
                 }
                 // double owltMargin = ((MAX_SPEED_MPH / 3600) * owlt) / 186282;
@@ -586,15 +586,15 @@ void RoutingCgrModelYen::loadRouteListYen(int terminusNode, double simTime) {
                 if (rootPathIsContained) {
                     ((Work *)rootPath.hops.back()->work)
                         ->suppressedNextContact.push_back(nextContact);
-                    cout << "          remove edge " << rootPath.hops.back()->getId() << " to "
-                         << nextContact->getId() << endl;
+                    // cout << "          remove edge " << rootPath.hops.back()->getId() << " to "
+                    //      << nextContact->getId() << endl;
                 }
             }
 
             // Remove the links that are part of the rootPath (except spurNode)
             for (vector<Contact *>::iterator it2 = rootPath.hops.begin();
                  it2 != --rootPath.hops.end(); ++it2) {
-                cout << "          remove node " << (*it2)->getId() << endl;
+                //cout << "          remove node " << (*it2)->getId() << endl;
                 ((Work *)(*it2)->work)->suppressed = true;
             }
 
@@ -632,10 +632,10 @@ void RoutingCgrModelYen::loadRouteListYen(int terminusNode, double simTime) {
 
             // Print new route
             cout << "          new route added to B: ";
-            for (vector<Contact *>::iterator it2 = route.hops.begin(); it2 != route.hops.end();
-                 ++it2) {
-                cout << (*it2)->getId() << ",";
-            }
+            // for (vector<Contact *>::iterator it2 = route.hops.begin(); it2 != route.hops.end();
+            //      ++it2) {
+            //     cout << (*it2)->getId() << ",";
+            // }
             cout << " toNodeNbr:" << route.toNodeNbr << ", arrTime:" << route.arrivalTime
                  << ", fromTime:" << route.fromTime << ", toTime:" << route.toTime
                  << ", maxCap:" << route.maxCapacity << endl;
@@ -654,16 +654,16 @@ void RoutingCgrModelYen::loadRouteListYen(int terminusNode, double simTime) {
             }
 
             // Print all routes in routeList_[terminusNode]
-            for (vector<CgrRoute>::iterator it = routeList_[terminusNode].begin();
-                 it != routeList_[terminusNode].end(); ++it) {
-                cout << "(";
-                for (vector<Contact *>::iterator it2 = (*it).hops.begin(); it2 != (*it).hops.end();
-                     ++it2) {
-                    cout << (*it2)->getId() << ",";
-                }
-                cout << "),";
-            }
-            cout << endl;
+            // for (vector<CgrRoute>::iterator it = routeList_[terminusNode].begin();
+            //      it != routeList_[terminusNode].end(); ++it) {
+            //     cout << "(";
+            //     for (vector<Contact *>::iterator it2 = (*it).hops.begin(); it2 != (*it).hops.end();
+            //          ++it2) {
+            //         cout << (*it2)->getId() << ",";
+            //     }
+            //     cout << "),";
+            // }
+            // cout << endl;
 
             break;
         }
@@ -696,15 +696,15 @@ void RoutingCgrModelYen::findNextBestRoute(Contact *rootContact, int terminusNod
     double earliestFinalArrivalTime = numeric_limits<double>::max();
     float highestConfidence = 0.0;
 
-    cout << "        surfing contact-graph:";
+    //cout << "        surfing contact-graph:";
 
     while (1) {
         // Go thorugh all next hop neighbors in the
         // contact plan (all contacts which source
         // node is the currentWork destination node)
 
-        cout << "," << currentContact->getId() << "(dst:" << currentContact->getDestinationEid()
-             << ")";
+        // cout << "," << currentContact->getId() << "(dst:" << currentContact->getDestinationEid()
+        //      << ")";
         vector<Contact> currentNeighbors =
             contactPlan_->getContactsBySrc(currentContact->getDestinationEid());
         for (vector<Contact>::iterator it = currentNeighbors.begin(); it != currentNeighbors.end();
@@ -716,7 +716,7 @@ void RoutingCgrModelYen::findNextBestRoute(Contact *rootContact, int terminusNod
                 ((Work *)(currentContact->work))->suppressedNextContact.begin();
             for (; it2 != ((Work *)(currentContact->work))->suppressedNextContact.end(); ++it2) {
                 if ((*it).getId() == (*it2)->getId()) {
-                    cout << "(isSuppressedNextContact:" << (*it).getId() << ")";
+                    //cout << "(isSuppressedNextContact:" << (*it).getId() << ")";
                     isSuppressedNextContact = true;
                     break;
                 }
@@ -730,13 +730,13 @@ void RoutingCgrModelYen::findNextBestRoute(Contact *rootContact, int terminusNod
 
             // This contact is finished, ignore it.
             if ((*it).getEnd() <= ((Work *)(currentContact->work))->arrivalTime) {
-                cout << "(isOld:" << (*it).getId() << ")";
+                //cout << "(isOld:" << (*it).getId() << ")";
                 continue;
             }
 
             // This contact is suppressed/visited, ignore it.
             if (((Work *)(*it).work)->suppressed || ((Work *)(*it).work)->visited) {
-                cout << "(isSuppressed:" << (*it).getId() << ")";
+                //cout << "(isSuppressed:" << (*it).getId() << ")";
                 continue;
             }
 
@@ -767,7 +767,7 @@ void RoutingCgrModelYen::findNextBestRoute(Contact *rootContact, int terminusNod
 
             // Update the cost of this contact
             if (arrivalTime < ((Work *)(*it).work)->arrivalTime) {
-                cout << (*it).getId() << "<" << arrivalTime << ">";
+                //cout << (*it).getId() << "<" << arrivalTime << ">";
                 ((Work *)(*it).work)->arrivalTime = arrivalTime;
                 ((Work *)(*it).work)->predecessor = currentContact;
 
