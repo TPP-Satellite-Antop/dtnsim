@@ -31,59 +31,6 @@ int ContactPlan::getNodesNumber() {
     return this->nodesNumber_;
 }
 
-void ContactPlan::processContactPlanLine(
-    const std::string& fileLine,
-    int mode,
-    double failureProb,
-    bool opportunistic)
-{
-    if (fileLine.empty() || fileLine.at(0) == '#')
-        return;
-
-    std::string a, command;
-    double start = 0.0, end = 0.0, dataRateOrRange = 0.0, failureProbability = 0.0;
-    int sourceEid = 0, destinationEid = 0;
-
-    std::stringstream stringLine(fileLine);
-    stringLine >> a >> command >> start >> end >> sourceEid;
-
-    if (a != "a") return;
-
-    stringLine >> destinationEid >> dataRateOrRange >> failureProbability;
-    if (failureProb >= 0) {
-        failureProbability = failureProb;
-    }
-
-    if (command == "contact") {
-        this->addContact(start, end, sourceEid, destinationEid, dataRateOrRange,
-                            1.0, failureProbability / 100);
-    } else if (command == "range") {
-        this->addRange(start, end, sourceEid, destinationEid, dataRateOrRange, 1.0);
-    } else if (command == "ocontact") {
-        int requiredMode = opportunistic ? 1 : 2;
-        if (mode < requiredMode) return;
-        if (opportunistic) {
-            this->addDiscoveredContact(start, end, sourceEid, destinationEid,
-                                        dataRateOrRange, 1.0, 0);
-            this->addDiscoveredContact(start, end, destinationEid, sourceEid,
-                                        dataRateOrRange, 1.0, 0);
-        } else {
-            this->addContact(start, end, sourceEid, destinationEid, dataRateOrRange,
-                                1.0, 0);
-            this->addContact(start, end, destinationEid, sourceEid, dataRateOrRange,
-                                1.0, 0);
-        }
-    } else if (command == "orange") {
-        int requiredMode = opportunistic ? 1 : 2;
-        if (mode < requiredMode) return;
-        this->addRange(start, end, sourceEid, destinationEid, dataRateOrRange, 1.0);
-        this->addRange(start, end, destinationEid, sourceEid, dataRateOrRange, 1.0);
-    } else {
-        std::cout << "dtnsim error: unknown contact plan command type: a " << fileLine << std::endl;
-    }
-
-}
-
 void ContactPlan::initializeFromParsedPlan(
     const ParsedContactPlan& parsed,
     int mode)
@@ -108,7 +55,7 @@ void ContactPlan::initializeFromParsedPlan(
             c.failureProbability
         );
 
-        if (!opportunistic) { // contacts are added in both directions as discovered contacts
+        if (opportunistic) { // contacts are added in both directions as discovered contacts
             this->addContact(
                 c.start,
                 c.end,
@@ -132,7 +79,7 @@ void ContactPlan::initializeFromParsedPlan(
             1.0
         );
 
-        if (!opportunistic) {
+        if (opportunistic) {
             this->addRange(
                 r.start,
                 r.end,

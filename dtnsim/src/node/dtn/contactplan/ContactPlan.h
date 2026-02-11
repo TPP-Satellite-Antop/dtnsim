@@ -73,8 +73,6 @@ class ContactPlan {
     bool hasDiscoveredContact(int sourceEid, int destinationEid);
 
   private:
-    void processContactPlanLine(const std::string &fileLine, int mode, double failureProb,
-                              bool opportunistic);
     void updateContactRanges();
     void sortContactIdsBySrcByStartTime();
 
