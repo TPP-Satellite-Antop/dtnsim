@@ -381,16 +381,17 @@ void MetricCollector::evaluateAndPrintJsonResults() {
     std::filesystem::path p = this->path_;
     std::filesystem::create_directories(p.parent_path());
 
-    std::string timestamp = makeTimestamp();
-    std::filesystem::path timestampedPath =
-        p.parent_path() /
-        (p.stem().string() + "-" + timestamp + p.extension().string());
+    // use this to add timestamp to the file name, if needed:
+    // std::string timestamp = makeTimestamp();
+    // std::filesystem::path timestampedPath =
+    //     p.parent_path() /
+    //     (p.stem().string() + "-" + timestamp + p.extension().string());
 
-    ofstream jsonFile(timestampedPath);
+    ofstream jsonFile(p);
     jsonFile << setw(4) << j << endl;
     jsonFile.close();
 
-    cout << "MetricCollector: Results written to " << timestampedPath << endl;
+    cout << "MetricCollector: Results written to " << p << endl;
 }
 
 /*
