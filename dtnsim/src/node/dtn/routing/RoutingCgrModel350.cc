@@ -188,10 +188,10 @@ void RoutingCgrModel350::identifyProximateNodes(BundlePkt *bundle, double simTim
              << (*it).toTime << "), maxCap:" << (*it).maxVolume << "Bytes:" << endl;
 
         // print route:
-        for (vector<Contact *>::iterator ith = (*it).hops.begin(); ith != (*it).hops.end(); ++ith)
-            cout << "(+" << (*ith)->getStart() << " +" << (*ith)->getEnd() << " "
-                 << (*ith)->getSourceEid() << " " << (*ith)->getDestinationEid() << ")";
-        cout << endl;
+        // for (vector<Contact *>::iterator ith = (*it).hops.begin(); ith != (*it).hops.end(); ++ith)
+        //     cout << "(+" << (*ith)->getStart() << " +" << (*ith)->getEnd() << " "
+        //          << (*ith)->getSourceEid() << " " << (*ith)->getDestinationEid() << ")";
+        // cout << endl;
 
         if ((*it).toTime <= simTime) {
             // clear the route table for this destination, load a new route list and traverse it
@@ -690,7 +690,7 @@ void RoutingCgrModel350::bpEnqueue(BundlePkt *bundle, ProximateNode *selectedNei
             // one route might impact other routes that uses the same contacts.
             selectedNeighbor->route->maxVolume -= bundle->getByteLength();
 
-            EV << "Node " << eid_ << ": bundle to node " << bundle->getDestinationEid()
+            cout << "Node " << eid_ << ": bundle to node " << bundle->getDestinationEid()
                << " enqueued in queueId: " << selectedNeighbor->contactId
                << " (next hop: " << selectedNeighbor->neighborNodeNbr << ")" << endl;
         } else {
