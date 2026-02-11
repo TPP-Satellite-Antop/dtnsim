@@ -517,8 +517,8 @@ void RoutingCgrModel350::findNextBestRoute(Contact *rootContact, int terminusNod
             double owlt =
                 contactPlan_->getRangeBySrcDst((*it).getSourceEid(), (*it).getDestinationEid());
             if (owlt == -1) {
-                cout << "warning, range not available for nodes " << (*it).getSourceEid() << "-"
-                     << (*it).getDestinationEid() << ", assuming range=0" << endl;
+                // cout << "warning, range not available for nodes " << (*it).getSourceEid() << "-"
+                //      << (*it).getDestinationEid() << ", assuming range=0" << endl;
                 owlt = 0;
             }
             // double owltMargin = ((MAX_SPEED_MPH / 3600) * owlt) / 186282;
