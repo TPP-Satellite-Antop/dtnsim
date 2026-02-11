@@ -24,7 +24,6 @@ def load_scenarios(algorithm, faults):
         scenarios.append(load_result(path))
 
     return scenarios
-
 def paired_bar_plot(metric, antop_scenarios, cgr_scenarios, ylabel, faults):
     names = [s["name"] for s in antop_scenarios]
 
@@ -39,11 +38,15 @@ def paired_bar_plot(metric, antop_scenarios, cgr_scenarios, ylabel, faults):
 
     offset = 0.35
 
-    plt.bar([i - offset/2 for i in x], antop_values, width=offset, label="ANTOP", color="tab:blue")
-    plt.bar([i + offset/2 for i in x], cgr_values,   width=offset, label="CGR",   color="tab:orange")
+    plt.bar([i - offset/2 for i in x], antop_values, width=offset,
+            label="ANTOP", color="tab:blue")
+    plt.bar([i + offset/2 for i in x], cgr_values, width=offset,
+            label="CGR", color="tab:orange")
+
+    plt.yscale("log")
 
     plt.xticks(list(x), names, rotation=45, ha="right")
-    plt.grid(axis="y")
+    plt.grid(axis="y", which="both", linestyle="--", alpha=0.6)
     plt.legend()
     plt.tight_layout()
 
