@@ -10,6 +10,8 @@ RoutingCgrModel350::RoutingCgrModel350(int eid, SdrModel *sdr, ContactPlan *cont
 RoutingCgrModel350::~RoutingCgrModel350() {}
 
 void RoutingCgrModel350::routeAndQueueBundle(BundlePkt *bundle, double simTime) {
+    cout << "NODE: " << eid_ << ", routeAndQueueBundle for dst: "
+         << bundle->getDestinationEid() << " (" << bundle->getByteLength() << "Bytes)" << endl;
     if (!printDebug_) // disable cout if degug disabled
         cout.setstate(std::ios_base::failbit);
 
@@ -186,10 +188,10 @@ void RoutingCgrModel350::identifyProximateNodes(BundlePkt *bundle, double simTim
              << (*it).toTime << "), maxCap:" << (*it).maxVolume << "Bytes:" << endl;
 
         // print route:
-        for (vector<Contact *>::iterator ith = (*it).hops.begin(); ith != (*it).hops.end(); ++ith)
-            cout << "(+" << (*ith)->getStart() << " +" << (*ith)->getEnd() << " "
-                 << (*ith)->getSourceEid() << " " << (*ith)->getDestinationEid() << ")";
-        cout << endl;
+        // for (vector<Contact *>::iterator ith = (*it).hops.begin(); ith != (*it).hops.end(); ++ith)
+        //     cout << "(+" << (*ith)->getStart() << " +" << (*ith)->getEnd() << " "
+        //          << (*ith)->getSourceEid() << " " << (*ith)->getDestinationEid() << ")";
+        // cout << endl;
 
         if ((*it).toTime <= simTime) {
             // clear the route table for this destination, load a new route list and traverse it
@@ -424,7 +426,7 @@ void RoutingCgrModel350::loadRouteList(int terminusNode, double simTime) {
             }
 
         // Record route
-        cout << "NODE " << eid_ << ", *New route found through node:" << route.nextHop
+        cout << "simtme: " << simTime << " NODE " << eid_ << ", *New route found through node:" << route.nextHop
              << ", arrivalConf:" << route.confidence << ", arrivalT:" << route.arrivalTime
              << ", txWin:(" << route.fromTime << "-" << route.toTime
              << "), maxCap:" << route.maxVolume << "Bytes:" << endl;
@@ -688,7 +690,7 @@ void RoutingCgrModel350::bpEnqueue(BundlePkt *bundle, ProximateNode *selectedNei
             // one route might impact other routes that uses the same contacts.
             selectedNeighbor->route->maxVolume -= bundle->getByteLength();
 
-            EV << "Node " << eid_ << ": bundle to node " << bundle->getDestinationEid()
+            cout << "Node " << eid_ << ": bundle to node " << bundle->getDestinationEid()
                << " enqueued in queueId: " << selectedNeighbor->contactId
                << " (next hop: " << selectedNeighbor->neighborNodeNbr << ")" << endl;
         } else {
