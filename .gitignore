@@ -17,8 +17,8 @@ dtnsim/simulations/opportunistic/**/.vec
 dtnsim/simulations/opportunistic/**/cgr_log/
 dtnsim/simulations/opportunistic_uncertain/**/cgr_log/
 dtnsim/simulations/iccAnalysis/**/resultsRandom/
-
 dtnsim/simulations/tutorial/**/results/
+dtnsim/simulations/cgr/final/contactPlan/*.txt
 
 .idea
 .vscode
