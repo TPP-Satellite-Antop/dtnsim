@@ -24,6 +24,7 @@ class ContactlessDtn : public Dtn {
     void scheduleRetry();
     void setRoutingAlgorithm(Antop* antop);
     LatLng getPosition(int eid);
+    std::tuple<int, double> getQueuedBundlesCount(int eid);
     void setMobilityMap(map<int, inet::SatelliteMobility*> *mobilityMap);
     ContactlessDtn *getModule(int eid);
     double getNextMobilityUpdate() const;

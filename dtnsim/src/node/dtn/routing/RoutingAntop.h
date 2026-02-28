@@ -9,11 +9,14 @@ class RoutingAntop : public RoutingDeterministic {
     public:
         using GetPosition = std::function<LatLng(int)>;
         using GetNextMobilityUpdate = std::function<double()>;
+        using GetQueuedBundlesCount = std::function<std::tuple<int, double>(int)>;
 
         RoutingAntop(
             Antop* antop,
             int eid,
-            int nodes, const GetPosition &getPosition,
+            int nodes,
+            const GetPosition &getPosition,
+            const GetQueuedBundlesCount &getQueuedBundlesCount,
             const GetNextMobilityUpdate &getNextMobilityUpdate
         );
         virtual ~RoutingAntop();
@@ -23,6 +26,7 @@ class RoutingAntop : public RoutingDeterministic {
         int resolution_;
         int nodes;
         GetPosition getPosition;
+        GetQueuedBundlesCount getQueuedBundlesCount;
         GetNextMobilityUpdate getNextMobilityUpdate_;
         RoutingTable *routingTable;
 

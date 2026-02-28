@@ -6,12 +6,14 @@ RoutingAntop::RoutingAntop(
     const int eid,
     const int nodes,
     const GetPosition &getPosition,
+    const GetQueuedBundlesCount &getQueuedBundlesCount,
     const GetNextMobilityUpdate &getNextMobilityUpdate
 ): RoutingDeterministic(eid, nullptr) {
+    this->nodes = nodes;
     this->resolution_ = antop->getResolution();
     this->routingTable = new RoutingTable(antop);
     this->getPosition = getPosition;
-    this->nodes = nodes;
+    this->getQueuedBundlesCount = getQueuedBundlesCount;
     this->getNextMobilityUpdate_ = getNextMobilityUpdate;
 }
 
@@ -82,17 +84,27 @@ int RoutingAntop::getEidFromH3Index(const H3Index idx, const H3Index dst, const 
     // If the next hop is the destination, route to destination. If impossible (node is down), save to SDR.
     if (idx == dst) return getH3Index(dstEid) == idx ? dstEid : eid_;
 
+    int bestCandidate = 0;
+    int bestCandidateQueuedBundles = 0;
+    double bestCandidateFwdArrivalTime = 0;
+
     for (int eid = 1; eid <= nodes; eid++) {
-        if (getH3Index(eid) == idx)
-            // ToDo: figure a better way of choosing a destination EID as always choosing the first one found
-            //       may lead to transmission link saturation.
-            //       Potential options are:
-            //       - Round-robin.
-            //       - Link availability-based election (choose the least busy link).
-            return eid;
+        if (getH3Index(eid) == idx) {
+
+            const auto [queuedBundles, fwdArrivalTime] = getQueuedBundlesCount(eid);
+            if (queuedBundles == 0 && fwdArrivalTime == 0) {
+                return eid;
+            }
+
+            if (bestCandidate == 0 || bestCandidateQueuedBundles > queuedBundles || (bestCandidateQueuedBundles == queuedBundles && fwdArrivalTime < bestCandidateFwdArrivalTime)) {
+                bestCandidate = eid;
+                bestCandidateQueuedBundles = queuedBundles;
+                bestCandidateFwdArrivalTime = fwdArrivalTime;
+            }
+        }
     }
 
-    return 0;
+    return bestCandidate;
 }
 
 /**
