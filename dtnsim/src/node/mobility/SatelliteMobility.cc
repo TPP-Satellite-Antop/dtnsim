@@ -1,10 +1,11 @@
 #include <ctime>
 #include <cmath>
 
-#include "SatelliteMobility.h"
 #include "INorad.h"
 #include "NoradA.h"
+#include "SatelliteMobility.h"
 #include "h3api.h"
+#include "src/node/dtn/contactless/ContactlessDtn.h"
 
 namespace inet {
 
@@ -130,21 +131,10 @@ void SatelliteMobility::setTargetPosition()
     targetPosition.y = lastPosition.y;
     nextChange =  simTime() + updateInterval;
 
-    { // Debugging prints for satellite position.
-        H3Index cell = 0;
-        const auto latLng = LatLng {deg2rad(getLatitude()), deg2rad(getLongitude())};
+    const auto dtn = dynamic_cast<ContactlessDtn*>(this->getParentModule()->getSubmodule("dtn"));
+    const auto eid = dtn->getParentModule()->getIndex();
 
-        latLngToCell(&latLng, 0, &cell);
-
-        // std::cout << norad->getLongitude() << ", " << norad->getLatitude() << std::endl;
-        // std::cout << std::hex << cell << std::dec << std::endl;
-
-        // std::cout << std::dec << "(" << a->getLatitude() << ", " << a->getLongitude() << ") /// " << std::hex << this->getCurH3IndexForEid(eid) << std::endl;
-        // std::cout << std::hex << this->getCurH3IndexForEid(eid) << std::endl;
-        // std::cout << std::dec << eid << "," << eid << "," << a->getLatitude() << "," << a->getLongitude() << std::endl;
-        // std::cout << std::dec << a->getLongitude() << "," << a->getLatitude() << std::endl;
-        // std::cout << std::dec << a->getLatitude() << "," << a->getLongitude() << std::endl;
-    }
+    dtn->updatePosition(eid, deg2rad(getLatitude()), deg2rad(getLongitude()));
 }
 
 void SatelliteMobility::move()

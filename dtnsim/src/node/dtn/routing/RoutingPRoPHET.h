@@ -18,23 +18,25 @@ class RoutingPRoPHET : public Routing {
     RoutingPRoPHET(int eid, SdrModel *sdr, cModule *dtn, float p_enc_max, float p_enc_first,
                    float p_first_thresh, float forw_thresh, float alpha, float beta, float gamma,
                    float delta, int numOfNodes, MetricCollector *metricCollector);
-    virtual ~RoutingPRoPHET();
+    ~RoutingPRoPHET() override;
 
-    virtual void msgToOtherArrive(BundlePkt *bundle, double simTime);
+    void msgToOtherArrive(BundlePkt *bundle, double simTime) override;
 
-    virtual bool msgToMeArrive(BundlePkt *bundle);
+    bool msgToMeArrive(BundlePkt *bundle) override;
 
-    virtual void contactStart(Contact *c);
+    void contactStart(Contact *c) override;
 
-    virtual void contactEnd(Contact *c);
+    void contactEnd(Contact *c) override;
 
-    virtual void successfulBundleForwarded(long bundleId, Contact *contact, bool sentToDestination);
+    void successfulBundleForwarded(long bundleId, Contact *contact, bool sentToDestination) override;
 
-    virtual void updateContactPlan(Contact *c);
+    void updateContactPlan(Contact *c) override;
 
-    virtual void refreshForwarding(Contact *c);
+    void refreshForwarding(Contact *c) override;
 
     virtual void routeAndQueueBundle(Contact *c);
+
+    void updatePosition(int eid, double lat, double lng) override;
 
   private:
     cModule *dtn_;

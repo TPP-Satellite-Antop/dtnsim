@@ -5,10 +5,11 @@ RoutingAntop::RoutingAntop(
     Antop* antop,
     const int eid,
     const int nodes,
+    std::shared_ptr<std::unordered_map<H3Index, std::vector<int>>> eidsByH3Cell,
     const GetPosition &getPosition,
     const GetQueuedBundlesCount &getQueuedBundlesCount,
     const GetNextMobilityUpdate &getNextMobilityUpdate
-): RoutingDeterministic(eid, nullptr) {
+): RoutingDeterministic(eid, nullptr), eidsByH3Cell_(std::move(eidsByH3Cell)) {
     this->nodes = nodes;
     this->resolution_ = antop->getResolution();
     this->routingTable = new RoutingTable(antop);
@@ -85,13 +86,17 @@ int RoutingAntop::getEidFromH3Index(const H3Index idx, const H3Index dst, const 
     if (idx == dst) return getH3Index(dstEid) == idx ? dstEid : eid_;
 
     int bestCandidate = 0;
-    int bestCandidateQueuedBundles = 0;
-    double bestCandidateFwdArrivalTime = 0;
 
-    for (int eid = 1; eid <= nodes; eid++) {
-        if (getH3Index(eid) == idx) {
+    if (const auto it = eidsByH3Cell_->find(idx); it != eidsByH3Cell_->end()) {
+        int bestCandidateQueuedBundles = 0;
+        double bestCandidateFwdArrivalTime = 0;
 
-            const auto [queuedBundles, fwdArrivalTime] = getQueuedBundlesCount(eid);
+        for (const int eid : it->second) {
+            const auto queueInfo = getQueuedBundlesCount(eid);
+            if (!queueInfo) continue;
+
+            const auto [queuedBundles, fwdArrivalTime] = *queueInfo;
+
             if (queuedBundles == 0 && fwdArrivalTime == 0) {
                 return eid;
             }
@@ -114,15 +119,29 @@ int RoutingAntop::getEidFromH3Index(const H3Index idx, const H3Index dst, const 
  * @param eid: endpoint ID of the target node.
  */
 H3Index RoutingAntop::getH3Index(const int eid) const {
-    try {
-        const auto latLng = getPosition(eid);
-        H3Index cell = 0;
+    const auto latLng = getPosition(eid);
+    if (!latLng) return 0;
 
-        if (latLngToCell(&latLng, resolution_, &cell) != E_SUCCESS)
-            cout << "Error converting lat long to cell" << endl;
+    H3Index cell = 0;
 
-        return cell;
-    } catch (exception& _) {
-        return 0;
+    if (latLngToCell(&*latLng, resolution_, &cell) != E_SUCCESS)
+        cout << "Error converting lat long to cell" << endl;
+
+    return cell;
+}
+
+void RoutingAntop::updatePosition(const int eid, const double lat, const double lng) {
+    if (eid == 0) {
+        eidsByH3Cell_->clear();
+        return;
     }
+    const auto latLng = LatLng {lat, lng};
+    H3Index cell = 0;
+
+    if (latLngToCell(&latLng, resolution_, &cell) != E_SUCCESS) {
+        cout << "Error converting lat long to cell" << endl;
+        exit(1); // This branch should be unreachable.
+    }
+
+    (*eidsByH3Cell_)[cell].push_back(eid);
 }

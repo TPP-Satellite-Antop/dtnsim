@@ -31,21 +31,23 @@ class RoutingDeterministic : public Routing {
   public:
     RoutingDeterministic(int eid, SdrModel *sdr, ContactPlan *contactPlan);
     RoutingDeterministic(int eid, SdrModel *sdr); //for contactless dtn module
-    virtual ~RoutingDeterministic();
+    ~RoutingDeterministic() override;
 
-    virtual void msgToOtherArrive(BundlePkt *bundle, double simTime);
+    void msgToOtherArrive(BundlePkt *bundle, double simTime) override;
 
-    virtual bool msgToMeArrive(BundlePkt *bundle);
+    bool msgToMeArrive(BundlePkt *bundle) override;
 
-    virtual void contactStart(Contact *c);
+    void contactStart(Contact *c) override;
 
-    virtual void contactEnd(Contact *c);
+    void contactEnd(Contact *c) override;
 
-    virtual void successfulBundleForwarded(long bundleId, Contact *contact, bool sentToDestination);
+    void updatePosition(int eid, double lat, double lng) override;
 
-    virtual void updateContactPlan(Contact *c);
+    void successfulBundleForwarded(long bundleId, Contact *contact, bool sentToDestination) override;
 
-    virtual void refreshForwarding(Contact *c);
+    void updateContactPlan(Contact *c) override;
+
+    void refreshForwarding(Contact *c) override;
 
     // This is a pure virtual method (all deterministic routing must at least
     // implement this function)

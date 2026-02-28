@@ -18,19 +18,17 @@
 class ContactlessDtn : public Dtn {
   public:
     ContactlessDtn();
-    virtual ~ContactlessDtn();
+    ~ContactlessDtn() override;
 
     void setOnFault(bool onFault) override;
-    void scheduleRetry();
-    void setRoutingAlgorithm(Antop* antop);
-    LatLng getPosition(int eid);
-    std::tuple<int, double> getQueuedBundlesCount(int eid);
+    void setRoutingAntop(Antop* antop,
+    const std::shared_ptr<std::unordered_map<H3Index, std::vector<int>>> &eidsByH3Cell);
+    void updatePosition(int eid, double lat, double lng) const;
+    std::optional<LatLng> getPosition(int eid);
+    std::optional<std::tuple<int, double>> getQueuedBundlesCount(int eid);
     void setMobilityMap(map<int, inet::SatelliteMobility*> *mobilityMap);
     ContactlessDtn *getModule(int eid);
     double getNextMobilityUpdate() const;
-    // Returns the current H3 index of the node with given eid. Returns 0 if not found.
-    H3Index getCurH3IndexForEid(int eid) const;
-    int getEidFromH3Index(H3Index idx, H3Index dst, int dstEid);
 
   protected:
     void initialize(int stage) override;
@@ -44,7 +42,6 @@ class ContactlessDtn : public Dtn {
 
   private:
     int eid_;
-    Antop* antop;
     double dataRate; // represents the data rate in bytes per second
     map<int, inet::SatelliteMobility*> *mobilityMap_; // helper Map to access other nodes' mobility modules
     void initializeRouting(const string& routingString);

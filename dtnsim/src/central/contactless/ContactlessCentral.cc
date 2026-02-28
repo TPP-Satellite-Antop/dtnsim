@@ -18,25 +18,28 @@ void ContactlessCentral::initialize() {
 
     this->metricCollector_.setAlgorithm("ANTOP");
     for (int i = 0; i <= nodesNumber_; i++) {
-        auto dtn = check_and_cast<ContactlessDtn *>(
+        const auto dtn = check_and_cast<ContactlessDtn *>(
             this->getParentModule()->getSubmodule("node", i)->getSubmodule("dtn"));
 
         dtn->setMetricCollector(&metricCollector_);
 
-        auto app = check_and_cast<App *>(
-            this->getParentModule()->getSubmodule("node", i)->getSubmodule("app"));
+        const auto app = check_and_cast<App *>(this->getParentModule()->getSubmodule("node", i)->getSubmodule("app"));
         app->setMetricCollector(&metricCollector_);
     }
 
     auto antop = new Antop(nodesNumber_);
     auto* mobilityMap = new std::map<int, inet::SatelliteMobility*>();
+
+    auto eidsByH3Cell = std::make_shared<std::unordered_map<H3Index, std::vector<int>>>();
+    eidsByH3Cell->reserve(cellsPerRes[antop->getResolution()]);
+
     for (int i = 0; i <= nodesNumber_; i++) { // todo: i = 1?
         const auto dtn = check_and_cast<ContactlessDtn *>(
             this->getParentModule()
                 ->getSubmodule("node", i)
                 ->getSubmodule("dtn")
         );
-        dtn->setRoutingAlgorithm(antop);
+        dtn->setRoutingAntop(antop, eidsByH3Cell);
         dtn->setMobilityMap(mobilityMap);
     }
 }

@@ -89,3 +89,6 @@ bool RoutingStochastic::isDeliveredBundle(long bundleId) {
             return true;
     return false;
 }
+
+void RoutingStochastic::updatePosition(int eid, double lat, double lng) {};
+

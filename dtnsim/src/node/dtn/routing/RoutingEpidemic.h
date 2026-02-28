@@ -30,8 +30,8 @@
 class RoutingEpidemic : public RoutingStochastic {
   public:
     RoutingEpidemic(int eid, SdrModel *sdr, cModule *dtn);
-    virtual ~RoutingEpidemic();
-    virtual void routeAndQueueBundle(Contact *c);
+    ~RoutingEpidemic() override;
+    void routeAndQueueBundle(Contact *c) override;
 };
 
 #endif /* SRC_NODE_DTN_ROUTINGEPIDEMIC_H_ */

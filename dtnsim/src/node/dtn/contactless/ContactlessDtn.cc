@@ -97,14 +97,6 @@ void ContactlessDtn::initializeRouting(const string& routingString) {
     if (routingString == "antop") {
         auto* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
         (*this->mobilityMap_)[eid_] = mobility;
-        this->routing = new RoutingAntop(
-            this->antop,
-            this->eid_,
-            nodes,
-            [this](const int eid) { return this->getPosition(eid); },
-            [this](const int eid) { return this->getQueuedBundlesCount(eid); },
-            [this] { return this->getNextMobilityUpdate(); }
-        );
     } else {
         cout << "dtnsim error: unknown routing type: " << routingString << endl;
     }
@@ -336,8 +328,16 @@ void ContactlessDtn::setOnFault(const bool onFault) {
     }
 }
 
-void ContactlessDtn::setRoutingAlgorithm(Antop* antop) {
-    this->antop = antop;
+void ContactlessDtn::setRoutingAntop(Antop* antop, const std::shared_ptr<std::unordered_map<H3Index, std::vector<int>>> &eidsByH3Cell) {
+    this->routing = new RoutingAntop(
+        antop,
+        this->getParentModule()->getIndex(),
+        this->getParentModule()->getParentModule()->par("nodesNumber"),
+        eidsByH3Cell,
+        [this](const int eid) { return this->getPosition(eid); },
+        [this](const int eid) { return this->getQueuedBundlesCount(eid); },
+        [this] { return this->getNextMobilityUpdate(); }
+    );
 }
 
 /**
@@ -346,14 +346,15 @@ void ContactlessDtn::setRoutingAlgorithm(Antop* antop) {
  *
  * @param eid: endpoint ID of the target DTN node.
  */
-LatLng ContactlessDtn::getPosition(const int eid) {
-    if (onFault) throw std::runtime_error("Local node unavailable");
-
-    if (const auto dtn = getModule(eid); eid == 0 || dtn->onFault)
-        throw std::runtime_error("Remote node unavailable");
+std::optional<LatLng> ContactlessDtn::getPosition(const int eid) {
+    if (onFault || eid == 0 || getModule(eid)->onFault) return nullopt;
 
     const auto mobility = (*mobilityMap_)[eid];
     return LatLng {deg2rad(mobility->getLatitude()), deg2rad(mobility->getLongitude())};
+}
+
+void ContactlessDtn::updatePosition(const int eid, const double lat, const double lng) const {
+    routing->updatePosition(eid, lat, lng);
 }
 
 /**
@@ -366,11 +367,8 @@ LatLng ContactlessDtn::getPosition(const int eid) {
  *
  * @param eid: endpoint ID of the target DTN node.
  */
-std::tuple<int, double> ContactlessDtn::getQueuedBundlesCount(const int eid) {
-    if (onFault) throw std::runtime_error("Local node unavailable");
-
-    if (const auto dtn = getModule(eid); eid == 0 || dtn->onFault)
-        throw std::runtime_error("Remote node unavailable");
+std::optional<std::tuple<int, double>> ContactlessDtn::getQueuedBundlesCount(const int eid) {
+    if (onFault || eid == 0 || getModule(eid)->onFault) return nullopt;
 
     const auto bundlesCount = sdr_->getBundlesCountInIndex(eid);
     double fwdTimeToFree = 0;
@@ -381,7 +379,7 @@ std::tuple<int, double> ContactlessDtn::getQueuedBundlesCount(const int eid) {
         fwdTimeToFree = std::max(0.0, fwdArrivalTime - simTime().dbl());
     }
 
-    return {bundlesCount, fwdTimeToFree};
+    return std::make_tuple(bundlesCount, fwdTimeToFree);
 }
 
 /**

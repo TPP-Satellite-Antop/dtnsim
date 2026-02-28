@@ -21,7 +21,7 @@ using namespace std;
 
 class Routing {
   public:
-    Routing(int eid, SdrModel *sdr) {
+    Routing(const int eid, SdrModel *sdr) {
         eid_ = eid;
         sdr_ = sdr;
     }
@@ -56,6 +56,11 @@ class Routing {
      * Method to be called in case a contact plan was updated for opp. routing.
      */
     virtual void updateContactPlan(Contact *c) = 0;
+
+    /**
+     * Method to be called in case a positional update has occurred.
+     */
+    virtual void updatePosition(int eid, double lat, double lng) = 0;
 
     /**
      * Method that will be called by Dtn module when some bundle is forwarded successfully

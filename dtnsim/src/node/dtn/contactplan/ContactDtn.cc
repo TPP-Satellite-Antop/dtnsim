@@ -330,6 +330,8 @@ void ContactDtn::finish() {
     delete routing;
 }
 
+long lastLog = 0;
+
 /**
  * Reacts to a system message.
  *
@@ -340,13 +342,14 @@ void ContactDtn::finish() {
  */
 
 void ContactDtn::handleMessage(cMessage *msg) {
+    const auto timeFirst = std::chrono::time_point_cast<nanoseconds>(system_clock::now()).time_since_epoch().count();
 
     ///////////////////////////////////////////
     // New Bundle (from App or ContactPlanCom):
     ///////////////////////////////////////////
     if (msg->getKind() == BUNDLE || msg->getKind() == BUNDLE_CUSTODY_REPORT) {
         auto *bundle = check_and_cast<BundlePkt *>(msg);
-        
+
         if (msg->arrivedOn("gateToCom$i"))
             emit(dtnBundleReceivedFromCom, true);
         if (msg->arrivedOn("gateToApp$i")) {
@@ -549,6 +552,18 @@ void ContactDtn::handleMessage(cMessage *msg) {
             this->dispatchBundle(reSendBundle);
         delete custodyTimeout;
     }
+
+    const auto timeLast = std::chrono::time_point_cast<nanoseconds>(system_clock::now()).time_since_epoch().count();
+    const auto dif = timeLast - timeFirst;
+
+    if (dif > 0) {
+        std::cout << "Handled message of type " << msg->getKind() << " for " << dif << "ns. ";
+        if (lastLog != 0 && timeFirst - lastLog >= 10000)
+            std::cout << "Time offset since last handled message (should be 0-ish): " << timeFirst - lastLog << std::endl;
+        else
+            std::cout << std::endl;
+    }
+    lastLog = timeLast;
 }
 
 void ContactDtn::dispatchBundle(BundlePkt *bundle) {
@@ -579,8 +594,7 @@ void ContactDtn::dispatchBundle(BundlePkt *bundle) {
             } else {
                 // This is a data bundle destined to me
                 if (bundle->getCustodyTransferRequested())
-                    this->dispatchBundle(
-                    this->custodyModel_.bundleWithCustodyRequestedArrived(bundle));
+                    this->dispatchBundle(this->custodyModel_.bundleWithCustodyRequestedArrived(bundle));
                 // Send to app layer
                 send(bundle, "gateToApp$o");
             }
