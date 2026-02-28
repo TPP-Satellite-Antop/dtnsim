@@ -351,7 +351,7 @@ void ContactDtn::handleMessage(cMessage *msg) {
             emit(dtnBundleReceivedFromCom, true);
         if (msg->arrivedOn("gateToApp$i")) {
             emit(dtnBundleReceivedFromApp, true);
-            this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
+            this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), simTime());
         }
         
         dispatchBundle(bundle);

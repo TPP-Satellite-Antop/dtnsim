@@ -6,6 +6,11 @@
  */
 
 #include "MetricCollector.h"
+#include <algorithm>
+#include <fstream>
+#include <omnetpp/csimulation.h>
+#include <omnetpp/index.h>
+#include <omnetpp/simtime.h>
 
 MetricCollector::MetricCollector() {}
 
@@ -13,9 +18,9 @@ MetricCollector::~MetricCollector() {
     // TODO Auto-generated destructor stub
 }
 
-void MetricCollector::initialize(int numOfNodes) {
+void MetricCollector::initialize(const int numOfNodes) {
     for (int i = 0; i < numOfNodes; i++) {
-        Metrics nodeMetric = Metrics();
+        auto nodeMetric = Metrics();
         nodeMetric.eid_ = i + 1;
         this->nodeMetrics_.push_back(nodeMetric);
     }
@@ -46,32 +51,25 @@ void MetricCollector::updateSentBundles(int eid, int destinationEid, double time
             this->nodeMetrics_.at(eid - 1).sentBundles_[bundleId] + 1;
     }
 
-    this->nodeMetrics_.at(eid - 1).routingDecisions_[bundleId].push_back(
-        make_tuple(destinationEid, time));
+    this->nodeMetrics_.at(eid - 1).routingDecisions_[bundleId].emplace_back(destinationEid, time);
 }
 
-void MetricCollector::updateSentBundles(int eid, int destinationEid, double time, long bundleId,
-                                        int numBundles) {
-    if (this->nodeMetrics_.at(eid - 1).sentBundles_.find(bundleId) ==
-        this->nodeMetrics_.at(eid - 1).sentBundles_.end()) {
+void MetricCollector::updateSentBundles(const int eid, int destinationEid, double time, const long bundleId, const int numBundles) {
+    if (!this->nodeMetrics_.at(eid - 1).sentBundles_.contains(bundleId)) {
         this->nodeMetrics_.at(eid - 1).sentBundles_[bundleId] = numBundles;
     } else {
         this->nodeMetrics_.at(eid - 1).sentBundles_[bundleId] =
             this->nodeMetrics_.at(eid - 1).sentBundles_[bundleId] + numBundles;
     }
 
-    this->nodeMetrics_.at(eid - 1).routingDecisions_[bundleId].push_back(
-        make_tuple(destinationEid, time));
+    this->nodeMetrics_.at(eid - 1).routingDecisions_[bundleId].emplace_back(destinationEid, time);
 }
-void MetricCollector::updateReceivedBundles(int eid, long bundleId, double receivingTime) {
-
+void MetricCollector::updateReceivedBundles(const int eid, const long bundleId, const double receivingTime) {
     this->nodeMetrics_.at(eid - 1).bundleReceivingTimes_[bundleId] = receivingTime;
 }
 
-void MetricCollector::updateStartedBundles(int eid, long bundleId, int sourceEid,
-                                           int destinationEid, double startTime) {
-    if (this->nodeMetrics_.at(eid - 1).bundleStartTimes_.find(bundleId) ==
-        this->nodeMetrics_.at(eid - 1).bundleStartTimes_.end()) {
+void MetricCollector::updateStartedBundles(const int eid, const long bundleId, int sourceEid, int destinationEid, double startTime) {
+    if (!this->nodeMetrics_.at(eid - 1).bundleStartTimes_.contains(bundleId)) {
         this->nodeMetrics_.at(eid - 1).bundleStartTimes_[bundleId] = startTime;
     }
 
@@ -80,7 +78,7 @@ void MetricCollector::updateStartedBundles(int eid, long bundleId, int sourceEid
     }
 }
 
-void MetricCollector::setNumberOfHops(long bundleId, int hops) {
+void MetricCollector::setNumberOfHops(const long bundleId, const int hops) {
     this->bundleHops_[bundleId] = hops;
 }
 
@@ -89,7 +87,8 @@ void MetricCollector::setNumberOfHops(long bundleId, int hops) {
 * If the bundle is not yet in the map, it initializes it with the given elapsed time.
 * Otherwise, calculates the new elapsed time and adds it to the existing one.
 */
-void MetricCollector::updateBundleElapsedTime(long bundleId, std::chrono::steady_clock::time_point elapsedTimeStart) {
+void MetricCollector::updateBundleElapsedTime(
+    const long bundleId, std::chrono::steady_clock::time_point elapsedTimeStart) {
     double elapsedTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - elapsedTimeStart).count();
 
     auto bundleElapsedTime = &this->bundleElapsedTime_;
@@ -104,50 +103,48 @@ void MetricCollector::updateBundleElapsedTime(long bundleId, std::chrono::steady
 * If the bundle is not yet in the map, it sets the generation time to the given initial time.
 * If the bundle is already in the map, it does nothing (because it's not the node that generated the bundle).
 */
-void MetricCollector::intializeArrivalTime(long bundleId, std::chrono::steady_clock::time_point initialTime) {
-    auto bundleArrivalTime = &this->bundleArrivalTime_;
-    if ((*bundleArrivalTime).find(bundleId) == (*bundleArrivalTime).end()){
+void MetricCollector::intializeArrivalTime(const long bundleId, const omnetpp::SimTime& initialTime) {
+    if (const auto bundleArrivalTime = &this->bundleArrivalTime_; !bundleArrivalTime->contains(bundleId)){
         (*bundleArrivalTime)[bundleId].generationTime = initialTime;
     }
-    // if already initialized, do nothing because it is not the src node
 }
 
 /*
 * Sets the final arrival time for a bundle.
 */
-void MetricCollector::setFinalArrivalTime(long bundleId, std::chrono::steady_clock::time_point finalTime) {
+void MetricCollector::setFinalArrivalTime(const long bundleId, const omnetpp::SimTime& finalTime) {
     this->bundleArrivalTime_[bundleId].arrivalTime = finalTime;
 }
 
-void MetricCollector::updateCGRComputationTime(long computationTime) {
+void MetricCollector::updateCGRComputationTime(const long computationTime) {
     this->cgrComputationTime_ += computationTime;
 }
 
-void MetricCollector::updateRUCoPComputationTime(long computationTime) {
+void MetricCollector::updateRUCoPComputationTime(const long computationTime) {
     this->RUCoPComputationTime_ += computationTime;
 }
 
-void MetricCollector::setAlgorithm(string algorithm) {
+void MetricCollector::setAlgorithm(const string& algorithm) {
     this->algorithm_ = algorithm;
 }
 
-void MetricCollector::setFailureProb(double failureProb) {
+void MetricCollector::setFailureProb(const double failureProb) {
     this->failureProb_ = failureProb;
 }
 
-void MetricCollector::setMode(int mode) {
-    this->mode = mode;
+void MetricCollector::setMode(const int newMode) {
+    this->mode = newMode;
 }
 
-void MetricCollector::setPath(string path) {
+void MetricCollector::setPath(const string& path) {
     this->path_ = path;
 }
 
-int MetricCollector::getMode() {
+int MetricCollector::getMode() const {
     return this->mode;
 }
 
-string MetricCollector::getPrefix() {
+string MetricCollector::getPrefix() const {
     string result = this->path_ + "/" + this->algorithm_;
     if (this->failureProb_ == -1) {
         result += "/pf=-1";
@@ -184,8 +181,7 @@ void MetricCollector::evaluateAndPrintResults() {
     map<long, double> bundlesToBeSent = this->getOverallSentBundles();
     map<long, double> receivedBundles = this->getOverallReceivedBundles();
 
-    map<long, double> bundleDeliveryTimes =
-        this->computeDeliveryTimes(bundlesToBeSent, receivedBundles);
+    map<long, double> bundleDeliveryTimes = computeDeliveryTimes(bundlesToBeSent, receivedBundles);
     map<long, int> bundlesDeliveryCounts = this->getBundleDeliveryCounts();
     int RUCoPCalls = this->getRUCoPCalls();
     int cgrCalls = this->getCGRCalls();
@@ -204,7 +200,7 @@ void MetricCollector::evaluateAndPrintResults() {
                    to_string(get<1>(this->bundleInformation_[it->first])) + "), ";
     }
     outputFile << sentIds << endl;
-    string seperator = "";
+    string seperator;
     for (int i = 0; i < 20; i++) {
         seperator += "-";
     }
@@ -212,7 +208,7 @@ void MetricCollector::evaluateAndPrintResults() {
     outputFile << "The following bundles were received by the destination node with the following "
                   "delivery time: "
                << endl;
-    string receivedIds = "";
+    string receivedIds;
     for (auto it = bundleDeliveryTimes.begin(); it != bundleDeliveryTimes.end(); it++) {
         receivedIds += "(" + to_string(it->first) + ": " + to_string(it->second) + ")" + ", ";
     }
@@ -220,13 +216,13 @@ void MetricCollector::evaluateAndPrintResults() {
 
     outputFile << seperator << endl;
     outputFile << "That means, that overall "
-               << (double)bundleDeliveryTimes.size() / bundlesToBeSent.size() << " ("
+               << static_cast<double>(bundleDeliveryTimes.size()) / static_cast<double>(bundlesToBeSent.size()) << " ("
                << bundleDeliveryTimes.size() << "/" << bundlesToBeSent.size()
                << ") were delivered successfully" << endl;
     outputFile << seperator << endl;
 
     outputFile << "Further, every bundle was sent the following amount of times: " << endl;
-    string deliveryCounts = "";
+    string deliveryCounts;
 
     for (auto it = bundlesDeliveryCounts.begin(); it != bundlesDeliveryCounts.end(); it++) {
         deliveryCounts += "(" + to_string(it->first) + ": " + to_string(it->second) + ")" + ", ";
@@ -245,7 +241,7 @@ void MetricCollector::evaluateAndPrintResults() {
             this->nodeMetrics_.at(i).routingDecisions_;
         outputFile << "Node " << i + 1 << ": " << endl;
         for (auto it = routingDecisions.begin(); it != routingDecisions.end(); it++) {
-            string decisionsString = "";
+            string decisionsString;
             for (size_t j = 0; j < it->second.size(); j++) {
                 tuple<int, double> decision = it->second.at(j);
                 decisionsString += "(to: " + to_string(get<0>(decision)) +
@@ -269,9 +265,8 @@ void MetricCollector::evaluateAndPrintResults() {
     j["bundleIds"] = bundleIds;
     vector<string> receivedBundleIds;
 
-    for (auto it = receivedBundles.begin(); it != receivedBundles.end(); it++) {
-        receivedBundleIds.push_back(
-            this->getInformationString(it->first, bundlesToBeSent[it->first]));
+    for (auto &[bundleId, startTime] : receivedBundles) {
+        receivedBundleIds.push_back(this->getInformationString(bundleId, bundlesToBeSent[bundleId]));
     }
 
     j["receivedIds"] = receivedBundleIds;
@@ -300,14 +295,14 @@ void MetricCollector::evaluateAndPrintResults() {
 }
 
 
-void buildBundleMetrics(std::map<long, int> &bundleHops,
-                        std::map<long, double> &bundleElapseTime,
-                        std::map<long, ArrivalInfo> &bundleArrivalTime,
-                        int &avgNumberOfHops, double &avgElapsedTime, double &avgArrivalTime,
-                        nlohmann::json &bundleMetrics) {
-    for (auto it = bundleHops.begin(); it != bundleHops.end(); it++) {
-        long bundleId = it->first;
-        int hops = it->second;
+void buildBundleMetrics(
+    std::map<long, int> &bundleHops,
+    std::map<long, double> &bundleElapseTime,
+    std::map<long, ArrivalInfo> &bundleArrivalTime,
+    int &avgNumberOfHops, double &avgElapsedTime, double &avgArrivalTime,
+    nlohmann::json &bundleMetrics
+){
+    for (auto &[bundleId, hops] : bundleHops) {
         double elapsedTime = bundleElapseTime[bundleId];
         avgNumberOfHops += hops;
         avgElapsedTime += elapsedTime;
@@ -317,14 +312,13 @@ void buildBundleMetrics(std::map<long, int> &bundleHops,
         bundleMetric["numberOfHops"] = hops;
         bundleMetric["elapsedTime"] = elapsedTime;
 
-        if (bundleArrivalTime[bundleId].arrivalTime == std::chrono::steady_clock::time_point()) {
-            bundleMetrics.push_back(bundleMetric);
-            continue; // skip bundles that were not received
+        if (bundleArrivalTime[bundleId].arrivalTime != -1) {
+            const auto arrivalTimeRaw = bundleArrivalTime[bundleId].arrivalTime - bundleArrivalTime[bundleId].generationTime;
+            const auto arrivalTime = arrivalTimeRaw.str();
+
+            avgArrivalTime += stod(arrivalTime);
+            bundleMetric["arrivalTime"] = stod(arrivalTime);
         }
-        double arrivalTimeSecs = std::chrono::duration<double>(
-            (bundleArrivalTime[bundleId].arrivalTime) - (bundleArrivalTime[bundleId].generationTime)).count();
-        avgArrivalTime += arrivalTimeSecs;
-        bundleMetric["arrivalTime"] = arrivalTimeSecs;
 
         bundleMetrics.push_back(bundleMetric);
     }
@@ -332,8 +326,8 @@ void buildBundleMetrics(std::map<long, int> &bundleHops,
 
 // Build timestamp string: YYYYMMDD-HHMMSS
 std::string makeTimestamp() {
-    auto now =  std::chrono::system_clock::now();
-    std::time_t tt =  std::chrono::system_clock::to_time_t(now);
+    const auto now =  std::chrono::system_clock::now();
+    const std::time_t tt =  std::chrono::system_clock::to_time_t(now);
 
     std::tm localTm{};
     localtime_r(&tt, &localTm); // thread-safe (POSIX)
@@ -401,14 +395,11 @@ void MetricCollector::evaluateAndPrintJsonResults() {
  *
  * @author Simon Rink
  */
-map<long, double> MetricCollector::getOverallSentBundles() {
+map<long, double> MetricCollector::getOverallSentBundles() const {
     map<long, double> bundleMap;
-    for (size_t i = 0; i < this->nodeMetrics_.size(); i++) {
-        Metrics nodeMetric = this->nodeMetrics_.at(i);
-
-        for (auto it = nodeMetric.bundleStartTimes_.begin();
-             it != nodeMetric.bundleStartTimes_.end(); it++) {
-            bundleMap[it->first] = it->second;
+    for (const auto& nodeMetric : this->nodeMetrics_) {
+        for (const auto &[bundleId, time] : nodeMetric.bundleStartTimes_) {
+            bundleMap[bundleId] = time;
         }
     }
 
@@ -422,14 +413,11 @@ map<long, double> MetricCollector::getOverallSentBundles() {
  *
  * @author Simon Rink
  */
-map<long, double> MetricCollector::getOverallReceivedBundles() {
+map<long, double> MetricCollector::getOverallReceivedBundles() const {
     map<long, double> bundleMap;
-    for (size_t i = 0; i < this->nodeMetrics_.size(); i++) {
-        Metrics nodeMetric = this->nodeMetrics_.at(i);
-
-        for (auto it = nodeMetric.bundleReceivingTimes_.begin();
-             it != nodeMetric.bundleReceivingTimes_.end(); it++) {
-            bundleMap[it->first] = it->second;
+    for (const auto& nodeMetric : this->nodeMetrics_) {
+        for (const auto &[bundleId, time] : nodeMetric.bundleReceivingTimes_) {
+            bundleMap[bundleId] = time;
         }
     }
 
@@ -439,17 +427,16 @@ map<long, double> MetricCollector::getOverallReceivedBundles() {
 /**
  * Returns a unique string for each bundle
  *
- * @param bundleid: The ID of the bundle
- * 	      start: The start time of the bundle
+ * @param bundleId: The ID of the bundle
+ * @param start: The start time of the bundle
  *
  * @return The resulting string
  *
  * @author Simon Rink
  */
-string MetricCollector::getInformationString(long bundleId, double start) {
+string MetricCollector::getInformationString(const long bundleId, const double start) {
     tuple<int, int> informations = this->bundleInformation_[bundleId];
-    return to_string(get<0>(informations)) + ":" + to_string(get<1>(informations)) + ":" +
-           to_string(start);
+    return to_string(get<0>(informations)) + ":" + to_string(get<1>(informations)) + ":" + to_string(start);
 }
 
 /*
@@ -462,14 +449,12 @@ string MetricCollector::getInformationString(long bundleId, double start) {
  *
  * @author Simon Rink
  */
-map<long, double> MetricCollector::computeDeliveryTimes(map<long, double> startTimes,
-                                                        map<long, double> receivingTimes) {
+map<long, double> MetricCollector::computeDeliveryTimes(map<long, double> startTimes, const map<long, double>& receivingTimes) {
     map<long, double> bundleMap;
 
-    for (auto it = receivingTimes.begin(); it != receivingTimes.end(); it++) {
-        bundleMap[it->first] =
-            it->second - startTimes[it->first]; // all fields must exist, since a received bundle
-                                                // must have been sent as some point
+    for (const auto &[bundleId, time] : receivingTimes) {
+        bundleMap[bundleId] = time - startTimes[bundleId];
+        // all fields must exist, since a received bundle must have been sent as some point
     }
 
     return bundleMap;
@@ -482,17 +467,15 @@ map<long, double> MetricCollector::computeDeliveryTimes(map<long, double> startT
  *
  * @author Simon Rink
  */
-map<long, int> MetricCollector::getBundleDeliveryCounts() {
+map<long, int> MetricCollector::getBundleDeliveryCounts() const {
     map<long, int> bundleMap;
 
-    for (size_t i = 0; i < this->nodeMetrics_.size(); i++) {
-        Metrics nodeMetric = this->nodeMetrics_.at(i);
-
-        for (auto it = nodeMetric.sentBundles_.begin(); it != nodeMetric.sentBundles_.end(); it++) {
-            if (bundleMap.find(it->first) == bundleMap.end()) {
-                bundleMap[it->first] = it->second;
+    for (const auto& nodeMetric : this->nodeMetrics_) {
+        for (const auto &[bundleId, counter] : nodeMetric.sentBundles_) {
+            if (!bundleMap.contains(bundleId)) {
+                bundleMap[bundleId] = counter;
             } else {
-                bundleMap[it->first] = bundleMap[it->first] + it->second;
+                bundleMap[bundleId] = bundleMap[bundleId] + counter;
             }
         }
     }
@@ -507,11 +490,9 @@ map<long, int> MetricCollector::getBundleDeliveryCounts() {
  *
  * @author Simon Rink
  */
-int MetricCollector::getRUCoPCalls() {
+int MetricCollector::getRUCoPCalls() const {
     int RUCoPCalls = 0;
-    for (size_t i = 0; i < this->nodeMetrics_.size(); i++) {
-        Metrics nodeMetric = this->nodeMetrics_.at(i);
-
+    for (const auto& nodeMetric : this->nodeMetrics_) {
         RUCoPCalls = RUCoPCalls + nodeMetric.RUCoPCalls_;
     }
 
@@ -525,27 +506,24 @@ int MetricCollector::getRUCoPCalls() {
  *
  * @author Simon Rink
  */
-int MetricCollector::getCGRCalls() {
+int MetricCollector::getCGRCalls() const {
     int djikstraCalls = 0;
-    for (size_t i = 0; i < this->nodeMetrics_.size(); i++) {
-        Metrics nodeMetric = this->nodeMetrics_.at(i);
-
+    for (const auto& nodeMetric : this->nodeMetrics_) {
         djikstraCalls = djikstraCalls + nodeMetric.cgrCalls_;
     }
 
     return djikstraCalls;
 }
 
-int MetricCollector::getFileNumber(string prefix)
-{
-	int number = 0;
-	string fileName = prefix + "/metrics/output_" + to_string(number) + ".txt";
+int MetricCollector::getFileNumber(const string& prefix) {
+    int number = 0;
+    string fileName = prefix + "/metrics/output_" + to_string(number) + ".txt";
 
-	while (FILE *test = fopen(fileName.c_str(), "r"))
-	{
-		number++;
-		fileName = prefix + "/metrics/output_" + to_string(number) + ".txt";
-	}
+    while (FILE *test = fopen(fileName.c_str(), "r"))
+    {
+	    number++;
+	    fileName = prefix + "/metrics/output_" + to_string(number) + ".txt";
+    }
 
-	return number;
+    return number;
 }
