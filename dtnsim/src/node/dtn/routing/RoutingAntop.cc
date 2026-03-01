@@ -25,7 +25,10 @@ void RoutingAntop::routeAndQueueBundle(BundlePkt *bundle, const double simTime) 
 }
 
 void RoutingAntop::routeAndQueueAntopBundle(AntopPkt *bundle, const double simTime) const {
+    H3Index cachedNextHop = bundle->getCachedNextHopH3Index();
+
     bundle->setNextHopEid(eid_); // Default to storing bundle in SDR.
+    bundle->setCachedNextHopH3Index(-1); // Invalidate cache for early returns.
 
     const H3Index cur = getH3Index(eid_);
     if(cur == 0) return;
@@ -56,34 +59,45 @@ void RoutingAntop::routeAndQueueAntopBundle(AntopPkt *bundle, const double simTi
     } */
 
     nextHop = routingTable->findNextHop(cur, src, dst, sender, &hopCount, &loopEpoch, nextUpdateTime);
-    nextHopEid = getEidFromH3Index(nextHop, dst, bundle->getDestinationEid());
+    nextHopEid = getEidFromH3Index(nextHop, dst, cachedNextHop, bundle->getDestinationEid(), bundle->getNextHopEid());
 
     bundle->setHopCount(hopCount);
     bundle->setLoopEpoch(loopEpoch);
 
     while (nextHopEid == 0) {
         nextHop = routingTable->findNewNeighbor(cur, dst, sender == 0 ? cur : sender, nextUpdateTime);
-        nextHopEid = getEidFromH3Index(nextHop, dst, bundle->getDestinationEid());
+        nextHopEid = getEidFromH3Index(nextHop, dst, cachedNextHop, bundle->getDestinationEid(), bundle->getNextHopEid());
     }
 
-    if (nextHop == cur) nextHopEid = eid_;
+    if (nextHop == cur) {
+        nextHopEid = eid_;
+        cachedNextHop = -1;
+    } else
+        cachedNextHop = nextHop;
 
+    bundle->setCachedNextHopH3Index(cachedNextHop);
     bundle->setNextHopEid(nextHopEid);
 
     if (nextHopEid != eid_) bundle->setReturnToSender(nextHop == sender);
 }
 
 /**
- * Returns the first valid EID of a node in the target H3 cell. Returns 0 (invalid EID) if no
+ * Returns the best candidate EID of a node in the target H3 cell. Returns 0 (invalid EID) if no
  * nodes are inside the target H3 cell.
  *
  * @param idx: H3Index of the target cell.
  * @param dst: current H3Index of the bundle being routed.
+ * @param cachedNextHop: last selected next hop cell index.
  * @param dstEid: destination EID of the bundle being routed.
+ * @param nextHopEid: last selected next hop EID.
  */
-int RoutingAntop::getEidFromH3Index(const H3Index idx, const H3Index dst, const int dstEid) const {
+int RoutingAntop::getEidFromH3Index(const H3Index idx, const H3Index dst, const H3Index cachedNextHop, const int dstEid, const int nextHopEid) const {
     // If the next hop is the destination, route to destination. If impossible (node is down), save to SDR.
     if (idx == dst) return getH3Index(dstEid) == idx ? dstEid : eid_;
+
+    // If the last selected next hop cell is still the same, and the previously selected next hop
+    // EID is still at said cell, do not look for a new option.
+    if (cachedNextHop == idx && cachedNextHop == getH3Index(nextHopEid)) return nextHopEid;
 
     int bestCandidate = 0;
 

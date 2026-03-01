@@ -36,7 +36,7 @@ class RoutingAntop : public RoutingDeterministic {
         std::shared_ptr<std::unordered_map<H3Index, std::vector<int>>> eidsByH3Cell_;
 
         void routeAndQueueAntopBundle(AntopPkt *bundle, double simTime) const;
-        [[nodiscard]] int getEidFromH3Index(H3Index idx, H3Index dst, int dstEid) const;
+        [[nodiscard]] int getEidFromH3Index(H3Index idx, H3Index dst, H3Index cachedNextHop, int dstEid, int nextHopEid) const;
         [[nodiscard]] H3Index getH3Index(int eid) const;
         void updatePosition(int eid, double lat, double lng) override;
 };
