@@ -330,8 +330,6 @@ void ContactDtn::finish() {
     delete routing;
 }
 
-long lastLog = 0;
-
 /**
  * Reacts to a system message.
  *
@@ -342,8 +340,6 @@ long lastLog = 0;
  */
 
 void ContactDtn::handleMessage(cMessage *msg) {
-    const auto timeFirst = std::chrono::time_point_cast<nanoseconds>(system_clock::now()).time_since_epoch().count();
-
     ///////////////////////////////////////////
     // New Bundle (from App or ContactPlanCom):
     ///////////////////////////////////////////
@@ -552,18 +548,6 @@ void ContactDtn::handleMessage(cMessage *msg) {
             this->dispatchBundle(reSendBundle);
         delete custodyTimeout;
     }
-
-    const auto timeLast = std::chrono::time_point_cast<nanoseconds>(system_clock::now()).time_since_epoch().count();
-    const auto dif = timeLast - timeFirst;
-
-    if (dif > 0) {
-        std::cout << "Handled message of type " << msg->getKind() << " for " << dif << "ns. ";
-        if (lastLog != 0 && timeFirst - lastLog >= 10000)
-            std::cout << "Time offset since last handled message (should be 0-ish): " << timeFirst - lastLog << std::endl;
-        else
-            std::cout << std::endl;
-    }
-    lastLog = timeLast;
 }
 
 void ContactDtn::dispatchBundle(BundlePkt *bundle) {
