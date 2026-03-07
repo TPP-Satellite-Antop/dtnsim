@@ -136,7 +136,7 @@ void MetricCollector::setMode(const int newMode) {
     this->mode = newMode;
 }
 
-void MetricCollector::setPath(const string& path) {
+void MetricCollector::setPath(c onst string& path) {
     this->path_ = path;
 }
 
