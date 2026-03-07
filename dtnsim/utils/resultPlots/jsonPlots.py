@@ -11,8 +11,8 @@ COLORS = {
     "CGR-ONE": "#8da0cb"
 }
 
-BASE = "../../experiment_results"
-OUT = "plots"
+BASE = "dtnsim/experiment_results"
+OUT = "dtnsim/utils/resultPlots/plots"
 
 def pretty_metric_name(name: str) -> str:
     words = re.sub(r'([a-z])([A-Z])', r'\1 \2', name)
