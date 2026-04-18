@@ -3,13 +3,41 @@ import sys
 import os
 import glob
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import re
 
-COLORS = {
-    "ANTOP": "#66c2a5",
-    "CGR": "#fc8d62",
-    "CGR-ONE": "#8da0cb"
+THEME = {
+    "bg": "#060b18",
+    "text": "#f1f5f9",
+    "muted": "#94a3b8",
+    "dim": "#3f4f67",
+    "accent": "#38bdf8",
+    "red": "#f87171",
+    "purple": "#818cf8"
 }
+
+COLORS = {
+    "ANTOP": THEME["accent"],
+    "CGR": THEME["purple"],
+    "CGR-ONE": THEME["red"]
+}
+
+# Apply global style
+mpl.rcParams.update({
+    "figure.facecolor": THEME["bg"],
+    "axes.facecolor": THEME["bg"],
+    "axes.edgecolor": THEME["dim"],
+    "axes.labelcolor": THEME["text"],
+    "xtick.color": THEME["muted"],
+    "ytick.color": THEME["muted"],
+    "text.color": THEME["text"],
+    "axes.titleweight": "bold",
+    "axes.titlesize": 14,
+    "axes.labelsize": 11,
+    "font.family": ["sans-serif"],
+    "grid.color": THEME["dim"],
+    "grid.alpha": 0.3,
+})
 
 BASE = "dtnsim/experiment_results"
 OUT = "dtnsim/utils/resultPlots/plots"
@@ -142,11 +170,21 @@ def triple_boxplot(metric, antop, cgr, cgr_one, ylabel, faults):
 
     for box, c in zip(bp["boxes"], colors):
         box.set_facecolor(c)
-        box.set_edgecolor("black")
+        box.set_edgecolor(THEME["dim"])
 
     for median in bp["medians"]:
-        median.set_color("black")
+        median.set_color(THEME["text"])
         median.set_linewidth(2)
+
+    for whisker in bp["whiskers"]:
+        whisker.set_color(THEME["dim"])
+
+    for cap in bp["caps"]:
+        cap.set_color(THEME["dim"])
+
+    for flier in bp["fliers"]:
+        flier.set_markerfacecolor(THEME["muted"])
+        flier.set_alpha(0.3)
 
     plt.xticks(range(len(all_names)), all_names, rotation=45, ha="right")
     plt.suptitle(f"{pretty_metric_name(metric)} — {faults}% faults", y=0.95)
@@ -204,7 +242,7 @@ def main():
     delivery_ratio_plot(antop, cgr, cgr_one, faults)
 
     triple_boxplot("elapsedTime", antop, cgr, cgr_one, "Time (ms)", faults)
-    triple_boxplot("arrivalTime", antop, cgr, cgr_one,"Time (ms)", faults)
+    triple_boxplot("arrivalTime", antop, cgr, cgr_one, "Time (ms)", faults)
     triple_boxplot("numberOfHops", antop, cgr, cgr_one, "Hops", faults)
 
 
