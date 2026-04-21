@@ -3,9 +3,55 @@ import sys
 import os
 import glob
 import matplotlib.pyplot as plt
+import re
 
-BASE = "../../simulations/experiment_results"
-OUT = "plots"
+plt.rcParams.update({
+    "font.size": 18,
+    "axes.titlesize": 16,
+    "axes.labelsize": 16,
+    "xtick.labelsize": 16,
+    "ytick.labelsize": 16,
+    "legend.fontsize": 14
+})
+
+COLORS = {
+    "ANTOP": "#66c2a5",
+    "CGR": "#fc8d62",
+    "CGR-ONE": "#8da0cb"
+}
+
+BASE = "../../experiment_results"
+OUT = "./plots"
+
+def pretty_metric_name(name: str) -> str:
+    words = re.sub(r'([a-z])([A-Z])', r'\1 \2', name)
+
+    replacements = {
+        "avg": "average",
+        "num": "number",
+    }
+
+    tokens = words.split()
+    tokens = [replacements.get(t.lower(), t.lower()) for t in tokens]
+
+    return tokens[0].capitalize() + " " + " ".join(tokens[1:])
+
+def satellites_from_name(name):
+    # name example: walker-53x120x12x7
+    try:
+        params = name.split("-")[1]
+        inclination, satellites, planes, phase = params.split("x")
+        return int(satellites)
+    except Exception as e:
+        raise ValueError(f"Cannot parse satellites from scenario name: {name}")
+
+def short_scenario_name(name):
+    try:
+        params = name.split("-")[1]
+        parts = params.split("x")
+        return "x".join(parts[1:])
+    except:
+        return name
 
 def load_result(path):
     with open(path, "r") as f:
@@ -25,97 +71,135 @@ def load_scenarios(algorithm, faults):
 
     return scenarios
 
-def paired_bar_plot(metric, antop_scenarios, cgr_scenarios, ylabel, faults):
-    names = [s["name"] for s in antop_scenarios]
+def delivery_ratio_plot(antop, cgr, cgr_one, faults):
+    def map_ratio(scenarios):
+        result = {}
+        for s in scenarios:
+            name = s["name"]
+            expected = satellites_from_name(name) * 100
+            arrived = len(s.get("bundles", []))
+            result[name] = 100.0 * arrived / expected if expected > 0 else 0
+        return result
 
-    antop_values = [s[metric] for s in antop_scenarios]
-    cgr_values = [s[metric] for s in cgr_scenarios]
+    antop_map = map_ratio(antop)
+    cgr_map = map_ratio(cgr)
+    cgr_one_map = map_ratio(cgr_one)
 
-    x = range(len(names))
+    all_names = sorted(
+        set(antop_map.keys()) |
+        set(cgr_map.keys()) |
+        set(cgr_one_map.keys())
+    )
+
+    xscenarios = [short_scenario_name(n) for n in all_names]
+
+    x = list(range(len(all_names)))
+
+    def values(map_):
+        return [map_.get(n, None) for n in all_names]
 
     plt.figure()
-    plt.title(f"{metric} — {faults}% faults")
-    plt.ylabel(ylabel)
+    plt.title(f"Delivery ratio — {faults}% faults")
+    plt.ylabel("Arrival (%)")
+    plt.xlabel("Scenarios")
+    plt.ylim(90, 101.5)
+    ticks = plt.yticks()[0]
+    ticks = [t for t in ticks if 90 < t <= 100]
 
-    offset = 0.35
+    plt.yticks(ticks)
 
-    plt.bar([i - offset/2 for i in x], antop_values, width=offset, label="ANTOP", color="tab:blue")
-    plt.bar([i + offset/2 for i in x], cgr_values,   width=offset, label="CGR",   color="tab:orange")
+    plt.plot(x, values(antop_map), marker="o", label="ANTop", color=COLORS["ANTOP"], markersize=12)
+    plt.plot(x, values(cgr_map), marker="s", label="CGR (per-neighbor)", color=COLORS["CGR"], fillstyle="none", markersize=12)
+    plt.plot(x, values(cgr_one_map), marker="^", label="CGR (one-best)", color=COLORS["CGR-ONE"], markersize=12)
 
-    plt.xticks(list(x), names, rotation=45, ha="right")
-    plt.grid(axis="y")
+    plt.xticks(x, xscenarios)
+    plt.grid(axis="y", linestyle="--", alpha=0.6)
     plt.legend()
     plt.tight_layout()
 
     os.makedirs(OUT, exist_ok=True)
-    out_path = os.path.join(OUT, f"{metric}_{faults}-faults.png")
-    plt.savefig(out_path, dpi=300)
+    path = os.path.join(OUT, f"delivery_ratio_{faults}-faults.pdf")
+    plt.savefig(path, bbox_inches="tight")
     plt.close()
 
-    print(f"Saved {out_path}")
+    print(f"Saved {path}")
 
-def paired_boxplot(metric, antop_scenarios, cgr_scenarios, ylabel, faults):
-
-    def map_name_to_values(scenarios):
+def triple_boxplot(metric, antop, cgr, cgr_one, ylabel, faults):
+    def map_values(scenarios):
         result = {}
         for s in scenarios:
-            name = s["name"]
-            vals = []
-            for b in s["bundles"]:
-                vals.append(b[metric])
-            result[name] = vals
+            result[s["name"]] = [b[metric] for b in s.get("bundles", [])]
         return result
 
-    antop_map = map_name_to_values(antop_scenarios)
-    cgr_map = map_name_to_values(cgr_scenarios)
+    antop_map = map_values(antop)
+    cgr_map = map_values(cgr)
+    cgr_one_map = map_values(cgr_one)
 
-    # common scenario names (intersection)
-    names = sorted(set(antop_map.keys()) & set(cgr_map.keys()))
-
-    # build data in paired order
-    data = []
-    labels = []
-    colors = []
-
-    for name in names:
-        data.append(antop_map[name])
-        labels.append(f"{name}\nANTOP")
-        colors.append("#4CAF50")  # green
-
-        data.append(cgr_map[name])
-        labels.append(f"{name}\nCGR")
-        colors.append("#2196F3")  # blue
-
-    plt.figure(figsize=(max(8, len(names)), 6))
-
-    bp = plt.boxplot(
-        data,
-        labels=labels,
-        patch_artist=True
+    all_names = sorted(
+        set(antop_map.keys()) |
+        set(cgr_map.keys()) |
+        set(cgr_one_map.keys())
     )
 
-    # apply colors
+    xscenarios = [short_scenario_name(n) for n in all_names]
+
+    data = []
+    positions = []
+    colors = []
+
+    offset = 0.25
+
+    protocols = [
+        ("ANTOP", antop_map, -offset),
+        ("CGR-ONE", cgr_one_map, 0.0),
+        ("CGR", cgr_map, +offset),
+    ]
+
+    for i, name in enumerate(all_names):
+        for proto_name, proto_map, pos_offset in protocols:
+            if name in proto_map:
+                data.append(proto_map[name])
+                positions.append(i + pos_offset)
+                colors.append(COLORS[proto_name])
+
+    plt.figure(figsize=(max(8, len(all_names)), 6))
+    bp = plt.boxplot(data, positions=positions, widths=0.2, patch_artist=True)
+    plt.yscale("log")
+
     for box, c in zip(bp["boxes"], colors):
         box.set_facecolor(c)
         box.set_edgecolor("black")
 
-    # median emphasis
-    for med in bp["medians"]:
-        med.set_color("black")
-        med.set_linewidth(2)
+    for median in bp["medians"]:
+        median.set_color("black")
+        median.set_linewidth(2)
 
-    plt.title(f"{metric} — {faults}% faults")
+    plt.xticks(range(len(all_names)), xscenarios)
+    plt.suptitle(f"{pretty_metric_name(metric)} — {faults}% faults", y=0.90)
     plt.ylabel(ylabel)
-    plt.grid(axis="y")
-    plt.xticks(rotation=45, ha="right")
-    plt.tight_layout()
+    plt.xlabel("Scenarios")
+    plt.xlim(-0.5, len(all_names) - 0.5)
+    plt.grid(axis="y", linestyle="--", alpha=0.6)
 
+    plt.legend(
+        handles=[
+            plt.Line2D([0], [0], color=COLORS["ANTOP"], lw=6, label="ANTop"),
+            plt.Line2D([0], [0], color=COLORS["CGR-ONE"], lw=6, label="CGR (one-best)"),
+            plt.Line2D([0], [0], color=COLORS["CGR"], lw=6, label="CGR (per-neighbor)"),
+        ],
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.15),
+        ncol=3,
+        frameon=False
+    )
+
+    plt.tight_layout(rect=[0, 0, 1, 0.985])
     os.makedirs(OUT, exist_ok=True)
-    out_path = os.path.join(OUT, f"boxplot_{metric}_{faults}-faults.png")
-    plt.savefig(out_path, dpi=300)
+    path = os.path.join(OUT, f"boxplot_{metric}_{faults}-faults.pdf")
+    plt.savefig(path, bbox_inches="tight")
     plt.close()
 
-    print(f"Saved {out_path}")
+    print(f"Saved {path}")
 
 def to_ms(scenarios):
     for s in scenarios:
@@ -141,21 +225,15 @@ def main():
 
     faults = sys.argv[1]
 
-    antop_scenarios = load_scenarios("antop", faults)
-    cgr_scenarios = load_scenarios("cgr", faults)
+    antop = to_ms(sorted(load_scenarios("antop", faults), key=lambda s: s["name"]))
+    cgr = to_ms(sorted(load_scenarios("cgr", faults), key=lambda s: s["name"]))
+    cgr_one = to_ms(sorted(load_scenarios("cgr-one", faults), key=lambda s: s["name"]))
 
-    antop_scenarios = sorted(antop_scenarios, key=lambda s: s["name"])
-    cgr_scenarios = sorted(cgr_scenarios, key=lambda s: s["name"])
+    delivery_ratio_plot(antop, cgr, cgr_one, faults)
 
-    antop_scenarios = to_ms(antop_scenarios)
-    cgr_scenarios = to_ms(cgr_scenarios)
-    paired_bar_plot("avgElapsedTime", antop_scenarios, cgr_scenarios, "Time (ms)", faults)
-    paired_bar_plot("avgArrivalTime", antop_scenarios, cgr_scenarios, "Time (ms)", faults)
-    paired_bar_plot("avgNumberOfHops", antop_scenarios, cgr_scenarios, "Hops", faults)
-    
-    paired_boxplot("elapsedTime", antop_scenarios, cgr_scenarios, "Time (ms)", faults)
-    paired_boxplot("arrivalTime", antop_scenarios, cgr_scenarios, "Time (ms)", faults)
-    paired_boxplot("numberOfHops", antop_scenarios, cgr_scenarios, "Hops", faults)
+    triple_boxplot("elapsedTime", antop, cgr, cgr_one, "Time (ms)", faults)
+    triple_boxplot("arrivalTime", antop, cgr, cgr_one,"Time (ms)", faults)
+    triple_boxplot("numberOfHops", antop, cgr, cgr_one, "Hops", faults)
 
 
 if __name__ == "__main__":

@@ -37,3 +37,6 @@ void RoutingOpportunistic::successfulBundleForwarded(long bundleId, Contact *con
                                                      bool sentToDestination) {}
 
 void RoutingOpportunistic::refreshForwarding(Contact *c) {}
+
+void RoutingOpportunistic::updatePosition(int eid, double lat, double lng) {};
+

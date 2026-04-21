@@ -297,3 +297,5 @@ void RoutingPRoPHET::updateAging(int destinationEid, double simTime) {
     this->pred_table_[destinationEid] = p_old * pow(this->gamma_, diff);
     this->last_updated_[destinationEid] = simTime;
 }
+
+void RoutingPRoPHET::updatePosition(int eid, double lat, double lng) {};

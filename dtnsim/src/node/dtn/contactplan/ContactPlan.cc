@@ -1,5 +1,4 @@
 #include <algorithm>
-#include "src/node/dtn/contactplan/Contact.h"
 #include "src/node/dtn/contactplan/ContactPlan.h"
 
 double toRadians(double degree) {
@@ -32,108 +31,97 @@ int ContactPlan::getNodesNumber() {
     return this->nodesNumber_;
 }
 
-void ContactPlan::processContactPlanLine(
-    const std::string& fileLine,
-    int mode,
-    double failureProb,
-    bool opportunistic)
+void ContactPlan::initializeFromParsedPlan(
+    const ParsedContactPlan& parsed,
+    int mode)
 {
-    if (fileLine.empty() || fileLine.at(0) == '#')
-        return;
+    const bool opportunisticMode = mode < 2;
+    this->nodesNumber_ = parsed.nodesNumber;
+    this->contactIdsBySrc_.clear();
+    this->contactIdsBySrc_.resize(nodesNumber_ + 1);
 
-    std::string a, command;
-    double start = 0.0, end = 0.0, dataRateOrRange = 0.0, failureProbability = 0.0;
-    int sourceEid = 0, destinationEid = 0;
+    for (const auto& c : parsed.contacts) {
+        if (c.src <= 0 || c.dst <= 0)
+            continue;
+        
+        // The following conditions replicate the behavior of the previous code to be backwards compatible, even if they look confusing.
+        if(c.opportunistic){ // command was "ocontact"
+            if (opportunisticMode){
+                this->addDiscoveredContact(
+                    c.start,
+                    c.end,
+                    c.src,
+                    c.dst,
+                    c.dataRate,
+                    1.0,
+                    c.failureProbability
+                );
 
-    std::stringstream stringLine(fileLine);
-    stringLine >> a >> command >> start >> end >> sourceEid;
-
-    if (a != "a") return;
-
-    if (command == "position") {
-        double lat, lon;
-        stringLine >> lat >> lon;
-
-        PositionEntry entry;
-        entry.latLng = LatLng{toRadians(lat), toRadians(lon)};
-        entry.eId    = sourceEid;
-
-        TimeInterval interval;
-        interval.tStart = start;
-        interval.tEnd   = end;
-
-        this->nodePositions_[interval].push_back(entry);
-    } else {
-        stringLine >> destinationEid >> dataRateOrRange >> failureProbability;
-        if (failureProb >= 0) {
-            failureProbability = failureProb;
-        }
-
-        if (command == "contact") {
-            this->addContact(start, end, sourceEid, destinationEid, dataRateOrRange,
-                             1.0, failureProbability / 100);
-        } else if (command == "range") {
-            this->addRange(start, end, sourceEid, destinationEid, dataRateOrRange, 1.0);
-        } else if (command == "ocontact") {
-            int requiredMode = opportunistic ? 1 : 2;
-            if (mode < requiredMode) return;
-            if (opportunistic) {
-                this->addDiscoveredContact(start, end, sourceEid, destinationEid,
-                                           dataRateOrRange, 1.0, 0);
-                this->addDiscoveredContact(start, end, destinationEid, sourceEid,
-                                           dataRateOrRange, 1.0, 0);
+                this->addDiscoveredContact(
+                    c.start,
+                    c.end,
+                    c.dst,
+                    c.src,
+                    c.dataRate,
+                    1.0,
+                    c.failureProbability
+                );
             } else {
-                this->addContact(start, end, sourceEid, destinationEid, dataRateOrRange,
-                                 1.0, 0);
-                this->addContact(start, end, destinationEid, sourceEid, dataRateOrRange,
-                                 1.0, 0);
+                this->addContact(
+                    c.start,
+                    c.end,
+                    c.src,
+                    c.dst,
+                    c.dataRate,
+                    1.0,
+                    c.failureProbability
+                ); 
+
+                this->addContact(
+                    c.start,
+                    c.end,
+                    c.dst,
+                    c.src,
+                    c.dataRate,
+                    1.0,
+                    c.failureProbability
+                );
             }
-        } else if (command == "orange") {
-            int requiredMode = opportunistic ? 1 : 2;
-            if (mode < requiredMode) return;
-            this->addRange(start, end, sourceEid, destinationEid, dataRateOrRange, 1.0);
-            this->addRange(start, end, destinationEid, sourceEid, dataRateOrRange, 1.0);
         } else {
-            std::cout << "dtnsim error: unknown contact plan command type: a " << fileLine << std::endl;
+            this->addContact(
+                c.start,
+                c.end,
+                c.src,
+                c.dst,
+                c.dataRate,
+                1.0,
+                c.failureProbability
+            ); 
         }
     }
-}
 
-void ContactPlan::parseContactPlanFile(std::string fileName, int nodesNumber, int mode, double failureProb) {
-    this->nodesNumber_ = nodesNumber;
-    this->contactIdsBySrc_.resize(nodesNumber + 1);
+    for (const auto& r : parsed.ranges) {
+        this->addRange(
+            r.start,
+            r.end,
+            r.src,
+            r.dst,
+            r.owlt,
+            1.0
+        );
 
-    std::ifstream file(fileName.c_str());
-    if (!file.is_open())
-        throw cException("%s", ("Error: wrong path to contacts file " + fileName).c_str());
-
-    std::string fileLine;
-    while (getline(file, fileLine)) {
-        processContactPlanLine(fileLine, mode, failureProb, false);
+        if(r.opportunistic) {
+            this->addRange(
+                r.start,
+                r.end,
+                r.dst,
+                r.src,
+                r.owlt,
+                1.0
+            );
+        }
     }
 
-    file.close();
-
-    this->setContactsFile(fileName);
-    this->updateContactRanges();
-    this->sortContactIdsBySrcByStartTime();
-}
-
-void ContactPlan::parseOpportunisticContactPlanFile(std::string fileName, int nodesNumber, int mode, double failureProb) {
-    this->contactIdsBySrc_.resize(nodesNumber + 1);
-
-    std::ifstream file(fileName.c_str());
-    if (!file.is_open())
-        throw cException("%s", ("Error: wrong path to contacts file " + fileName).c_str());
-
-    std::string fileLine;
-    while (getline(file, fileLine)) {
-        processContactPlanLine(fileLine, mode, failureProb, true);
-    }
-
-    file.close();
-
-    this->setContactsFile(fileName);
     this->updateContactRanges();
     this->sortContactIdsBySrcByStartTime();
 }
@@ -374,14 +362,6 @@ vector<int> ContactPlan::getCurrentNeighbors() {
 
 simtime_t ContactPlan::getLastEditTime() {
     return lastEditTime;
-}
-
-void ContactPlan::setContactsFile(string contactsFile) {
-    contactsFile_ = contactsFile;
-}
-
-const string &ContactPlan::getContactsFile() const {
-    return contactsFile_;
 }
 
 void ContactPlan::printContactPlan() {
@@ -639,8 +619,4 @@ void ContactPlan::deleteOldContacts() {
             it->second.clear();
         }
     }
-}
-
-unordered_map<TimeInterval, vector<PositionEntry>> ContactPlan::getNodePositions() {
-    return this->nodePositions_;
 }

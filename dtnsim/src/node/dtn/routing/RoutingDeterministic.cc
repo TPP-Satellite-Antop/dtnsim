@@ -39,3 +39,6 @@ void RoutingDeterministic::contactEnd(Contact *c) {
         routeAndQueueBundle(bundle, simTime().dbl());
     }
 }
+
+void RoutingDeterministic::updatePosition(int eid, double lat, double lng) {};
+

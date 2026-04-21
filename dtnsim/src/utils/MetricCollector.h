@@ -9,13 +9,12 @@
 #define SRC_UTILS_METRICCOLLECTOR_H_
 
 #include "src/utils/json.hpp"
-#include <algorithm>
-#include <fstream>
+#include <chrono>
 #include <iostream>
 #include <map>
+#include <omnetpp/simtime.h>
 #include <string>
 #include <vector>
-#include <chrono>
 
 using json = nlohmann::json;
 using namespace std;
@@ -29,17 +28,15 @@ class Metrics {
     map<long, vector<tuple<int, double>>> routingDecisions_;
     map<long, double> bundleReceivingTimes_; // Decision to be made
 
-    Metrics(){};
-
-    ~Metrics(){};
+    Metrics() =default;
+    ~Metrics()= default;
 };
 
 struct ArrivalInfo
 {
-  std::chrono::steady_clock::time_point generationTime;
-  std::chrono::steady_clock::time_point arrivalTime;
+  omnetpp::SimTime generationTime = omnetpp::SimTime::ZERO;
+  omnetpp::SimTime arrivalTime = omnetpp::SimTime::ZERO;
 };
-
 
 class MetricCollector {
   public:
@@ -47,12 +44,12 @@ class MetricCollector {
     virtual ~MetricCollector();
 
     void updateCGRCalls(int eid);
-    void setAlgorithm(string algoritm);
+    void setAlgorithm(const string& algoritm);
     void setFailureProb(double failureProb);
-    void setMode(int mode);
+    void setMode(int newMode);
     void initialize(int numOfNodes);
     void updateRUCoPCalls(int eid);
-    void setPath(string path);
+    void setPath(const string& path);
     void updateStartedBundles(int eid, long bundleId, int sourceEid, int destinationEid,
                               double startTime);
     void updateSentBundles(int eid, int destinationEid, double time, long bundleId);
@@ -62,23 +59,23 @@ class MetricCollector {
     void updateCGRComputationTime(long computationTime);
     void setNumberOfHops(long bundleId, int hops);
     void updateBundleElapsedTime(long bundleId, std::chrono::steady_clock::time_point elapsedTimeStart);
-    void intializeArrivalTime(long bundleId, std::chrono::steady_clock::time_point initialTime);
-    void setFinalArrivalTime(long bundleId, std::chrono::steady_clock::time_point finalTime);
+    void intializeArrivalTime(long bundleId, const omnetpp::SimTime& initialTime);
+    void setFinalArrivalTime(long bundleId, const omnetpp::SimTime& finalTime);
     void evaluateAndPrintResults();
     void evaluateAndPrintJsonResults();
-    int getFileNumber(string prefix);
-    int getMode();
+    static int getFileNumber(const string& prefix);
+    int getMode() const;
 
   private:
-    map<long, double> getOverallSentBundles();
-    map<long, double> getOverallReceivedBundles();
-    map<long, double> computeDeliveryTimes(map<long, double> startTimes,
-                                           map<long, double> receivingTimes);
-    map<long, int> getBundleDeliveryCounts();
+    [[nodiscard]] map<long, double> getOverallSentBundles() const;
+    [[nodiscard]] map<long, double> getOverallReceivedBundles() const;
+    static map<long, double> computeDeliveryTimes(map<long, double> startTimes,
+                                           const map<long, double>& receivingTimes);
+    [[nodiscard]] map<long, int> getBundleDeliveryCounts() const;
     string getInformationString(long bundleId, double start);
-    string getPrefix();
-    int getCGRCalls();
-    int getRUCoPCalls();
+    [[nodiscard]] string getPrefix() const;
+    [[nodiscard]] int getCGRCalls() const;
+    [[nodiscard]] int getRUCoPCalls() const;
     string path_;
     vector<Metrics> nodeMetrics_;
     long RUCoPComputationTime_ = 0;
@@ -92,8 +89,8 @@ class MetricCollector {
 
     map<long, int> bundleHops_; // number of hops per bundle
     map<long, double> bundleElapsedTime_; // total elapsed time per bundle in seconds. It measures the time spent
-                                         // processing the bundle in each node (handleMessage + routing).
-                                         // Doesn´t measure time spent waiting in queues.
+                                          // processing the bundle in each node (handleMessage + routing).
+                                          // Does not measure time spent waiting in queues.
     map<long, ArrivalInfo> bundleArrivalTime_; // generation and arrival time per bundle. With this info it is then
                                                // possible to compute final arrival time (arrival - generation)
 };

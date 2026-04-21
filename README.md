@@ -41,18 +41,37 @@ git pull
 Go to omnetpp IDE, add dtnsim project, open any of the use cases ini files from /simulations.
 Finally right click on the .ini: Run->Run As->Omnet++ Simulation.
 
-To generate antop .ini using a script, move to /simulations and run:
+To generate antop .ini using a script, move to /simulations and run from the root of the project:
 ```sh
-python3 generate-antop.py
+python3 dtnsim/simulations/generate-antop.py 
 ```
 Then, you will be requested to provide the number of planes.
-An antop .ini file will be generated in simulations/antop/antop<num_nodes>-sats.ini
+An antop .ini file will be generated in simulations/antop/final/antop-<num_nodes>-sats.ini
+
+To run the simulation using command line (no graphics), run:
+```sh
+export LD_LIBRARY_PATH=$INET_ROOT/out/gcc-release/src:$LD_LIBRARY_PATH
+./dtnsim/out/gcc-release/dtnsim -u Cmdenv -f dtnsim/simulations/<path_to_ini_file>
+```
+from the root of the project. For example:
+```sh
+./dtnsim/out/gcc-release/dtnsim -u Cmdenv -f dtnsim/simulations/cgr-one/final/cgr-120-sats-20-faults.ini
+```
 
 Metrics of the simulations will be saved in /experiment_results folder (or in the specified path in the .ini file).
+
+## Metrics and plots ##
+DTNSIM computes a set of metrics related to the performance of the network and the routing protocol. These metrics are stored in JSON files in the /experiment_results folder. A set of scripts are provided to generate plots from these JSON files. The scripts are located in /dtnsim/utils/resultPlots.
+To generate plots, run from the root of the project:
+```sh
+python3 dtnsim/utils/resultPlots/jsonPlots.py <% of faults>
+```
+This will generate a set of plots in the /dtnsim/utils/resultPlots/plots folder (or in the specified path in the jsonPlots.py file).
+
 ## ION Support ##
 
 Interplanetary Overlay Network (ION) flight code is supported in the support-ion branch. Currently, ION 3.5.0 Contact Graph Routing library is supported by DTNSIM.
 
 ## Contact Us ##
 
-If you have any comment, suggestion, or contribution you can reach us at madoerypablo@gmail.com and juanfraire@gmail.com.
+If you have any comment, suggestion, or contribution you can reach us at madoerypablo@gmail.com, juanfraire@gmail.com, gfrenkel@fi.uba.ar and vadelsflugel@fi.uba.ar

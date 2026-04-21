@@ -63,6 +63,7 @@ packet BundlePkt {
 
 packet AntopPkt extends BundlePkt {
     uint64_t cachedDstH3Index;
+    uint64_t cachedNextHopH3Index;
     int loopEpoch;
 };
 

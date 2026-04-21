@@ -3,7 +3,7 @@ import random
 
 def generate_ini(num_sats, sat_per_plane, num_planes, phaseOffset=0, faultOn=False, faultMeanTTF=0, faultMeanTTR=0, failure_pct=0):
     suffix = f"-{failure_pct}-faults" if faultOn else ""
-    output_file = f"antop/final/antop-{num_sats}-sats{suffix}.ini"
+    output_file = f"dtnsim/simulations/antop/final/antop-{num_sats}-sats{suffix}.ini"
 
     with open(output_file, "w") as f:
         f.write(f"""[General]
@@ -89,7 +89,7 @@ dtnsim.node[{src}].app.size = "{",".join(size_vec)}"
 
         f.write(f"""
     #Metrics
-    dtnsim.central.collectorPath = "../../experiment_results/antop/{failure_pct}-faults/walker-53x{num_sats}x{num_planes}x{phaseOffset}.json"
+    dtnsim.central.collectorPath = "dtnsim/experiment_results/antop/{failure_pct}-faults/walker-53x{num_sats}x{num_planes}x{phaseOffset}.json"
     """)
 
     print(f"Generated: {output_file}")

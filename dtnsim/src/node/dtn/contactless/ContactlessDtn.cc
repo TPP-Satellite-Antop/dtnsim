@@ -97,13 +97,6 @@ void ContactlessDtn::initializeRouting(const string& routingString) {
     if (routingString == "antop") {
         auto* mobility = dynamic_cast<inet::SatelliteMobility*>(this->getParentModule()->getSubmodule("mobility"));
         (*this->mobilityMap_)[eid_] = mobility;
-        this->routing = new RoutingAntop(
-            this->antop,
-            this->eid_,
-            nodes,
-            [this](const int eid) { return this->getPosition(eid); },
-            [this] { return this->getNextMobilityUpdate(); }
-        );
     } else {
         cout << "dtnsim error: unknown routing type: " << routingString << endl;
     }
@@ -141,7 +134,7 @@ void ContactlessDtn::handleMessage(cMessage *msg) {
                 emit(dtnBundleReceivedFromCom, true);
             if (msg->arrivedOn("gateToApp$i")) {
                 emit(dtnBundleReceivedFromApp, true);
-                this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), steady_clock::now());
+                this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), simTime());
             }
             handleBundle(bundle);
             break;
@@ -276,7 +269,7 @@ void ContactlessDtn::scheduleBundle(BundlePkt *bundle) {
     // See Case #2: https://github.com/TPP-Satellite-Antop/dtnsim/issues/50
     bundle->setReturnToSender(false);
 
-    if (fwdByEid_.find(nextHop) == fwdByEid_.end()) {
+    if (!fwdByEid_.contains(nextHop)) {
         auto *fwd = new ForwardingMsgStart("forwardingStart", FORWARDING_MSG_START);
         fwd->setNeighborEid(nextHop);
         fwdByEid_[nextHop] = fwd;
@@ -304,8 +297,6 @@ void ContactlessDtn::scheduleRoutingRetry(BundlePkt *bundle) {
 
     const auto mobilityModule = (*mobilityMap_)[eid_];
 
-    // ToDo: that one-second policy seems arbitrary. Can we assume the bundle to be re-routed would be in SDR, signaling
-    //		 that it shouldn't simply be dropped if the node is down?
     const auto scheduleTime = mobilityModule->getNextUpdateTime();
     std::cout << "Scheduling bundle retry... - Current time: " << simTime().dbl() <<  " - Scheduling time: " << scheduleTime << std::endl;
 
@@ -337,8 +328,16 @@ void ContactlessDtn::setOnFault(const bool onFault) {
     }
 }
 
-void ContactlessDtn::setRoutingAlgorithm(Antop* antop) {
-    this->antop = antop;
+void ContactlessDtn::setRoutingAntop(Antop* antop, const std::shared_ptr<std::unordered_map<H3Index, std::vector<int>>> &eidsByH3Cell) {
+    this->routing = new RoutingAntop(
+        antop,
+        this->getParentModule()->getIndex(),
+        this->getParentModule()->getParentModule()->par("nodesNumber"),
+        eidsByH3Cell,
+        [this](const int eid) { return this->getPosition(eid); },
+        [this](const int eid) { return this->getQueuedBundlesCount(eid); },
+        [this] { return this->getNextMobilityUpdate(); }
+    );
 }
 
 /**
@@ -347,14 +346,40 @@ void ContactlessDtn::setRoutingAlgorithm(Antop* antop) {
  *
  * @param eid: endpoint ID of the target DTN node.
  */
-LatLng ContactlessDtn::getPosition(const int eid) {
-    if (onFault) throw std::runtime_error("Local node unavailable");
-
-    if (const auto dtn = getModule(eid); eid == 0 || dtn->onFault)
-        throw std::runtime_error("Remote node unavailable");
+std::optional<LatLng> ContactlessDtn::getPosition(const int eid) {
+    if (onFault || eid == 0 || getModule(eid)->onFault) return nullopt;
 
     const auto mobility = (*mobilityMap_)[eid];
     return LatLng {deg2rad(mobility->getLatitude()), deg2rad(mobility->getLongitude())};
+}
+
+void ContactlessDtn::updatePosition(const int eid, const double lat, const double lng) const {
+    routing->updatePosition(eid, lat, lng);
+}
+
+/**
+ * Fetches the number of queued bundles for the given EID, as well as a boolean flag indicating
+ * whether a FWD message is in flight.
+ *
+ * Even if a queue might be empty, a message might still be being transmitted through the EID
+ * antenna. This state can be identified by checking the second return parameter, which is the
+ * simulation time at which the in-flight bundle will finish transmission.
+ *
+ * @param eid: endpoint ID of the target DTN node.
+ */
+std::optional<std::tuple<int, double>> ContactlessDtn::getQueuedBundlesCount(const int eid) {
+    if (onFault || eid == 0 || getModule(eid)->onFault) return nullopt;
+
+    const auto bundlesCount = sdr_->getBundlesCountInIndex(eid);
+    double fwdTimeToFree = 0;
+
+    if (fwdByEid_.contains(eid) && fwdByEid_[eid] != nullptr) {
+        const auto fwdArrivalTime = fwdByEid_[eid]->getArrivalTime().dbl();
+
+        fwdTimeToFree = std::max(0.0, fwdArrivalTime - simTime().dbl());
+    }
+
+    return std::make_tuple(bundlesCount, fwdTimeToFree);
 }
 
 /**

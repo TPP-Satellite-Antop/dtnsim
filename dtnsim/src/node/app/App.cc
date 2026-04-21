@@ -147,10 +147,11 @@ void App::handleMessage(cMessage *msg) {
         int destinationEid = bundle->getDestinationEid();
 
         if (this->eid_ == destinationEid) {
+            std::cout << "Node " << std::dec << this->eid_ << " received bundle " << bundle->getBundleId() << " from node " << bundle->getSourceEid() << " at time " << simTime().dbl() << std::endl;
             emit(appBundleReceived, true);
             emit(appBundleReceivedHops, bundle->getHopCount());
             emit(appBundleReceivedDelay, simTime() - bundle->getCreationTimestamp());
-            this->metricCollector_->setFinalArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
+            this->metricCollector_->setFinalArrivalTime(bundle->getBundleId(), simTime());
             this->metricCollector_->setNumberOfHops(bundle->getBundleId(), bundle->getHopCount());
             delete msg;
         } else {

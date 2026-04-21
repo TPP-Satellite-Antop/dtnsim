@@ -28,25 +28,27 @@
 class RoutingStochastic : public Routing {
   public:
     RoutingStochastic(int eid, SdrModel *sdr, cModule *dtn);
-    virtual ~RoutingStochastic();
+    ~RoutingStochastic() override;
 
-    virtual void msgToOtherArrive(BundlePkt *bundle, double simTime);
+    void msgToOtherArrive(BundlePkt *bundle, double simTime) override;
 
-    virtual bool msgToMeArrive(BundlePkt *bundle);
+    bool msgToMeArrive(BundlePkt *bundle) override;
 
-    virtual void contactStart(Contact *c);
+    void contactStart(Contact *c) override;
 
-    virtual void contactEnd(Contact *c);
+    void contactEnd(Contact *c) override;
 
-    virtual void successfulBundleForwarded(long bundleId, Contact *contact, bool sentToDestination);
+    void successfulBundleForwarded(long bundleId, Contact *contact, bool sentToDestination) override;
 
-    virtual void updateContactPlan(Contact *c);
+    void updateContactPlan(Contact *c) override;
 
-    virtual void refreshForwarding(Contact *c);
+    void refreshForwarding(Contact *c) override;
 
     // This is a pure virtual method (all stochastic routing must at least
     // implement this function)
     virtual void routeAndQueueBundle(Contact *c) = 0;
+
+    void updatePosition(int eid, double lat, double lng) override;
 
   protected:
     cModule *dtn_;

@@ -340,18 +340,17 @@ void ContactDtn::finish() {
  */
 
 void ContactDtn::handleMessage(cMessage *msg) {
-
     ///////////////////////////////////////////
     // New Bundle (from App or ContactPlanCom):
     ///////////////////////////////////////////
     if (msg->getKind() == BUNDLE || msg->getKind() == BUNDLE_CUSTODY_REPORT) {
         auto *bundle = check_and_cast<BundlePkt *>(msg);
-        
+
         if (msg->arrivedOn("gateToCom$i"))
             emit(dtnBundleReceivedFromCom, true);
         if (msg->arrivedOn("gateToApp$i")) {
             emit(dtnBundleReceivedFromApp, true);
-            this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), std::chrono::steady_clock::now());
+            this->metricCollector_->intializeArrivalTime(bundle->getBundleId(), simTime());
         }
         
         dispatchBundle(bundle);
@@ -579,8 +578,7 @@ void ContactDtn::dispatchBundle(BundlePkt *bundle) {
             } else {
                 // This is a data bundle destined to me
                 if (bundle->getCustodyTransferRequested())
-                    this->dispatchBundle(
-                    this->custodyModel_.bundleWithCustodyRequestedArrived(bundle));
+                    this->dispatchBundle(this->custodyModel_.bundleWithCustodyRequestedArrived(bundle));
                 // Send to app layer
                 send(bundle, "gateToApp$o");
             }
